@@ -11,24 +11,24 @@ This extension provides out of the box support for Laravel 4 and Slim 2 framewor
 
 To install latest version simply add it to your `composer.json`:
 
----
+```javascript
 "itsgoingd/clockwork": "dev-master"
----
+```
 
 ### Laravel 4
 
 Once Clockwork is installed, you need to register Laravel service provider, in your `app/config/app.php`:
 
----
+```php
 'providers' => array(
 	...    
     'Clockwork\Support\Laravel\ClockworkServiceProvider'
 )
----
+```
 
 To add your controller's runtime to timeline, add following to your base controller's constructor:
 
----
+```php
 $this->beforeFilter(function()
 {
 	Event::fire('clockwork.controller.start');
@@ -38,16 +38,16 @@ $this->afterFilter(function()
 {
 	Event::fire('clockwork.controller.end');
 });
----
+```
 
 ### Slim 2
 
 Once Clockwork is installed, you need to add Slim middleware to your app:
 
----
+```php
 $app = new Slim(...);
 $app->add(new Clockwork\Support\Slim\ClockworkMiddleware('/requests/storage/path'));
----
+```
 
 ## TODO
 
