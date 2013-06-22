@@ -37,7 +37,7 @@ class ClockworkServiceProvider extends ServiceProvider
 				->addDataSource(new PhpDataSource())
 				->addDataSource($app['clockwork.laravel'])
 				->addDataSource(new EloquentDataSource($app['db']->connection()))
-				->setStorage(new FileStorage($app['config']->get('paths.storage') . '/clockwork'));
+				->setStorage(new FileStorage($app['path.storage'] . '/clockwork'));
 
 			return $clockwork;
 		});
