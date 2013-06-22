@@ -15,6 +15,5 @@
     },
     "autoload": {
         "psr-0": {"Clockwork": ""}
-    },
-    "target-dir": "Clockwork"
+    }
 }
