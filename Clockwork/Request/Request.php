@@ -162,6 +162,6 @@ class Request
 	 */
 	protected function generateRequestId()
 	{
-		return time() . '.' . mt_rand();
+		return microtime(true) . '.' . mt_rand();
 	}
 }
