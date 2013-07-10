@@ -1,7 +1,7 @@
 Clockwork
 =========
 
-[Clockwork](http://github.com/itsgoingd/clockwork-chrome) is a Chrome extension for PHP development, extending Developer Tools with a new panel providing all kinds of information useful for debugging and profilling your PHP applications, including information about request, headers, get and post data, cookies, session data, database queries, visualisation of application runtime and more.
+[Clockwork](http://github.com/itsgoingd/clockwork-chrome) is a Chrome extension for PHP development, extending Developer Tools with a new panel providing all kinds of information useful for debugging and profilling your PHP applications, including information about request, headers, get and post data, cookies, session data, database queries, routes, visualisation of application runtime and more.
 
 This repository contains server-side component of Clockwork that gathers all the data, stores them in JSON format and serves them for displaying in Chrome Developer Tools extension.
 
@@ -24,6 +24,12 @@ Once Clockwork is installed, you need to register Laravel service provider, in y
 	...    
     'Clockwork\Support\Laravel\ClockworkServiceProvider'
 )
+```
+
+By default, Clockwork will only be available in debug mode, you can change this and other settings in the configuration file. Use the following Artisan command to publish the configuration file into your config directory:
+
+```
+$ php artisan config:publish itsgoingd/clockwork --path vendor/itsgoingd/clockwork/Clockwork/Support/Laravel/config/
 ```
 
 To add your controller's runtime to timeline, add following to your base controller's constructor:
