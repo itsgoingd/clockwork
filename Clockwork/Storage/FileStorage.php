@@ -76,7 +76,7 @@ class FileStorage extends Storage
 	{
 		file_put_contents(
 			$this->path . '/' . $request->id . '.json',
-			$request->toJson()
+			json_encode($this->applyFilter($request->toArray()))
 		);
 	}
 }

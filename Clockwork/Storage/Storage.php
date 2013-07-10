@@ -10,6 +10,11 @@ use Clockwork\Request\Request;
 abstract class Storage implements StorageInterface
 {
 	/**
+	 * Array of data to be filtered from stored requests
+	 */
+	public $filter = array();
+
+	/**
 	 * Retrieve request specified by id argument, if second argument is specified, array of requests from id to last
 	 * will be returned
 	 */
@@ -38,4 +43,18 @@ abstract class Storage implements StorageInterface
 	 * Store request
 	 */
 	abstract public function store(Request $request);
+
+	/**
+	 * Return array of data with applied filter
+	 */
+	protected function applyFilter(array $data)
+	{
+		foreach ($this->filter as $key) {
+			if (isset($data[$key])) {
+				$data[$key] = null;
+			}
+		}
+
+		return $data;
+	}
 }
