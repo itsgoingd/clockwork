@@ -51,6 +51,7 @@ class LaravelDataSource extends DataSource
 		$request->controller     = $this->getController();
 		$request->headers        = $this->getRequestHeaders();
 		$request->responseStatus = $this->getResponseStatus();
+		$request->routes         = $this->getRoutes();
 
 		$request->timelineData = $this->getTimeline()->finalize($request->time);
 		$request->log          = $this->getLog()->toArray();
@@ -224,5 +225,27 @@ class LaravelDataSource extends DataSource
 	protected function getResponseStatus()
 	{
 		return $this->response->getStatusCode();
+	}
+
+	/**
+	 * Return array of application routes
+	 */
+	protected function getRoutes()
+	{
+		$routes = $this->app['router']->getRoutes()->all();
+
+		$routesData = array();
+		foreach ($routes as $name => $route) {
+			$routesData[] = array(
+				'method' => implode(', ', $route->getMethods()),
+				'uri' => $route->getPath(),
+				'name' => $name,
+				'action' => $route->getAction() ?: 'anonymous function',
+				'before' => implode(', ', $route->getBeforeFilters()),
+				'after' => implode(', ', $route->getAfterFilters()),
+			);
+		}
+
+		return $routesData;
 	}
 }

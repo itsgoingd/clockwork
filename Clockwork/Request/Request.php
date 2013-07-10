@@ -82,6 +82,11 @@ class Request
 	public $log = array();
 
 	/**
+	 * Application routes array
+	 */
+	public $routes = array();
+
+	/**
 	 * Custom user data (not used by Clockwork app)
 	 */
 	public $userData;
@@ -145,6 +150,7 @@ class Request
 			'databaseDuration' => $this->getDatabaseDuration(),
 			'timelineData'     => $this->timelineData,
 			'log'              => $this->log,
+			'routes'           => $this->routes,
 			'userData'         => $this->userData,
 		);
 	}
