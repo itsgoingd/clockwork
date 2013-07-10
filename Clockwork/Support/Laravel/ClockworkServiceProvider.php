@@ -17,6 +17,19 @@ class ClockworkServiceProvider extends ServiceProvider
 
 	public function register()
 	{
+		$this->app['config']->package('itsgoingd/clockwork', __DIR__ . '/config');
+
+		$isEnabled = $this->app['config']->get('clockwork::enable');
+		if ($isEnabled === null) {
+			$isEnabled = $this->app['config']->get('app.debug');
+		}
+
+		$isCollectingData = $isEnabled || $this->app['config']->get('clockwork::collect_data_always', true);
+
+		if (!$isCollectingData) {
+			return; // Don't bother creating all the objects when we are not collecting data
+		}
+
 		$this->app['clockwork.timeline'] = $this->app->share(function($app){
 			return new Timeline();
 		});
@@ -36,30 +49,38 @@ class ClockworkServiceProvider extends ServiceProvider
 			$clockwork
 				->addDataSource(new PhpDataSource())
 				->addDataSource($app['clockwork.laravel'])
-				->addDataSource(new EloquentDataSource($app['db']->connection()))
-				->setStorage(new FileStorage($app['path.storage'] . '/clockwork'));
+				->addDataSource(new EloquentDataSource($app['db']->connection()));
+
+			$storage = new FileStorage($app['path.storage'] . '/clockwork');
+			$storage->filter = $app['config']->get('clockwork::filter', array());
+
+			$clockwork->setStorage($storage);
 
 			return $clockwork;
 		});
 
 		$app = $this->app;
-		$this->app->after(function($request, $response) use($app){
+		$this->app->after(function($request, $response) use($app, $isEnabled){
+			if ($app['config']->get('clockwork::skip'))
+				return;
+
 			$app['clockwork.laravel']->setResponse($response);
 
 			$app['clockwork']->resolveRequest();
 			$app['clockwork']->storeRequest();
 
-			if ($app['config']->get('app.debug') && !$app['config']->get('clockwork.skip')) {
+			if ($isEnabled) {
 				$response->headers->set('X-Clockwork-Id', $app['clockwork']->getRequest()->id, true);
-				$response->headers->set('X-Clockwork-Version', '0.9.0', true);
+				$response->headers->set('X-Clockwork-Version', Clockwork::VERSION, true);
 			}
 		});
 
-		$this->app['router']->get('/__clockwork/{id}', function($id = null, $last = null) use($app){
-			if (!$app['config']->get('app.debug'))
-				$app->abort(404);
+		if (!$isEnabled) {
+			return; // Don't bother registering the route when we are sending 404 anyway
+		}
 
-			$app['config']->set('clockwork.skip', true);
+		$this->app['router']->get('/__clockwork/{id}', function($id = null, $last = null) use($app){
+			$app['config']->set('clockwork::skip', true);
 
 			return $app['clockwork']->getStorage()->retrieveAsJson($id, $last);
 		});
