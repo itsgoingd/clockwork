@@ -36,7 +36,7 @@ class ClockworkMiddleware extends Middleware
 			if (preg_match('#/__clockwork(/(?<id>\d+\.\d+))?#', $this->app->request()->getPathInfo(), $matches))
 				return $this->retrieveRequest($matches['id']);
 
-			$this->app->response()->header('X-Clockwork-Version', '0.9.0');
+			$this->app->response()->header('X-Clockwork-Version', Clockwork::VERSION);
 		}
 
 		try {

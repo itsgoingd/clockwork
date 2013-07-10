@@ -11,6 +11,11 @@ use Clockwork\Storage\StorageInterface;
 class Clockwork
 {
 	/**
+	 * Clockwork version
+	 */
+	const VERSION = '0.9.1';
+
+	/**
 	 * Array of data sources, these objects provide data to be stored in a request object
 	 */
 	protected $dataSources = array();
