@@ -49,13 +49,6 @@ $app = new Slim(...);
 $app->add(new Clockwork\Support\Slim\ClockworkMiddleware('/requests/storage/path'));
 ```
 
-## TODO
-
-- documentation
-- support for application log and timeline in Slim
-- support for more frameworks (namely Symfony2)
-- tests
-
 ## Licence
 
 Copyright (c) 2013 Miroslav Rigler
