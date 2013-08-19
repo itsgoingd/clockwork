@@ -32,6 +32,8 @@ class ClockworkMiddleware extends Middleware
 				->setStorage(new FileStorage($this->clockworkStoragePath));
 		}
 
+		$this->app->config('clockwork', $this->clockwork);
+
 		if ($this->app->config('debug')) {
 			if (preg_match('#/__clockwork(/(?<id>\d+\.\d+))?#', $this->app->request()->getPathInfo(), $matches))
 				return $this->retrieveRequest($matches['id']);

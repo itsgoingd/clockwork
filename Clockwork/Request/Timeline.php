@@ -54,7 +54,7 @@ class Timeline
 			$item['duration'] = ($item['end'] - $item['start']) * 1000;
 		}
 
-		usort($this->data, function($a, $b){
+		uasort($this->data, function($a, $b){
 			return $a['start'] * 1000 - $b['start'] * 1000;
 		});
 
