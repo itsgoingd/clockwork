@@ -83,7 +83,7 @@ class ClockworkServiceProvider extends ServiceProvider
 			$app['config']->set('clockwork::skip', true);
 
 			return $app['clockwork']->getStorage()->retrieveAsJson($id, $last);
-		});
+		})->where('id', '[0-9\.]+');
 	}
 
 	public function provides()
