@@ -55,6 +55,12 @@ $app = new Slim(...);
 $app->add(new Clockwork\Support\Slim\ClockworkMiddleware('/requests/storage/path'));
 ```
 
+### Other frameworks
+
+There is a [brief architecture overview](https://github.com/itsgoingd/clockwork/wiki/Development-notes) available, that should provide some help when implementing support for new frameworks or custom applications.
+
+If you would like to see or are working on a support for yet unsupported framework feel free to open a new issue on github.
+
 ## Licence
 
 Copyright (c) 2013 Miroslav Rigler
