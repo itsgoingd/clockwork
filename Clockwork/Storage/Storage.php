@@ -49,9 +49,11 @@ abstract class Storage implements StorageInterface
 	 */
 	protected function applyFilter(array $data)
 	{
+		$emptyRequest = new Request(array());
+
 		foreach ($this->filter as $key) {
 			if (isset($data[$key])) {
-				$data[$key] = null;
+				$data[$key] = $emptyRequest->$key;
 			}
 		}
 
