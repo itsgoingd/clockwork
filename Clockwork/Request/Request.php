@@ -12,6 +12,11 @@ class Request
 	public $id;
 
 	/**
+	 * Data protocol version
+	 */
+	public $version = 1;
+
+	/**
 	 * Request time
 	 */
 	public $time;
