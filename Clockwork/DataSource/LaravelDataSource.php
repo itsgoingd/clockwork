@@ -54,7 +54,7 @@ class LaravelDataSource extends DataSource
 		$request->routes         = $this->getRoutes();
 
 		$request->timelineData = $this->getTimeline()->finalize($request->time);
-		$request->log          = $this->getLog()->toArray();
+		$request->log          = array_merge($request->log, $this->getLog()->toArray());
 
 		return $request;
 	}
