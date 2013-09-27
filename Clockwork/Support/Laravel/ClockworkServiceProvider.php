@@ -76,6 +76,10 @@ class ClockworkServiceProvider extends ServiceProvider
 			if ($isEnabled) {
 				$response->headers->set('X-Clockwork-Id', $app['clockwork']->getRequest()->id, true);
 				$response->headers->set('X-Clockwork-Version', Clockwork::VERSION, true);
+
+				if ($app['request']->getBasePath()) {
+					$response->headers->set('X-Clockwork-Path', $app['request']->getBasePath() . '/__clockwork/', true);
+				}
 			}
 		});
 
