@@ -91,7 +91,9 @@ class PhpDataSource extends DataSource
 	 */
 	protected function getRequestMethod()
 	{
-		return $_SERVER['REQUEST_METHOD'];
+		if (isset($_SERVER['REQUEST_METHOD'])) {
+			return $_SERVER['REQUEST_METHOD'];
+		}
 	}
 
 	/**
@@ -99,9 +101,11 @@ class PhpDataSource extends DataSource
 	 */
 	protected function getRequestTime()
 	{
-		return isset($_SERVER['REQUEST_TIME_FLOAT'])
-			? $_SERVER['REQUEST_TIME_FLOAT']
-			: $_SERVER['REQUEST_TIME'];
+		if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
+			return $_SERVER['REQUEST_TIME_FLOAT'];
+		} else if (isset($_SERVER['REQUEST_TIME'])) {
+			return $_SERVER['REQUEST_TIME'];
+		}
 	}
 
 	/**
@@ -109,7 +113,9 @@ class PhpDataSource extends DataSource
 	 */
 	protected function getRequestUri()
 	{
-		return $_SERVER['REQUEST_URI'];
+		if (isset($_SERVER['REQUEST_URI'])) {
+			return $_SERVER['REQUEST_URI'];
+		}
 	}
 
 	/**
@@ -136,8 +142,10 @@ class PhpDataSource extends DataSource
 	 */
 	protected function getSessionData()
 	{
-		return $this->removePasswords(
-			$this->replaceUnserializable($_SESSION)
-		);
+		if (isset($_SESSION)) {
+			return $this->removePasswords(
+				$this->replaceUnserializable($_SESSION)
+			);
+		}
 	}
 }
