@@ -47,11 +47,15 @@ class SlimDataSource extends DataSource
 			$this->slim->request()->getMethod(), $this->slim->request()->getResourceUri()
 		);
 
+		if (!count($matched_routes)) {
+			return null;
+		}
+
 		$controller = end($matched_routes)->getCallable();
 
-		if ($controller instanceof Closure) {
+		if ($controller instanceof \Closure) {
 			$controller = 'anonymous function';
-		} elseif (is_object($controller)) {
+		} else if (is_object($controller)) {
 			$controller = 'instance of ' . get_class($controller);
 		} else if (is_array($controller) && count($controller) == 2) {
 			if (is_object($controller[0]))
