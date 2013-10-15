@@ -34,12 +34,8 @@ class ClockworkMiddleware extends Middleware
 
 		$this->app->config('clockwork', $this->clockwork);
 
-		if ($this->app->config('debug')) {
-			if (preg_match('#/__clockwork(/(?<id>[0-9\.]+))?#', $this->app->request()->getPathInfo(), $matches)) {
-				return $this->retrieveRequest($matches['id']);
-			}
-
-			$this->app->response()->header('X-Clockwork-Version', Clockwork::VERSION);
+		if ($this->app->config('debug') && preg_match('#/__clockwork(/(?<id>[0-9\.]+))?#', $this->app->request()->getPathInfo(), $matches)) {
+			return $this->retrieveRequest($matches['id']);
 		}
 
 		try {
@@ -63,6 +59,12 @@ class ClockworkMiddleware extends Middleware
 
 		if ($this->app->config('debug')) {
 			$this->app->response()->header('X-Clockwork-Id', $this->clockwork->getRequest()->id);
+			$this->app->response()->header('X-Clockwork-Version', Clockwork::VERSION);
+
+			$env = $this->app->environment();
+			if ($env['SCRIPT_NAME']) {
+				$this->app->response()->header('X-Clockwork-Path', $env['SCRIPT_NAME'] . '/__clockwork/');
+			}
 		}
 	}
 }
