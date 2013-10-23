@@ -20,10 +20,16 @@ class FileStorage extends Storage
 	 */
 	public function __construct($path)
 	{
-		if (!file_exists($path))
-			@mkdir($path, 0700, true);
+		if (!file_exists($path)) {
+			# directory doesn't exist, try to create one
+			if (!mkdir($path, 0700, true))
+				throw new Exception('Directory "' . $path . '" does not exist.');
 
-		if (!is_writable($path))
+			# create default .gitignore, to ignore stored json files
+			file_put_contents($path . '/.gitignore', "*.json\n");
+		}
+
+		if (!is_writable($path)) 
 			throw new Exception('Path "' . $path . '" is not writable.');
 
 		$this->path = $path;
