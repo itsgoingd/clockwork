@@ -177,7 +177,13 @@ class LaravelDataSource extends DataSource
 	 */
 	protected function getController()
 	{
-		$controller = $this->app['router']->getCurrentRoute()->getAction();
+		$router = $this->app['router'];
+
+		if (method_exists($router, 'getCurrentRoute')) { // Laravel 4.0
+			$controller = $router->getCurrentRoute()->getAction();
+		} else { // Laravel 4.1
+			$controller = $router->current()->getAction();
+		}
 
 		if ($controller instanceof Closure) {
 			$controller = 'anonymous function';
