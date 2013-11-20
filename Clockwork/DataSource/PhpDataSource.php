@@ -142,10 +142,11 @@ class PhpDataSource extends DataSource
 	 */
 	protected function getSessionData()
 	{
-		if (isset($_SESSION)) {
-			return $this->removePasswords(
-				$this->replaceUnserializable($_SESSION)
-			);
-		}
+		if (!isset($_SESSION))
+			return array();
+
+		return $this->removePasswords(
+			$this->replaceUnserializable($_SESSION)
+		);
 	}
 }
