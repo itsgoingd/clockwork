@@ -238,18 +238,35 @@ class LaravelDataSource extends DataSource
 	 */
 	protected function getRoutes()
 	{
-		$routes = $this->app['router']->getRoutes()->all();
-
+		$router = $this->app['router'];
 		$routesData = array();
-		foreach ($routes as $name => $route) {
-			$routesData[] = array(
-				'method' => implode(', ', $route->getMethods()),
-				'uri' => $route->getPath(),
-				'name' => $name,
-				'action' => $route->getAction() ?: 'anonymous function',
-				'before' => implode(', ', $route->getBeforeFilters()),
-				'after' => implode(', ', $route->getAfterFilters()),
-			);
+
+		if (method_exists($router, 'getCurrentRoute')) { // Laravel 4.0
+			$routes = $router->getRoutes()->all();
+
+			foreach ($routes as $name => $route) {
+				$routesData[] = array(
+					'method' => implode(', ', $route->getMethods()),
+					'uri'    => $route->getPath(),
+					'name'   => $name,
+					'action' => $route->getAction() ?: 'anonymous function',
+					'before' => implode(', ', $route->getBeforeFilters()),
+					'after'  => implode(', ', $route->getAfterFilters()),
+				);
+			}
+		} else { // Laravel 4.1
+			$routes = $router->getRoutes();
+
+			foreach ($routes as $route) {
+				$routesData[] = array(
+					'method' => implode(', ', $route->methods()),
+					'uri'    => $route->uri(),
+					'name'   => $route->getName(),
+					'action' => $route->getActionName() ?: 'anonymous function',
+					'before' => implode(', ', array_keys($route->beforeFilters())),
+					'after'  => implode(', ', array_keys($route->afterFilters())),
+				);
+			}
 		}
 
 		return $routesData;
