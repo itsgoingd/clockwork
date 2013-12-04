@@ -180,9 +180,11 @@ class LaravelDataSource extends DataSource
 		$router = $this->app['router'];
 
 		if (method_exists($router, 'getCurrentRoute')) { // Laravel 4.0
-			$controller = $router->getCurrentRoute()->getAction();
+			$route = $router->getCurrentRoute();
+			$controller = $route ? $route->getAction() : null;
 		} else { // Laravel 4.1
-			$controller = $router->current()->getActionName();
+			$route = $router->current();
+			$controller = $route ? $route->getActionName() : null;
 		}
 
 		if ($controller instanceof Closure) {
