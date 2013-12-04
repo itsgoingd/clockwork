@@ -19,6 +19,8 @@ class ClockworkServiceProvider extends ServiceProvider
 	{
 		$this->app['config']->package('itsgoingd/clockwork', __DIR__ . '/config');
 
+		$this->registerCommands();
+
 		$isEnabled = $this->app['config']->get('clockwork::enable');
 		if ($isEnabled === null) {
 			$isEnabled = $this->app['config']->get('app.debug');
@@ -61,7 +63,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		$app = $this->app;
 		$this->app->after(function($request, $response) use($app, $isEnabled){
 			// don't collect data for configured URIs
-			
+
 			$request_uri = $this->app['request']->getRequestUri();
 			$filter_uris = $app['config']->get('clockwork::filter_uris', array());
 			$filter_uris[] = '/__clockwork/[0-9\.]+'; // don't collect data for Clockwork requests
@@ -96,6 +98,21 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app['router']->get('/__clockwork/{id}', function($id = null, $last = null) use($app){
 			return $app['clockwork']->getStorage()->retrieveAsJson($id, $last);
 		})->where('id', '[0-9\.]+');
+	}
+
+	/**
+	 * Register the artisan commands.
+	 */
+	public function registerCommands()
+	{
+		// Clean command
+		$this->app['command.clockwork.clean'] = $this->app->share(function($app){
+			return new ClockworkCleanCommand();
+		});
+
+		$this->commands(
+			'command.clockwork.clean'
+		);
 	}
 
 	public function provides()
