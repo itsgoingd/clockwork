@@ -30,13 +30,8 @@ class ClockworkServiceProvider extends ServiceProvider
 			return; // Don't bother creating all the objects when we are not collecting data
 		}
 
-		$this->app['clockwork.timeline'] = $this->app->share(function($app){
-			return new Timeline();
-		});
-
 		$this->app['clockwork.laravel'] = $this->app->share(function($app){
 			$datasource = new LaravelDataSource($app);
-			$datasource->setTimeline($app['clockwork.timeline']);
 
 			return $datasource;
 		});

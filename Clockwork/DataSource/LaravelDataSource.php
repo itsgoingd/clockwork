@@ -39,6 +39,9 @@ class LaravelDataSource extends DataSource
 	public function __construct(Application $app)
 	{
 		$this->app = $app;
+
+		$this->log = new Log();
+		$this->timeline = new Timeline();
 	}
 
 	/**
@@ -53,8 +56,8 @@ class LaravelDataSource extends DataSource
 		$request->responseStatus = $this->getResponseStatus();
 		$request->routes         = $this->getRoutes();
 
-		$request->timelineData = $this->getTimeline()->finalize($request->time);
-		$request->log          = array_merge($request->log, $this->getLog()->toArray());
+		$request->timelineData = $this->timeline->finalize($request->time);
+		$request->log          = array_merge($request->log, $this->log->toArray());
 
 		return $request;
 	}
@@ -68,49 +71,11 @@ class LaravelDataSource extends DataSource
 	}
 
 	/**
-	 * Return the log data structure (creates default Log instance if none set)
-	 */
-	public function getLog()
-	{
-		if (!$this->log)
-			$this->log = new Log();
-
-		return $this->log;
-	}
-
-	/**
-	 * Set a custom log data structure
-	 */
-	public function setLog(Log $log)
-	{
-		$this->log = $log;
-	}
-
-	/**
-	 * Return the timeline data structure (creates default Timeline instance if none set)
-	 */
-	public function getTimeline()
-	{
-		if (!$this->timeline)
-			$this->timeline = new Timeline();
-
-		return $this->timeline;
-	}
-
-	/**
-	 * Set a custom timeline data-structure
-	 */
-	public function setTimeline(Timeline $timeline)
-	{
-		$this->timeline = $timeline;
-	}
-
-	/**
 	 * Hook up callbacks for various Laravel events, providing information for timeline and log entries
 	 */
 	public function listenToEvents()
 	{
-		$timeline = $this->getTimeline();
+		$timeline = $this->timeline;
 
 		$timeline->startEvent('total', 'Total execution time.', 'start');
 
@@ -152,7 +117,7 @@ class LaravelDataSource extends DataSource
 			$timeline->endEvent('controller');
 		});
 
-		$log = $this->getLog();
+		$log = $this->log;
 
 		$this->app['events']->listen('illuminate.log', function($level, $message) use($log)
 		{
