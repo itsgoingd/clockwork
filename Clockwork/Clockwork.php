@@ -15,7 +15,7 @@ class Clockwork
 	/**
 	 * Clockwork version
 	 */
-	const VERSION = '1.1';
+	const VERSION = '1.2';
 
 	/**
 	 * Array of data sources, these objects provide data to be stored in a request object

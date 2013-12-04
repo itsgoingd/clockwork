@@ -1,3 +1,14 @@
+1.2
+- added support for Laravel 4.1
+- added facade for Laravel
+- added ability to disable collecting data about requests to specified URIs in Laravel
+- added clockwork:clean artisan command for cleaning request metadata for Laravel
+- added an easy way to add timeline events and log records via main Clockwork class
+- added support for Slim apps running in subdirs (requires Clockwork Chrome 1.1+)
+- file stroage now creates default gitignore file for the request data when creating the storage dir
+- fixed a few bugs which might cause request data to not appear in Chrome extension
+- fixed a few bugs that could lead to PHP errors/exceptions
+
 1.1
 - added support for Laravel 4 apps running in subdirs (requires Clockwork Chrome 1.1+)
 - added data-protocol version to the request data

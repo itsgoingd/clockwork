@@ -21,7 +21,7 @@ Once Clockwork is installed, you need to register Laravel service provider, in y
 
 ```php
 'providers' => array(
-	...    
+	...
     'Clockwork\Support\Laravel\ClockworkServiceProvider'
 )
 ```
@@ -44,6 +44,26 @@ $this->afterFilter(function()
 {
 	Event::fire('clockwork.controller.end');
 });
+```
+
+Clockwork also comes with a facade, which provides an easy way to add records to the Clockwork log and events to the timeline. You can register the facade in your `app/config/app.php`:
+
+```php
+'aliases' => array(
+	...
+	'Clockwork' => 'Clockwork\Support\Laravel\Facade',
+)
+```
+
+Now you can use the following commands:
+
+```php
+Clockwork::startEvent('event_name', 'Event description.'); // event called 'Event description.' appears in Clockwork timeline tab
+
+Clockwork::log('Message text.'); // 'Message text.' appears in Clockwork log tab
+Log::info('Message text.'); // 'Message text.' appears in Clockwork log tab as well as application log file
+
+Clockwork::endEvent('event_name');
 ```
 
 ### Slim 2
