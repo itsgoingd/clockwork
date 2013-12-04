@@ -43,6 +43,20 @@ return array(
 
     'filter' => array(
         'routes', // It might be a good idea to not collect routes in every request as this might use a lot of disk space
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Disable data collection for certain URIs
+    |--------------------------------------------------------------------------
+    |
+    | You can disable data collection for specific URIs by adding matching
+    | regular expressions here.
+    |
+    */
+
+    'filter_uris' => array(
+        '/__clockwork/.*', // disable collecting data for clockwork-web assets
     )
 
 );

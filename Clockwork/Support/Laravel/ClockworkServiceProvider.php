@@ -60,8 +60,19 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		$app = $this->app;
 		$this->app->after(function($request, $response) use($app, $isEnabled){
-			if ($app['config']->get('clockwork::skip'))
-				return;
+			// don't collect data for configured URIs
+			
+			$request_uri = $this->app['request']->getRequestUri();
+			$filter_uris = $app['config']->get('clockwork::filter_uris', array());
+			$filter_uris[] = '/__clockwork/[0-9\.]+'; // don't collect data for Clockwork requests
+
+			foreach ($filter_uris as $uri) {
+				$regexp = '#' . str_replace('#', '\#', $uri) . '#';
+
+				if (preg_match($regexp, $request_uri)) {
+					return;
+				}
+			}
 
 			$app['clockwork.laravel']->setResponse($response);
 
@@ -83,8 +94,6 @@ class ClockworkServiceProvider extends ServiceProvider
 		}
 
 		$this->app['router']->get('/__clockwork/{id}', function($id = null, $last = null) use($app){
-			$app['config']->set('clockwork::skip', true);
-
 			return $app['clockwork']->getStorage()->retrieveAsJson($id, $last);
 		})->where('id', '[0-9\.]+');
 	}
