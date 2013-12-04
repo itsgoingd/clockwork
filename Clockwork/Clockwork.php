@@ -2,7 +2,9 @@
 namespace Clockwork;
 
 use Clockwork\DataSource\DataSourceInterface;
+use Clockwork\Request\Log;
 use Clockwork\Request\Request;
+use Clockwork\Request\Timeline;
 use Clockwork\Storage\StorageInterface;
 
 /**
@@ -31,11 +33,23 @@ class Clockwork
 	protected $storage;
 
 	/**
+	 * Request\Log instance, data structure which stores data for the log view
+	 */
+	protected $log;
+
+	/**
+	 * Request\Timeline instance, data structure which stores data for the timeline view
+	 */
+	protected $timeline;
+
+	/**
 	 * Create a new Clockwork instance with default request object
 	 */
 	public function __construct()
 	{
 		$this->request = new Request();
+		$this->log = new Log();
+		$this->timeline = new Timeline();
 	}
 
 	/**
@@ -82,6 +96,14 @@ class Clockwork
 		foreach ($this->dataSources as $dataSource)
 			$dataSource->resolve($this->request);
 
+		// merge global log and timeline data with data collected from data sources
+		$this->request->log = array_merge($this->request->log, $this->log->toArray());
+		$this->request->timelineData = array_merge($this->request->timelineData, $this->timeline->finalize());
+
+		// sort log and timeline data by time
+		uasort($this->request->log, function($a, $b){ return $a['time'] - $b['time']; });
+		uasort($this->request->timelineData, function($a, $b){ return $a['start'] - $b['start']; });
+
 		return $this;
 	}
 
@@ -109,5 +131,61 @@ class Clockwork
 		$this->storage = $storage;
 
 		return $this;
+	}
+
+	/**
+	 * Return the log instance
+	 */
+	public function getLog()
+	{
+		return $this->log;
+	}
+
+	/**
+	 * Set a custom log instance
+	 */
+	public function setLog(Log $log)
+	{
+		$this->log = $log;
+	}
+
+	/**
+	 * Shortcut for $clockwork->getLog()->log()
+	 */
+	public function log($message, $level = Log::INFO)
+	{
+		return $this->getLog()->log($message, $level);
+	}
+
+	/**
+	 * Return the timeline instance
+	 */
+	public function getTimeline()
+	{
+		return $this->timeline;
+	}
+
+	/**
+	 * Set a custom timeline instance
+	 */
+	public function setTimeline(Timeline $timeline)
+	{
+		$this->timeline = $timeline;
+	}
+
+	/**
+	 * Shortcut for $clockwork->getTimeline()->startEvent()
+	 */
+	public function startEvent($name, $description, $time = null)
+	{
+		return $this->getTimeline()->startEvent($name, $description, $time);
+	}
+
+	/**
+	 * Shortcut for $clockwork->getTimeline()->endEvent()
+	 */
+	public function endEvent($name)
+	{
+		return $this->getTimeline()->endEvent($name);
 	}
 }
