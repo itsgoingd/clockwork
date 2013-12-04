@@ -1,7 +1,7 @@
 {
     "name": "itsgoingd/clockwork",
     "description": "Server-side component of Clockwork, a Chrome extension for PHP development",
-    "keywords": ["debugging", "profiling", "logging"],
+    "keywords": ["debugging", "profiling", "logging", "laravel"],
     "homepage": "http://github.com/itsgoingd/clockwork",
     "license": "MIT",
     "authors": [
