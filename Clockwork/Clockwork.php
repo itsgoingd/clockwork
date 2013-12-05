@@ -102,7 +102,7 @@ class Clockwork
 
 		// sort log and timeline data by time
 		uasort($this->request->log, function($a, $b){ return $a['time'] - $b['time']; });
-		uasort($this->request->timelineData, function($a, $b){ return $a['start'] - $b['start']; });
+		uasort($this->request->timelineData, function($a, $b){ return $a['start'] * 1000 - $b['start'] * 1000; });
 
 		return $this;
 	}
