@@ -64,7 +64,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->after(function($request, $response) use($app, $isEnabled){
 			// don't collect data for configured URIs
 
-			$request_uri = $this->app['request']->getRequestUri();
+			$request_uri = $app['request']->getRequestUri();
 			$filter_uris = $app['config']->get('clockwork::filter_uris', array());
 			$filter_uris[] = '/__clockwork/[0-9\.]+'; // don't collect data for Clockwork requests
 
