@@ -57,6 +57,22 @@ return array(
 
     'filter_uris' => array(
         '/__clockwork/.*', // disable collecting data for clockwork-web assets
-    )
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Send Headers for AJAX request
+    |--------------------------------------------------------------------------
+    |
+    | When trying to collect data the AJAX method can sometimes fail if it is 
+    | missing required headers. For example, an API might require a version 
+    | number using Accept headers to route the HTTP request to the correct 
+    | codebase.
+    |
+    */
+
+    'headers' => array(
+        // 'Accept' => 'application/vnd.com.whatever.v1+json',
+    ),
 
 );
