@@ -125,7 +125,7 @@ class Request
 	}
 
 	/**
-	 * Compute and return response duration in miliseconds
+	 * Compute and return response duration in milliseconds
 	 */
 	public function getResponseDuration()
 	{

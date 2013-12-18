@@ -6,34 +6,34 @@ use Illuminate\Console\Command;
 class ClockworkCleanCommand extends Command
 {
     /**
-    * The console command name.
-    *
-    * @var string
-    */
+     * The console command name.
+     *
+     * @var string
+     */
     protected $name = 'clockwork:clean';
 
     /**
-    * The console command description.
-    *
-    * @var string
-    */
+     * The console command description.
+     *
+     * @var string
+     */
     protected $description = 'Cleans all request metadata';
 
     /**
-    * Create a new command instance.
-    *
-    * @return void
-    */
+     * Create a new command instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
         parent::__construct();
     }
 
     /**
-    * Execute the console command.
-    *
-    * @return void
-    */
+     * Execute the console command.
+     *
+     * @return void
+     */
     public function fire()
     {
         $data_dir = storage_path() . '/clockwork';
