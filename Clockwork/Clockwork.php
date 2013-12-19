@@ -89,7 +89,7 @@ class Clockwork
 	}
 
 	/**
-	 * Add data from all data soruces to request
+	 * Add data from all data sources to request
 	 */
 	public function resolveRequest()
 	{
@@ -154,7 +154,7 @@ class Clockwork
 	 */
 	public function log($message, $level = Log::INFO)
 	{
-		return $this->getLog()->log($message, $level);
+		$this->getLog()->log($message, $level);
 	}
 
 	/**
@@ -178,7 +178,7 @@ class Clockwork
 	 */
 	public function startEvent($name, $description, $time = null)
 	{
-		return $this->getTimeline()->startEvent($name, $description, $time);
+		$this->getTimeline()->startEvent($name, $description, $time);
 	}
 
 	/**
@@ -186,6 +186,6 @@ class Clockwork
 	 */
 	public function endEvent($name)
 	{
-		return $this->getTimeline()->endEvent($name);
+		$this->getTimeline()->endEvent($name);
 	}
 }

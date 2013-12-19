@@ -38,7 +38,7 @@ class EloquentDataSource extends DataSource
 	 */
 	protected function createRunnableQuery($query, $bindings)
 	{
-		# add bingins to query
+		# add bindings to query
 		$bindings = $this->connection->prepareBindings($bindings);
 
 		foreach ($bindings as $binding) {
