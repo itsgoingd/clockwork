@@ -29,7 +29,7 @@ class PhpDataSource extends DataSource
 	}
 
 	/**
-	 * Return cookies (replace unserializable items, attemp to remove passwords)
+	 * Return cookies (replace unserializable items, attempt to remove passwords)
 	 */
 	protected function getCookies()
 	{
@@ -39,7 +39,7 @@ class PhpDataSource extends DataSource
 	}
 
 	/**
-	 * Return GET data (replace unserializable items, attemp to remove passwords)
+	 * Return GET data (replace unserializable items, attempt to remove passwords)
 	 */
 	protected function getGetData()
 	{
@@ -49,7 +49,7 @@ class PhpDataSource extends DataSource
 	}
 
 	/**
-	 * Return POST data (replace unserializable items, attemp to remove passwords)
+	 * Return POST data (replace unserializable items, attempt to remove passwords)
 	 */
 	protected function getPostData()
 	{
@@ -87,7 +87,7 @@ class PhpDataSource extends DataSource
 	}
 
 	/**
-	 * Retrun request method
+	 * Return request method
 	 */
 	protected function getRequestMethod()
 	{
@@ -138,7 +138,7 @@ class PhpDataSource extends DataSource
 	}
 
 	/**
-	 * Return session data (replace unserializable items, attemp to remove passwords)
+	 * Return session data (replace unserializable items, attempt to remove passwords)
 	 */
 	protected function getSessionData()
 	{

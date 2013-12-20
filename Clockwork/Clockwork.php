@@ -92,7 +92,7 @@ class Clockwork implements LoggerInterface
 	}
 
 	/**
-	 * Add data from all data soruces to request
+	 * Add data from all data sources to request
 	 */
 	public function resolveRequest()
 	{
@@ -169,7 +169,7 @@ class Clockwork implements LoggerInterface
 	}
 
 	/**
-	 * Shortcut methods for current log instance
+	 * Shortcut methods for the current log instance
 	 */
 
 	public function log($level = LogLevel::INFO, $message, array $context = array())
@@ -218,7 +218,7 @@ class Clockwork implements LoggerInterface
     }
 
 	/**
-	 * Shortcut methods for current timeline instance
+	 * Shortcut methods for the current timeline instance
 	 */
 
 	public function startEvent($name, $description, $time = null)

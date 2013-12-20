@@ -10,7 +10,7 @@ NOTE: Clockwork\Request\Log::log method arguments have been changed from log($me
 - added clockwork:clean artisan command for cleaning request metadata for Laravel
 - added an easy way to add timeline events and log records via main Clockwork class
 - added support for Slim apps running in subdirs (requires Clockwork Chrome 1.1+)
-- file stroage now creates default gitignore file for the request data when creating the storage dir
+- file storage now creates default gitignore file for the request data when creating the storage dir
 - fixed a few bugs which might cause request data to not appear in Chrome extension
 - fixed a few bugs that could lead to PHP errors/exceptions
 
@@ -26,4 +26,4 @@ NOTE: Clockwork\Request\Log::log method arguments have been changed from log($me
 - added support for application routes (ootb support for Laravel 4 only atm)
 - added configuration file for Laravel 4
 - added support for filtering stored data in Storage
-- added library version constant Cloclwork::VERSION
+- added library version constant Clockwork::VERSION
