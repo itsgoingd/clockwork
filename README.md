@@ -60,11 +60,11 @@ Now you can use the following commands:
 ```php
 Clockwork::startEvent('event_name', 'Event description.'); // event called 'Event description.' appears in Clockwork timeline tab
 
-Clockwork::log('Message text.'); // 'Message text.' appears in Clockwork log tab
+Clockwork::info('Message text.'); // 'Message text.' appears in Clockwork log tab
 Log::info('Message text.'); // 'Message text.' appears in Clockwork log tab as well as application log file
 
-Clockwork::log(array('hello' => 'world')); // logs json representation of the array
-Clockwork::log(new Object()); // logs string representation of the objects if the object implements __toString magic method, logs json representation of output of toArray method if the object implements it, if neither is the case, logs json representation of the object cast to array
+Clockwork::info(array('hello' => 'world')); // logs json representation of the array
+Clockwork::info(new Object()); // logs string representation of the objects if the object implements __toString magic method, logs json representation of output of toArray method if the object implements it, if neither is the case, logs json representation of the object cast to array
 
 Clockwork::endEvent('event_name');
 ```
