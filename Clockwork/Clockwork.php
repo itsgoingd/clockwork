@@ -7,10 +7,13 @@ use Clockwork\Request\Request;
 use Clockwork\Request\Timeline;
 use Clockwork\Storage\StorageInterface;
 
+use Psr\Log\LogLevel;
+use Psr\Log\LoggerInterface;
+
 /**
  * Main Clockwork class
  */
-class Clockwork
+class Clockwork implements LoggerInterface
 {
 	/**
 	 * Clockwork version
@@ -150,14 +153,6 @@ class Clockwork
 	}
 
 	/**
-	 * Shortcut for $clockwork->getLog()->log()
-	 */
-	public function log($message, $level = Log::INFO)
-	{
-		return $this->getLog()->log($message, $level);
-	}
-
-	/**
 	 * Return the timeline instance
 	 */
 	public function getTimeline()
@@ -174,16 +169,63 @@ class Clockwork
 	}
 
 	/**
-	 * Shortcut for $clockwork->getTimeline()->startEvent()
+	 * Shortcut methods for current log instance
 	 */
+
+	public function log($level = LogLevel::INFO, $message, array $context = array())
+	{
+		return $this->getLog()->log($level, $message, $context);
+	}
+
+    public function emergency($message, array $context = array())
+    {
+        return $this->getLog()->log(LogLevel::EMERGENCY, $message, $context);
+    }
+
+    public function alert($message, array $context = array())
+    {
+        return $this->getLog()->log(LogLevel::ALERT, $message, $context);
+    }
+
+    public function critical($message, array $context = array())
+    {
+        return $this->getLog()->log(LogLevel::CRITICAL, $message, $context);
+    }
+
+    public function error($message, array $context = array())
+    {
+        return $this->getLog()->log(LogLevel::ERROR, $message, $context);
+    }
+
+    public function warning($message, array $context = array())
+    {
+        return $this->getLog()->log(LogLevel::WARNING, $message, $context);
+    }
+
+    public function notice($message, array $context = array())
+    {
+        return $this->getLog()->log(LogLevel::NOTICE, $message, $context);
+    }
+
+    public function info($message, array $context = array())
+    {
+        return $this->getLog()->log(LogLevel::INFO, $message, $context);
+    }
+
+    public function debug($message, array $context = array())
+    {
+        return $this->getLog()->log(LogLevel::DEBUG, $message, $context);
+    }
+
+	/**
+	 * Shortcut methods for current timeline instance
+	 */
+
 	public function startEvent($name, $description, $time = null)
 	{
 		return $this->getTimeline()->startEvent($name, $description, $time);
 	}
 
-	/**
-	 * Shortcut for $clockwork->getTimeline()->endEvent()
-	 */
 	public function endEvent($name)
 	{
 		return $this->getTimeline()->endEvent($name);

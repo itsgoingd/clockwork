@@ -121,19 +121,7 @@ class LaravelDataSource extends DataSource
 
 		$this->app['events']->listen('illuminate.log', function($level, $message) use($log)
 		{
-			switch ($level) {
-				case 'debug': $level = Log::DEBUG; break;
-				case 'info': $level = Log::INFO; break;
-				case 'notice': $level = Log::NOTICE; break;
-				case 'warning': $level = Log::WARNING; break;
-				case 'error': $level = Log::ERROR; break;
-				case 'critical': $level = Log::ERROR; break;
-				case 'alert': $level = Log::WARNING; break;
-				case 'emergency': $level = Log::ERROR; break;
-				default: $level = Log::INFO;
-			}
-
-			$log->log($message, $level);
+			$log->log($level, $message);
 		});
 	}
 
