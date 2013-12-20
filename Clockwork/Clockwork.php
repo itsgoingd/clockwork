@@ -104,8 +104,8 @@ class Clockwork implements LoggerInterface
 		$this->request->timelineData = array_merge($this->request->timelineData, $this->timeline->finalize());
 
 		// sort log and timeline data by time
-		uasort($this->request->log, function($a, $b){ return $a['time'] - $b['time']; });
-		uasort($this->request->timelineData, function($a, $b){ return $a['start'] * 1000 - $b['start'] * 1000; });
+		uasort($this->request->log, function($a, $b){ return $a['time'] * 10000 - $b['time'] * 10000; });
+		uasort($this->request->timelineData, function($a, $b){ return $a['start'] * 10000 - $b['start'] * 10000; });
 
 		return $this;
 	}

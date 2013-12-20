@@ -154,7 +154,7 @@ class Request
 			'databaseQueries'  => $this->databaseQueries,
 			'databaseDuration' => $this->getDatabaseDuration(),
 			'timelineData'     => $this->timelineData,
-			'log'              => $this->log,
+			'log'              => array_values($this->log),
 			'routes'           => $this->routes,
 			'userData'         => $this->userData,
 		);

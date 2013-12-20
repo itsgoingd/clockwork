@@ -34,7 +34,7 @@ class Log extends AbstractLogger
 		$this->data[] = array(
 			'message' => $message,
 			'level' => $level,
-			'time' => time(),
+			'time' => microtime(true),
 		);
 	}
 
