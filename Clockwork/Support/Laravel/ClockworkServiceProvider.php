@@ -89,7 +89,7 @@ class ClockworkServiceProvider extends ServiceProvider
 					$response->headers->set('X-Clockwork-Path', $app['request']->getBasePath() . '/__clockwork/', true);
 				}
 				
-				$extraHeaders = $this->app['config']->get('clockwork::headers');
+				$extraHeaders = $app['config']->get('clockwork::headers');
 				if ($extraHeaders and is_array($extraHeaders)) {
 					foreach ($extraHeaders as $headerName => $headerValue) {
 						$response->headers->set('X-Clockwork-Header-'.$headerName, $headerValue);
