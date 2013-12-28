@@ -132,7 +132,7 @@ class LaravelDataSource extends DataSource
 	{
 		$router = $this->app['router'];
 
-		if (method_exists($router, 'getCurrentRoute')) { // Laravel 4.0
+		if (strpos(Application::VERSION, '4.0') === 0) { // Laravel 4.0
 			$route = $router->getCurrentRoute();
 			$controller = $route ? $route->getAction() : null;
 		} else { // Laravel 4.1
@@ -196,7 +196,7 @@ class LaravelDataSource extends DataSource
 		$router = $this->app['router'];
 		$routesData = array();
 
-		if (method_exists($router, 'getCurrentRoute')) { // Laravel 4.0
+		if (strpos(Application::VERSION, '4.0') === 0) { // Laravel 4.0
 			$routes = $router->getRoutes()->all();
 
 			foreach ($routes as $name => $route) {
