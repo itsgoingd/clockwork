@@ -32,7 +32,6 @@ class CodeIgniterDataSource extends DataSource
 	{
 		$CI = &get_instance();
 		
-		
 		$request->uri = $CI->uri->ruri_string();
 		$request->controller = $CI->router->fetch_class();
 		$request->method = $CI->router->fetch_method();
@@ -51,14 +50,13 @@ class CodeIgniterDataSource extends DataSource
 	{
 		$CI = &get_instance();
 		
-		
-		$databaseQueries = [];
+		$databaseQueries = array();
 		$queries = array_combine($CI->db->query_times, $CI->db->queries);
 		foreach ($queries as $time => $query) {
-			$databaseQueries[] = [
+			$databaseQueries[] = array(
 				'query'		=> $query,
 				'duration'	=> $time
-			];
+			);
 		}
 		
 		return $databaseQueries;

@@ -7,7 +7,7 @@ This repository contains server-side component of Clockwork that gathers all the
 
 ## Installation
 
-This extension provides out of the box support for Laravel 4 and Slim 2 frameworks, you can add support for any other or custom framework via an extensible API.
+This extension provides out of the box support for Laravel 4, Slim 2 and CodeIgniter 2.1 frameworks, you can add support for any other or custom framework via an extensible API.
 
 To install latest version simply add it to your `composer.json`:
 
@@ -76,6 +76,20 @@ Once Clockwork is installed, you need to add Slim middleware to your app:
 ```php
 $app = new Slim(...);
 $app->add(new Clockwork\Support\Slim\ClockworkMiddleware('/requests/storage/path'));
+```
+
+### CodeIgniter 2.1
+
+Once Clockwork is installed, you need to copy the Clockwork controller from `vendor/itsgoingd/clockwork/Clockwork/Support/CodeIgniter/Clockwork.php` to your controllers directory and set up the following route:
+
+```php
+$route['__clockwork/(.*)'] = 'clockwork/$1';
+```
+
+Finally, you need to set up the Clockwork hooks by adding following to your `application/config/hooks.php` file:
+
+```php
+Clockwork\Support\CodeIgniter\Hook_Clockwork_Register::registerHooks($hook);
 ```
 
 ### Other frameworks
