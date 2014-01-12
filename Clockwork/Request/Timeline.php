@@ -12,16 +12,31 @@ class Timeline
 	public $data = array();
 
 	/**
+	 * Add a new event
+	 */
+	public function addEvent($name, $description, $start_time, $end_time, array $data = array())
+	{
+		$this->data[$name] = array(
+			'start'       => $start_time,
+			'end'         => $end_time,
+			'duration'    => null,
+			'description' => $description,
+			'data'        => $data,
+		);
+	}
+
+	/**
 	 * Start recording a new event, expects name, description and optional time as arguments, if time is not provided,
 	 * current time will be used, if time equals 'start', request time will be used
 	 */
-	public function startEvent($name, $description, $time = null)
+	public function startEvent($name, $description, $time = null, array $data = array())
 	{
 		$this->data[$name] = array(
 			'start'       => $time ? $time : microtime(true),
 			'end'         => null,
 			'duration'    => null,
 			'description' => $description,
+			'data'        => $data,
 		);
 	}
 
