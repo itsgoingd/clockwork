@@ -5,6 +5,7 @@ use Clockwork\Clockwork;
 use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\LaravelDataSource;
 use Clockwork\DataSource\EloquentDataSource;
+use Clockwork\DataSource\SwiftDataSource;
 use Clockwork\Request\Timeline;
 use Clockwork\Storage\FileStorage;
 use Illuminate\Support\ServiceProvider;
@@ -20,6 +21,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		}
 
 		$this->app['clockwork.laravel']->listenToEvents();
+		$this->app->make('clockwork.swift');
 
 		if (!$this->isEnabled()) {
 			return; // Clockwork is diabled, don't register the route
@@ -39,13 +41,19 @@ class ClockworkServiceProvider extends ServiceProvider
 			return new LaravelDataSource($app);
 		});
 
+		$this->app->singleton('clockwork.swift', function($app)
+		{
+			return new SwiftDataSource($app['mailer']->getSwiftMailer());
+		});
+
 		$this->app->singleton('clockwork', function($app)
 		{
 			$clockwork = new Clockwork();
 
 			$clockwork
 				->addDataSource(new PhpDataSource())
-				->addDataSource($app['clockwork.laravel']);
+				->addDataSource($app['clockwork.laravel'])
+				->addDataSource($app['clockwork.swift']);
 
 			$filter = $app['config']->get('clockwork::config.filter', array());
 

@@ -34,6 +34,11 @@ class LaravelDataSource extends DataSource
 	protected $timeline;
 
 	/**
+	 * Timeline data structure for views data
+	 */
+	protected $views;
+
+	/**
 	 * Create a new data source, takes Laravel application instance as an argument
 	 */
 	public function __construct(Application $app)
@@ -42,6 +47,7 @@ class LaravelDataSource extends DataSource
 
 		$this->log = new Log();
 		$this->timeline = new Timeline();
+		$this->views = new Timeline();
 	}
 
 	/**
@@ -55,10 +61,11 @@ class LaravelDataSource extends DataSource
 		$request->headers        = $this->getRequestHeaders();
 		$request->responseStatus = $this->getResponseStatus();
 		$request->routes         = $this->getRoutes();
-		
 		$request->sessionData    = $this->getSessionData();
-		$request->timelineData = $this->timeline->finalize($request->time);
+
 		$request->log          = array_merge($request->log, $this->log->toArray());
+		$request->timelineData = $this->timeline->finalize($request->time);
+		$request->viewsData    = $this->views->finalize();
 
 		return $request;
 	}
@@ -123,6 +130,24 @@ class LaravelDataSource extends DataSource
 		$this->app['events']->listen('illuminate.log', function($level, $message) use($log)
 		{
 			$log->log($level, $message);
+		});
+
+		$views = $this->views;
+
+		$this->app['events']->listen('composing:*', function($view) use($views)
+		{
+			$time = microtime(true);
+
+			$views->addEvent(
+				'view ' . $view->getName(),
+				'Rendering a view',
+				$time,
+				$time,
+				array(
+					'name' => $view->getName(),
+					'data' => $this->replaceUnserializable($view->getData())
+				)
+			);
 		});
 	}
 
@@ -227,14 +252,14 @@ class LaravelDataSource extends DataSource
 
 		return $routesData;
 	}
-	
+
 	/**
 	 * Return session data (replace unserializable items, attempt to remove passwords)
 	 */
 	protected function getSessionData()
 	{
 		return $this->removePasswords(
-			$this->replaceUnserializable( $this->app['session']->all() )
+			$this->replaceUnserializable($this->app['session']->all())
 		);
 	}
 }
