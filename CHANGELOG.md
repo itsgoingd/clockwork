@@ -1,6 +1,10 @@
-dev
+1.4
+- added support for collecting emails and views data
 - added support for CodeIgniter 2.1 (tnx pwhelan)
+- added data source and plugin for collecting emails data from Swift mailer
+- added support for collecting emails and views data from Laravel
 - added --age argument to Laravel artisan clockwork::clean command, specifies how old the request data must be to be deleted (in hours)
+- improved Laravel service provider
 - fixed compatibilty with latest Laravel 4.1
 
 1.3

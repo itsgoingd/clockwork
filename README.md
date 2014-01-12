@@ -14,7 +14,7 @@ This extension provides out of the box support for Laravel 4, Slim 2 and CodeIgn
 To install latest version simply add it to your `composer.json`:
 
 ```javascript
-"itsgoingd/clockwork": "dev-master"
+"itsgoingd/clockwork": "1.*"
 ```
 
 ### Laravel 4
