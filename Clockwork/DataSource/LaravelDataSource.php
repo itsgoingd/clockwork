@@ -55,7 +55,8 @@ class LaravelDataSource extends DataSource
 		$request->headers        = $this->getRequestHeaders();
 		$request->responseStatus = $this->getResponseStatus();
 		$request->routes         = $this->getRoutes();
-
+		
+		$request->sessionData    = $this->getSessionData();
 		$request->timelineData = $this->timeline->finalize($request->time);
 		$request->log          = array_merge($request->log, $this->log->toArray());
 
@@ -225,5 +226,15 @@ class LaravelDataSource extends DataSource
 		}
 
 		return $routesData;
+	}
+	
+	/**
+	 * Return session data (replace unserializable items, attempt to remove passwords)
+	 */
+	protected function getSessionData()
+	{
+		return $this->removePasswords(
+			$this->replaceUnserializable( $this->app['session']->all() )
+		);
 	}
 }
