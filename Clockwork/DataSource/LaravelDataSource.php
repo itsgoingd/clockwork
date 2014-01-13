@@ -133,8 +133,9 @@ class LaravelDataSource extends DataSource
 		});
 
 		$views = $this->views;
+		$that = $this;
 
-		$this->app['events']->listen('composing:*', function($view) use($views)
+		$this->app['events']->listen('composing:*', function($view) use($views, $that)
 		{
 			$time = microtime(true);
 
@@ -145,7 +146,7 @@ class LaravelDataSource extends DataSource
 				$time,
 				array(
 					'name' => $view->getName(),
-					'data' => $this->replaceUnserializable($view->getData())
+					'data' => $that->replaceUnserializable($view->getData())
 				)
 			);
 		});
