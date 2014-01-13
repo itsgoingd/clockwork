@@ -137,7 +137,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		return array('clockwork');
 	}
 
-	private function isEnabled()
+	public function isEnabled()
 	{
 		$is_enabled = $this->app['config']->get('clockwork::config.enable', null);
 
@@ -148,7 +148,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		return $is_enabled;
 	}
 
-	private function isCollectingData()
+	public function isCollectingData()
 	{
 		return $this->isEnabled() || $this->app['config']->get('clockwork::config.collect_data_always', true);
 	}
