@@ -31,7 +31,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app['router']->get('/__clockwork/{id}', function($id = null, $last = null) use($app)
 		{
 			return $app['clockwork']->getStorage()->retrieveAsJson($id, $last);
-		})->where('id', '[0-9\.]+');
+		})->where('id', '[0-9,\.]+');
 	}
 
 	public function register()
@@ -82,7 +82,7 @@ class ClockworkServiceProvider extends ServiceProvider
 			// don't collect data for configured URIs
 			$request_uri = $app['request']->getRequestUri();
 			$filter_uris = $app['config']->get('clockwork::config.filter_uris', array());
-			$filter_uris[] = '/__clockwork/[0-9\.]+'; // don't collect data for Clockwork requests
+			$filter_uris[] = '/__clockwork/[0-9,\.]+'; // don't collect data for Clockwork requests
 
 			foreach ($filter_uris as $uri) {
 				$regexp = '#' . str_replace('#', '\#', $uri) . '#';
