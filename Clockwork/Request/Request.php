@@ -185,6 +185,6 @@ class Request
 	 */
 	protected function generateRequestId()
 	{
-		return microtime(true) . '.' . mt_rand();
+		return sprintf('%.4F', microtime(true)) . '.' . mt_rand();
 	}
 }
