@@ -9,6 +9,7 @@ use Clockwork\DataSource\SwiftDataSource;
 use Clockwork\Request\Timeline;
 use Clockwork\Storage\FileStorage;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Http\JsonResponse;
 
 class ClockworkServiceProvider extends ServiceProvider
 {
@@ -30,7 +31,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		$app = $this->app;
 		$this->app['router']->get('/__clockwork/{id}', function($id = null, $last = null) use($app)
 		{
-			return $app['clockwork']->getStorage()->retrieveAsJson($id, $last);
+			return new JsonResponse($app['clockwork']->getStorage()->retrieve($id, $last));
 		})->where('id', '[0-9\.]+');
 	}
 
