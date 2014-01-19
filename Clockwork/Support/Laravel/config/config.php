@@ -25,11 +25,11 @@ return array(
     |
     | This setting controls, whether data about application requests will be
     | recorded even when Clockwork is disabled (useful for later analysis).
-    | Default: true
+    | Default: false
     |
     */
 
-    'collect_data_always' => true,
+    'collect_data_always' => false,
 
     /*
     |--------------------------------------------------------------------------
