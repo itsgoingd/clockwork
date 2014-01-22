@@ -151,6 +151,6 @@ class ClockworkServiceProvider extends ServiceProvider
 
 	public function isCollectingData()
 	{
-		return $this->isEnabled() || $this->app['config']->get('clockwork::config.collect_data_always', true);
+		return $this->isEnabled() || $this->app['config']->get('clockwork::config.collect_data_always', false);
 	}
 }
