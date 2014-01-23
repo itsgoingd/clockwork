@@ -131,4 +131,9 @@ class Hook_Clockwork
 	{
 		return self::$__clockwork->getStorage();
 	}
+
+	public static function getInstance()
+	{
+		return self::$__clockwork;
+	}
 }
