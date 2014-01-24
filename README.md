@@ -94,6 +94,30 @@ Finally, you need to set up the Clockwork hooks by adding following to your `app
 Clockwork\Support\CodeIgniter\Hook_Clockwork_Register::registerHooks($hook);
 ```
 
+To use Clockwork within your controllers/models/etc. you will need to extend your `CI_Controller` class. (If you haven't done so already) Create a new file at `application/core/MY_Controller.php`. 
+
+```php
+class MY_Controller extends CI_Controller
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $GLOBALS['EXT']->_call_hook('pre_controller_constructor');
+     } 
+}
+```
+
+Now you can use the following commands in your CodeIgniter app:
+
+```php
+$this->clockwork->startEvent('event_name', 'Event description.'); // event called 'Event description.' appears in Clockwork timeline tab
+
+$this->clockwork->info('Message text.'); // 'Message text.' appears in Clockwork log tab
+
+$this->clockwork->endEvent('event_name');
+```
+
+
 ### Other frameworks
 
 There is a [brief architecture overview](https://github.com/itsgoingd/clockwork/wiki/Development-notes) available, that should provide some help when implementing support for new frameworks or custom applications.

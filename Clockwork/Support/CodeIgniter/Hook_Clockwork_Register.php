@@ -16,6 +16,7 @@ class Hook_Clockwork_Register
 		$__hooknames = array(
 			'pre_system', 
 			'pre_controller',
+			'pre_controller_constructor',
 			'post_controller_constructor',
 			'post_controller',
 			'post_system',
