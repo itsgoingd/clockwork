@@ -31,6 +31,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		$app = $this->app;
 		$this->app['router']->get('/__clockwork/{id}', function($id = null, $last = null) use($app)
 		{
+			$app['session.store']->reflash();
 			return new JsonResponse($app['clockwork']->getStorage()->retrieve($id, $last));
 		})->where('id', '[0-9\.]+');
 	}
