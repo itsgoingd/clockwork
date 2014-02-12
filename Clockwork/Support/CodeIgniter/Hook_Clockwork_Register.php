@@ -31,10 +31,10 @@ class Hook_Clockwork_Register
 		// overwritten.
 		foreach ($__hooknames as $__hookname) {
 			if (!isset($hook[$__hookname])) {
-				$hook[$__hookname] = [];
+				$hook[$__hookname] = array();
 			}
 			if (isset($hook[$__hookname]) && isset($hook[$__hookname]['class'])) {
-				$hook[$__hookname] = [0 => $hook[$__hookname]];
+				$hook[$__hookname] = array(0 => $hook[$__hookname]);
 			}
 			
 			$hook[$__hookname][] = [
@@ -45,7 +45,7 @@ class Hook_Clockwork_Register
 				// sits well with hooking into a file outside of the
 				// application folder.
 				'filepath'	=> self::__resolve_filepath(),
-				'params'	=> []
+				'params'	=> array()
 			];
 			
 		}
