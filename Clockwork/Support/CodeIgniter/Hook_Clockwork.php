@@ -98,18 +98,6 @@ class Hook_Clockwork
 		}
 	}
 	
-	// Overrides the _display() function, used to send the finalized page to 
-	// the web browser at the end of system execution. This permits you to 
-	// use your own display methodology. Note that you will need to 
-	// reference the CI superobject with $this->CI =& get_instance() and 
-	// then the finalized data will be available by calling 
-	// $this->CI->output->get_output()
-	public function display_override()
-	{
-		$CI = &get_instance();
-		echo $CI->output->get_output();
-	}
-	
 	public static function startEvent($event, $description)
 	{
 		self::$__datasource->startEvent($event, $description);

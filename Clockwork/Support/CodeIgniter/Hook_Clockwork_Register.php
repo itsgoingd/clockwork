@@ -6,20 +6,19 @@ namespace Clockwork\Support\CodeIgniter;
  * Singleton class for easy loading of the Clockwork Hooks. Add the following to
  * your application/config/hooks.php file:
  * 
- *     Clockwork\Support\CodeIgniter\Hook_Clockwork_Register::registerHooks($hooks);
+ *     Clockwork\Support\CodeIgniter\Hook_Clockwork_Register::registerHooks($hook);
  * 
  */
 class Hook_Clockwork_Register
 {
-	public static function registerHooks(&$hooks, $storagePath = null)
+	public static function registerHooks(&$hook, $storagePath = null)
 	{
 		$__hooknames = [
 			'pre_system', 
 			'pre_controller',
 			'post_controller_constructor',
 			'post_controller',
-			'post_system',
-			'display_override'
+			'post_system'
 		];
 		
 		// Force Autoload and set Storage Path for the Hook_Clockwork
