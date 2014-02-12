@@ -1,8 +1,17 @@
+1.4
+- added support for collecting emails and views data
+- added support for CodeIgniter 2.1 (tnx pwhelan)
+- added data source and plugin for collecting emails data from Swift mailer
+- added support for collecting emails and views data from Laravel
+- added --age argument to Laravel artisan clockwork::clean command, specifies how old the request data must be to be deleted (in hours)
+- improved Laravel service provider
+- fixed compatibilty with latest Laravel 4.1
+
 1.3
 NOTE: Clockwork\Request\Log::log method arguments have been changed from log($message, $level) to log($level, $message), levels are now specified via Psr\Log\LogLevel class, it's recommended to use shortcut methods for various levels (emergency, alert, critical,  error, warning, notice, info and debug($message))
 - clockwork log class now implements PSR logger interface, updated Laravel and Monolog support to use all available log levels
 - clockwork log now accepts objects and arrays as input and logs their json representation
-- added support for specifying additional headers on metadata requests (Laravel)
+- added support for specifying additional headers on metadata requests (Laravel) (tnx philsturgeon)
 
 1.2
 - added support for Laravel 4.1

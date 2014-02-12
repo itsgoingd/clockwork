@@ -13,13 +13,14 @@ class Hook_Clockwork_Register
 {
 	public static function registerHooks(&$hook, $storagePath = null)
 	{
-		$__hooknames = [
+		$__hooknames = array(
 			'pre_system', 
 			'pre_controller',
+			'pre_controller_constructor',
 			'post_controller_constructor',
 			'post_controller',
 			'post_system'
-		];
+		);
 		
 		// Force Autoload and set Storage Path for the Hook_Clockwork
 		// class. Also force it to auto-load so that CodeIgniter does
@@ -37,7 +38,7 @@ class Hook_Clockwork_Register
 				$hook[$__hookname] = array(0 => $hook[$__hookname]);
 			}
 			
-			$hook[$__hookname][] = [
+			$hook[$__hookname][] = array(
 				'class'		=> 'Clockwork\\Support\\CodeIgniter\\Hook_Clockwork',
 				'function'	=> $__hookname,
 				'filename'	=> 'Hook_Clockwork.php',
@@ -46,8 +47,7 @@ class Hook_Clockwork_Register
 				// application folder.
 				'filepath'	=> self::__resolve_filepath(),
 				'params'	=> array()
-			];
-			
+			);
 		}
 	}
 	

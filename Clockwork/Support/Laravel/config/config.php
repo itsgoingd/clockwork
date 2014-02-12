@@ -25,11 +25,11 @@ return array(
     |
     | This setting controls, whether data about application requests will be
     | recorded even when Clockwork is disabled (useful for later analysis).
-    | Default: true
+    | Default: false
     |
     */
 
-    'collect_data_always' => true,
+    'collect_data_always' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -42,7 +42,8 @@ return array(
     */
 
     'filter' => array(
-        'routes', // It might be a good idea to not collect routes in every request as this might use a lot of disk space
+        'routes',    // collecting routes data on every request might use a lot of disk space
+        'viewsData', // collecting views data, including all variables passed to the view on every request might use a lot of disk space
     ),
 
     /*

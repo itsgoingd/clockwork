@@ -92,6 +92,16 @@ class Request
 	public $routes = array();
 
 	/**
+	 * Emails data array
+	 */
+	public $emailsData = array();
+
+	/**
+	 * Views data array
+	 */
+	public $viewsData = array();
+
+	/**
 	 * Custom user data (not used by Clockwork app)
 	 */
 	public $userData;
@@ -156,7 +166,9 @@ class Request
 			'timelineData'     => $this->timelineData,
 			'log'              => array_values($this->log),
 			'routes'           => $this->routes,
-			'userData'         => $this->userData,
+			'emailsData'       => $this->emailsData,
+			'viewsData'        => $this->viewsData,
+			'userData'         => $this->userData
 		);
 	}
 
@@ -173,6 +185,6 @@ class Request
 	 */
 	protected function generateRequestId()
 	{
-		return microtime(true) . '.' . mt_rand();
+		return sprintf('%.4F', microtime(true)) . '.' . mt_rand();
 	}
 }

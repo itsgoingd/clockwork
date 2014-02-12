@@ -19,7 +19,7 @@ class DataSource implements DataSourceInterface
 	/**
 	 * Replaces unserializable items such as closures, resources and objects in an array with textual representation
 	 */
-	protected function replaceUnserializable(array $data)
+	public function replaceUnserializable(array $data)
 	{
 		foreach ($data as &$item) {
 			if ($item instanceof Closure)
@@ -36,7 +36,7 @@ class DataSource implements DataSourceInterface
 	/**
 	 * Censors passwords in an array, identified by key containing "pass" substring
 	 */
-	protected function removePasswords(array $data)
+	public function removePasswords(array $data)
 	{
 		foreach ($data as $key => &$val)
 			if (strpos($key, 'pass') !== false)

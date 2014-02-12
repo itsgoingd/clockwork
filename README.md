@@ -1,18 +1,20 @@
 Clockwork
 =========
 
-[Clockwork](http://github.com/itsgoingd/clockwork-chrome) is a Chrome extension for PHP development, extending Developer Tools with a new panel providing all kinds of information useful for debugging and profiling your PHP applications, including information about request, headers, get and post data, cookies, session data, database queries, routes, visualisation of application runtime and more.
+**[Clockwork](http://github.com/itsgoingd/clockwork-chrome) is a Chrome extension for PHP development**, extending Developer Tools with a new panel providing all kinds of information useful for debugging and profiling your PHP applications, including information about request, headers, get and post data, cookies, session data, database queries, routes, visualisation of application runtime and more.
 
-This repository contains server-side component of Clockwork that gathers all the data, stores them in JSON format and serves them for displaying in Chrome Developer Tools extension.
+**Not a Chrome user?** Check out [embeddable web app version of Clockwork](http://github.com/itsgoingd/clockwork-web), supporting many modern browsers along Chrome with out of the box support for Laravel and Slim.
+
+**This repository contains server-side component of Clockwork** that gathers all the data, stores them in JSON format and serves them for displaying in Chrome Developer Tools extension.
 
 ## Installation
 
-This extension provides out of the box support for Laravel 4 and Slim 2 frameworks, you can add support for any other or custom framework via an extensible API.
+This extension provides out of the box support for Laravel 4, Slim 2 and CodeIgniter 2.1 frameworks, you can add support for any other or custom framework via an extensible API.
 
 To install latest version simply add it to your `composer.json`:
 
 ```javascript
-"itsgoingd/clockwork": "dev-master"
+"itsgoingd/clockwork": "1.*"
 ```
 
 ### Laravel 4
@@ -77,6 +79,44 @@ Once Clockwork is installed, you need to add Slim middleware to your app:
 $app = new Slim(...);
 $app->add(new Clockwork\Support\Slim\ClockworkMiddleware('/requests/storage/path'));
 ```
+
+### CodeIgniter 2.1
+
+Once Clockwork is installed, you need to copy the Clockwork controller from `vendor/itsgoingd/clockwork/Clockwork/Support/CodeIgniter/Clockwork.php` to your controllers directory and set up the following route:
+
+```php
+$route['__clockwork/(.*)'] = 'clockwork/$1';
+```
+
+Finally, you need to set up the Clockwork hooks by adding following to your `application/config/hooks.php` file:
+
+```php
+Clockwork\Support\CodeIgniter\Hook_Clockwork_Register::registerHooks($hook);
+```
+
+To use Clockwork within your controllers/models/etc. you will need to extend your `CI_Controller` class. (If you haven't done so already) Create a new file at `application/core/MY_Controller.php`. 
+
+```php
+class MY_Controller extends CI_Controller
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $GLOBALS['EXT']->_call_hook('pre_controller_constructor');
+     } 
+}
+```
+
+Now you can use the following commands in your CodeIgniter app:
+
+```php
+$this->clockwork->startEvent('event_name', 'Event description.'); // event called 'Event description.' appears in Clockwork timeline tab
+
+$this->clockwork->info('Message text.'); // 'Message text.' appears in Clockwork log tab
+
+$this->clockwork->endEvent('event_name');
+```
+
 
 ### Other frameworks
 

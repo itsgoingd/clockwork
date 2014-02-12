@@ -10,29 +10,37 @@ use Slim\Middleware;
 
 class ClockworkMiddleware extends Middleware
 {
-	private $clockwork;
-	private $clockworkStoragePath;
+	private $storage_path_or_clockwork;
 
-	public function __construct($storagePathOrClockwork)
+	public function __construct($storage_path_or_clockwork)
 	{
-		if ($storagePathOrClockwork instanceof Clockwork) {
-			$this->clockwork = $storagePathOrClockwork;
-		} else {
-			$this->clockworkStoragePath = $storagePathOrClockwork;
-		}
+		$this->storage_path_or_clockwork = $storage_path_or_clockwork;
 	}
 
 	public function call()
 	{
-		if (!$this->clockwork) {
-			$this->clockwork = new Clockwork();
+		$app = $this->app;
+		$storage_path_or_clockwork = $this->storage_path_or_clockwork;
 
-			$this->clockwork->addDataSource(new PhpDataSource())
-				->addDataSource(new SlimDataSource($this->app))
-				->setStorage(new FileStorage($this->clockworkStoragePath));
-		}
+		$this->app->container->singleton('clockwork', function() use($app, $storage_path_or_clockwork)
+		{
+			if ($storage_path_or_clockwork instanceof Clockwork) {
+				return $storage_path_or_clockwork;
+			}
 
-		$this->app->config('clockwork', $this->clockwork);
+			$clockwork = new Clockwork();
+
+			$clockwork->addDataSource(new PhpDataSource())
+				->addDataSource(new SlimDataSource($app))
+				->setStorage(new FileStorage($storage_path_or_clockwork));
+
+			return $clockwork;
+		});
+
+		$original_log_writer = $this->app->getLog()->getWriter();
+		$clockwork_log_writer = new ClockworkLogWriter($this->app->clockwork, $original_log_writer);
+
+		$this->app->getLog()->setWriter($clockwork_log_writer);
 
 		if ($this->app->config('debug') && preg_match('#/__clockwork(/(?<id>[0-9\.]+))?#', $this->app->request()->getPathInfo(), $matches)) {
 			return $this->retrieveRequest($matches['id']);
@@ -49,16 +57,16 @@ class ClockworkMiddleware extends Middleware
 
 	public function retrieveRequest($id = null, $last = null)
 	{
-		echo $this->clockwork->getStorage()->retrieveAsJson($id, $last);
+		echo $this->app->clockwork->getStorage()->retrieveAsJson($id, $last);
 	}
 
 	protected function logRequest()
 	{
-		$this->clockwork->resolveRequest();
-		$this->clockwork->storeRequest();
+		$this->app->clockwork->resolveRequest();
+		$this->app->clockwork->storeRequest();
 
 		if ($this->app->config('debug')) {
-			$this->app->response()->header('X-Clockwork-Id', $this->clockwork->getRequest()->id);
+			$this->app->response()->header('X-Clockwork-Id', $this->app->clockwork->getRequest()->id);
 			$this->app->response()->header('X-Clockwork-Version', Clockwork::VERSION);
 
 			$env = $this->app->environment();

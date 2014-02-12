@@ -34,6 +34,11 @@ class LaravelDataSource extends DataSource
 	protected $timeline;
 
 	/**
+	 * Timeline data structure for views data
+	 */
+	protected $views;
+
+	/**
 	 * Create a new data source, takes Laravel application instance as an argument
 	 */
 	public function __construct(Application $app)
@@ -42,6 +47,7 @@ class LaravelDataSource extends DataSource
 
 		$this->log = new Log();
 		$this->timeline = new Timeline();
+		$this->views = new Timeline();
 	}
 
 	/**
@@ -55,9 +61,11 @@ class LaravelDataSource extends DataSource
 		$request->headers        = $this->getRequestHeaders();
 		$request->responseStatus = $this->getResponseStatus();
 		$request->routes         = $this->getRoutes();
+		$request->sessionData    = $this->getSessionData();
 
-		$request->timelineData = $this->timeline->finalize($request->time);
 		$request->log          = array_merge($request->log, $this->log->toArray());
+		$request->timelineData = $this->timeline->finalize($request->time);
+		$request->viewsData    = $this->views->finalize();
 
 		return $request;
 	}
@@ -123,6 +131,25 @@ class LaravelDataSource extends DataSource
 		{
 			$log->log($level, $message);
 		});
+
+		$views = $this->views;
+		$that = $this;
+
+		$this->app['events']->listen('composing:*', function($view) use($views, $that)
+		{
+			$time = microtime(true);
+
+			$views->addEvent(
+				'view ' . $view->getName(),
+				'Rendering a view',
+				$time,
+				$time,
+				array(
+					'name' => $view->getName(),
+					'data' => $that->replaceUnserializable($view->getData())
+				)
+			);
+		});
 	}
 
 	/**
@@ -132,7 +159,7 @@ class LaravelDataSource extends DataSource
 	{
 		$router = $this->app['router'];
 
-		if (method_exists($router, 'getCurrentRoute')) { // Laravel 4.0
+		if (strpos(Application::VERSION, '4.0') === 0) { // Laravel 4.0
 			$route = $router->getCurrentRoute();
 			$controller = $route ? $route->getAction() : null;
 		} else { // Laravel 4.1
@@ -196,7 +223,7 @@ class LaravelDataSource extends DataSource
 		$router = $this->app['router'];
 		$routesData = array();
 
-		if (method_exists($router, 'getCurrentRoute')) { // Laravel 4.0
+		if (strpos(Application::VERSION, '4.0') === 0) { // Laravel 4.0
 			$routes = $router->getRoutes()->all();
 
 			foreach ($routes as $name => $route) {
@@ -225,5 +252,15 @@ class LaravelDataSource extends DataSource
 		}
 
 		return $routesData;
+	}
+
+	/**
+	 * Return session data (replace unserializable items, attempt to remove passwords)
+	 */
+	protected function getSessionData()
+	{
+		return $this->removePasswords(
+			$this->replaceUnserializable($this->app['session']->all())
+		);
 	}
 }

@@ -74,6 +74,13 @@ class Hook_Clockwork
 		$this->_datasource->endEvent('boot');
 		$this->_datasource->startEvent('dispatch', 'Router dispatch.');
 	}
+
+	// Called immediately before your controller's constructor.
+	public function pre_controller_constructor()
+	{
+		$CI = &get_instance();
+		$CI->clockwork = self::$__clockwork;
+	}
 	
 	// Called immediately after your controller is instantiated, but prior 
 	// to any method calls happening.

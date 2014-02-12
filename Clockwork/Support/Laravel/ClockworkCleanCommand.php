@@ -2,6 +2,7 @@
 namespace Clockwork\Support\Laravel;
 
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Input\InputOption;
 
 class ClockworkCleanCommand extends Command
 {
@@ -29,6 +30,13 @@ class ClockworkCleanCommand extends Command
         parent::__construct();
     }
 
+    public function getOptions()
+    {
+        return array(
+            array('age', 'a', InputOption::VALUE_OPTIONAL, 'delete data about requests older then specified time in hours', null),
+        );
+    }
+
     /**
      * Execute the console command.
      *
@@ -47,8 +55,16 @@ class ClockworkCleanCommand extends Command
             return;
         }
 
+        $max_age = ($this->option('age')) ? time() - $this->option('age') * 60 * 60 : null;
+
         $count = 0;
         foreach ($files as $file) {
+            $tokens = explode('.', basename($file));
+
+            if ($max_age && $tokens[0] > $max_age) {
+                continue;
+            }
+
             unlink($file);
             $count++;
         }
