@@ -7,7 +7,7 @@ use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\CodeIgniterDataSource;
 use Clockwork\Storage\FileStorage;
 
-class Hook_Clockwork
+class Hook
 {
 	private static $__clockwork = null;
 	private static $__datasource = null;

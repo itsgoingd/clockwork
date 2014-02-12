@@ -12,13 +12,13 @@ class Clockwork extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		Clockwork\Support\CodeIgniter\Hook_Clockwork::disable();
+		Clockwork\Support\CodeIgniter\Hook::disable();
 	}
 	
 	public function index($id = null, $last = null)
 	{
 		header('Content-Type: application/json');
-		echo Clockwork\Support\CodeIgniter\Hook_Clockwork::getStorage()->retrieveAsJson($id, $last);
+		echo Clockwork\Support\CodeIgniter\Hook::getStorage()->retrieveAsJson($id, $last);
 	}
 	
 	public function _remap($func, $args)
