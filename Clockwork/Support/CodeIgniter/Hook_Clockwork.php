@@ -112,4 +112,9 @@ class Hook_Clockwork
 	{
 		return self::$__clockwork->getStorage();
 	}
+	
+	public static function addDataSource($dataSource)
+	{
+		self::$__clockwork->addDataSource($dataSource);
+	}
 }
