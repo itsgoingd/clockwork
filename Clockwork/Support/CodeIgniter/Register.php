@@ -6,10 +6,10 @@ namespace Clockwork\Support\CodeIgniter;
  * Singleton class for easy loading of the Clockwork Hooks. Add the following to
  * your application/config/hooks.php file:
  * 
- *     Clockwork\Support\CodeIgniter\Hook_Clockwork_Register::registerHooks($hook);
+ *     Clockwork\Support\CodeIgniter\Register::registerHooks($hook);
  * 
  */
-class Hook_Clockwork_Register
+class Register
 {
 	public static function registerHooks(&$hook, $storagePath = null)
 	{
@@ -19,14 +19,13 @@ class Hook_Clockwork_Register
 			'pre_controller_constructor',
 			'post_controller_constructor',
 			'post_controller',
-			'post_system',
-			'display_override'
+			'post_system'
 		);
 		
 		// Force Autoload and set Storage Path for the Hook_Clockwork
 		// class. Also force it to auto-load so that CodeIgniter does
 		// not make the attempt.
-		Hook_Clockwork::setStoragePath($storagePath);
+		Hook::setStoragePath($storagePath);
 		
 		// Hook into all the necessary hooks for Hook_Clockwork to do
 		// it's job. Make sure that other previous hooks are not
@@ -40,16 +39,15 @@ class Hook_Clockwork_Register
 			}
 			
 			$hook[$__hookname][] = array(
-				'class'		=> 'Clockwork\\Support\\CodeIgniter\\Hook_Clockwork',
+				'class'		=> 'Clockwork\\Support\\CodeIgniter\\Hook',
 				'function'	=> $__hookname,
-				'filename'	=> 'Hook_Clockwork.php',
+				'filename'	=> 'Hook.php',
 				// Do a bit of hand-waving here so that core/Hooks.php
 				// sits well with hooking into a file outside of the
 				// application folder.
 				'filepath'	=> self::__resolve_filepath(),
 				'params'	=> array()
 			);
-			
 		}
 	}
 	

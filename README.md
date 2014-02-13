@@ -91,7 +91,7 @@ $route['__clockwork/(.*)'] = 'clockwork/$1';
 Finally, you need to set up the Clockwork hooks by adding following to your `application/config/hooks.php` file:
 
 ```php
-Clockwork\Support\CodeIgniter\Hook_Clockwork_Register::registerHooks($hook);
+Clockwork\Support\CodeIgniter\Register::registerHooks($hook);
 ```
 
 To use Clockwork within your controllers/models/etc. you will need to extend your `CI_Controller` class. (If you haven't done so already) Create a new file at `application/core/MY_Controller.php`. 

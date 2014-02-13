@@ -7,7 +7,7 @@ use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\CodeIgniterDataSource;
 use Clockwork\Storage\FileStorage;
 
-class Hook_Clockwork
+class Hook
 {
 	private static $__clockwork = null;
 	private static $__datasource = null;
@@ -105,18 +105,6 @@ class Hook_Clockwork
 		}
 	}
 	
-	// Overrides the _display() function, used to send the finalized page to 
-	// the web browser at the end of system execution. This permits you to 
-	// use your own display methodology. Note that you will need to 
-	// reference the CI superobject with $this->CI =& get_instance() and 
-	// then the finalized data will be available by calling 
-	// $this->CI->output->get_output()
-	public function display_override()
-	{
-		$CI = &get_instance();
-		echo $CI->output->get_output();
-	}
-	
 	public static function startEvent($event, $description)
 	{
 		self::$__datasource->startEvent($event, $description);
@@ -130,5 +118,10 @@ class Hook_Clockwork
 	public static function getStorage()
 	{
 		return self::$__clockwork->getStorage();
+	}
+	
+	public static function addDataSource($dataSource)
+	{
+		self::$__clockwork->addDataSource($dataSource);
 	}
 }
