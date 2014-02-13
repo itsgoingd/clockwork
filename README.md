@@ -80,6 +80,19 @@ $app = new Slim(...);
 $app->add(new Clockwork\Support\Slim\ClockworkMiddleware('/requests/storage/path'));
 ```
 
+Clockwork is now available in Slim's DI container and can be used like this:
+
+```php
+$app = Slim::getInstance();
+
+$app->clockwork->startEvent('event_name', 'Event description.'); // event called 'Event description.' appears in Clockwork timeline tab
+
+$app->clockwork->info('Message text.'); // 'Message text.' appears in Clockwork log tab
+$app->log->info('Message text.'); // 'Message text.' appears in Clockwork log tab as well as application log file
+
+$app->clockwork->endEvent('event_name');
+```
+
 ### CodeIgniter 2.1
 
 Once Clockwork is installed, you need to copy the Clockwork controller from `vendor/itsgoingd/clockwork/Clockwork/Support/CodeIgniter/Clockwork.php` to your controllers directory and set up the following route:
@@ -116,7 +129,6 @@ $this->clockwork->info('Message text.'); // 'Message text.' appears in Clockwork
 
 $this->clockwork->endEvent('event_name');
 ```
-
 
 ### Other frameworks
 

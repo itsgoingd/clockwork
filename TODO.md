@@ -1,4 +1,4 @@
-1.5
+1.6
 - documentation
 - support for application log, timeline and routes in Slim
 - support for application and/or PHP settings

@@ -1,3 +1,25 @@
+1.5
+- improved Slim support to use DI container to share Clockwork instance instead of config
+- improved Slim support now adds all messages logged via Slim's log interface to Clockwork log as well
+- improved CodeIgniter support to make Clockwork available through the CI app (tnx BradEstey)
+- fixed Laravel support breaking flash messages (tnx hannesvdvreken)
+- fixed CodeIgniter support PSR-0 autoloading and other improvements (tnx pwhelan)
+- fixed file storage warning when recursive data is collected
+
+1.4.4
+- changed Laravel support to disable permanent data collection by default (tnx jenssegers)
+- improved Laravel support to return Clockwork data with proper Content-Type (tnx maximebeaudoin)
+- fixed CodeIgniter support compatibility with PHP 5.3 (tnx BradEstey)
+
+1.4.3
+- fixed incorrect requests ids being generated depending on set locale
+
+1.4.2
+- fixed Laravel support compatibility with PHP 5.3
+
+1.4.1
+- fixed Laravel support compatibility with PHP 5.3
+
 1.4
 - added support for collecting emails and views data
 - added support for CodeIgniter 2.1 (tnx pwhelan)
