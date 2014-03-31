@@ -13,7 +13,7 @@ class Register
 {
 	public static function registerHooks(&$hook, $storagePath = null)
 	{
-		$__hooknames = array(
+		$hooknames = array(
 			'pre_system', 
 			'pre_controller',
 			'pre_controller_constructor',
@@ -30,54 +30,37 @@ class Register
 		// Hook into all the necessary hooks for Hook_Clockwork to do
 		// it's job. Make sure that other previous hooks are not
 		// overwritten.
-		foreach ($__hooknames as $__hookname) {
-			if (!isset($hook[$__hookname])) {
-				$hook[$__hookname] = array();
+		foreach ($hooknames as $hookname) {
+			if (!isset($hook[$hookname])) {
+				$hook[$hookname] = array();
 			}
-			if (isset($hook[$__hookname]) && isset($hook[$__hookname]['class'])) {
-				$hook[$__hookname] = array(0 => $hook[$__hookname]);
+			if (isset($hook[$hookname]) && isset($hook[$hookname]['class'])) {
+				$hook[$hookname] = array(0 => $hook[$hookname]);
 			}
 			
-			$hook[$__hookname][] = array(
+			$hook[$hookname][] = array(
 				'class'		=> 'Clockwork\\Support\\CodeIgniter\\Hook',
-				'function'	=> $__hookname,
+				'function'	=> $hookname,
 				'filename'	=> 'Hook.php',
-				// Do a bit of hand-waving here so that core/Hooks.php
-				// sits well with hooking into a file outside of the
-				// application folder.
-				'filepath'	=> self::__resolve_filepath(),
+				'filepath'	=> self::resolveFilepath(),
 				'params'	=> array()
 			);
 		}
 	}
 	
 	/**
-	 * Helper function to find the common path between the CodeIgniter
-	 * APPPATH and the path to the Hook_Clockwork class file.
+	 * Resolves the path used for the hook, relative to APPPATH
 	 */
-	private static function __commonPath($d1, $d2)
+	private static function resolveFilepath()
 	{
-		$da1 = explode('/', $d1);
-		$da2 = explode('/', $d2);
-		
-		
-		for ($i = 0, $x = min(count($da1), count($da2)); $i < $x; $i++) {
-			if ($da1[$i] != $da2[$i]) {
-				return implode('/', array_slice($da1, 0, $i));
-			}
+		$path = realpath(APPPATH);
+		$steps = 0;
+	 
+		while (strstr(__DIR__, $path) === false) {
+			$path = dirname($path);
+			$steps++;
 		}
-		
-		return implode('/', array_slice($da1, 0, $i));
-	}
-	
-	/**
-	 * Resolves the path used for the hook.
-	 */
-	private static function __resolve_filepath()
-	{
-		$common		= self::__commonPath(APPPATH, __DIR__);
-		$backpath	= substr_count(APPPATH, '/') - substr_count($common, '/');
-		
-		return $common.'/'.str_repeat('../', $backpath).substr(__DIR__, strlen($common));
+	 
+		return str_repeat('..' . DIRECTORY_SEPARATOR, $steps) . preg_replace('#^' . preg_quote($path, '#') . '#', '', __DIR__);
 	}
 }
