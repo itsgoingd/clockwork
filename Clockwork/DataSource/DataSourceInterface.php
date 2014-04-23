@@ -8,8 +8,8 @@ use Clockwork\Request\Request;
  */
 interface DataSourceInterface
 {
-	/**
-	 * Adds data to the request and returns it
-	 */
-	public function resolve(Request $request);
+    /**
+     * Adds data to the request and returns it
+     */
+    public function resolve(Request $request);
 }

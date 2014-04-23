@@ -11,28 +11,28 @@ use Swift_Mailer;
  */
 class SwiftDataSource extends DataSource
 {
-	/**
-	 * Timeline data structure
-	 */
-	protected $timeline;
+    /**
+     * Timeline data structure
+     */
+    protected $timeline;
 
-	/**
-	 * Create a new data source, takes Swift_Mailer instance as an argument
-	 */
-	public function __construct(Swift_Mailer $swift)
-	{
-		$this->timeline = new Timeline();
+    /**
+     * Create a new data source, takes Swift_Mailer instance as an argument
+     */
+    public function __construct(Swift_Mailer $swift)
+    {
+        $this->timeline = new Timeline();
 
-		$swift->registerPlugin(new SwiftPluginClockworkTimeline($this->timeline));
-	}
+        $swift->registerPlugin(new SwiftPluginClockworkTimeline($this->timeline));
+    }
 
-	/**
-	 * Adds email data to the request
-	 */
-	public function resolve(Request $request)
-	{
-		$request->emailsData = array_merge($request->emailsData, $this->timeline->finalize());
+    /**
+     * Adds email data to the request
+     */
+    public function resolve(Request $request)
+    {
+        $request->emailsData = array_merge($request->emailsData, $this->timeline->finalize());
 
-		return $request;
-	}
+        return $request;
+    }
 }

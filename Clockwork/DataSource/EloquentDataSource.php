@@ -10,67 +10,72 @@ use Illuminate\Database\Connection;
  */
 class EloquentDataSource extends DataSource
 {
-	/**
-	 * Database connection for which the queries are retrieved
-	 */
-	protected $connection;
+    /**
+     * Database connection for which the queries are retrieved
+     */
+    protected $connection;
 
-	/**
-	 * Create a new data source instance, takes a database connection as an argument
-	 */
-	public function __construct(Connection $connection)
-	{
-		$this->connection = $connection;
-	}
+    /**
+     * Create a new data source instance, takes a database connection as an argument
+     */
+    public function __construct(Connection $connection)
+    {
+        $this->connection = $connection;
+    }
 
-	/**
-	 * Adds ran database queries to the request
-	 */
-	public function resolve(Request $request)
-	{
-		$request->databaseQueries = array_merge($request->databaseQueries, $this->getDatabaseQueries());
+    /**
+     * Adds ran database queries to the request
+     */
+    public function resolve(Request $request)
+    {
+        $request->databaseQueries = array_merge($request->databaseQueries, $this->getDatabaseQueries());
 
-		return $request;
-	}
+        return $request;
+    }
 
-	/**
-	 * Takes a query and array of bindings as arguments, returns runnable query with upper-cased keywords
-	 */
-	protected function createRunnableQuery($query, $bindings)
-	{
-		# add bindings to query
-		$bindings = $this->connection->prepareBindings($bindings);
+    /**
+     * Takes a query and array of bindings as arguments, returns runnable query with upper-cased keywords
+     */
+    protected function createRunnableQuery($query, $bindings)
+    {
+        # add bindings to query
+        $bindings = $this->connection->prepareBindings($bindings);
 
-		foreach ($bindings as $binding) {
-			$binding = $this->connection->getPdo()->quote($binding);
+        foreach ($bindings as $binding) {
+            $binding = $this->connection->getPdo()->quote($binding);
 
-			$query = preg_replace('/\?/', $binding, $query, 1);
-		}
+            $query = preg_replace('/\?/', $binding, $query, 1);
+        }
 
-		# highlight keywords
-		$keywords = array('select', 'insert', 'update', 'delete', 'where', 'from', 'limit', 'is', 'null', 'having', 'group by', 'order by', 'asc', 'desc');
-		$regexp = '/\b' . implode('\b|\b', $keywords) . '\b/i';
+        # highlight keywords
+        $keywords = array(
+            'select', 'insert', 'update', 'delete', 'where', 'from', 'limit',
+            'is', 'null', 'having', 'group by', 'order by', 'asc', 'desc'
+        );
 
-		$query = preg_replace_callback($regexp, function($match){
-			return strtoupper($match[0]);
-		}, $query);
+        $regexp = '/\b' . implode('\b|\b', $keywords) . '\b/i';
 
-		return $query;
-	}
+        $query = preg_replace_callback($regexp, function ($match) {
+            return strtoupper($match[0]);
+        }, $query);
 
-	/**
-	 * Returns an array of runnable queries and their durations from a database connection
-	 */
-	protected function getDatabaseQueries()
-	{
-		$queries = array();
+        return $query;
+    }
 
-		foreach ($this->connection->getQueryLog() as $query)
-			$queries[] = array(
-				'query'    => $this->createRunnableQuery($query['query'], $query['bindings']),
-				'duration' => $query['time'],
-			);
+    /**
+     * Returns an array of runnable queries and their durations from a database connection
+     */
+    protected function getDatabaseQueries()
+    {
+        $queries = array();
 
-		return $queries;
-	}
+        foreach ($this->connection->getQueryLog() as $query) {
+            $queries[] = array(
+                'query'    => $this->createRunnableQuery($query['query'], $query['bindings']),
+                'duration' => $query['time'],
+            );
+        }
+
+        return $queries;
+    }
 }
