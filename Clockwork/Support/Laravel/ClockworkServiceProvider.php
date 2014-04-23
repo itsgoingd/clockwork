@@ -29,8 +29,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		}
 
 		$app = $this->app;
-		$this->app['router']->get('/__clockwork/{id}', function($id = null, $last = null) use($app)
-		{
+		$this->app['router']->get('/__clockwork/{id}', function ($id = null, $last = null) use ($app) {
 			$app['session.store']->reflash();
 			return new JsonResponse($app['clockwork']->getStorage()->retrieve($id, $last));
 		})->where('id', '[0-9\.]+');
@@ -38,18 +37,15 @@ class ClockworkServiceProvider extends ServiceProvider
 
 	public function register()
 	{
-		$this->app->singleton('clockwork.laravel', function($app)
-		{
+		$this->app->singleton('clockwork.laravel', function ($app) {
 			return new LaravelDataSource($app);
 		});
 
-		$this->app->singleton('clockwork.swift', function($app)
-		{
+		$this->app->singleton('clockwork.swift', function ($app) {
 			return new SwiftDataSource($app['mailer']->getSwiftMailer());
 		});
 
-		$this->app->singleton('clockwork', function($app)
-		{
+		$this->app->singleton('clockwork', function ($app) {
 			$clockwork = new Clockwork();
 
 			$clockwork
@@ -75,8 +71,7 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		$app = $this->app;
 		$service = $this;
-		$this->app->after(function($request, $response) use($app, $service)
-		{
+		$this->app->after(function ($request, $response) use ($app, $service) {
 			if (!$service->isCollectingData()) {
 				return; // Collecting data is disabled, return immediately
 			}
@@ -125,7 +120,7 @@ class ClockworkServiceProvider extends ServiceProvider
 	public function registerCommands()
 	{
 		// Clean command
-		$this->app['command.clockwork.clean'] = $this->app->share(function($app){
+		$this->app['command.clockwork.clean'] = $this->app->share(function ($app) {
 			return new ClockworkCleanCommand();
 		});
 
