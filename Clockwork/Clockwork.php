@@ -15,175 +15,179 @@ use Psr\Log\LoggerInterface;
  */
 class Clockwork implements LoggerInterface
 {
-	/**
-	 * Clockwork version
-	 */
-	const VERSION = '1.5';
+    /**
+     * Clockwork version
+     */
+    const VERSION = '1.5';
 
-	/**
-	 * Array of data sources, these objects provide data to be stored in a request object
-	 */
-	protected $dataSources = array();
+    /**
+     * Array of data sources, these objects provide data to be stored in a request object
+     */
+    protected $dataSources = array();
 
-	/**
-	 * Request object, data structure which stores data about current application request
-	 */
-	protected $request;
+    /**
+     * Request object, data structure which stores data about current application request
+     */
+    protected $request;
 
-	/**
-	 * Storage object, provides implementation for storing and retrieving request objects
-	 */
-	protected $storage;
+    /**
+     * Storage object, provides implementation for storing and retrieving request objects
+     */
+    protected $storage;
 
-	/**
-	 * Request\Log instance, data structure which stores data for the log view
-	 */
-	protected $log;
+    /**
+     * Request\Log instance, data structure which stores data for the log view
+     */
+    protected $log;
 
-	/**
-	 * Request\Timeline instance, data structure which stores data for the timeline view
-	 */
-	protected $timeline;
+    /**
+     * Request\Timeline instance, data structure which stores data for the timeline view
+     */
+    protected $timeline;
 
-	/**
-	 * Create a new Clockwork instance with default request object
-	 */
-	public function __construct()
-	{
-		$this->request = new Request();
-		$this->log = new Log();
-		$this->timeline = new Timeline();
-	}
+    /**
+     * Create a new Clockwork instance with default request object
+     */
+    public function __construct()
+    {
+        $this->request = new Request();
+        $this->log = new Log();
+        $this->timeline = new Timeline();
+    }
 
-	/**
-	 * Add a new data source
-	 */
-	public function addDataSource(DataSourceInterface $dataSource)
-	{
-		$this->dataSources[] = $dataSource;
+    /**
+     * Add a new data source
+     */
+    public function addDataSource(DataSourceInterface $dataSource)
+    {
+        $this->dataSources[] = $dataSource;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Return array of all added data sources
-	 */
-	public function getDataSources()
-	{
-		return $this->dataSources;
-	}
+    /**
+     * Return array of all added data sources
+     */
+    public function getDataSources()
+    {
+        return $this->dataSources;
+    }
 
-	/**
-	 * Return the request object
-	 */
-	public function getRequest()
-	{
-		return $this->request;
-	}
+    /**
+     * Return the request object
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
 
-	/**
-	 * Set a custom request object
-	 */
-	public function setRequest(Request $request)
-	{
-		$this->request = $request;
+    /**
+     * Set a custom request object
+     */
+    public function setRequest(Request $request)
+    {
+        $this->request = $request;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Add data from all data sources to request
-	 */
-	public function resolveRequest()
-	{
-		foreach ($this->dataSources as $dataSource)
-			$dataSource->resolve($this->request);
+    /**
+     * Add data from all data sources to request
+     */
+    public function resolveRequest()
+    {
+        foreach ($this->dataSources as $dataSource) {
+            $dataSource->resolve($this->request);
+        }
 
-		// merge global log and timeline data with data collected from data sources
-		$this->request->log = array_merge($this->request->log, $this->log->toArray());
-		$this->request->timelineData = array_merge($this->request->timelineData, $this->timeline->finalize());
+        // merge global log and timeline data with data collected from data sources
+        $this->request->log = array_merge($this->request->log, $this->log->toArray());
+        $this->request->timelineData = array_merge($this->request->timelineData, $this->timeline->finalize());
 
-		// sort log and timeline data by time
-		uasort($this->request->log, function($a, $b)
-		{
-			if ($a['time'] == $b['time']) return 0;
-			return $a['time'] < $b['time'] ? -1 : 1;
-		});
-		uasort($this->request->timelineData, function($a, $b)
-		{
-			if ($a['start'] == $b['start']) return 0;
-			return $a['start'] < $b['start'] ? -1 : 1;
-		});
+        // sort log and timeline data by time
+        uasort($this->request->log, function ($a, $b) {
+            if ($a['time'] == $b['time']) {
+                return 0;
+            }
 
-		return $this;
-	}
+            return $a['time'] < $b['time'] ? -1 : 1;
+        });
+        uasort($this->request->timelineData, function ($a, $b) {
+            if ($a['start'] == $b['start']) {
+                return 0;
+            }
+            return $a['start'] < $b['start'] ? -1 : 1;
+        });
 
-	/**
-	 * Store request via storage object
-	 */
-	public function storeRequest()
-	{
-		return $this->storage->store($this->request);
-	}
+        return $this;
+    }
 
-	/**
-	 * Return the storage object
-	 */
-	public function getStorage()
-	{
-		return $this->storage;
-	}
+    /**
+     * Store request via storage object
+     */
+    public function storeRequest()
+    {
+        return $this->storage->store($this->request);
+    }
 
-	/**
-	 * Set a custom storage object
-	 */
-	public function setStorage(StorageInterface $storage)
-	{
-		$this->storage = $storage;
+    /**
+     * Return the storage object
+     */
+    public function getStorage()
+    {
+        return $this->storage;
+    }
 
-		return $this;
-	}
+    /**
+     * Set a custom storage object
+     */
+    public function setStorage(StorageInterface $storage)
+    {
+        $this->storage = $storage;
 
-	/**
-	 * Return the log instance
-	 */
-	public function getLog()
-	{
-		return $this->log;
-	}
+        return $this;
+    }
 
-	/**
-	 * Set a custom log instance
-	 */
-	public function setLog(Log $log)
-	{
-		$this->log = $log;
-	}
+    /**
+     * Return the log instance
+     */
+    public function getLog()
+    {
+        return $this->log;
+    }
 
-	/**
-	 * Return the timeline instance
-	 */
-	public function getTimeline()
-	{
-		return $this->timeline;
-	}
+    /**
+     * Set a custom log instance
+     */
+    public function setLog(Log $log)
+    {
+        $this->log = $log;
+    }
 
-	/**
-	 * Set a custom timeline instance
-	 */
-	public function setTimeline(Timeline $timeline)
-	{
-		$this->timeline = $timeline;
-	}
+    /**
+     * Return the timeline instance
+     */
+    public function getTimeline()
+    {
+        return $this->timeline;
+    }
 
-	/**
-	 * Shortcut methods for the current log instance
-	 */
+    /**
+     * Set a custom timeline instance
+     */
+    public function setTimeline(Timeline $timeline)
+    {
+        $this->timeline = $timeline;
+    }
 
-	public function log($level = LogLevel::INFO, $message, array $context = array())
-	{
-		return $this->getLog()->log($level, $message, $context);
-	}
+    /**
+     * Shortcut methods for the current log instance
+     */
+
+    public function log($level = LogLevel::INFO, $message = '', array $context = array())
+    {
+        return $this->getLog()->log($level, $message, $context);
+    }
 
     public function emergency($message, array $context = array())
     {
@@ -225,17 +229,17 @@ class Clockwork implements LoggerInterface
         return $this->getLog()->log(LogLevel::DEBUG, $message, $context);
     }
 
-	/**
-	 * Shortcut methods for the current timeline instance
-	 */
+    /**
+     * Shortcut methods for the current timeline instance
+     */
 
-	public function startEvent($name, $description, $time = null)
-	{
-		return $this->getTimeline()->startEvent($name, $description, $time);
-	}
+    public function startEvent($name, $description, $time = null)
+    {
+        return $this->getTimeline()->startEvent($name, $description, $time);
+    }
 
-	public function endEvent($name)
-	{
-		return $this->getTimeline()->endEvent($name);
-	}
+    public function endEvent($name)
+    {
+        return $this->getTimeline()->endEvent($name);
+    }
 }

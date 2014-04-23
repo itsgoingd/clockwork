@@ -32,8 +32,10 @@ class ClockworkCleanCommand extends Command
 
     public function getOptions()
     {
+        $message = 'delete data about requests older then specified time in hours';
+        
         return array(
-            array('age', 'a', InputOption::VALUE_OPTIONAL, 'delete data about requests older then specified time in hours', null),
+            array('age', 'a', InputOption::VALUE_OPTIONAL, $message, null),
         );
     }
 
