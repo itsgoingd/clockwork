@@ -75,7 +75,7 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		$app = $this->app;
 		$service = $this;
-		$this->app->after(function($request, $response) use($app, $service)
+		$this->app->finish(function($request, $response) use($app, $service)
 		{
 			if (!$service->isCollectingData()) {
 				return; // Collecting data is disabled, return immediately
