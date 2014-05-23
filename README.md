@@ -136,6 +136,11 @@ There is a [brief architecture overview](https://github.com/itsgoingd/clockwork/
 
 If you would like to see or are working on a support for yet unsupported framework feel free to open a new issue on github.
 
+## Addons
+
+- [clockwork-cli](https://github.com/ptrofimov/clockwork-cli) - Command-line interface to Clockwork by [ptrofimov](https://github.com/ptrofimov)
+- [guzzle-clockwork](https://github.com/hannesvdvreken/guzzle-clockwork) - Plugin for logging Guzzle requests to Clockwork by [hannesvdvreken](https://github.com/hannesvdvreken)
+
 ## Licence
 
 Copyright (c) 2013 Miroslav Rigler
