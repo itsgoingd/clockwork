@@ -25,7 +25,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->make('clockwork.swift');
 
 		if (!$this->isEnabled()) {
-			return; // Clockwork is diabled, don't register the route
+			return; // Clockwork is disabled, don't register the route
 		}
 
 		$app = $this->app;
