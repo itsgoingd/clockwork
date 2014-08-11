@@ -23,7 +23,7 @@ class Hook
 		self::$__disabled = true;
 	}
 	
-	public function setStoragePath($storagePath = null)
+	public static function setStoragePath($storagePath = null)
 	{
 		if ($storagePath == null) {
 			return;
