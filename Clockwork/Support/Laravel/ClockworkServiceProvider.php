@@ -22,6 +22,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		}
 
 		$this->app['clockwork.laravel']->listenToEvents();
+		$this->app['clockwork.eloquent']->listenToEvents();
 		$this->app->make('clockwork.swift');
 
 		if (!$this->isEnabled()) {
@@ -48,6 +49,11 @@ class ClockworkServiceProvider extends ServiceProvider
 			return new SwiftDataSource($app['mailer']->getSwiftMailer());
 		});
 
+		$this->app->singleton('clockwork.eloquent', function($app)
+        {
+            return new EloquentDataSource($app['db'], $app['events']);
+        });
+
 		$this->app->singleton('clockwork', function($app)
 		{
 			$clockwork = new Clockwork();
@@ -60,7 +66,7 @@ class ClockworkServiceProvider extends ServiceProvider
 			$filter = $app['config']->get('clockwork::config.filter', array());
 
 			if ($app['config']->get('database.default') && !in_array('databaseQueries', $filter)) {
-				$clockwork->addDataSource(new EloquentDataSource($app['db']->connection()));
+				$clockwork->addDataSource($app['clockwork.eloquent']);
 			}
 
 			$storage = new FileStorage($app['path.storage'] . '/clockwork');
@@ -109,7 +115,7 @@ class ClockworkServiceProvider extends ServiceProvider
 			if ($app['request']->getBasePath()) {
 				$response->headers->set('X-Clockwork-Path', $app['request']->getBasePath() . '/__clockwork/', true);
 			}
-			
+
 			$extra_headers = $app['config']->get('clockwork::config.headers');
 			if ($extra_headers && is_array($extra_headers)) {
 				foreach ($extra_headers as $header_name => $header_value) {
