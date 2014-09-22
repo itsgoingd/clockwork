@@ -46,7 +46,7 @@ class Timeline
 	public function endEvent($name)
 	{
 		if (!isset($this->data[$name]))
-			throw new \Exception($name);
+			return false;
 
 		$this->data[$name]['end'] = microtime(true);
 
