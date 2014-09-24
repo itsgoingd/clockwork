@@ -1,3 +1,11 @@
+1.6
+- improved Eloquent data source to support multiple databases (thanks ingro)
+- improved compatibility with Laravel apps not using database
+- improved compatibility with various CodeIngiter installations
+- fixed a bug where log messages and timeline data might not be sorted correctly
+- fixed missing static keyword in CodeIgniter hook (thanks noevidenz)
+- changed Timeline::endEvent behavior to return false instead of throwing exception when called for non-existing event
+
 1.5
 - improved Slim support to use DI container to share Clockwork instance instead of config
 - improved Slim support now adds all messages logged via Slim's log interface to Clockwork log as well
