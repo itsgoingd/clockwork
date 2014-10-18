@@ -1,15 +1,15 @@
-<?php
-namespace Clockwork\Support\Laravel;
+<?php namespace Clockwork\Support\Laravel;
 
 use Clockwork\Clockwork;
 use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\LaravelDataSource;
 use Clockwork\DataSource\EloquentDataSource;
 use Clockwork\DataSource\SwiftDataSource;
-use Clockwork\Request\Timeline;
 use Clockwork\Storage\FileStorage;
+
+use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
 
 class ClockworkServiceProvider extends ServiceProvider
 {
@@ -17,7 +17,7 @@ class ClockworkServiceProvider extends ServiceProvider
 	{
 		$this->package('itsgoingd/clockwork', 'clockwork', __DIR__);
 
-		if (!$this->isCollectingData()) {
+		if (!$this->app['clockwork.support']->isCollectingData()) {
 			return; // Don't bother registering event listeners as we are not collecting data
 		}
 
@@ -25,20 +25,24 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app['clockwork.eloquent']->listenToEvents();
 		$this->app->make('clockwork.swift');
 
-		if (!$this->isEnabled()) {
+		if (!$this->app['clockwork.support']->isEnabled()) {
 			return; // Clockwork is disabled, don't register the route
 		}
 
 		$app = $this->app;
 		$this->app['router']->get('/__clockwork/{id}', function($id = null, $last = null) use($app)
 		{
-			$app['session.store']->reflash();
-			return new JsonResponse($app['clockwork']->getStorage()->retrieve($id, $last));
+			return $this->app['clockwork.support']->getData($id, $last);
 		})->where('id', '[0-9\.]+');
 	}
 
 	public function register()
 	{
+		$this->app->singleton('clockwork.support', function($app)
+		{
+			return new ClockworkSupport($app);
+		});
+
 		$this->app->singleton('clockwork.laravel', function($app)
 		{
 			return new LaravelDataSource($app);
@@ -79,50 +83,15 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		$this->registerCommands();
 
-		$app = $this->app;
-		$service = $this;
-		$this->app->after(function($request, $response) use($app, $service)
-		{
-			if (!$service->isCollectingData()) {
-				return; // Collecting data is disabled, return immediately
-			}
-
-			// don't collect data for configured URIs
-			$request_uri = $app['request']->getRequestUri();
-			$filter_uris = $app['config']->get('clockwork::config.filter_uris', array());
-			$filter_uris[] = '/__clockwork/[0-9\.]+'; // don't collect data for Clockwork requests
-
-			foreach ($filter_uris as $uri) {
-				$regexp = '#' . str_replace('#', '\#', $uri) . '#';
-
-				if (preg_match($regexp, $request_uri)) {
-					return;
-				}
-			}
-
-			$app['clockwork.laravel']->setResponse($response);
-
-			$app['clockwork']->resolveRequest();
-			$app['clockwork']->storeRequest();
-
-			if (!$service->isEnabled()) {
-				return; // Clockwork is disabled, don't set the headers
-			}
-
-			$response->headers->set('X-Clockwork-Id', $app['clockwork']->getRequest()->id, true);
-			$response->headers->set('X-Clockwork-Version', Clockwork::VERSION, true);
-
-			if ($app['request']->getBasePath()) {
-				$response->headers->set('X-Clockwork-Path', $app['request']->getBasePath() . '/__clockwork/', true);
-			}
-
-			$extra_headers = $app['config']->get('clockwork::config.headers');
-			if ($extra_headers && is_array($extra_headers)) {
-				foreach ($extra_headers as $header_name => $header_value) {
-					$response->headers->set('X-Clockwork-Header-' . $header_name, $header_value);
-				}
-			}
-		});
+		if ($this->isLegacyLaravel()) {
+			$this->app->middleware('Clockwork\Support\Laravel\ClockworkLegacyMiddleware', array($this->app));
+		} else if ($this->isOldLaravel()) {
+			$app = $this->app;
+			$this->app['router']->after(function($request, $response) use($app)
+			{
+				return $app['clockwork.support']->process($request, $response);
+			});
+		}
 	}
 
 	/**
@@ -145,19 +114,13 @@ class ClockworkServiceProvider extends ServiceProvider
 		return array('clockwork');
 	}
 
-	public function isEnabled()
+	public function isLegacyLaravel()
 	{
-		$is_enabled = $this->app['config']->get('clockwork::config.enable', null);
-
-		if ($is_enabled === null) {
-			$is_enabled = $this->app['config']->get('app.debug');
-		}
-
-		return $is_enabled;
+		return Str::startsWith(Application::VERSION, array('4.1.', '4.2.'));
 	}
 
-	public function isCollectingData()
+	public function isOldLaravel()
 	{
-		return $this->isEnabled() || $this->app['config']->get('clockwork::config.collect_data_always', false);
+		return Str::startsWith(Application::VERSION, '4.0.');
 	}
 }
