@@ -17,16 +17,27 @@ To install latest version simply add it to your `composer.json`:
 "itsgoingd/clockwork": "1.*"
 ```
 
-### Laravel 4
+### Laravel
 
 Once Clockwork is installed, you need to register Laravel service provider, in your `app/config/app.php`:
 
 ```php
 'providers' => array(
 	...
-    'Clockwork\Support\Laravel\ClockworkServiceProvider'
+	'Clockwork\Support\Laravel\ClockworkServiceProvider'
 )
 ```
+
+When using Laravel 5, you need to add Clockwork middleware, in your `app/Providers/AppServiceProvider.php`:
+
+```php
+protected $stack = [
+	'Clockwork\Support\Laravel\ClockworkMiddleware',
+	...
+]
+```
+
+**NOTE: Laravel 5 support is experimental and only available in dev-master version.**
 
 By default, Clockwork will only be available in debug mode, you can change this and other settings in the configuration file. Use the following Artisan command to publish the configuration file into your config directory:
 
@@ -112,11 +123,11 @@ To use Clockwork within your controllers/models/etc. you will need to extend you
 ```php
 class MY_Controller extends CI_Controller
 {
-    public function __construct()
-    {
-        parent::__construct();
-        $GLOBALS['EXT']->_call_hook('pre_controller_constructor');
-     } 
+	public function __construct()
+	{
+		parent::__construct();
+		$GLOBALS['EXT']->_call_hook('pre_controller_constructor');
+	 } 
 }
 ```
 
