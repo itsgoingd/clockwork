@@ -41,7 +41,8 @@ class ClockworkMiddleware implements Middleware
 		try {
 			$response = $next($request);
 		} catch (Exception $e) {
-			$response = $this->app['exception']->handleException($e);
+			$this->app['Illuminate\Contracts\Debug\ExceptionHandler']->report($e);
+			$response = $this->app['Illuminate\Contracts\Debug\ExceptionHandler']->render($request, $e);
 		}
 
 		return $this->app['clockwork.support']->process($request, $response);
