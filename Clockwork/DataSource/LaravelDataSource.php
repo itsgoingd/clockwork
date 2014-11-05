@@ -101,11 +101,6 @@ class LaravelDataSource extends DataSource
 			$timeline->endEvent('boot');
 		});
 
-		//$this->app->shutdown(function() use($timeline)
-		//{
-		//	$timeline->endEvent('run');
-		//});
-
 		$this->app['router']->before(function() use($timeline)
 		{
 			$timeline->startEvent('dispatch', 'Router dispatch.');
