@@ -28,10 +28,10 @@ Once Clockwork is installed, you need to register Laravel service provider, in y
 )
 ```
 
-When using Laravel 5, you need to add Clockwork middleware, in your `app/Providers/AppServiceProvider.php`:
+When using Laravel 5, you need to add Clockwork middleware, in your `app/Http/Kernel.php`:
 
 ```php
-protected $stack = [
+protected $middleware = [
 	'Clockwork\Support\Laravel\ClockworkMiddleware',
 	...
 ]
@@ -118,7 +118,7 @@ Finally, you need to set up the Clockwork hooks by adding following to your `app
 Clockwork\Support\CodeIgniter\Register::registerHooks($hook);
 ```
 
-To use Clockwork within your controllers/models/etc. you will need to extend your `CI_Controller` class. (If you haven't done so already) Create a new file at `application/core/MY_Controller.php`. 
+To use Clockwork within your controllers/models/etc. you will need to extend your `CI_Controller` class. (If you haven't done so already) Create a new file at `application/core/MY_Controller.php`.
 
 ```php
 class MY_Controller extends CI_Controller
@@ -127,7 +127,7 @@ class MY_Controller extends CI_Controller
 	{
 		parent::__construct();
 		$GLOBALS['EXT']->_call_hook('pre_controller_constructor');
-	 } 
+	 }
 }
 ```
 
