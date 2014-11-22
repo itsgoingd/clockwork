@@ -15,12 +15,6 @@ abstract class Storage implements StorageInterface
 	public $filter = array();
 
 	/**
-	 * Retrieve request specified by id argument, if second argument is specified, array of requests from id to last
-	 * will be returned
-	 */
-	abstract public function retrieve($id = null, $last = null);
-
-	/**
 	 * Same as retrieve, but json representations of requests are returned
 	 */
 	public function retrieveAsJson($id = null, $last = null)
@@ -38,11 +32,6 @@ abstract class Storage implements StorageInterface
 
 		return json_encode($requests);
 	}
-
-	/**
-	 * Store request
-	 */
-	abstract public function store(Request $request);
 
 	/**
 	 * Return array of data with applied filter
