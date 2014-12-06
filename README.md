@@ -152,6 +152,7 @@ If you would like to see or are working on a support for yet unsupported framewo
 - [clockwork-cli](https://github.com/ptrofimov/clockwork-cli) - Command-line interface to Clockwork by [ptrofimov](https://github.com/ptrofimov)
 - [guzzle-clockwork](https://github.com/hannesvdvreken/guzzle-clockwork) - Plugin for logging Guzzle requests to Clockwork by [hannesvdvreken](https://github.com/hannesvdvreken)
 - [silverstripe-clockwork](https://github.com/markguinn/silverstripe-clockwork) - Integration for SilverStripe CMS/framework by [markguinn](https://github.com/markguinn)
+- [clockwork-firebug](https://github.com/sidorovich/clockwork-firebug) - Extension for Firebug (like for Chrome) by [Pavel Sidorovich](https://github.com/sidorovich)
 
 ## Licence
 
