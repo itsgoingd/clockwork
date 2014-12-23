@@ -100,7 +100,7 @@ class DoctrineDataSource extends DataSource implements SQLLogger
             foreach ($params as $param) {
 
                 $param  = $this->convertParam($param);
-                $sql    = preg_replace($pattern, $param, $sql, 1);
+                $sql    = preg_replace($pattern, "\"$param\"", $sql, 1);
             }
         }
 
