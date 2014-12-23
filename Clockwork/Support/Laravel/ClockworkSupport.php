@@ -46,7 +46,7 @@ class ClockworkSupport
 		$this->app['clockwork']->storeRequest();
 
 		if (!$this->isEnabled()) {
-			return; // Clockwork is disabled, don't set the headers
+			return $response; // Clockwork is disabled, don't set the headers
 		}
 
 		$response->headers->set('X-Clockwork-Id', $this->app['clockwork']->getRequest()->id, true);

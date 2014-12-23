@@ -122,9 +122,9 @@ class LaravelDataSource extends DataSource
 
 		$log = $this->log;
 
-		$this->app['events']->listen('illuminate.log', function($level, $message) use($log)
+		$this->app['events']->listen('illuminate.log', function($level, $message, $context) use($log)
 		{
-			$log->log($level, $message);
+			$log->log($level, $message, $context);
 		});
 
 		$views = $this->views;
