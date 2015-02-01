@@ -1,3 +1,10 @@
+1.7-dev
+- added support for Laravel 5 (thanks Garbee, slovenianGooner)
+- improved support for Laravel 4.1 and 4.2, Clockwork data is now available for error responses
+- added Doctrine data source (thanks matiux)
+- fixed compatibility with some old PHP 5.3 versions (thanks hailwood)
+- updated Laravel data source to capture the context for log messages (thanks hermanzhu)
+
 1.6
 - improved Eloquent data source to support multiple databases (thanks ingro)
 - improved compatibility with Laravel apps not using database
