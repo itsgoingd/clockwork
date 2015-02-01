@@ -10,12 +10,12 @@ There are also a third-party [Firebug extension](https://github.com/sidorovich/c
 
 ## Installation
 
-This extension provides out of the box support for Laravel 4, Slim 2 and CodeIgniter 2.1 frameworks, you can add support for any other or custom framework via an extensible API.
+This extension provides out of the box support for Laravel, Slim 2 and CodeIgniter 2.1 frameworks, you can add support for any other or custom framework via an extensible API.
 
 To install latest version simply add it to your `composer.json`:
 
 ```javascript
-"itsgoingd/clockwork": "1.*"
+"itsgoingd/clockwork": "~1.6"
 ```
 
 ### Laravel
@@ -43,21 +43,13 @@ protected $middleware = [
 By default, Clockwork will only be available in debug mode, you can change this and other settings in the configuration file. Use the following Artisan command to publish the configuration file into your config directory:
 
 ```
-$ php artisan config:publish itsgoingd/clockwork --path vendor/itsgoingd/clockwork/Clockwork/Support/Laravel/config/
+$ php artisan vendor:publish --provider='Clockwork\Support\Laravel\ClockworkServiceProvider'
 ```
 
-To add your controller's runtime to timeline, add following to your base controller's constructor:
+For Laravel 4 you can do the same with this command:
 
-```php
-$this->beforeFilter(function()
-{
-	Event::fire('clockwork.controller.start');
-});
-
-$this->afterFilter(function()
-{
-	Event::fire('clockwork.controller.end');
-});
+```
+$ php artisan config:publish itsgoingd/clockwork --path vendor/itsgoingd/clockwork/Clockwork/Support/Laravel/config/
 ```
 
 Clockwork also comes with a facade, which provides an easy way to add records to the Clockwork log and events to the timeline. You can register the facade in your `app/config/app.php`:
