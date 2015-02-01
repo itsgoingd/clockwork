@@ -63,6 +63,10 @@ class ClockworkServiceProvider extends ServiceProvider
             return new EloquentDataSource($app['db'], $app['events']);
         });
 
+		foreach ($this->app['clockwork.support']->getAdditionalDataSources() as $name => $callable) {
+			$this->app->singleton($name, $callable);
+		}
+
 		$this->app->singleton('clockwork', function($app)
 		{
 			$clockwork = new Clockwork();
@@ -72,14 +76,16 @@ class ClockworkServiceProvider extends ServiceProvider
 				->addDataSource($app['clockwork.laravel'])
 				->addDataSource($app['clockwork.swift']);
 
-			$filter = $app['clockwork.support']->getFilter();
-
 			if ($app['clockwork.support']->isCollectingDatabaseQueries()) {
 				$clockwork->addDataSource($app['clockwork.eloquent']);
 			}
 
+			foreach ($app['clockwork.support']->getAdditionalDataSources() as $name => $callable) {
+				$clockwork->addDataSource($app[$name]);
+			}
+
 			$storage = new FileStorage($app['path.storage'] . '/clockwork');
-			$storage->filter = $filter;
+			$storage->filter = $app['clockwork.support']->getFilter();
 
 			$clockwork->setStorage($storage);
 
