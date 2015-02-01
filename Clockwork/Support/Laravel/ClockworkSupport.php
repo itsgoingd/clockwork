@@ -8,10 +8,27 @@ use Illuminate\Http\JsonResponse;
 class ClockworkSupport
 {
 	protected $app;
+	protected $legacy;
 
-	public function __construct(Application $app)
+	public function __construct(Application $app, $legacy)
 	{
 		$this->app = $app;
+		$this->legacy = $legacy;
+	}
+
+	public function getConfig($key, $default = null)
+	{
+		if ($this->legacy) {
+			if ($value = $this->app['config']->get("clockwork::clockwork.{$key}")) {
+				// try to look for a value from clockwork.php configuration file first
+				return $value;
+			} else {
+				// try to look for a value from config.php (pre 1.7) or return the default value
+				return $this->app['config']->get("clockwork::config.{$key}", $default);
+			}
+		} else {
+			return $this->app['config']->get("clockwork.{$key}", $default);
+		}
 	}
 
 	public function getData($id = null, $last = null)
@@ -19,6 +36,11 @@ class ClockworkSupport
 		$this->app['session.store']->reflash();
 
 		return new JsonResponse($this->app['clockwork']->getStorage()->retrieve($id, $last));
+	}
+
+	public function getFilter()
+	{
+		return $this->getConfig('filter', array());
 	}
 
 	public function process($request, $response)
@@ -29,7 +51,7 @@ class ClockworkSupport
 
 		// don't collect data for configured URIs
 		$request_uri = $request->getRequestUri();
-		$filter_uris = $this->app['config']->get('clockwork::config.filter_uris', array());
+		$filter_uris = $this->getConfig('filter_uris', array());
 		$filter_uris[] = '/__clockwork/[0-9\.]+'; // don't collect data for Clockwork requests
 
 		foreach ($filter_uris as $uri) {
@@ -56,11 +78,9 @@ class ClockworkSupport
 			$response->headers->set('X-Clockwork-Path', $request->getBasePath() . '/__clockwork/', true);
 		}
 
-		$extra_headers = $this->app['config']->get('clockwork::config.headers');
-		if ($extra_headers && is_array($extra_headers)) {
-			foreach ($extra_headers as $header_name => $header_value) {
-				$response->headers->set('X-Clockwork-Header-' . $header_name, $header_value);
-			}
+		$extra_headers = $this->getConfig('headers', array());
+		foreach ($extra_headers as $header_name => $header_value) {
+			$response->headers->set('X-Clockwork-Header-' . $header_name, $header_value);
 		}
 
 		return $response;
@@ -68,7 +88,7 @@ class ClockworkSupport
 
 	public function isEnabled()
 	{
-		$is_enabled = $this->app['config']->get('clockwork::config.enable', null);
+		$is_enabled = $this->getConfig('enable', null);
 
 		if ($is_enabled === null) {
 			$is_enabled = $this->app['config']->get('app.debug');
@@ -79,6 +99,11 @@ class ClockworkSupport
 
 	public function isCollectingData()
 	{
-		return $this->isEnabled() || $this->app['config']->get('clockwork::config.collect_data_always', false);
+		return $this->isEnabled() || $this->getConfig('collect_data_always', false);
+	}
+
+	public function isCollectingDatabaseQueries()
+	{
+		return $this->app['config']->get('database.default') && !in_array('databaseQueries', $this->getFilter());
 	}
 }

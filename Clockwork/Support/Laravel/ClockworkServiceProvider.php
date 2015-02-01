@@ -15,7 +15,11 @@ class ClockworkServiceProvider extends ServiceProvider
 {
 	public function boot()
 	{
-		$this->package('itsgoingd/clockwork', 'clockwork', __DIR__);
+		if ($this->isLegacyLaravel() || $this->isOldLaravel()) {
+			$this->package('itsgoingd/clockwork', 'clockwork', __DIR__);
+		} else {
+			$this->publishes(array(__DIR__ . '/config/clockwork.php' => config_path('clockwork.php')));
+		}
 
 		if (!$this->app['clockwork.support']->isCollectingData()) {
 			return; // Don't bother registering event listeners as we are not collecting data
@@ -32,15 +36,16 @@ class ClockworkServiceProvider extends ServiceProvider
 		$app = $this->app;
 		$this->app['router']->get('/__clockwork/{id}', function($id = null, $last = null) use($app)
 		{
-			return $this->app['clockwork.support']->getData($id, $last);
+			return $app['clockwork.support']->getData($id, $last);
 		})->where('id', '[0-9\.]+');
 	}
 
 	public function register()
 	{
-		$this->app->singleton('clockwork.support', function($app)
+		$legacy = $this->isLegacyLaravel() || $this->isOldLaravel();
+		$this->app->singleton('clockwork.support', function($app) use($legacy)
 		{
-			return new ClockworkSupport($app);
+			return new ClockworkSupport($app, $legacy);
 		});
 
 		$this->app->singleton('clockwork.laravel', function($app)
@@ -67,9 +72,9 @@ class ClockworkServiceProvider extends ServiceProvider
 				->addDataSource($app['clockwork.laravel'])
 				->addDataSource($app['clockwork.swift']);
 
-			$filter = $app['config']->get('clockwork::config.filter', array());
+			$filter = $app['clockwork.support']->getFilter();
 
-			if ($app['config']->get('database.default') && !in_array('databaseQueries', $filter)) {
+			if ($app['clockwork.support']->isCollectingDatabaseQueries()) {
 				$clockwork->addDataSource($app['clockwork.eloquent']);
 			}
 
