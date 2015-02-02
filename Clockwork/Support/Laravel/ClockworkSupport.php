@@ -24,9 +24,9 @@ class ClockworkSupport
 	public function getConfig($key, $default = null)
 	{
 		if ($this->legacy) {
-			if ($value = $this->app['config']->get("clockwork::clockwork.{$key}")) {
+			if ($this->app['config']->has("clockwork::clockwork.{$key}")) {
 				// try to look for a value from clockwork.php configuration file first
-				return $value;
+				return $this->app['config']->get("clockwork::clockwork.{$key}");
 			} else {
 				// try to look for a value from config.php (pre 1.7) or return the default value
 				return $this->app['config']->get("clockwork::config.{$key}", $default);

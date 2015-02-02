@@ -15,12 +15,6 @@ class ClockworkServiceProvider extends ServiceProvider
 {
 	public function boot()
 	{
-		if ($this->isLegacyLaravel() || $this->isOldLaravel()) {
-			$this->package('itsgoingd/clockwork', 'clockwork', __DIR__);
-		} else {
-			$this->publishes(array(__DIR__ . '/config/clockwork.php' => config_path('clockwork.php')));
-		}
-
 		if (!$this->app['clockwork.support']->isCollectingData()) {
 			return; // Don't bother registering event listeners as we are not collecting data
 		}
@@ -42,6 +36,12 @@ class ClockworkServiceProvider extends ServiceProvider
 
 	public function register()
 	{
+		if ($this->isLegacyLaravel() || $this->isOldLaravel()) {
+			$this->package('itsgoingd/clockwork', 'clockwork', __DIR__);
+		} else {
+			$this->publishes(array(__DIR__ . '/config/clockwork.php' => config_path('clockwork.php')));
+		}
+
 		$legacy = $this->isLegacyLaravel() || $this->isOldLaravel();
 		$this->app->singleton('clockwork.support', function($app) use($legacy)
 		{
