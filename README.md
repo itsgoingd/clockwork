@@ -23,10 +23,10 @@ To install latest version simply add it to your `composer.json`:
 Once Clockwork is installed, you need to register Laravel service provider, in your `app/config/app.php`:
 
 ```php
-'providers' => array(
+'providers' => [
 	...
 	'Clockwork\Support\Laravel\ClockworkServiceProvider'
-)
+]
 ```
 
 When using Laravel 5, you need to add Clockwork middleware, in your `app/Http/Kernel.php`:
@@ -55,10 +55,10 @@ $ php artisan config:publish itsgoingd/clockwork --path vendor/itsgoingd/clockwo
 Clockwork also comes with a facade, which provides an easy way to add records to the Clockwork log and events to the timeline. You can register the facade in your `app/config/app.php`:
 
 ```php
-'aliases' => array(
+'aliases' => [
 	...
 	'Clockwork' => 'Clockwork\Support\Laravel\Facade',
-)
+]
 ```
 
 Now you can use the following commands:
@@ -69,7 +69,7 @@ Clockwork::startEvent('event_name', 'Event description.'); // event called 'Even
 Clockwork::info('Message text.'); // 'Message text.' appears in Clockwork log tab
 Log::info('Message text.'); // 'Message text.' appears in Clockwork log tab as well as application log file
 
-Clockwork::info(array('hello' => 'world')); // logs json representation of the array
+Clockwork::info([ 'hello' => 'world' ]); // logs json representation of the array
 Clockwork::info(new Object()); // logs string representation of the objects if the object implements __toString magic method, logs json representation of output of toArray method if the object implements it, if neither is the case, logs json representation of the object cast to array
 
 Clockwork::endEvent('event_name');

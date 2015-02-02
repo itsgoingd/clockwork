@@ -1,5 +1,4 @@
-<?php
-namespace Clockwork\Support\Swift;
+<?php namespace Clockwork\Support\Swift;
 
 use Clockwork\Request\Timeline as ClockworkTimeline;
 
@@ -30,7 +29,7 @@ class SwiftPluginClockworkTimeline implements Swift_Events_SendListener
     {
         $message = $evt->getMessage();
 
-        $headers = array();
+        $headers = [];
         foreach ($message->getHeaders()->getAll() as $header) {
             $headers[$header->getFieldName()] = $header->getFieldBody();
         }

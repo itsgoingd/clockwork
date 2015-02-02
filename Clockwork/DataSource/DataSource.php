@@ -1,5 +1,4 @@
-<?php
-namespace Clockwork\DataSource;
+<?php namespace Clockwork\DataSource;
 
 use Clockwork\Request\Request;
 
@@ -22,12 +21,13 @@ class DataSource implements DataSourceInterface
 	public function replaceUnserializable(array $data)
 	{
 		foreach ($data as &$item) {
-			if ($item instanceof Closure)
+			if ($item instanceof Closure) {
 				$item = 'anonymous function';
-			elseif (is_resource($item))
+			} elseif (is_resource($item)) {
 				$item = 'resource';
-			elseif (is_object($item))
+			} elseif (is_object($item)) {
 				$item = 'instance of ' . get_class($item);
+			}
 		}
 
 		return $data;
@@ -38,9 +38,11 @@ class DataSource implements DataSourceInterface
 	 */
 	public function removePasswords(array $data)
 	{
-		foreach ($data as $key => &$val)
-			if (strpos($key, 'pass') !== false)
+		foreach ($data as $key => &$val) {
+			if (strpos($key, 'pass') !== false) {
 				$val = '*removed*';
+			}
+		}
 
 		return $data;
 	}

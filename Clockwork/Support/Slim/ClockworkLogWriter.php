@@ -1,5 +1,4 @@
-<?php
-namespace Clockwork\Support\Slim;
+<?php namespace Clockwork\Support\Slim;
 
 use Clockwork\Clockwork;
 use Clockwork\DataSource\PhpDataSource;
@@ -13,7 +12,7 @@ class ClockworkLogWriter
 	protected $clockwork;
 	protected $original_log_writer;
 
-	protected $log_levels = array(
+	protected $log_levels = [
 		1 => 'emergency',
 		2 => 'alert',
 		3 => 'critical',
@@ -22,7 +21,7 @@ class ClockworkLogWriter
 		6 => 'notice',
 		7 => 'info',
 		8 => 'debug'
-	);
+	];
 
 	public function __construct(Clockwork $clockwork, $original_log_writer)
 	{

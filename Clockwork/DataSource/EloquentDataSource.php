@@ -1,5 +1,4 @@
-<?php
-namespace Clockwork\DataSource;
+<?php namespace Clockwork\DataSource;
 
 use Clockwork\Request\Request;
 
@@ -20,7 +19,7 @@ class EloquentDataSource extends DataSource
 	 * Internal array where queries are stored
 	 * @var array
 	 */
-	protected $queries = array();
+	protected $queries = [];
 
 	/**
 	 * Create a new data source instance, takes a database manager and an event dispatcher as arguments
@@ -36,7 +35,7 @@ class EloquentDataSource extends DataSource
 	 */
 	public function listenToEvents()
 	{
-		$this->eventDispatcher->listen('illuminate.query', array($this, 'registerQuery'));
+		$this->eventDispatcher->listen('illuminate.query', [ $this, 'registerQuery' ]);
 	}
 
 	/**
@@ -45,12 +44,12 @@ class EloquentDataSource extends DataSource
 	 */
 	public function registerQuery($query, $bindings, $time, $connection)
 	{
-		$this->queries[] = array(
+		$this->queries[] = [
 			'query'      => $query,
 			'bindings'   => $bindings,
 			'time'       => $time,
 			'connection' => $connection
-		);
+		];
 	}
 
 	/**
@@ -78,10 +77,11 @@ class EloquentDataSource extends DataSource
 		}
 
 		# highlight keywords
-		$keywords = array('select', 'insert', 'update', 'delete', 'where', 'from', 'limit', 'is', 'null', 'having', 'group by', 'order by', 'asc', 'desc');
+		$keywords = [ 'select', 'insert', 'update', 'delete', 'where', 'from', 'limit', 'is', 'null', 'having', 'group by', 'order by', 'asc', 'desc' ];
 		$regexp = '/\b' . implode('\b|\b', $keywords) . '\b/i';
 
-		$query = preg_replace_callback($regexp, function($match){
+		$query = preg_replace_callback($regexp, function($match)
+		{
 			return strtoupper($match[0]);
 		}, $query);
 
@@ -93,14 +93,14 @@ class EloquentDataSource extends DataSource
 	 */
 	protected function getDatabaseQueries()
 	{
-		$queries = array();
+		$queries = [];
 
 		foreach ($this->queries as $query)
-			$queries[] = array(
+			$queries[] = [
 				'query'      => $this->createRunnableQuery($query['query'], $query['bindings'], $query['connection']),
 				'duration'   => $query['time'],
 				'connection' => $query['connection']
-			);
+			];
 
 		return $queries;
 	}

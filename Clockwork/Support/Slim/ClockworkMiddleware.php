@@ -1,5 +1,4 @@
-<?php
-namespace Clockwork\Support\Slim;
+<?php namespace Clockwork\Support\Slim;
 
 use Clockwork\Clockwork;
 use Clockwork\DataSource\PhpDataSource;
@@ -19,10 +18,7 @@ class ClockworkMiddleware extends Middleware
 
 	public function call()
 	{
-		$app = $this->app;
-		$storage_path_or_clockwork = $this->storage_path_or_clockwork;
-
-		$this->app->container->singleton('clockwork', function() use($app, $storage_path_or_clockwork)
+		$this->app->container->singleton('clockwork', function()
 		{
 			if ($storage_path_or_clockwork instanceof Clockwork) {
 				return $storage_path_or_clockwork;
@@ -31,8 +27,8 @@ class ClockworkMiddleware extends Middleware
 			$clockwork = new Clockwork();
 
 			$clockwork->addDataSource(new PhpDataSource())
-				->addDataSource(new SlimDataSource($app))
-				->setStorage(new FileStorage($storage_path_or_clockwork));
+				->addDataSource(new SlimDataSource($this->app))
+				->setStorage(new FileStorage($this->storage_path_or_clockwork));
 
 			return $clockwork;
 		});

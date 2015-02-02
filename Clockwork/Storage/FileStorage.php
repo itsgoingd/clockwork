@@ -1,8 +1,8 @@
-<?php
-namespace Clockwork\Storage;
+<?php namespace Clockwork\Storage;
 
 use Clockwork\Request\Request;
 use Clockwork\Storage\Storage;
+
 use Exception;
 
 /**
@@ -22,15 +22,17 @@ class FileStorage extends Storage
 	{
 		if (!file_exists($path)) {
 			# directory doesn't exist, try to create one
-			if (!mkdir($path, 0700, true))
+			if (!mkdir($path, 0700, true)) {
 				throw new Exception('Directory "' . $path . '" does not exist.');
+			}
 
 			# create default .gitignore, to ignore stored json files
 			file_put_contents($path . '/.gitignore', "*.json\n");
 		}
 
-		if (!is_writable($path)) 
+		if (!is_writable($path)) {
 			throw new Exception('Path "' . $path . '" is not writable.');
+		}
 
 		$this->path = $path;
 	}
@@ -42,8 +44,9 @@ class FileStorage extends Storage
 	public function retrieve($id = null, $last = null)
 	{
 		if ($id && !$last) {
-			if (!is_readable($this->path . '/' . $id . '.json'))
+			if (!is_readable($this->path . '/' . $id . '.json')) {
 				return null;
+			}
 
 			return new Request(
 				json_decode(file_get_contents($this->path . '/' . $id . '.json'), true)
@@ -55,17 +58,19 @@ class FileStorage extends Storage
 		$id = ($id) ? $id . '.json' : first($files);
 		$last = ($last) ? $last . '.json' : end($files);
 
-		$requests = array();
+		$requests = [];
 		$add = false;
 
 		foreach ($files as $file) {
-			if ($file == $id)
+			if ($file == $id) {
 				$add = true;
-			elseif ($file == $last)
+			} elseif ($file == $last) {
 				$add = false;
+			}
 
-			if (!$add)
+			if (!$add) {
 				continue;
+			}
 
 			$requests[] = new Request(
 				json_decode(file_get_contents($file), true)

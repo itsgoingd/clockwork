@@ -1,5 +1,4 @@
-<?php
-namespace Clockwork\Request;
+<?php namespace Clockwork\Request;
 
 /**
  * Data structure representing a single application request
@@ -34,7 +33,7 @@ class Request
 	/**
 	 * Request headers
 	 */
-	public $headers = array();
+	public $headers = [];
 
 	/**
 	 * Textual representation of executed controller
@@ -44,22 +43,22 @@ class Request
 	/**
 	 * GET data array
 	 */
-	public $getData = array();
+	public $getData = [];
 
 	/**
 	 * POST data array
 	 */
-	public $postData = array();
+	public $postData = [];
 
 	/**
 	 * Session data array
 	 */
-	public $sessionData = array();
+	public $sessionData = [];
 
 	/**
 	 * Cookies array
 	 */
-	public $cookies = array();
+	public $cookies = [];
 
 	/**
 	 * Response time
@@ -74,32 +73,32 @@ class Request
 	/**
 	 * Database queries array
 	 */
-	public $databaseQueries = array();
+	public $databaseQueries = [];
 
 	/**
 	 * Timeline data array
 	 */
-	public $timelineData = array();
+	public $timelineData = [];
 
 	/**
 	 * Log messages array
 	 */
-	public $log = array();
+	public $log = [];
 
 	/**
 	 * Application routes array
 	 */
-	public $routes = array();
+	public $routes = [];
 
 	/**
 	 * Emails data array
 	 */
-	public $emailsData = array();
+	public $emailsData = [];
 
 	/**
 	 * Views data array
 	 */
-	public $viewsData = array();
+	public $viewsData = [];
 
 	/**
 	 * Custom user data (not used by Clockwork app)
@@ -113,8 +112,9 @@ class Request
 	public function __construct(array $data = null)
 	{
 		if ($data) {
-			foreach ($data as $key => $val)
+			foreach ($data as $key => $val) {
 				$this->$key = $val;
+			}
 		} else {
 			$this->id = $this->generateRequestId();
 		}
@@ -127,9 +127,11 @@ class Request
 	{
 		$duration = 0;
 
-		foreach ($this->databaseQueries as $query)
-			if (isset($query['duration']))
+		foreach ($this->databaseQueries as $query) {
+			if (isset($query['duration'])) {
 				$duration += $query['duration'];
+			}
+		}
 
 		return $duration;
 	}
@@ -147,7 +149,7 @@ class Request
 	 */
 	public function toArray()
 	{
-		return array(
+		return [
 			'id'               => $this->id,
 			'time'             => $this->time,
 			'method'           => $this->method,
@@ -169,7 +171,7 @@ class Request
 			'emailsData'       => $this->emailsData,
 			'viewsData'        => $this->viewsData,
 			'userData'         => $this->userData
-		);
+		];
 	}
 
 	/**

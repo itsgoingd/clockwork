@@ -1,10 +1,10 @@
-<?php
-namespace Clockwork\DataSource;
+<?php namespace Clockwork\DataSource;
 
 use Clockwork\DataSource\DataSource;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
 use Clockwork\Support\Monolog\Handler\ClockworkHandler;
+
 use Monolog\Logger as Monolog;
 
 /**

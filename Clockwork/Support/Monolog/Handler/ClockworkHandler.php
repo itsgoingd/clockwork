@@ -1,10 +1,9 @@
-<?php
-namespace Clockwork\Support\Monolog\Handler;
+<?php namespace Clockwork\Support\Monolog\Handler;
 
 use Clockwork\Request\Log as ClockworkLog;
 
-use Monolog\Logger;
 use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Logger;
 
 /**
  * Stores messages to Clockwork Log instance

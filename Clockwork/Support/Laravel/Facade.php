@@ -1,5 +1,4 @@
-<?php
-namespace Clockwork\Support\Laravel;
+<?php namespace Clockwork\Support\Laravel;
 
 use Illuminate\Support\Facades\Facade as IlluminateFacade;
 

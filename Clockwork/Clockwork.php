@@ -1,5 +1,4 @@
-<?php
-namespace Clockwork;
+<?php namespace Clockwork;
 
 use Clockwork\DataSource\DataSourceInterface;
 use Clockwork\Request\Log;
@@ -18,12 +17,12 @@ class Clockwork implements LoggerInterface
 	/**
 	 * Clockwork version
 	 */
-	const VERSION = '1.6';
+	const VERSION = '2.0-dev';
 
 	/**
 	 * Array of data sources, these objects provide data to be stored in a request object
 	 */
-	protected $dataSources = array();
+	protected $dataSources = [];
 
 	/**
 	 * Request object, data structure which stores data about current application request
@@ -180,47 +179,47 @@ class Clockwork implements LoggerInterface
 	 * Shortcut methods for the current log instance
 	 */
 
-	public function log($level = LogLevel::INFO, $message, array $context = array())
+	public function log($level = LogLevel::INFO, $message, array $context = [])
 	{
 		return $this->getLog()->log($level, $message, $context);
 	}
 
-	public function emergency($message, array $context = array())
+	public function emergency($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::EMERGENCY, $message, $context);
 	}
 
-	public function alert($message, array $context = array())
+	public function alert($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::ALERT, $message, $context);
 	}
 
-	public function critical($message, array $context = array())
+	public function critical($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::CRITICAL, $message, $context);
 	}
 
-	public function error($message, array $context = array())
+	public function error($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::ERROR, $message, $context);
 	}
 
-	public function warning($message, array $context = array())
+	public function warning($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::WARNING, $message, $context);
 	}
 
-	public function notice($message, array $context = array())
+	public function notice($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::NOTICE, $message, $context);
 	}
 
-	public function info($message, array $context = array())
+	public function info($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::INFO, $message, $context);
 	}
 
-	public function debug($message, array $context = array())
+	public function debug($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::DEBUG, $message, $context);
 	}
