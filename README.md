@@ -15,7 +15,7 @@ This extension provides out of the box support for Laravel, Slim 2 and CodeIgnit
 To install latest version simply add it to your `composer.json`:
 
 ```javascript
-"itsgoingd/clockwork": "~1.6"
+"itsgoingd/clockwork": "~1.7"
 ```
 
 ### Laravel
@@ -37,8 +37,6 @@ protected $middleware = [
 	...
 ]
 ```
-
-**NOTE: Laravel 5 support is experimental and only available in dev-master version.**
 
 By default, Clockwork will only be available in debug mode, you can change this and other settings in the configuration file. Use the following Artisan command to publish the configuration file into your config directory:
 

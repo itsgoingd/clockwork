@@ -1,4 +1,4 @@
-1.7-dev
+1.7
 - added support for Laravel 5 (thanks Garbee, slovenianGooner)
 - improved support for Laravel 4.1 and 4.2, Clockwork data is now available for error responses
 - added Doctrine data source (thanks matiux)
