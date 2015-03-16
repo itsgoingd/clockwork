@@ -19,8 +19,6 @@ class ClockworkServiceProvider extends ServiceProvider
 			return; // Don't bother registering event listeners as we are not collecting data
 		}
 
-		$this->app['clockwork.laravel']->listenToEvents();
-		$this->app['clockwork.eloquent']->listenToEvents();
 		$this->app->make('clockwork.swift');
 
 		if (!$this->app['clockwork.support']->isEnabled()) {
@@ -52,16 +50,20 @@ class ClockworkServiceProvider extends ServiceProvider
 		{
 			return new LaravelDataSource($app);
 		});
+		
+		$this->app['clockwork.laravel']->listenToEvents();
+
+		$this->app->singleton('clockwork.eloquent', function($app)
+        	{
+			return new EloquentDataSource($app['db'], $app['events']);
+		});
+		
+		$this->app['clockwork.eloquent']->listenToEvents();
 
 		$this->app->singleton('clockwork.swift', function($app)
 		{
 			return new SwiftDataSource($app['mailer']->getSwiftMailer());
 		});
-
-		$this->app->singleton('clockwork.eloquent', function($app)
-        {
-            return new EloquentDataSource($app['db'], $app['events']);
-        });
 
 		foreach ($this->app['clockwork.support']->getAdditionalDataSources() as $name => $callable) {
 			$this->app->singleton($name, $callable);
