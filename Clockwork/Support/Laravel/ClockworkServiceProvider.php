@@ -27,11 +27,11 @@ class ClockworkServiceProvider extends ServiceProvider
 			return; // Clockwork is disabled, don't register the route
 		}
 
-		$app = $this->app;
-		$this->app['router']->get('/__clockwork/{id}', function($id = null, $last = null) use($app)
-		{
-			return $app['clockwork.support']->getData($id, $last);
-		})->where('id', '[0-9\.]+');
+		if ($this->isLegacyLaravel() || $this->isOldLaravel()) {
+			$this->app['router']->get('/__clockwork/{id}', 'Clockwork\Support\Laravel\LegacyController@getData')->where('id', '[0-9\.]+');
+		} else {
+			$this->app['router']->get('/__clockwork/{id}', 'Clockwork\Support\Laravel\ClockworkController@getData')->where('id', '[0-9\.]+');
+		}
 	}
 
 	public function register()
