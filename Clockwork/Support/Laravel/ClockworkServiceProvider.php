@@ -28,9 +28,9 @@ class ClockworkServiceProvider extends ServiceProvider
 		}
 
 		if ($this->isLegacyLaravel() || $this->isOldLaravel()) {
-			$this->app['router']->get('/__clockwork/{id}', 'Clockwork\Support\Laravel\LegacyController@getData')->where('id', '[0-9\.]+');
+			$this->app['router']->get('/__clockwork/{id}', 'Clockwork\Support\Laravel\Controllers\LegacyController@getData')->where('id', '[0-9\.]+');
 		} else {
-			$this->app['router']->get('/__clockwork/{id}', 'Clockwork\Support\Laravel\ClockworkController@getData')->where('id', '[0-9\.]+');
+			$this->app['router']->get('/__clockwork/{id}', 'Clockwork\Support\Laravel\Controllers\CurrentController@getData')->where('id', '[0-9\.]+');
 		}
 	}
 
