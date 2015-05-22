@@ -33,6 +33,29 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
+	| Metadata storage
+	|--------------------------------------------------------------------------
+	|
+	| You can configure how are the metadata collected by Clockwork stored.
+	| Valid options are: files or sql.
+	| Files storage stores the metadata in one-per-request files in a specified
+	| directory.
+	| Sql storage stores the metadata as rows in a sql database. You can specify
+	| the database by name if defined in database.php or by path to Sqlite
+	| database. Database table will be automatically created.
+	| Sql storage requires PDO.
+	|
+	*/
+
+	'storage' => 'files',
+
+	'storage_files_path' => storage_path('clockwork'),
+
+	'storage_sql_database' => storage_path('clockwork.sqlite'),
+	'storage_sql_table'    => 'clockwork',
+
+	/*
+	|--------------------------------------------------------------------------
 	| Filter collected data
 	|--------------------------------------------------------------------------
 	|

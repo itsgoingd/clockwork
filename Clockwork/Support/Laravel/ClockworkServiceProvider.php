@@ -5,7 +5,6 @@ use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\LaravelDataSource;
 use Clockwork\DataSource\EloquentDataSource;
 use Clockwork\DataSource\SwiftDataSource;
-use Clockwork\Storage\FileStorage;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
@@ -84,10 +83,7 @@ class ClockworkServiceProvider extends ServiceProvider
 				$clockwork->addDataSource($app[$name]);
 			}
 
-			$storage = new FileStorage($app['path.storage'] . '/clockwork');
-			$storage->filter = $app['clockwork.support']->getFilter();
-
-			$clockwork->setStorage($storage);
+			$clockwork->setStorage($app['clockwork.support']->getStorage());
 
 			return $clockwork;
 		});
