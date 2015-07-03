@@ -1,3 +1,8 @@
+1.8
+- added SQL data storage implementation
+- added new config options for data storage for Laravel
+- fixed not being able to use the Larvel route caching when using Clockwork (thanks Garbee, kylestev, cbakker86)
+
 1.7
 - added support for Laravel 5 (thanks Garbee, slovenianGooner)
 - improved support for Laravel 4.1 and 4.2, Clockwork data is now available for error responses
