@@ -40,7 +40,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		if ($this->isLegacyLaravel() || $this->isOldLaravel()) {
 			$this->package('itsgoingd/clockwork', 'clockwork', __DIR__);
 		} else {
-			$this->publishes(array(__DIR__ . '/config/clockwork.php' => config_path('clockwork.php')));
+			$this->publishes([ __DIR__ . '/config/clockwork.php' => config_path('clockwork.php') ]);
 		}
 
 		$this->app->singleton('clockwork.support', function($app)

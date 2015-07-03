@@ -38,12 +38,12 @@ class SwiftPluginClockworkTimeline implements Swift_Events_SendListener
             'email ' . $message->getId(),
             'Sending an email message',
             null,
-            array(
+            [
                 'from'    => $this->addressToString($message->getFrom()),
                 'to'      => $this->addressToString($message->getTo()),
                 'subject' => $message->getSubject(),
                 'headers' => $headers
-            )
+            ]
         );
     }
 
