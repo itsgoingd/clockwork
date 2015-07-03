@@ -150,23 +150,23 @@ class SqlStorage extends Storage
 				'time DOUBLE NULL, ' .
 				'method VARCHAR(10) NULL, ' .
 				'uri VARCHAR(250) NULL, ' .
-				'headers TEXT NULL, ' .
+				'headers MEDIUMTEXT NULL, ' .
 				'controller VARCHAR(250) NULL, ' .
-				'getData TEXT NULL, ' .
-				'postData TEXT NULL, ' .
-				'sessionData TEXT NULL, ' .
-				'cookies TEXT NULL, ' .
+				'getData MEDIUMTEXT NULL, ' .
+				'postData MEDIUMTEXT NULL, ' .
+				'sessionData MEDIUMTEXT NULL, ' .
+				'cookies MEDIUMTEXT NULL, ' .
 				'responseTime DOUBLE NULL, ' .
 				'responseStatus INTEGER NULL, ' .
 				'responseDuration DOUBLE NULL, ' .
-				'databaseQueries TEXT NULL, ' .
+				'databaseQueries MEDIUMTEXT NULL, ' .
 				'databaseDuration DOUBLE NULL, ' .
-				'timelineData TEXT NULL, ' .
-				'log TEXT NULL, ' .
-				'routes TEXT NULL, ' .
-				'emailsData TEXT NULL, ' .
-				'viewsData TEXT NULL, ' .
-				'userData TEXT NULL' .
+				'timelineData MEDIUMTEXT NULL, ' .
+				'log MEDIUMTEXT NULL, ' .
+				'routes MEDIUMTEXT NULL, ' .
+				'emailsData MEDIUMTEXT NULL, ' .
+				'viewsData MEDIUMTEXT NULL, ' .
+				'userData MEDIUMTEXT NULL' .
 			');'
 		);
 	}
