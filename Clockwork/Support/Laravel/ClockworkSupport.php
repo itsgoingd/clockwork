@@ -60,7 +60,7 @@ class ClockworkSupport
 			$storage = new SqlStorage($database, $table);
 			$storage->initialize();
 		} else {
-			$storage = new FileStorage($this->getConfig('storage_files_path'));
+			$storage = new FileStorage($this->getConfig('storage_files_path', storage_path('clockwork')));
 		}
 
 		$storage->filter = $this->getFilter();
