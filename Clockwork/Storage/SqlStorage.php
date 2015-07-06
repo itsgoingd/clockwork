@@ -139,7 +139,13 @@ class SqlStorage extends Storage
 	 */
 	public function initialize()
 	{
-		if ($this->pdo->query("SELECT 1 FROM {$this->table} LIMIT 1") !== false) {
+		try {
+			$initialized = $this->pdo->query("SELECT 1 FROM {$this->table} LIMIT 1");
+		} catch (\Exception $e) {
+			$initialized = false;
+		}
+
+		if ($initialized !== false) {
 			return;
 		}
 

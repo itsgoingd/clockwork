@@ -1,6 +1,9 @@
+1.8.1
+- fixed SQL data storage initialization if PDO is set to throw exception on error (thanks YOzaz)
+
 1.8
 - added SQL data storage implementation
-- added new config options for data storage for Laravel
+- added new config options for data storage for Laravel (please re-publish the config file)
 - fixed not being able to use the Larvel route caching when using Clockwork (thanks Garbee, kylestev, cbakker86)
 
 1.7
