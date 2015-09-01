@@ -91,6 +91,13 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		$this->app['clockwork.laravel']->listenToEvents();
 
+		// set up aliases for all Clockwork parts so they can be resolved by the IoC container
+		$this->app->alias('clockwork.support', 'Clockwork\Support\Laravel\ClockworkSupport');
+		$this->app->alias('clockwork.laravel', 'Clockwork\DataSource\LaravelDataSource');
+		$this->app->alias('clockwork.swift', 'Clockwork\DataSource\SwiftDataSource');
+		$this->app->alias('clockwork.eloquent', 'Clockwork\DataSource\EloquentDataSource');
+		$this->app->alias('clockwork', 'Clockwork\Clockwork');
+
 		$this->registerCommands();
 
 		if ($this->isLegacyLaravel()) {

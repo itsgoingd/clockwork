@@ -89,6 +89,13 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		$this->app['clockwork.lumen']->listenToEvents();
 
+		// set up aliases for all Clockwork parts so they can be resolved by the IoC container
+		$this->app->alias('clockwork.support', 'Clockwork\Support\Lumen\ClockworkSupport');
+		$this->app->alias('clockwork.lumen', 'Clockwork\DataSource\LumenDataSource');
+		$this->app->alias('clockwork.swift', 'Clockwork\DataSource\SwiftDataSource');
+		$this->app->alias('clockwork.eloquent', 'Clockwork\DataSource\EloquentDataSource');
+		$this->app->alias('clockwork', 'Clockwork\Clockwork');
+
 		$this->registerCommands();
 	}
 
