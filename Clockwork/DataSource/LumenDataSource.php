@@ -87,20 +87,6 @@ class LumenDataSource extends DataSource
 
 		$timeline->startEvent('total', 'Total execution time.', 'start');
 
-		$timeline->startEvent('initialisation', 'Application initialisation.', 'start');
-
-		$this->app->booting(function() use($timeline)
-		{
-			$timeline->endEvent('initialisation');
-			$timeline->startEvent('boot', 'Framework booting.');
-			$timeline->startEvent('run', 'Framework running.');
-		});
-
-		$this->app->booted(function() use($timeline)
-		{
-			$timeline->endEvent('boot');
-		});
-
 		$this->app['events']->listen('clockwork.controller.start', function() use($timeline)
 		{
 			$timeline->startEvent('controller', 'Controller running.');

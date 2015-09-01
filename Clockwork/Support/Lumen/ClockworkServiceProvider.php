@@ -21,8 +21,6 @@ class ClockworkServiceProvider extends ServiceProvider
 			return; // Don't bother registering event listeners as we are not collecting data
 		}
 
-		$this->app['clockwork.lumen']->listenToEvents();
-
 		if ($this->app['clockwork.support']->isCollectingDatabaseQueries()) {
 			$this->app['clockwork.eloquent']->listenToEvents();
 		}
@@ -88,6 +86,8 @@ class ClockworkServiceProvider extends ServiceProvider
 
 			return $clockwork;
 		});
+
+		$this->app['clockwork.lumen']->listenToEvents();
 
 		$this->registerCommands();
 	}
