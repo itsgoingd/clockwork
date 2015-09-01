@@ -110,9 +110,7 @@ class ClockworkServiceProvider extends ServiceProvider
 	public function registerCommands()
 	{
 		// Clean command
-		$this->app['command.clockwork.clean'] = $this->app->share(function($app){
-			return new ClockworkCleanCommand();
-		});
+		$this->app->bind('command.clockwork.clean', 'Clockwork\Support\Laravel\ClockworkCleanCommand');
 
 		$this->commands(
 			'command.clockwork.clean'
