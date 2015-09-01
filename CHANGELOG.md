@@ -1,3 +1,10 @@
+1.9
+- added Lumen support (thanks dawiyo)
+- added aliases for all Clockwork parts so they can be resolved by the IoC container in Laravel and Lumen
+- fixed Laravel framework initialisation, booting and running timeline events not being recorded properly (thanks HipsterJazzbo, sisve)
+- fixed how Laravel clockwork:clean artisan command is registered (thanks freekmurze)
+- removed Lumen framework initialisation, booting and running timeline events as they are not supported by Lumen
+
 1.8.1
 - fixed SQL data storage initialization if PDO is set to throw exception on error (thanks YOzaz)
 

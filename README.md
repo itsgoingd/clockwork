@@ -15,7 +15,7 @@ This extension provides out of the box support for Laravel, Slim 2 and CodeIgnit
 To install latest version simply add it to your `composer.json`:
 
 ```javascript
-"itsgoingd/clockwork": "~1.8"
+"itsgoingd/clockwork": "~1.9"
 ```
 
 ### Laravel
@@ -75,8 +75,6 @@ Clockwork::endEvent('event_name');
 
 ### Lumen
 
-**NOTE: Lumen support is experimental, available in `1.x-dev` version.**
-
 Once Clockwork is installed, you need to register the Clockwork service provider, in your `bootstrap/app.php`:
 
 ```php
@@ -93,7 +91,7 @@ $app->middleware([
 ```
 
 By default, Clockwork will only be available in debug mode (`APP_DEBUG` set to true), you can change this and other settings via environment variables.
-Simply specify the setting as environment variable prefixed with `CLOCKWORK_`, eg. CLOCKWORK_ENABLE, [full list of available settings](https://raw.githubusercontent.com/itsgoingd/clockwork/v1/Clockwork/Support/Laravel/config/clockwork.php).
+Simply specify the setting as environment variable prefixed with `CLOCKWORK_`, eg. `CLOCKWORK_ENABLE`, [full list of available settings](https://raw.githubusercontent.com/itsgoingd/clockwork/v1/Clockwork/Support/Laravel/config/clockwork.php).
 
 Clockwork also comes with a facade, which provides an easy way to add records to the Clockwork log and events to the timeline. The facade will be automatically registered when you enable facades for your Lumen app, in `bootstrap/app.php`:
 
