@@ -1,21 +1,19 @@
-<?php namespace Clockwork\Support\Laravel;
+<?php namespace Clockwork\Support\Lumen;
 
 use Clockwork\Clockwork;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\SqlStorage;
 
-use Illuminate\Foundation\Application;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 
 class ClockworkSupport
 {
 	protected $app;
-	protected $legacy;
 
-	public function __construct(Application $app, $legacy)
+	public function __construct(Application $app)
 	{
 		$this->app = $app;
-		$this->legacy = $legacy;
 	}
 
 	public function getAdditionalDataSources()
@@ -25,17 +23,7 @@ class ClockworkSupport
 
 	public function getConfig($key, $default = null)
 	{
-		if ($this->legacy) {
-			if ($this->app['config']->has("clockwork::clockwork.{$key}")) {
-				// try to look for a value from clockwork.php configuration file first
-				return $this->app['config']->get("clockwork::clockwork.{$key}");
-			} else {
-				// try to look for a value from config.php (pre 1.7) or return the default value
-				return $this->app['config']->get("clockwork::config.{$key}", $default);
-			}
-		} else {
-			return $this->app['config']->get("clockwork.{$key}", $default);
-		}
+		return env('CLOCKWORK_' . strtoupper($key), $default);
 	}
 
 	public function getData($id = null, $last = null)
@@ -92,7 +80,7 @@ class ClockworkSupport
 			}
 		}
 
-		$this->app['clockwork.laravel']->setResponse($response);
+		$this->app['clockwork.lumen']->setResponse($response);
 
 		$this->app['clockwork']->resolveRequest();
 		$this->app['clockwork']->storeRequest();
@@ -121,7 +109,7 @@ class ClockworkSupport
 		$is_enabled = $this->getConfig('enable', null);
 
 		if ($is_enabled === null) {
-			$is_enabled = $this->app['config']->get('app.debug');
+			$is_enabled = env('APP_DEBUG', false);
 		}
 
 		return $is_enabled;
@@ -134,6 +122,11 @@ class ClockworkSupport
 
 	public function isCollectingDatabaseQueries()
 	{
-		return $this->app['config']->get('database.default') && !in_array('databaseQueries', $this->getFilter());
+		return $this->app->bound('db') && $this->app['config']->get('database.default') && !in_array('databaseQueries', $this->getFilter());
+	}
+
+	public function isCollectingEmails()
+	{
+		return $this->app->bound('mailer');
 	}
 }

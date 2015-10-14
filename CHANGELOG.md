@@ -1,3 +1,18 @@
+1.9
+- added Lumen support (thanks dawiyo)
+- added aliases for all Clockwork parts so they can be resolved by the IoC container in Laravel and Lumen
+- fixed Laravel framework initialisation, booting and running timeline events not being recorded properly (thanks HipsterJazzbo, sisve)
+- fixed how Laravel clockwork:clean artisan command is registered (thanks freekmurze)
+- removed Lumen framework initialisation, booting and running timeline events as they are not supported by Lumen
+
+1.8.1
+- fixed SQL data storage initialization if PDO is set to throw exception on error (thanks YOzaz)
+
+1.8
+- added SQL data storage implementation
+- added new config options for data storage for Laravel (please re-publish the config file)
+- fixed not being able to use the Larvel route caching when using Clockwork (thanks Garbee, kylestev, cbakker86)
+
 1.7
 - added support for Laravel 5 (thanks Garbee, slovenianGooner)
 - improved support for Laravel 4.1 and 4.2, Clockwork data is now available for error responses

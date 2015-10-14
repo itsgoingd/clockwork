@@ -15,7 +15,7 @@ This extension provides out of the box support for Laravel, Slim 2 and CodeIgnit
 To install latest version simply add it to your `composer.json`:
 
 ```javascript
-"itsgoingd/clockwork": "~1.7"
+"itsgoingd/clockwork": "~1.9"
 ```
 
 ### Laravel
@@ -57,6 +57,46 @@ Clockwork also comes with a facade, which provides an easy way to add records to
 	...
 	'Clockwork' => 'Clockwork\Support\Laravel\Facade',
 )
+```
+
+Now you can use the following commands:
+
+```php
+Clockwork::startEvent('event_name', 'Event description.'); // event called 'Event description.' appears in Clockwork timeline tab
+
+Clockwork::info('Message text.'); // 'Message text.' appears in Clockwork log tab
+Log::info('Message text.'); // 'Message text.' appears in Clockwork log tab as well as application log file
+
+Clockwork::info(array('hello' => 'world')); // logs json representation of the array
+Clockwork::info(new Object()); // logs string representation of the objects if the object implements __toString magic method, logs json representation of output of toArray method if the object implements it, if neither is the case, logs json representation of the object cast to array
+
+Clockwork::endEvent('event_name');
+```
+
+### Lumen
+
+Once Clockwork is installed, you need to register the Clockwork service provider, in your `bootstrap/app.php`:
+
+```php
+$app->register(Clockwork\Support\Lumen\ClockworkServiceProvider::class);
+```
+
+You also need to add the Clockwork middleware, in the same file:
+
+```php
+$app->middleware([
+	...
+	Clockwork\Support\Lumen\ClockworkMiddleware::class
+]);
+```
+
+By default, Clockwork will only be available in debug mode (`APP_DEBUG` set to true), you can change this and other settings via environment variables.
+Simply specify the setting as environment variable prefixed with `CLOCKWORK_`, eg. `CLOCKWORK_ENABLE`, [full list of available settings](https://raw.githubusercontent.com/itsgoingd/clockwork/v1/Clockwork/Support/Laravel/config/clockwork.php).
+
+Clockwork also comes with a facade, which provides an easy way to add records to the Clockwork log and events to the timeline. The facade will be automatically registered when you enable facades for your Lumen app, in `bootstrap/app.php`:
+
+```php
+$app->withFacades();
 ```
 
 Now you can use the following commands:
