@@ -1,3 +1,9 @@
+1.10
+- added Laravel 5.2 support (thanks jonphipps)
+- improved file storage to allow configuring directory permissions (thanks patrick-radius)
+- fixed interaction with PHPUnit in Lumen (thanks troyharvey)
+- removed "router dispatch" timeline event for now (due to Laravel 5.2 changes)
+
 1.9
 - added Lumen support (thanks dawiyo)
 - added aliases for all Clockwork parts so they can be resolved by the IoC container in Laravel and Lumen
