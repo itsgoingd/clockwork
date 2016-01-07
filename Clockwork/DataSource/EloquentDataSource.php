@@ -36,21 +36,39 @@ class EloquentDataSource extends DataSource
 	 */
 	public function listenToEvents()
 	{
-		$this->eventDispatcher->listen('illuminate.query', array($this, 'registerQuery'));
+		if (class_exists('Illuminate\Database\Events\QueryExecuted')) {
+			// Laravel 5.2
+			$this->eventDispatcher->listen('Illuminate\Database\Events\QueryExecuted', array($this, 'registerQuery'));
+		} else {
+			// Laravel 4.0 to 5.1
+			$this->eventDispatcher->listen('illuminate.query', array($this, 'registerLegacyQuery'));
+		}
 	}
 
 	/**
 	 * Log the query into the internal store
-	 * @return array
 	 */
-	public function registerQuery($query, $bindings, $time, $connection)
+	public function registerQuery($event)
 	{
 		$this->queries[] = array(
-			'query'      => $query,
-			'bindings'   => $bindings,
-			'time'       => $time,
-			'connection' => $connection
+			'query'      => $event->sql,
+			'bindings'   => $event->bindings,
+			'time'       => $event->time,
+			'connection' => $event->connectionName
 		);
+	}
+
+	/**
+	 * Log a legacy (pre Laravel 5.2) query into the internal store
+	 */
+	public function registerLegacyQuery($sql, $bindings, $time, $connection)
+	{
+		return $this->registerQuery((object) array(
+			'sql'            => $sql,
+			'bindings'       => $bindings,
+			'time'           => $time,
+			'connectionName' => $connection
+		));
 	}
 
 	/**

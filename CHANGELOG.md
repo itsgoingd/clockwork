@@ -1,3 +1,6 @@
+1.10.1
+- fixed collecting of database queries in Laravel 5.2 (thanks sebastiandedeyne)
+
 1.10
 - added Laravel 5.2 support (thanks jonphipps)
 - improved file storage to allow configuring directory permissions (thanks patrick-radius)
