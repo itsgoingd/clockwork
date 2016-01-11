@@ -1,17 +1,20 @@
 <?php namespace Clockwork\Support\Lumen;
 
-use Illuminate\Contracts\Foundation\Application;
+use Clockwork\Support\Lumen\ClockworkSupport;
+
 use Laravel\Lumen\Routing\Controller as LumenController;
 
-class Controller extends LumenController {
+class Controller extends LumenController
+{
+	public $clockworkSupport;
 
-	public $app;
-
-	public function __construct(Application $app) {
-		$this->app = $app;
+	public function __construct(ClockworkSupport $clockworkSupport)
+	{
+		$this->clockworkSupport = $clockworkSupport;
 	}
 
-	public function getData($id = null, $last = null) {
-		return $this->app['clockwork.support']->getData($id, $last);
+	public function getData($id = null, $last = null)
+	{
+		return $this->clockworkSupport->getData($id, $last);
 	}
 }

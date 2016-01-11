@@ -5,7 +5,7 @@ use Clockwork\DataSource\DataSource;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
 use Clockwork\Request\Timeline;
-use Illuminate\Contracts\Foundation\Application;
+use Laravel\Lumen\Application;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -128,10 +128,10 @@ class LumenDataSource extends DataSource
 	 */
 	protected function getController()
 	{
-		$routes = $this->app->getRoutes();
+		$routes = method_exists($this->app, 'getRoutes') ? $this->app->getRoutes() : [];
 
 		$method = $this->getMethod();
-		$pathInfo = $this->app->getPathInfo();
+		$pathInfo = $this->getPathInfo();
 
 		if (isset($routes[$method.$pathInfo]['action']['uses'])) {
 			$controller = $routes[$method.$pathInfo]['action']['uses'];
@@ -191,7 +191,7 @@ class LumenDataSource extends DataSource
 	{
 		$routesData = array();
 
-		$routes = $this->app->getRoutes();
+		$routes = method_exists($this->app, 'getRoutes') ? $this->app->getRoutes() : [];
 
 		foreach ($routes as $route) {
 			$routesData[] = array(
@@ -210,17 +210,28 @@ class LumenDataSource extends DataSource
 	 */
 	protected function getSessionData()
 	{
+		if (! isset($this->app['session'])) {
+			return [];
+		}
+
 		return $this->removePasswords(
 			$this->replaceUnserializable($this->app['session']->all())
 		);
 	}
 
-    protected function getMethod()
-    {
-        if (isset($_POST['_method'])) {
-            return strtoupper($_POST['_method']);
-        } else {
-            return $_SERVER['REQUEST_METHOD'];
-        }
-    }
+	protected function getMethod()
+	{
+		if (isset($_POST['_method'])) {
+			return strtoupper($_POST['_method']);
+		} else {
+			return $_SERVER['REQUEST_METHOD'];
+		}
+	}
+
+	protected function getPathInfo()
+	{
+		$query = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
+
+		return '/'.trim(str_replace('?'.$query, '', $_SERVER['REQUEST_URI']), '/');
+	}
 }

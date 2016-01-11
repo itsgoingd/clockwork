@@ -4,8 +4,9 @@ use Clockwork\Clockwork;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\SqlStorage;
 
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
+use Laravel\Lumen\Application;
+use Symfony\Component\HttpFoundation\Response;
 
 class ClockworkSupport
 {
@@ -28,7 +29,9 @@ class ClockworkSupport
 
 	public function getData($id = null, $last = null)
 	{
-		$this->app['session.store']->reflash();
+		if (isset($this->app['session'])) {
+			$this->app['session.store']->reflash();
+		}
 
 		return new JsonResponse($this->app['clockwork']->getStorage()->retrieve($id, $last));
 	}
@@ -78,6 +81,10 @@ class ClockworkSupport
 			if (preg_match($regexp, $request_uri)) {
 				return $response;
 			}
+		}
+
+		if (! $response instanceof Response) {
+			$response = new Response((string) $response);
 		}
 
 		$this->app['clockwork.lumen']->setResponse($response);
