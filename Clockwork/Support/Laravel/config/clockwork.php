@@ -98,7 +98,7 @@ return array(
 	'additional_data_sources' => array(
 		// 'clockwork.doctrine' => function($app)
 		// {
-		// 	return new \Clockwork\DataSource\DoctrineDataSource($app['Doctrine\ORM\EntityManager'], $app['log']);
+		// 	return new \Clockwork\DataSource\DoctrineDataSource($app['Doctrine\ORM\EntityManager']);
 		// }
 	),
 

@@ -2,11 +2,9 @@
 
 use Clockwork\Request\Request;
 
-use Doctrine\ORM\EntityManager;
-use Illuminate\Log\Writer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\SQLLogger;
-
+use Doctrine\ORM\EntityManager;
 
 class DoctrineDataSource extends DataSource implements SQLLogger
 {
@@ -53,12 +51,11 @@ class DoctrineDataSource extends DataSource implements SQLLogger
      */
     protected $connection;
 
-    public function __construct(EntityManager $enm, Writer $logger)
+    public function __construct(EntityManager $enm)
     {
-        $this->evm          = $enm->getEventManager();     //Unused, for now
-        $this->enm          = $enm;
-        $this->logger       = $logger;
-        $this->connection   = $enm->getConnection();
+        $this->evm        = $enm->getEventManager(); //Unused, for now
+        $this->enm        = $enm;
+        $this->connection = $enm->getConnection();
 
         $enm->getConnection()->getConfiguration()->setSQLLogger($this);
     }
@@ -137,11 +134,6 @@ class DoctrineDataSource extends DataSource implements SQLLogger
          */
 
         $this->registerQuery($this->query['sql'], $this->query['params'], $endTime, $this->connection->getDatabase());
-
-        /**
-         * This call is helpful to register queries in log file when the application is in debug/local mode
-         */
-        $this->logger->debug($this->query['sql']. " [Executed in " . $endTime . " secs.] ", array( 'params' => $this->query['params'], 'types' => $this->query['types'] ));
     }
 
     /**
