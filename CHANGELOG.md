@@ -1,3 +1,11 @@
+1.11
+- added support for Lumen 5.2 (thanks lukeed)
+- added "clock" helper function
+- fixed data sources being initialized too late (thanks morfin)
+- fixed code style in Doctrine data source
+- removed Laravel log dependency from Doctrine data source
+- NOTE laravel-doctrine provides ootb support for Clockwork, you should use this instead of included Doctrine data source with Laravel
+
 1.10.1
 - fixed collecting of database queries in Laravel 5.2 (thanks sebastiandedeyne)
 
