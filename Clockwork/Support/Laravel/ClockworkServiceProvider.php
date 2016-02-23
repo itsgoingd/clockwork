@@ -102,6 +102,10 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		$this->registerCommands();
 
+		if ($this->app['clockwork.support']->getConfig('register_helpers', true)) {
+			require __DIR__ . '/helpers.php';
+		}
+
 		if ($this->isLegacyLaravel()) {
 			$this->app->middleware('Clockwork\Support\Laravel\ClockworkLegacyMiddleware', array($this->app));
 		} else if ($this->isOldLaravel()) {

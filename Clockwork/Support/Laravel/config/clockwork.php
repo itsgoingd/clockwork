@@ -104,6 +104,18 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
+	| Register helpers
+	|--------------------------------------------------------------------------
+	|
+	| This setting controls whether the "clock" helper function will be registered. You can use the "clock" function to
+	| quickly log something to Clockwork or access the Clockwork instance.
+	|
+	*/
+
+	'register_helpers' => true,
+
+	/*
+	|--------------------------------------------------------------------------
 	| Send Headers for AJAX request
 	|--------------------------------------------------------------------------
 	|

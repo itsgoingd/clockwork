@@ -97,6 +97,10 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->alias('clockwork', 'Clockwork\Clockwork');
 
 		$this->registerCommands();
+
+		if ($this->app['clockwork.support']->getConfig('register_helpers', true)) {
+			require __DIR__ . '/helpers.php';
+		}
 	}
 
 	/**
