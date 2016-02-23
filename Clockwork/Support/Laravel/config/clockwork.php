@@ -96,6 +96,9 @@ return array(
 	*/
 
 	'additional_data_sources' => array(
+		// Note, this is for example only, laravel-doctrine contains Clockwork support out of the box, please follow the
+		// documentation at http://www.laraveldoctrine.org/docs/current/orm/config-file
+
 		// 'clockwork.doctrine' => function($app)
 		// {
 		// 	return new \Clockwork\DataSource\DoctrineDataSource($app['Doctrine\ORM\EntityManager']);

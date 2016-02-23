@@ -185,6 +185,8 @@ If you would like to see or are working on a support for yet unsupported framewo
 - [silverstripe-clockwork](https://github.com/markguinn/silverstripe-clockwork) - Integration for SilverStripe CMS/framework by [markguinn](https://github.com/markguinn)
 - [clockwork-firebug](https://github.com/sidorovich/clockwork-firebug) - Extension for Firebug (like for Chrome) by [Pavel Sidorovich](https://github.com/sidorovich)
 
+- [laravel-doctrine](http://www.laraveldoctrine.org) - Doctrine support for Laravel, contains ootb Clockwork support
+
 ## Licence
 
 Copyright (c) 2013 Miroslav Rigler
