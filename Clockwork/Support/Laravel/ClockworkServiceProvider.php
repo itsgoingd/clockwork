@@ -19,7 +19,9 @@ class ClockworkServiceProvider extends ServiceProvider
 		}
 
 		$this->app['clockwork.eloquent']->listenToEvents();
-		$this->app->make('clockwork.swift');
+
+		// create the clockwork instance so all data sources are initialized at this point
+		$this->app->make('clockwork');
 
 		if (!$this->app['clockwork.support']->isEnabled()) {
 			return; // Clockwork is disabled, don't register the route
