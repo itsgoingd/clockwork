@@ -90,10 +90,11 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 		if (is_object($param)) {
 			if (! method_exists($param, '__toString')) {
 				// Carbon Object
-				if (is_a($param, 'DateTime')) {
+				if (is_a($param, 'DateTime') || is_a($param, 'DateTimeImmutable')) {
 					$param = $param->format('Y-m-d');
 				} else {
-					throw new \Exception('Unstringable Object');
+
+					throw new \Exception('Unstringable Object: '.get_class($param));
 				}
 			}
 		}
@@ -141,7 +142,7 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 	protected function getDatabaseQueries()
 	{
 		$queries = array();
-		
+
 		foreach ($this->queries as $query) {
 			$queries[] = array(
 				'query'      => $query['query'],
