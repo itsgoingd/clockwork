@@ -137,11 +137,11 @@ class ClockworkServiceProvider extends ServiceProvider
 
 	public function isLegacyLaravel()
 	{
-		return Str::startsWith(Application::VERSION, array('4.1.', '4.2.'));
+		return Str::startsWith(Application::VERSION, array('4.1', '4.2'));
 	}
 
 	public function isOldLaravel()
 	{
-		return Str::startsWith(Application::VERSION, '4.0.');
+		return Str::startsWith(Application::VERSION, '4.0');
 	}
 }
