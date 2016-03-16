@@ -15,12 +15,12 @@ This extension provides out of the box support for Laravel, Slim 2 and CodeIgnit
 To install latest version simply add it to your `composer.json`:
 
 ```javascript
-"itsgoingd/clockwork": "~1.11"
+"itsgoingd/clockwork": "~1.11.1"
 ```
 
 ### Laravel
 
-Once Clockwork is installed, you need to register Laravel service provider, in your `app/config/app.php`:
+Once Clockwork is installed, you need to register Laravel service provider, in your `config/app.php`:
 
 ```php
 'providers' => array(

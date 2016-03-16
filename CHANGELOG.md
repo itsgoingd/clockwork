@@ -1,3 +1,8 @@
+1.11.1
+- added support for DateTimeImmutable in Doctrine data source (thanks morfin)
+- fixed not being able to log null values via the "clock" helper function
+- fixed Laravel 4.2-dev not being properly detected as 4.2 release (thanks DemianD)
+
 1.11
 - added support for Lumen 5.2 (thanks lukeed)
 - added "clock" helper function
