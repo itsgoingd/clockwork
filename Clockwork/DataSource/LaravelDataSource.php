@@ -9,7 +9,7 @@ use Illuminate\Foundation\Application;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Data source for Laravel 4 framework, provides application log, timeline, request and response information
+ * Data source for Laravel framework, provides application log, timeline, request and response information
  */
 class LaravelDataSource extends DataSource
 {
@@ -137,13 +137,8 @@ class LaravelDataSource extends DataSource
 	{
 		$router = $this->app['router'];
 
-		if (strpos(Application::VERSION, '4.0') === 0) { // Laravel 4.0
-			$route = $router->getCurrentRoute();
-			$controller = $route ? $route->getAction() : null;
-		} else { // Laravel 4.1
-			$route = $router->current();
-			$controller = $route ? $route->getActionName() : null;
-		}
+		$route = $router->current();
+		$controller = $route ? $route->getActionName() : null;
 
 		if ($controller instanceof Closure) {
 			$controller = 'anonymous function';
@@ -202,32 +197,17 @@ class LaravelDataSource extends DataSource
 		$router = $this->app['router'];
 		$routesData = [];
 
-		if (strpos(Application::VERSION, '4.0') === 0) { // Laravel 4.0
-			$routes = $router->getRoutes()->all();
+		$routes = $router->getRoutes();
 
-			foreach ($routes as $name => $route) {
-				$routesData[] = [
-					'method' => implode(', ', $route->getMethods()),
-					'uri'    => $route->getPath(),
-					'name'   => $name,
-					'action' => $route->getAction() ?: 'anonymous function',
-					'before' => implode(', ', $route->getBeforeFilters()),
-					'after'  => implode(', ', $route->getAfterFilters())
-				);
-			}
-		} else { // Laravel 4.1
-			$routes = $router->getRoutes();
-
-			foreach ($routes as $route) {
-				$routesData[] = [
-					'method' => implode(', ', $route->methods()),
-					'uri'    => $route->uri(),
-					'name'   => $route->getName(),
-					'action' => $route->getActionName() ?: 'anonymous function',
-					'before' => method_exists($route, 'beforeFilters') ? implode(', ', array_keys($route->beforeFilters())) : '',
-					'after'  => method_exists($route, 'afterFilters') ? implode(', ', array_keys($route->afterFilters())) : ''
-				);
-			}
+		foreach ($routes as $route) {
+			$routesData[] = [
+				'method' => implode(', ', $route->methods()),
+				'uri'    => $route->uri(),
+				'name'   => $route->getName(),
+				'action' => $route->getActionName() ?: 'anonymous function',
+				'before' => method_exists($route, 'beforeFilters') ? implode(', ', array_keys($route->beforeFilters())) : '',
+				'after'  => method_exists($route, 'afterFilters') ? implode(', ', array_keys($route->afterFilters())) : ''
+			];
 		}
 
 		return $routesData;

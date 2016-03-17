@@ -29,7 +29,7 @@ Once Clockwork is installed, you need to register Laravel service provider, in y
 ]
 ```
 
-When using Laravel 5, you need to add Clockwork middleware, in your `app/Http/Kernel.php`:
+You also need to add Clockwork middleware, in your `app/Http/Kernel.php`:
 
 ```php
 protected $middleware = [
@@ -42,12 +42,6 @@ By default, Clockwork will only be available in debug mode, you can change this 
 
 ```
 $ php artisan vendor:publish --provider='Clockwork\Support\Laravel\ClockworkServiceProvider'
-```
-
-For Laravel 4 you can do the same with this command:
-
-```
-$ php artisan config:publish itsgoingd/clockwork --path vendor/itsgoingd/clockwork/Clockwork/Support/Laravel/config/
 ```
 
 Clockwork also comes with a `clock()` helper function, which provides an easy way to add records to the Clockwork log and events to the timeline.

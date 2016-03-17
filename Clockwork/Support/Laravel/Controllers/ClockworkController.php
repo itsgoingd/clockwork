@@ -1,9 +1,9 @@
 <?php namespace Clockwork\Support\Laravel\Controllers;
 
-use Illuminate\Foundation\Application;
-use Illuminate\Routing\Controllers\Controller;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Routing\Controller;
 
-class OldController extends Controller
+class ClockworkController extends Controller
 {
 	public $app;
 

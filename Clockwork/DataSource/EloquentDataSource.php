@@ -39,7 +39,7 @@ class EloquentDataSource extends DataSource
 			// Laravel 5.2
 			$this->eventDispatcher->listen('Illuminate\Database\Events\QueryExecuted', [ $this, 'registerQuery' ]);
 		} else {
-			// Laravel 4.0 to 5.1
+			// Laravel 5.1
 			$this->eventDispatcher->listen('illuminate.query', [ $this, 'registerLegacyQuery' ]);
 		}
 	}

@@ -8,7 +8,6 @@ use Clockwork\DataSource\SwiftDataSource;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 
 class ClockworkServiceProvider extends ServiceProvider
 {
@@ -27,28 +26,16 @@ class ClockworkServiceProvider extends ServiceProvider
 			return; // Clockwork is disabled, don't register the route
 		}
 
-		if ($this->isLegacyLaravel()) {
-			$this->app['router']->get('/__clockwork/{id}', 'Clockwork\Support\Laravel\Controllers\LegacyController@getData')->where('id', '[0-9\.]+');
-		} elseif ($this->isOldLaravel()) {
-			$this->app['router']->get('/__clockwork/{id}', 'Clockwork\Support\Laravel\Controllers\OldController@getData')->where('id', '[0-9\.]+');
-		} else {
-			$this->app['router']->get('/__clockwork/{id}', 'Clockwork\Support\Laravel\Controllers\CurrentController@getData')->where('id', '[0-9\.]+');
-		}
+		$this->app['router']->get('/__clockwork/{id}', 'Clockwork\Support\Laravel\Controllers\ClockworkController@getData')->where('id', '[0-9\.]+');
 	}
 
 	public function register()
 	{
-		if ($this->isLegacyLaravel() || $this->isOldLaravel()) {
-			$this->package('itsgoingd/clockwork', 'clockwork', __DIR__);
-		} else {
-			$this->publishes([ __DIR__ . '/config/clockwork.php' => config_path('clockwork.php') ]);
-		}
+		$this->publishes([ __DIR__ . '/config/clockwork.php' => config_path('clockwork.php') ]);
 
 		$this->app->singleton('clockwork.support', function($app)
 		{
-			$legacy = $this->isLegacyLaravel() || $this->isOldLaravel();
-
-			return new ClockworkSupport($app, $legacy);
+			return new ClockworkSupport($app);
 		});
 
 		$this->app->singleton('clockwork.laravel', function($app)
@@ -106,15 +93,6 @@ class ClockworkServiceProvider extends ServiceProvider
 		if ($this->app['clockwork.support']->getConfig('register_helpers', true)) {
 			require __DIR__ . '/helpers.php';
 		}
-
-		if ($this->isLegacyLaravel()) {
-			$this->app->middleware('Clockwork\Support\Laravel\ClockworkLegacyMiddleware', [ $this->app ]);
-		} elseif ($this->isOldLaravel()) {
-			$this->app['router']->after(function($request, $response)
-			{
-				return $this->app['clockwork.support']->process($request, $response);
-			});
-		}
 	}
 
 	/**
@@ -133,15 +111,5 @@ class ClockworkServiceProvider extends ServiceProvider
 	public function provides()
 	{
 		return [ 'clockwork' ];
-	}
-
-	public function isLegacyLaravel()
-	{
-		return Str::startsWith(Application::VERSION, [ '4.1', '4.2' ]);
-	}
-
-	public function isOldLaravel()
-	{
-		return Str::startsWith(Application::VERSION, '4.0');
 	}
 }
