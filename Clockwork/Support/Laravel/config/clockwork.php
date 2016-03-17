@@ -96,11 +96,26 @@ return [
 	*/
 
 	'additional_data_sources' => [
+		// Note, this is for example only, laravel-doctrine contains Clockwork support out of the box, please follow the
+		// documentation at http://www.laraveldoctrine.org/docs/current/orm/config-file
+
 		// 'clockwork.doctrine' => function($app)
 		// {
-		// 	return new \Clockwork\DataSource\DoctrineDataSource($app['Doctrine\ORM\EntityManager'], $app['log']);
+		// 	return new \Clockwork\DataSource\DoctrineDataSource($app['Doctrine\ORM\EntityManager']);
 		// }
 	],
+
+	/*
+	|--------------------------------------------------------------------------
+	| Register helpers
+	|--------------------------------------------------------------------------
+	|
+	| This setting controls whether the "clock" helper function will be registered. You can use the "clock" function to
+	| quickly log something to Clockwork or access the Clockwork instance.
+	|
+	*/
+
+	'register_helpers' => true,
 
 	/*
 	|--------------------------------------------------------------------------

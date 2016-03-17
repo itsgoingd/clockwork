@@ -1,17 +1,17 @@
-<?php namespace Clockwork\DataSource;
+<?php
+namespace Clockwork\DataSource;
 
 use Clockwork\DataSource\DataSource;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
 use Clockwork\Request\Timeline;
-
-use Illuminate\Foundation\Application;
+use Laravel\Lumen\Application;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Data source for Laravel 4 framework, provides application log, timeline, request and response information
+ * Data source for Lumen framework, provides application log, timeline, request and response information
  */
-class LaravelDataSource extends DataSource
+class LumenDataSource extends DataSource
 {
 	/**
 	 * Laravel application from which the data is retrieved
@@ -85,21 +85,7 @@ class LaravelDataSource extends DataSource
 	{
 		$this->timeline->startEvent('total', 'Total execution time.', 'start');
 
-		$this->timeline->startEvent('initialisation', 'Application initialisation.', 'start');
-
-		$this->app->booting(function()
-		{
-			$this->timeline->endEvent('initialisation');
-			$this->timeline->startEvent('boot', 'Framework booting.');
-			$this->timeline->startEvent('run', 'Framework running.');
-		});
-
-		$this->app->booted(function()
-		{
-			$this->timeline->endEvent('boot');
-		});
-
-		$this->app['events']->listen('clockwork.controller.start', function() use($timeline)
+		$this->app['events']->listen('clockwork.controller.start', function()
 		{
 			$this->timeline->startEvent('controller', 'Controller running.');
 		});
@@ -122,10 +108,10 @@ class LaravelDataSource extends DataSource
 				'Rendering a view',
 				$time,
 				$time,
-				[
+				array(
 					'name' => $view->getName(),
 					'data' => $this->replaceUnserializable($view->getData())
-				]
+				)
 			);
 		});
 	}
@@ -135,27 +121,24 @@ class LaravelDataSource extends DataSource
 	 */
 	protected function getController()
 	{
-		$router = $this->app['router'];
+		$routes = method_exists($this->app, 'getRoutes') ? $this->app->getRoutes() : [];
 
-		if (strpos(Application::VERSION, '4.0') === 0) { // Laravel 4.0
-			$route = $router->getCurrentRoute();
-			$controller = $route ? $route->getAction() : null;
-		} else { // Laravel 4.1
-			$route = $router->current();
-			$controller = $route ? $route->getActionName() : null;
+		$method = $this->getMethod();
+		$pathInfo = $this->getPathInfo();
+
+		if (isset($routes[$method.$pathInfo]['action']['uses'])) {
+			$controller = $routes[$method.$pathInfo]['action']['uses'];
+		} elseif (isset($routes[$method.$pathInfo]['action'][0])) {
+			$controller = $routes[$method.$pathInfo]['action'][0];
+		} else {
+			$controller = null;
 		}
 
-		if ($controller instanceof Closure) {
+		if ($controller instanceof \Closure) {
 			$controller = 'anonymous function';
 		} elseif (is_object($controller)) {
 			$controller = 'instance of ' . get_class($controller);
-		} elseif (is_array($controller) && count($controller) == 2) {
-			if (is_object($controller[0])) {
-				$controller = get_class($controller[0]) . '->' . $controller[1];
-			} else {
-				$controller = $controller[0] . '::' . $controller[1];
-			}
-		} elseif (!is_string($controller)) {
+		} else if (!is_string($controller)) {
 			$controller = null;
 		}
 
@@ -199,35 +182,17 @@ class LaravelDataSource extends DataSource
 	 */
 	protected function getRoutes()
 	{
-		$router = $this->app['router'];
-		$routesData = [];
+		$routesData = array();
 
-		if (strpos(Application::VERSION, '4.0') === 0) { // Laravel 4.0
-			$routes = $router->getRoutes()->all();
+		$routes = method_exists($this->app, 'getRoutes') ? $this->app->getRoutes() : [];
 
-			foreach ($routes as $name => $route) {
-				$routesData[] = [
-					'method' => implode(', ', $route->getMethods()),
-					'uri'    => $route->getPath(),
-					'name'   => $name,
-					'action' => $route->getAction() ?: 'anonymous function',
-					'before' => implode(', ', $route->getBeforeFilters()),
-					'after'  => implode(', ', $route->getAfterFilters())
-				);
-			}
-		} else { // Laravel 4.1
-			$routes = $router->getRoutes();
-
-			foreach ($routes as $route) {
-				$routesData[] = [
-					'method' => implode(', ', $route->methods()),
-					'uri'    => $route->uri(),
-					'name'   => $route->getName(),
-					'action' => $route->getActionName() ?: 'anonymous function',
-					'before' => method_exists($route, 'beforeFilters') ? implode(', ', array_keys($route->beforeFilters())) : '',
-					'after'  => method_exists($route, 'afterFilters') ? implode(', ', array_keys($route->afterFilters())) : ''
-				);
-			}
+		foreach ($routes as $route) {
+			$routesData[] = [
+				'method' => $route['method'],
+				'uri'    => $route['uri'],
+				'name'   => array_search($route['uri'], $this->app->namedRoutes) ?: null,
+				'action' => isset($route['action']['uses']) && is_string($route['action']['uses']) ? $route['action']['uses'] : 'anonymous function'
+			];
 		}
 
 		return $routesData;
@@ -238,8 +203,28 @@ class LaravelDataSource extends DataSource
 	 */
 	protected function getSessionData()
 	{
+		if (! isset($this->app['session'])) {
+			return [];
+		}
+
 		return $this->removePasswords(
 			$this->replaceUnserializable($this->app['session']->all())
 		);
+	}
+
+	protected function getMethod()
+	{
+		if (isset($_POST['_method'])) {
+			return strtoupper($_POST['_method']);
+		} else {
+			return $_SERVER['REQUEST_METHOD'];
+		}
+	}
+
+	protected function getPathInfo()
+	{
+		$query = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
+
+		return '/'.trim(str_replace('?'.$query, '', $_SERVER['REQUEST_URI']), '/');
 	}
 }

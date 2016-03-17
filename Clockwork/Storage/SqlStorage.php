@@ -49,7 +49,7 @@ class SqlStorage extends Storage
 	 */
 	public function retrieve($id = null, $last = null)
 	{
-		if (!$id) {
+		if (! $id) {
 			$stmt = $this->pdo->prepare(
 				'SELECT (id, version, time, method, uri, headers, controller, getData, postData, sessionData, cookies, responseTime, responseStatus, responseDuration, databaseQueries, databaseDuration, timelineData, log, routes, emailsData, viewsData, userData) ' .
 				"FROM {$this->table} "
@@ -76,7 +76,7 @@ class SqlStorage extends Storage
 		$stmt->execute([ 'id' => $id ]);
 		$data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-		if (!$data) {
+		if (! $data) {
 			return null;
 		}
 
@@ -139,7 +139,13 @@ class SqlStorage extends Storage
 	 */
 	public function initialize()
 	{
-		if ($this->pdo->query("SELECT 1 FROM {$this->table} LIMIT 1") !== false) {
+		try {
+			$initialized = $this->pdo->query("SELECT 1 FROM {$this->table} LIMIT 1");
+		} catch (\Exception $e) {
+			$initialized = false;
+		}
+
+		if ($initialized !== false) {
 			return;
 		}
 

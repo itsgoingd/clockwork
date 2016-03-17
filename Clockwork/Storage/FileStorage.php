@@ -18,11 +18,11 @@ class FileStorage extends Storage
 	/**
 	 * Return new storage, takes path where to store files as argument, throws exception if path is not writable
 	 */
-	public function __construct($path)
+	public function __construct($path, $dirPermissions = 0700)
 	{
-		if (!file_exists($path)) {
+		if (! file_exists($path)) {
 			# directory doesn't exist, try to create one
-			if (!mkdir($path, 0700, true)) {
+			if (! mkdir($path, $dirPermissions, true)) {
 				throw new Exception('Directory "' . $path . '" does not exist.');
 			}
 
@@ -30,7 +30,7 @@ class FileStorage extends Storage
 			file_put_contents($path . '/.gitignore', "*.json\n");
 		}
 
-		if (!is_writable($path)) {
+		if (! is_writable($path)) {
 			throw new Exception('Path "' . $path . '" is not writable.');
 		}
 
@@ -43,7 +43,7 @@ class FileStorage extends Storage
 	 */
 	public function retrieve($id = null, $last = null)
 	{
-		if ($id && !$last) {
+		if ($id && ! $last) {
 			if (!is_readable($this->path . '/' . $id . '.json')) {
 				return null;
 			}

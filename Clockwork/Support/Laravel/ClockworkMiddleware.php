@@ -4,10 +4,9 @@ use Clockwork\Clockwork;
 
 use Closure;
 use Exception;
-use Illuminate\Contracts\Routing\Middleware;
 use Illuminate\Foundation\Application;
 
-class ClockworkMiddleware implements Middleware
+class ClockworkMiddleware
 {
 	/**
 	 * The Laravel Application

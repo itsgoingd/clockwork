@@ -1,6 +1,38 @@
+1.11.1
+- added support for DateTimeImmutable in Doctrine data source (thanks morfin)
+- fixed not being able to log null values via the "clock" helper function
+- fixed Laravel 4.2-dev not being properly detected as 4.2 release (thanks DemianD)
+
+1.11
+- added support for Lumen 5.2 (thanks lukeed)
+- added "clock" helper function
+- fixed data sources being initialized too late (thanks morfin)
+- fixed code style in Doctrine data source
+- removed Laravel log dependency from Doctrine data source
+- NOTE laravel-doctrine provides ootb support for Clockwork, you should use this instead of included Doctrine data source with Laravel
+
+1.10.1
+- fixed collecting of database queries in Laravel 5.2 (thanks sebastiandedeyne)
+
+1.10
+- added Laravel 5.2 support (thanks jonphipps)
+- improved file storage to allow configuring directory permissions (thanks patrick-radius)
+- fixed interaction with PHPUnit in Lumen (thanks troyharvey)
+- removed "router dispatch" timeline event for now (due to Laravel 5.2 changes)
+
+1.9
+- added Lumen support (thanks dawiyo)
+- added aliases for all Clockwork parts so they can be resolved by the IoC container in Laravel and Lumen
+- fixed Laravel framework initialisation, booting and running timeline events not being recorded properly (thanks HipsterJazzbo, sisve)
+- fixed how Laravel clockwork:clean artisan command is registered (thanks freekmurze)
+- removed Lumen framework initialisation, booting and running timeline events as they are not supported by Lumen
+
+1.8.1
+- fixed SQL data storage initialization if PDO is set to throw exception on error (thanks YOzaz)
+
 1.8
 - added SQL data storage implementation
-- added new config options for data storage for Laravel
+- added new config options for data storage for Laravel (please re-publish the config file)
 - fixed not being able to use the Larvel route caching when using Clockwork (thanks Garbee, kylestev, cbakker86)
 
 1.7
