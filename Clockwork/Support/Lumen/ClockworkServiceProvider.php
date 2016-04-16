@@ -120,7 +120,7 @@ class ClockworkServiceProvider extends ServiceProvider
 
 	public function provides()
 	{
-		return array('clockwork');
+		return [ 'clockwork' ];
 	}
 
 	protected function isRunningWithFacades()

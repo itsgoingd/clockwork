@@ -83,41 +83,34 @@ class LumenDataSource extends DataSource
 	 */
 	public function listenToEvents()
 	{
-		$timeline = $this->timeline;
+		$this->timeline->startEvent('total', 'Total execution time.', 'start');
 
-		$timeline->startEvent('total', 'Total execution time.', 'start');
-
-		$this->app['events']->listen('clockwork.controller.start', function() use($timeline)
+		$this->app['events']->listen('clockwork.controller.start', function()
 		{
-			$timeline->startEvent('controller', 'Controller running.');
+			$this->timeline->startEvent('controller', 'Controller running.');
 		});
-		$this->app['events']->listen('clockwork.controller.end', function() use($timeline)
+		$this->app['events']->listen('clockwork.controller.end', function()
 		{
-			$timeline->endEvent('controller');
+			$this->timeline->endEvent('controller');
 		});
 
-		$log = $this->log;
-
-		$this->app['events']->listen('illuminate.log', function($level, $message, $context) use($log)
+		$this->app['events']->listen('illuminate.log', function($level, $message, $context)
 		{
-			$log->log($level, $message, $context);
+			$this->log->log($level, $message, $context);
 		});
 
-		$views = $this->views;
-		$that = $this;
-
-		$this->app['events']->listen('composing:*', function($view) use($views, $that)
+		$this->app['events']->listen('composing:*', function($view)
 		{
 			$time = microtime(true);
 
-			$views->addEvent(
+			$this->views->addEvent(
 				'view ' . $view->getName(),
 				'Rendering a view',
 				$time,
 				$time,
 				array(
 					'name' => $view->getName(),
-					'data' => $that->replaceUnserializable($view->getData())
+					'data' => $this->replaceUnserializable($view->getData())
 				)
 			);
 		});
@@ -194,12 +187,12 @@ class LumenDataSource extends DataSource
 		$routes = method_exists($this->app, 'getRoutes') ? $this->app->getRoutes() : [];
 
 		foreach ($routes as $route) {
-			$routesData[] = array(
+			$routesData[] = [
 				'method' => $route['method'],
 				'uri'    => $route['uri'],
 				'name'   => array_search($route['uri'], $this->app->namedRoutes) ?: null,
 				'action' => isset($route['action']['uses']) && is_string($route['action']['uses']) ? $route['action']['uses'] : 'anonymous function'
-			);
+			];
 		}
 
 		return $routesData;

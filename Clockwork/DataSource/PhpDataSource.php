@@ -1,5 +1,4 @@
-<?php
-namespace Clockwork\DataSource;
+<?php namespace Clockwork\DataSource;
 
 use Clockwork\DataSource\DataSource;
 use Clockwork\Request\Request;
@@ -63,11 +62,12 @@ class PhpDataSource extends DataSource
 	 */
 	protected function getRequestHeaders()
 	{
-		$headers = array();
+		$headers = [];
 
 		foreach ($_SERVER as $key => $value) {
-			if (substr($key, 0, 5) !== 'HTTP_')
+			if (substr($key, 0, 5) !== 'HTTP_') {
 				continue;
+			}
 
 			$header = substr($key, 5);
 			$header = str_replace('_', ' ', $header);
@@ -75,7 +75,7 @@ class PhpDataSource extends DataSource
 			$header = str_replace(' ', '-', $header);
 
 			if (!isset($headers[$header])) {
-				$headers[$header] = array($value);
+				$headers[$header] = [ $value ];
 			} else {
 				$headers[$header][] = $value;
 			}
@@ -103,7 +103,7 @@ class PhpDataSource extends DataSource
 	{
 		if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
 			return $_SERVER['REQUEST_TIME_FLOAT'];
-		} else if (isset($_SERVER['REQUEST_TIME'])) {
+		} elseif (isset($_SERVER['REQUEST_TIME'])) {
 			return $_SERVER['REQUEST_TIME'];
 		}
 	}
@@ -123,8 +123,9 @@ class PhpDataSource extends DataSource
 	 */
 	protected function getResponseStatus()
 	{
-		if (!function_exists('http_response_code'))
+		if (!function_exists('http_response_code')) {
 			return null;
+		}
 
 		return http_response_code();
 	}
@@ -142,8 +143,9 @@ class PhpDataSource extends DataSource
 	 */
 	protected function getSessionData()
 	{
-		if (!isset($_SESSION))
-			return array();
+		if (!isset($_SESSION)) {
+			return [];
+		}
 
 		return $this->removePasswords(
 			$this->replaceUnserializable($_SESSION)

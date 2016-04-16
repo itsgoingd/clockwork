@@ -24,10 +24,10 @@ class SqlStorage extends Storage
 	/**
 	 * List of Request keys that need to be serialized before they can be stored in database
 	 */
-	protected $needs_serialization = array(
+	protected $needs_serialization = [
 		'headers', 'getData', 'postData', 'sessionData', 'cookies', 'databaseQueries', 'timelineData', 'log', 'routes',
 		'emailsData', 'viewsData', 'userData'
-	);
+	];
 
 	/**
 	 * Return a new storage, takes PDO object or DSN and optionally a table name and database credentials as arguments
@@ -49,7 +49,7 @@ class SqlStorage extends Storage
 	 */
 	public function retrieve($id = null, $last = null)
 	{
-		if (!$id) {
+		if (! $id) {
 			$stmt = $this->pdo->prepare(
 				'SELECT (id, version, time, method, uri, headers, controller, getData, postData, sessionData, cookies, responseTime, responseStatus, responseDuration, databaseQueries, databaseDuration, timelineData, log, routes, emailsData, viewsData, userData) ' .
 				"FROM {$this->table} "
@@ -58,7 +58,7 @@ class SqlStorage extends Storage
 			$stmt->execute();
 			$data = $stms->fetchAll(PDO::FETCH_ASSOC);
 
-			$requests = array();
+			$requests = [];
 
 			foreach ($data as $item) {
 				$requests[] = $this->createRequestFromData($item);
@@ -73,10 +73,10 @@ class SqlStorage extends Storage
 			'WHERE id = :id'
 		);
 
-		$stmt->execute(array('id' => $id));
+		$stmt->execute([ 'id' => $id ]);
 		$data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-		if (!$data) {
+		if (! $data) {
 			return null;
 		}
 
@@ -90,7 +90,7 @@ class SqlStorage extends Storage
 			"WHERE id = :id"
 		);
 
-		$stmt->execute(array('id' => $last));
+		$stmt->execute([ 'id' => $last ]);
 		$last_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
 		$stmt = $this->pdo->prepare(
@@ -99,10 +99,10 @@ class SqlStorage extends Storage
 			"WHERE time >= :from AND time <= :to"
 		);
 
-		$stmt->execute(array('from' => $data['time'], 'to' => $last_data['time']));
+		$stmt->execute([ 'from' => $data['time'], 'to' => $last_data['time'] ]);
 		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-		$requests = array();
+		$requests = [];
 
 		foreach ($data as $item) {
 			$requests[] = $this->createRequestFromData($item);

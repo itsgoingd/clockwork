@@ -23,13 +23,13 @@ To install latest version simply add it to your `composer.json`:
 Once Clockwork is installed, you need to register Laravel service provider, in your `config/app.php`:
 
 ```php
-'providers' => array(
+'providers' => [
 	...
 	'Clockwork\Support\Laravel\ClockworkServiceProvider'
-)
+]
 ```
 
-When using Laravel 5, you need to add Clockwork middleware, in your `app/Http/Kernel.php`:
+You also need to add Clockwork middleware, in your `app/Http/Kernel.php`:
 
 ```php
 protected $middleware = [
@@ -42,12 +42,6 @@ By default, Clockwork will only be available in debug mode, you can change this 
 
 ```
 $ php artisan vendor:publish --provider='Clockwork\Support\Laravel\ClockworkServiceProvider'
-```
-
-For Laravel 4 you can do the same with this command:
-
-```
-$ php artisan config:publish itsgoingd/clockwork --path vendor/itsgoingd/clockwork/Clockwork/Support/Laravel/config/
 ```
 
 Clockwork also comes with a `clock()` helper function, which provides an easy way to add records to the Clockwork log and events to the timeline.
@@ -67,10 +61,10 @@ clock()->endEvent('event_name');
 If you prefer using Facades, add following to your `app/config/app.php`:
 
 ```php
-'aliases' => array(
+'aliases' => [
 	...
 	'Clockwork' => 'Clockwork\Support\Laravel\Facade',
-)
+]
 ```
 
 ### Lumen
@@ -94,65 +88,6 @@ By default, Clockwork will only be available in debug mode (`APP_DEBUG` set to t
 Simply specify the setting as environment variable prefixed with `CLOCKWORK_`, eg. `CLOCKWORK_ENABLE`, [full list of available settings](https://raw.githubusercontent.com/itsgoingd/clockwork/v1/Clockwork/Support/Laravel/config/clockwork.php).
 
 Clockwork also comes with a `clock()` helper function (see examples above) and a facade thats automatically registered when you enable facades in your `bootstrap/app.php`.
-
-### Slim 2
-
-Once Clockwork is installed, you need to add Slim middleware to your app:
-
-```php
-$app = new Slim(...);
-$app->add(new Clockwork\Support\Slim\ClockworkMiddleware('/requests/storage/path'));
-```
-
-Clockwork is now available in Slim's DI container and can be used like this:
-
-```php
-$app = Slim::getInstance();
-
-$app->clockwork->startEvent('event_name', 'Event description.'); // event called 'Event description.' appears in Clockwork timeline tab
-
-$app->clockwork->info('Message text.'); // 'Message text.' appears in Clockwork log tab
-$app->log->info('Message text.'); // 'Message text.' appears in Clockwork log tab as well as application log file
-
-$app->clockwork->endEvent('event_name');
-```
-
-### CodeIgniter 2.1
-
-Once Clockwork is installed, you need to copy the Clockwork controller from `vendor/itsgoingd/clockwork/Clockwork/Support/CodeIgniter/Clockwork.php` to your controllers directory and set up the following route:
-
-```php
-$route['__clockwork/(.*)'] = 'clockwork/$1';
-```
-
-Finally, you need to set up the Clockwork hooks by adding following to your `application/config/hooks.php` file:
-
-```php
-Clockwork\Support\CodeIgniter\Register::registerHooks($hook);
-```
-
-To use Clockwork within your controllers/models/etc. you will need to extend your `CI_Controller` class. (If you haven't done so already) Create a new file at `application/core/MY_Controller.php`.
-
-```php
-class MY_Controller extends CI_Controller
-{
-	public function __construct()
-	{
-		parent::__construct();
-		$GLOBALS['EXT']->_call_hook('pre_controller_constructor');
-	 }
-}
-```
-
-Now you can use the following commands in your CodeIgniter app:
-
-```php
-$this->clockwork->startEvent('event_name', 'Event description.'); // event called 'Event description.' appears in Clockwork timeline tab
-
-$this->clockwork->info('Message text.'); // 'Message text.' appears in Clockwork log tab
-
-$this->clockwork->endEvent('event_name');
-```
 
 ### Other frameworks
 

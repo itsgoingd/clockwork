@@ -19,7 +19,7 @@ class ClockworkSupport
 
 	public function getAdditionalDataSources()
 	{
-		return $this->getConfig('additional_data_sources', array());
+		return $this->getConfig('additional_data_sources', []);
 	}
 
 	public function getConfig($key, $default = null)
@@ -61,7 +61,7 @@ class ClockworkSupport
 
 	public function getFilter()
 	{
-		return $this->getConfig('filter', array());
+		return $this->getConfig('filter', []);
 	}
 
 	public function process($request, $response)
@@ -72,7 +72,7 @@ class ClockworkSupport
 
 		// don't collect data for configured URIs
 		$request_uri = $request->getRequestUri();
-		$filter_uris = $this->getConfig('filter_uris', array());
+		$filter_uris = $this->getConfig('filter_uris', []);
 		$filter_uris[] = '/__clockwork/[0-9\.]+'; // don't collect data for Clockwork requests
 
 		foreach ($filter_uris as $uri) {
@@ -103,7 +103,7 @@ class ClockworkSupport
 			$response->headers->set('X-Clockwork-Path', $request->getBasePath() . '/__clockwork/', true);
 		}
 
-		$extra_headers = $this->getConfig('headers', array());
+		$extra_headers = $this->getConfig('headers', []);
 		foreach ($extra_headers as $header_name => $header_value) {
 			$response->headers->set('X-Clockwork-Header-' . $header_name, $header_value);
 		}
@@ -129,7 +129,7 @@ class ClockworkSupport
 
 	public function isCollectingDatabaseQueries()
 	{
-		return $this->app->bound('db') && $this->app['config']->get('database.default') && !in_array('databaseQueries', $this->getFilter());
+		return $this->app->bound('db') && $this->app['config']->get('database.default') && ! in_array('databaseQueries', $this->getFilter());
 	}
 
 	public function isCollectingEmails()

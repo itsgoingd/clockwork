@@ -11,7 +11,7 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 	/**
 	 * Internal array where queries are stored
 	 */
-	protected $queries = array();
+	protected $queries = [];
 
 	/**
 	 * Doctrine entity manager
@@ -56,12 +56,12 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 		$sql         = $this->replaceParams($sql, $params);
 		$sql         = $this->formatQuery($sql);
 
-		$this->query = array('sql' => $sql, 'params' => $params, 'types' => $types);
+		$this->query = [ 'sql' => $sql, 'params' => $params, 'types' => $types ];
 	}
 
 	protected function formatQuery($sql)
 	{
-		$keywords = array('select', 'insert', 'update', 'delete', 'where', 'from', 'limit', 'is', 'null', 'having', 'group by', 'order by', 'asc', 'desc');
+		$keywords = [ 'select', 'insert', 'update', 'delete', 'where', 'from', 'limit', 'is', 'null', 'having', 'group by', 'order by', 'asc', 'desc' ];
 		$regexp   = '/\b' . implode('\b|\b', $keywords) . '\b/i';
 
 		$sql = preg_replace_callback($regexp, function($match){
@@ -93,8 +93,7 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 				if (is_a($param, 'DateTime') || is_a($param, 'DateTimeImmutable')) {
 					$param = $param->format('Y-m-d');
 				} else {
-
-					throw new \Exception('Unstringable Object: '.get_class($param));
+					throw new \Exception('Unstringable Object: ' . get_class($param));
 				}
 			}
 		}
@@ -118,12 +117,12 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 	 */
 	public function registerQuery($query, $bindings, $time, $connection)
 	{
-		$this->queries[] = array(
+		$this->queries[] = [
 			'query'      => $query,
 			'bindings'   => $bindings,
 			'time'       => $time,
 			'connection' => $connection
-		);
+		];
 	}
 
 	/**
@@ -141,14 +140,14 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 	 */
 	protected function getDatabaseQueries()
 	{
-		$queries = array();
+		$queries = [];
 
 		foreach ($this->queries as $query) {
-			$queries[] = array(
+			$queries[] = [
 				'query'      => $query['query'],
 				'duration'   => $query['time'],
 				'connection' => $query['connection']
-			);
+			];
 		}
 
 		return $queries;

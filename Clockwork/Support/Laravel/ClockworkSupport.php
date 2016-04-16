@@ -10,32 +10,20 @@ use Illuminate\Http\JsonResponse;
 class ClockworkSupport
 {
 	protected $app;
-	protected $legacy;
 
-	public function __construct(Application $app, $legacy)
+	public function __construct(Application $app)
 	{
 		$this->app = $app;
-		$this->legacy = $legacy;
 	}
 
 	public function getAdditionalDataSources()
 	{
-		return $this->getConfig('additional_data_sources', array());
+		return $this->getConfig('additional_data_sources', []);
 	}
 
 	public function getConfig($key, $default = null)
 	{
-		if ($this->legacy) {
-			if ($this->app['config']->has("clockwork::clockwork.{$key}")) {
-				// try to look for a value from clockwork.php configuration file first
-				return $this->app['config']->get("clockwork::clockwork.{$key}");
-			} else {
-				// try to look for a value from config.php (pre 1.7) or return the default value
-				return $this->app['config']->get("clockwork::config.{$key}", $default);
-			}
-		} else {
-			return $this->app['config']->get("clockwork.{$key}", $default);
-		}
+		return $this->app['config']->get("clockwork.{$key}", $default);
 	}
 
 	public function getData($id = null, $last = null)
@@ -70,7 +58,7 @@ class ClockworkSupport
 
 	public function getFilter()
 	{
-		return $this->getConfig('filter', array());
+		return $this->getConfig('filter', []);
 	}
 
 	public function process($request, $response)
@@ -81,7 +69,7 @@ class ClockworkSupport
 
 		// don't collect data for configured URIs
 		$request_uri = $request->getRequestUri();
-		$filter_uris = $this->getConfig('filter_uris', array());
+		$filter_uris = $this->getConfig('filter_uris', []);
 		$filter_uris[] = '/__clockwork/[0-9\.]+'; // don't collect data for Clockwork requests
 
 		foreach ($filter_uris as $uri) {
@@ -108,7 +96,7 @@ class ClockworkSupport
 			$response->headers->set('X-Clockwork-Path', $request->getBasePath() . '/__clockwork/', true);
 		}
 
-		$extra_headers = $this->getConfig('headers', array());
+		$extra_headers = $this->getConfig('headers', []);
 		foreach ($extra_headers as $header_name => $header_value) {
 			$response->headers->set('X-Clockwork-Header-' . $header_name, $header_value);
 		}

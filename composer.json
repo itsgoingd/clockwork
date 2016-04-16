@@ -12,10 +12,12 @@
         }
     ],
     "require": {
-        "php": ">=5.3.9",
+        "php": ">=5.4.0",
         "psr/log": "1.*"
     },
     "autoload": {
-        "psr-0": {"Clockwork": ""}
+        "psr-4": {
+            "Clockwork\\": "Clockwork/"
+        }
     }
 }
