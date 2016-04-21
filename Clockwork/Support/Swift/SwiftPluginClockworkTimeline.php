@@ -62,6 +62,10 @@ class SwiftPluginClockworkTimeline implements Swift_Events_SendListener
 
     protected function addressToString($address)
     {
+        if (! $address) {
+            return;
+        }
+
         foreach ($address as $email => $name) {
             if ($name) {
                 $address[$email] = "$name <$email>";
