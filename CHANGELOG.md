@@ -1,3 +1,7 @@
+1.11.2
+- switched to PSR-4 autoloading
+- fixed Swift data source crash when sending email with no from/to address specified (thanks marksecurelogin)
+
 1.11.1
 - added support for DateTimeImmutable in Doctrine data source (thanks morfin)
 - fixed not being able to log null values via the "clock" helper function
