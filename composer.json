@@ -16,6 +16,8 @@
         "psr/log": "1.*"
     },
     "autoload": {
-        "psr-0": {"Clockwork": ""}
+        "psr-4": {
+            "Clockwork\\": "Clockwork/"
+        }
     }
 }
