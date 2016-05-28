@@ -1,5 +1,6 @@
-<?php
-namespace Clockwork\Request;
+<?php namespace Clockwork\Request;
+
+use Clockwork\Helpers\StackTrace;
 
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
@@ -31,10 +32,15 @@ class Log extends AbstractLogger
 			$message = json_encode($message);
 		}
 
+		$caller = StackTrace::get()->firstNonVendor([ 'itsgoingd', 'laravel', 'slim', 'monolog' ]);
+
 		$this->data[] = array(
 			'message' => $message,
-			'level' => $level,
-			'time' => microtime(true),
+			'context' => @json_encode($context),
+			'level'   => $level,
+			'time'    => microtime(true),
+			'file'    => $caller->shortPath,
+			'line'    => $caller->line
 		);
 	}
 
