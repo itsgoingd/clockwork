@@ -1,13 +1,15 @@
 <?php
 namespace Clockwork\DataSource;
 
+use Clockwork\Helpers\StackTrace;
 use Clockwork\Request\Request;
 
 use Illuminate\Database\DatabaseManager;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Events\Dispatcher as EventDispatcher;
 
 /**
- * Data source for Eloquent (Laravel 4 ORM), provides database queries
+ * Data source for Eloquent (Laravel ORM), provides database queries
  */
 class EloquentDataSource extends DataSource
 {
@@ -21,6 +23,8 @@ class EloquentDataSource extends DataSource
 	 * @var array
 	 */
 	protected $queries = array();
+
+	protected $nextQueryModel;
 
 	/**
 	 * Create a new data source instance, takes a database manager and an event dispatcher as arguments
@@ -36,6 +40,15 @@ class EloquentDataSource extends DataSource
 	 */
 	public function listenToEvents()
 	{
+		$dataSource = $this;
+		$this->eventDispatcher->listen('eloquent.booted: *', function($model) use($dataSource)
+		{
+            $model->addGlobalScope(function() use($dataSource)
+			{
+				$dataSource->resolveNextQueryModel();
+			});
+        });
+
 		if (class_exists('Illuminate\Database\Events\QueryExecuted')) {
 			// Laravel 5.2
 			$this->eventDispatcher->listen('Illuminate\Database\Events\QueryExecuted', array($this, 'registerQuery'));
@@ -50,12 +63,19 @@ class EloquentDataSource extends DataSource
 	 */
 	public function registerQuery($event)
 	{
+		$caller = StackTrace::get()->firstNonVendor([ 'itsgoingd', 'laravel' ]);
+
 		$this->queries[] = array(
 			'query'      => $event->sql,
 			'bindings'   => $event->bindings,
 			'time'       => $event->time,
-			'connection' => $event->connectionName
+			'connection' => $event->connectionName,
+			'file'       => $caller->shortPath,
+			'line'       => $caller->line,
+			'model'      => $this->nextQueryModel
 		);
+
+		$this->nextQueryModel = null;
 	}
 
 	/**
@@ -63,12 +83,20 @@ class EloquentDataSource extends DataSource
 	 */
 	public function registerLegacyQuery($sql, $bindings, $time, $connection)
 	{
+
 		return $this->registerQuery((object) array(
 			'sql'            => $sql,
 			'bindings'       => $bindings,
 			'time'           => $time,
 			'connectionName' => $connection
 		));
+	}
+
+	public function resolveNextQueryModel()
+	{
+		$builder = StackTrace::get()->first(function($frame) { return $frame->object instanceof Builder; })->object;
+
+		$this->nextQueryModel = get_class($builder->getModel());
 	}
 
 	/**
@@ -117,7 +145,10 @@ class EloquentDataSource extends DataSource
 			$queries[] = array(
 				'query'      => $this->createRunnableQuery($query['query'], $query['bindings'], $query['connection']),
 				'duration'   => $query['time'],
-				'connection' => $query['connection']
+				'connection' => $query['connection'],
+				'file'       => $query['file'],
+				'line'       => $query['line'],
+				'model'      => $query['model']
 			);
 
 		return $queries;

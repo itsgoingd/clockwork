@@ -9,7 +9,7 @@ use Illuminate\Foundation\Application;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Data source for Laravel 4 framework, provides application log, timeline, request and response information
+ * Data source for Laravel framework, provides application log, timeline, request and response information
  */
 class LaravelDataSource extends DataSource
 {
