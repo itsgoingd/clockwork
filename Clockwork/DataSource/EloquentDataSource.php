@@ -3,6 +3,9 @@ namespace Clockwork\DataSource;
 
 use Clockwork\Helpers\StackTrace;
 use Clockwork\Request\Request;
+use Clockwork\Support\Laravel\Eloquent\ResolveModelScope;
+use Clockwork\Support\Laravel\Eloquent\ResolveModelLegacyScope;
+use Clockwork\Support\Laravel\Eloquent\ResolveModelOldScope;
 
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,11 +23,13 @@ class EloquentDataSource extends DataSource
 
 	/**
 	 * Internal array where queries are stored
-	 * @var array
 	 */
 	protected $queries = array();
 
-	protected $nextQueryModel;
+	/**
+	 * Model name to associate with the next executed query, used to map queries to models
+	 */
+	public $nextQueryModel;
 
 	/**
 	 * Create a new data source instance, takes a database manager and an event dispatcher as arguments
@@ -40,14 +45,12 @@ class EloquentDataSource extends DataSource
 	 */
 	public function listenToEvents()
 	{
-		$dataSource = $this;
-		$this->eventDispatcher->listen('eloquent.booted: *', function($model) use($dataSource)
-		{
-            $model->addGlobalScope(function() use($dataSource)
+		if ($scope = $this->getModelResolvingScope()) {
+			$this->eventDispatcher->listen('eloquent.booted: *', function($model) use($scope)
 			{
-				$dataSource->resolveNextQueryModel();
+				$model->addGlobalScope($scope);
 			});
-        });
+		}
 
 		if (class_exists('Illuminate\Database\Events\QueryExecuted')) {
 			// Laravel 5.2
@@ -83,20 +86,12 @@ class EloquentDataSource extends DataSource
 	 */
 	public function registerLegacyQuery($sql, $bindings, $time, $connection)
 	{
-
 		return $this->registerQuery((object) array(
 			'sql'            => $sql,
 			'bindings'       => $bindings,
 			'time'           => $time,
 			'connectionName' => $connection
 		));
-	}
-
-	public function resolveNextQueryModel()
-	{
-		$builder = StackTrace::get()->first(function($frame) { return $frame->object instanceof Builder; })->object;
-
-		$this->nextQueryModel = get_class($builder->getModel());
 	}
 
 	/**
@@ -152,5 +147,24 @@ class EloquentDataSource extends DataSource
 			);
 
 		return $queries;
+	}
+
+	/**
+	 * Returns model resolving scope for the installed Laravel version
+	 */
+	protected function getModelResolvingScope()
+	{
+		if (interface_exists('Illuminate\Database\Eloquent\Scope')) {
+			// Laravel 5.2
+			return new ResolveModelScope($this);
+		} elseif (interface_exists('Illuminate\Database\Eloquent\ScopeInterface') && function_exists('trait_exists')) {
+			if (trait_exists('Illuminate\Database\Eloquent\SoftDeletingTrait')) {
+				// Laravel 4.2
+				return new ResolveModelOldScope($this);
+			} else {
+				// Laravel 5.0 to 5.1
+				return new ResolveModelLegacyScope($this);
+			}
+		}
 	}
 }
