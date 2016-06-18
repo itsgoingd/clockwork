@@ -1,3 +1,9 @@
+1.12
+- added collecting of caller file name and line number for queries and model name (Laravel 4.2+) for ORM queries to the Eloquent data source (thanks OmarMakled and fitztrev for the idea)
+- added collecting of context, caller file name and line number to the logger (thanks crissi for the idea)
+- fixed crash in Lumen data source when running unit tests with simulated requests on Lumen
+- fixed compatibility with Laravel 4.0
+
 1.11.2
 - switched to PSR-4 autoloading
 - fixed Swift data source crash when sending email with no from/to address specified (thanks marksecurelogin)
