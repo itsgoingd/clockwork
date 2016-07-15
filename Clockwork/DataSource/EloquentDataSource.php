@@ -66,7 +66,7 @@ class EloquentDataSource extends DataSource
 	 */
 	public function registerQuery($event)
 	{
-		$caller = StackTrace::get()->firstNonVendor([ 'itsgoingd', 'laravel' ]);
+		$caller = StackTrace::get()->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
 
 		$this->queries[] = array(
 			'query'      => $event->sql,
