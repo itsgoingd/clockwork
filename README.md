@@ -17,6 +17,10 @@ To install latest version simply add it to your `composer.json`:
 ```javascript
 "itsgoingd/clockwork": "~1.12"
 ```
+or execute
+```bash
+composer require itsgoingd/clockwork
+```
 
 ### Laravel
 
