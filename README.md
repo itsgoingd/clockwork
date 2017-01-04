@@ -33,8 +33,8 @@ When using Laravel 5, you need to add Clockwork middleware, in your `app/Http/Ke
 
 ```php
 protected $middleware = [
-	...
 	Clockwork\Support\Laravel\ClockworkMiddleware::class,
+	...
 ]
 ```
 
