@@ -23,18 +23,18 @@ To install latest version simply add it to your `composer.json`:
 Once Clockwork is installed, you need to register Laravel service provider, in your `config/app.php`:
 
 ```php
-'providers' => array(
+'providers' => [
 	...
-	'Clockwork\Support\Laravel\ClockworkServiceProvider'
-)
+	Clockwork\Support\Laravel\ClockworkServiceProvider::class,
+]
 ```
 
 When using Laravel 5, you need to add Clockwork middleware, in your `app/Http/Kernel.php`:
 
 ```php
 protected $middleware = [
-	'Clockwork\Support\Laravel\ClockworkMiddleware',
 	...
+	Clockwork\Support\Laravel\ClockworkMiddleware::class,
 ]
 ```
 
@@ -58,7 +58,7 @@ clock()->startEvent('event_name', 'Event description.'); // event called 'Event 
 clock('Message text.'); // 'Message text.' appears in Clockwork log tab
 logger('Message text.'); // 'Message text.' appears in Clockwork log tab as well as application log file
 
-clock(array('hello' => 'world')); // logs json representation of the array
+clock(['hello' => 'world']); // logs json representation of the array
 clock(new Object()); // logs string representation of the objects if the object implements __toString magic method, logs json representation of output of toArray method if the object implements it, if neither is the case, logs json representation of the object cast to array
 
 clock()->endEvent('event_name');
@@ -67,10 +67,10 @@ clock()->endEvent('event_name');
 If you prefer using Facades, add following to your `app/config/app.php`:
 
 ```php
-'aliases' => array(
+'aliases' => [
 	...
-	'Clockwork' => 'Clockwork\Support\Laravel\Facade',
-)
+	'Clockwork' => Clockwork\Support\Laravel\Facade::class,
+]
 ```
 
 ### Lumen
@@ -86,7 +86,7 @@ You also need to add the Clockwork middleware, in the same file:
 ```php
 $app->middleware([
 	...
-	Clockwork\Support\Lumen\ClockworkMiddleware::class
+	Clockwork\Support\Lumen\ClockworkMiddleware::class,
 ]);
 ```
 
