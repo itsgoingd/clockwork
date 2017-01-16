@@ -26,8 +26,8 @@ class FileStorage extends Storage
 				throw new Exception('Directory "' . $path . '" does not exist.');
 			}
 
-			# create default .gitignore, to ignore stored json files
-			file_put_contents($path . '/.gitignore', "*.json\n");
+			# create default .gitignore, to ignore all files in clockwork storage folder
+			file_put_contents($path . '/.gitignore', "*\n");
 		}
 
 		if (! is_writable($path)) {
