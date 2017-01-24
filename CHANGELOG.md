@@ -1,3 +1,7 @@
+1.13
+- added support for Laravel 5.4 (thanks KKSzymanowski)
+- improved Laravel "clock" helper function now takes multiple arguments to be logged at once (eg. `clock($foo, $bar, $baz)`)
+
 1.12
 - added collecting of caller file name and line number for queries and model name (Laravel 4.2+) for ORM queries to the Eloquent data source (thanks OmarMakled and fitztrev for the idea)
 - added collecting of context, caller file name and line number to the logger (thanks crissi for the idea)
