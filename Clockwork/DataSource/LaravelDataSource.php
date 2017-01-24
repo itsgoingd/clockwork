@@ -112,16 +112,27 @@ class LaravelDataSource extends DataSource
 
 		$log = $this->log;
 
-		$this->app['events']->listen('illuminate.log', function($level, $message, $context) use($log)
-		{
-			$log->log($level, $message, $context);
-		});
+		if (class_exists('Illuminate\Log\Events\MessageLogged')) {
+			// Laravel 5.4
+			$this->app['events']->listen('Illuminate\Log\Events\MessageLogged', function ($event) use ($log) {
+				$log->log($event->level, $event->message, $event->context);
+			});
+		} else {
+			// Laravel 4.0 to 5.3
+			$this->app['events']->listen('illuminate.log', function ($level, $message, $context) use ($log) {
+				$log->log($level, $message, $context);
+			});
+		}
 
 		$views = $this->views;
 		$that = $this;
 
-		$this->app['events']->listen('composing:*', function($view) use($views, $that)
+		$this->app['events']->listen('composing:*', function ($view, $data = null) use ($views, $that)
 		{
+			if (is_string($view) && is_array($data)) { // Laravel 5.4 wildcard event
+				$view = $data[0];
+			}
+
 			$time = microtime(true);
 
 			$views->addEvent(
