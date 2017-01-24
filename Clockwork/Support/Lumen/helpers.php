@@ -7,14 +7,16 @@ if (! function_exists('clock')) {
 	}
 
 	/**
-	 * Log the message to Clockwork, returns Clockwork instance when called with no arguments.
+	 * Log a message to Clockwork, returns Clockwork instance when called with no arguments.
 	 */
 	function clock($message = CLOCKWORK_NULL)
 	{
 		if ($message === CLOCKWORK_NULL) {
 			return app('clockwork');
 		} else {
-			return app('clockwork')->debug($message);
+			foreach (func_get_args() as $arg) {
+				app('clockwork')->debug($arg);
+			}
 		}
 	}
 }
