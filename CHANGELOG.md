@@ -1,3 +1,6 @@
+1.13.1
+- fixed compatibility with Lumen 5.4 (thanks meanevo)
+
 1.13
 - added support for Laravel 5.4 (thanks KKSzymanowski)
 - improved Laravel "clock" helper function now takes multiple arguments to be logged at once (eg. `clock($foo, $bar, $baz)`)
