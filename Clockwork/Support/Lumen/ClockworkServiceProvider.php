@@ -109,7 +109,7 @@ class ClockworkServiceProvider extends ServiceProvider
 	public function registerCommands()
 	{
 		// Clean command
-		$this->app['command.clockwork.clean'] = $this->app->share(function($app){
+		$this->app->singleton('command.clockwork.clean', function($app){
 			return new ClockworkCleanCommand();
 		});
 
