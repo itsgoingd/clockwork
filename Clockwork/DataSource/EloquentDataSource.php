@@ -119,6 +119,9 @@ class EloquentDataSource extends DataSource
 		foreach ($bindings as $binding) {
 			$binding = $this->databaseManager->connection($connection)->getPdo()->quote($binding);
 
+			# escape backslashes in the binding (preg_replace requires to do so)
+			$binding = str_replace('\\', '\\\\', $binding);
+
 			$query = preg_replace('/\?/', $binding, $query, 1);
 		}
 
