@@ -4,6 +4,7 @@ namespace Clockwork\Support\Slim;
 use Clockwork\Clockwork;
 use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\SlimDataSource;
+use Clockwork\Helpers\ServerTiming;
 use Clockwork\Storage\FileStorage;
 
 use Slim\Middleware;
@@ -73,6 +74,9 @@ class ClockworkMiddleware extends Middleware
 			if ($env['SCRIPT_NAME']) {
 				$this->app->response()->header('X-Clockwork-Path', $env['SCRIPT_NAME'] . '/__clockwork/');
 			}
+
+			$request = $this->app->clockwork->getRequest();
+			$this->app->response()->header('Server-Timing', ServerTiming::fromRequest($request)->value());
 		}
 	}
 }

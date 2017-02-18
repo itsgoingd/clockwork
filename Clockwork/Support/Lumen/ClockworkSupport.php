@@ -1,6 +1,7 @@
 <?php namespace Clockwork\Support\Lumen;
 
 use Clockwork\Clockwork;
+use Clockwork\Helpers\ServerTiming;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\SqlStorage;
 
@@ -108,6 +109,8 @@ class ClockworkSupport
 			$response->headers->set('X-Clockwork-Header-' . $header_name, $header_value);
 		}
 
+		$this->appendServerTimingHeader($response, $this->app['clockwork']->getRequest());
+
 		return $response;
 	}
 
@@ -135,5 +138,10 @@ class ClockworkSupport
 	public function isCollectingEmails()
 	{
 		return $this->app->bound('mailer');
+	}
+
+	protected function appendServerTimingHeader($response, $request)
+	{
+		$response->headers->set('Server-Timing', ServerTiming::fromRequest($request)->value());
 	}
 }
