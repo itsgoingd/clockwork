@@ -106,8 +106,12 @@ class LumenDataSource extends DataSource
 		$views = $this->views;
 		$that = $this;
 
-		$this->app['events']->listen('composing:*', function($view) use($views, $that)
+		$this->app['events']->listen('composing:*', function ($view, $data = null) use ($views, $that)
 		{
+			if (is_string($view) && is_array($data)) { // Laravel 5.4 wildcard event
+				$view = $data[0];
+			}
+
 			$time = microtime(true);
 
 			$views->addEvent(
