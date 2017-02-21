@@ -99,6 +99,10 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 			}
 		}
 
+                if (is_array($param)) {
+                    $param = implode(",", $param);
+                }
+
 		return $param;
 	}
 
