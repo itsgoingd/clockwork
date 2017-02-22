@@ -83,35 +83,53 @@ class LumenDataSource extends DataSource
 	 */
 	public function listenToEvents()
 	{
-		$this->timeline->startEvent('total', 'Total execution time.', 'start');
+		$timeline = $this->timeline;
 
-		$this->app['events']->listen('clockwork.controller.start', function()
-		{
-			$this->timeline->startEvent('controller', 'Controller running.');
-		});
-		$this->app['events']->listen('clockwork.controller.end', function()
-		{
-			$this->timeline->endEvent('controller');
-		});
+		$timeline->startEvent('total', 'Total execution time.', 'start');
 
-		$this->app['events']->listen('illuminate.log', function($level, $message, $context)
+		$this->app['events']->listen('clockwork.controller.start', function() use($timeline)
 		{
-			$this->log->log($level, $message, $context);
+			$timeline->startEvent('controller', 'Controller running.');
+		});
+		$this->app['events']->listen('clockwork.controller.end', function() use($timeline)
+		{
+			$timeline->endEvent('controller');
 		});
 
-		$this->app['events']->listen('composing:*', function($view)
+		$log = $this->log;
+
+		$this->app['events']->listen('illuminate.log', function($level, $message, $context) use($log)
+		{
+			$log->log($level, $message, $context);
+		});
+
+		$views = $this->views;
+		$that = $this;
+
+		$this->app['events']->listen('composing:*', function($view) use($views, $that)
 		{
 			$time = microtime(true);
 
-			$this->views->addEvent(
-				'view ' . $view->getName(),
-				'Rendering a view',
-				$time,
-				$time,
-				array(
-					'name' => $view->getName(),
-					'data' => $this->replaceUnserializable($view->getData())
-				)
+			if (is_string($view)) {
+				$viewName = $view;
+				$viewData = array(
+					'name' => $viewName,
+					'data' => []
+				);
+			} else {
+				$viewName = $view->getName();
+				$viewData = array(
+					'name' => $viewName,
+					'data' => $that->replaceUnserializable($view->getData())
+				);
+			}
+
+            $views->addEvent(
+                'view ' . $viewName,
+                'Rendering a view',
+                $time,
+                $time,
+                $viewData
 			);
 		});
 	}
@@ -187,12 +205,12 @@ class LumenDataSource extends DataSource
 		$routes = method_exists($this->app, 'getRoutes') ? $this->app->getRoutes() : [];
 
 		foreach ($routes as $route) {
-			$routesData[] = [
+			$routesData[] = array(
 				'method' => $route['method'],
 				'uri'    => $route['uri'],
 				'name'   => array_search($route['uri'], $this->app->namedRoutes) ?: null,
 				'action' => isset($route['action']['uses']) && is_string($route['action']['uses']) ? $route['action']['uses'] : 'anonymous function'
-			];
+			);
 		}
 
 		return $routesData;
@@ -214,7 +232,9 @@ class LumenDataSource extends DataSource
 
 	protected function getMethod()
 	{
-		if (isset($_POST['_method'])) {
+		if ($this->app->bound('Illuminate\Http\Request')) {
+			return $this->app['Illuminate\Http\Request']->getMethod();
+		} elseif (isset($_POST['_method'])) {
 			return strtoupper($_POST['_method']);
 		} else {
 			return $_SERVER['REQUEST_METHOD'];
@@ -223,8 +243,12 @@ class LumenDataSource extends DataSource
 
 	protected function getPathInfo()
 	{
-		$query = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
+		if ($this->app->bound('Illuminate\Http\Request')) {
+			return $this->app['Illuminate\Http\Request']->getPathInfo();
+		} else {
+			$query = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
 
-		return '/'.trim(str_replace('?'.$query, '', $_SERVER['REQUEST_URI']), '/');
+			return '/'.trim(str_replace('?'.$query, '', $_SERVER['REQUEST_URI']), '/');
+		}
 	}
 }
