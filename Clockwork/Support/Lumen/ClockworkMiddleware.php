@@ -3,8 +3,6 @@
 use Clockwork\Clockwork;
 use Clockwork\Support\Lumen\ClockworkSupport;
 
-use Closure;
-use Exception;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 
 class ClockworkMiddleware
@@ -30,16 +28,12 @@ class ClockworkMiddleware
 
 	/**
 	 * Handle an incoming request.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @param  \Closure  $next
-	 * @return mixed
 	 */
-	public function handle($request, Closure $next)
+	public function handle($request, \Closure $next)
 	{
 		try {
 			$response = $next($request);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$this->exceptionHandler->report($e);
 			$response = $this->exceptionHandler->render($request, $e);
 		}

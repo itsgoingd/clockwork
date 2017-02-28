@@ -20,7 +20,7 @@ class ClockworkSupport
 
 	public function getAdditionalDataSources()
 	{
-		return $this->getConfig('additional_data_sources', array());
+		return $this->getConfig('additional_data_sources', []);
 	}
 
 	public function getConfig($key, $default = null)
@@ -62,24 +62,24 @@ class ClockworkSupport
 
 	public function getFilter()
 	{
-		return $this->getConfig('filter', array());
+		return $this->getConfig('filter', []);
 	}
 
 	public function process($request, $response)
 	{
-		if (!$this->isCollectingData()) {
+		if (! $this->isCollectingData()) {
 			return $response; // Collecting data is disabled, return immediately
 		}
 
 		// don't collect data for configured URIs
-		$request_uri = $request->getRequestUri();
-		$filter_uris = $this->getConfig('filter_uris', array());
-		$filter_uris[] = '/__clockwork/[0-9\.]+'; // don't collect data for Clockwork requests
+		$requestUri = $request->getRequestUri();
+		$filterUris = $this->getConfig('filter_uris', []);
+		$filterUris[] = '/__clockwork/[0-9\.]+'; // don't collect data for Clockwork requests
 
-		foreach ($filter_uris as $uri) {
+		foreach ($filterUris as $uri) {
 			$regexp = '#' . str_replace('#', '\#', $uri) . '#';
 
-			if (preg_match($regexp, $request_uri)) {
+			if (preg_match($regexp, $requestUri)) {
 				return $response;
 			}
 		}
@@ -93,7 +93,7 @@ class ClockworkSupport
 		$this->app['clockwork']->resolveRequest();
 		$this->app['clockwork']->storeRequest();
 
-		if (!$this->isEnabled()) {
+		if (! $this->isEnabled()) {
 			return $response; // Clockwork is disabled, don't set the headers
 		}
 
@@ -104,9 +104,8 @@ class ClockworkSupport
 			$response->headers->set('X-Clockwork-Path', $request->getBasePath() . '/__clockwork/', true);
 		}
 
-		$extra_headers = $this->getConfig('headers', array());
-		foreach ($extra_headers as $header_name => $header_value) {
-			$response->headers->set('X-Clockwork-Header-' . $header_name, $header_value);
+		foreach ($this->getConfig('headers', []) as $headerName => $headerValue) {
+			$response->headers->set("X-Clockwork-Header-{$headerName}", $headerValue);
 		}
 
 		$this->appendServerTimingHeader($response, $this->app['clockwork']->getRequest());
@@ -116,13 +115,13 @@ class ClockworkSupport
 
 	public function isEnabled()
 	{
-		$is_enabled = $this->getConfig('enable', null);
+		$isEnabled = $this->getConfig('enable', null);
 
-		if ($is_enabled === null) {
-			$is_enabled = env('APP_DEBUG', false);
+		if ($isEnabled === null) {
+			$isEnabled = env('APP_DEBUG', false);
 		}
 
-		return $is_enabled;
+		return $isEnabled;
 	}
 
 	public function isCollectingData()
@@ -132,7 +131,7 @@ class ClockworkSupport
 
 	public function isCollectingDatabaseQueries()
 	{
-		return $this->app->bound('db') && $this->app['config']->get('database.default') && !in_array('databaseQueries', $this->getFilter());
+		return $this->app->bound('db') && $this->app['config']->get('database.default') && ! in_array('databaseQueries', $this->getFilter());
 	}
 
 	public function isCollectingEmails()

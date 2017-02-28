@@ -1,5 +1,4 @@
-<?php
-namespace Clockwork\DataSource;
+<?php namespace Clockwork\DataSource;
 
 use Clockwork\Helpers\StackTrace;
 use Clockwork\Request\Request;
@@ -8,7 +7,6 @@ use Clockwork\Support\Laravel\Eloquent\ResolveModelLegacyScope;
 use Clockwork\Support\Laravel\Eloquent\ResolveModelOldScope;
 
 use Illuminate\Database\DatabaseManager;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Events\Dispatcher as EventDispatcher;
 
 /**
@@ -24,7 +22,7 @@ class EloquentDataSource extends DataSource
 	/**
 	 * Internal array where queries are stored
 	 */
-	protected $queries = array();
+	protected $queries = [];
 
 	/**
 	 * Model name to associate with the next executed query, used to map queries to models
@@ -46,8 +44,7 @@ class EloquentDataSource extends DataSource
 	public function listenToEvents()
 	{
 		if ($scope = $this->getModelResolvingScope()) {
-			$this->eventDispatcher->listen('eloquent.booted: *', function ($model, $data = null) use ($scope)
-			{
+			$this->eventDispatcher->listen('eloquent.booted: *', function ($model, $data = null) use ($scope) {
 				if (is_string($model) && is_array($data)) { // Laravel 5.4 wildcard event
 					$model = $data[0];
 				}
@@ -58,10 +55,10 @@ class EloquentDataSource extends DataSource
 
 		if (class_exists('Illuminate\Database\Events\QueryExecuted')) {
 			// Laravel 5.2
-			$this->eventDispatcher->listen('Illuminate\Database\Events\QueryExecuted', array($this, 'registerQuery'));
+			$this->eventDispatcher->listen('Illuminate\Database\Events\QueryExecuted', [ $this, 'registerQuery' ]);
 		} else {
 			// Laravel 4.0 to 5.1
-			$this->eventDispatcher->listen('illuminate.query', array($this, 'registerLegacyQuery'));
+			$this->eventDispatcher->listen('illuminate.query', [ $this, 'registerLegacyQuery' ]);
 		}
 	}
 
@@ -70,9 +67,9 @@ class EloquentDataSource extends DataSource
 	 */
 	public function registerQuery($event)
 	{
-		$caller = StackTrace::get()->firstNonVendor(array('itsgoingd', 'laravel', 'illuminate'));
+		$caller = StackTrace::get()->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
 
-		$this->queries[] = array(
+		$this->queries[] = [
 			'query'      => $event->sql,
 			'bindings'   => $event->bindings,
 			'time'       => $event->time,
@@ -80,7 +77,7 @@ class EloquentDataSource extends DataSource
 			'file'       => $caller->shortPath,
 			'line'       => $caller->line,
 			'model'      => $this->nextQueryModel
-		);
+		];
 
 		$this->nextQueryModel = null;
 	}
@@ -90,12 +87,12 @@ class EloquentDataSource extends DataSource
 	 */
 	public function registerLegacyQuery($sql, $bindings, $time, $connection)
 	{
-		return $this->registerQuery((object) array(
+		return $this->registerQuery((object) [
 			'sql'            => $sql,
 			'bindings'       => $bindings,
 			'time'           => $time,
 			'connectionName' => $connection
-		));
+		]);
 	}
 
 	/**
@@ -113,25 +110,26 @@ class EloquentDataSource extends DataSource
 	 */
 	protected function createRunnableQuery($query, $bindings, $connection)
 	{
-		# add bindings to query
+		// add bindings to query
 		$bindings = $this->databaseManager->connection($connection)->prepareBindings($bindings);
 
 		foreach ($bindings as $binding) {
 			$binding = $this->quoteBinding($binding, $connection);
 
-			# escape backslashes in the binding (preg_replace requires to do so)
+			// escape backslashes in the binding (preg_replace requires to do so)
 			$binding = str_replace('\\', '\\\\', $binding);
 
 			$query = preg_replace('/\?/', $binding, $query, 1);
 		}
 
-		# highlight keywords
-		$keywords = array('select', 'insert', 'update', 'delete', 'where', 'from', 'limit', 'is', 'null', 'having', 'group by', 'order by', 'asc', 'desc');
+		// highlight keywords
+		$keywords = [
+			'select', 'insert', 'update', 'delete', 'where', 'from', 'limit', 'is', 'null', 'having', 'group by',
+			'order by', 'asc', 'desc'
+		];
 		$regexp = '/\b' . implode('\b|\b', $keywords) . '\b/i';
 
-		$query = preg_replace_callback($regexp, function($match){
-			return strtoupper($match[0]);
-		}, $query);
+		$query = preg_replace_callback($regexp, function ($match) { return strtoupper($match[0]); }, $query);
 
 		return $query;
 	}
@@ -156,19 +154,16 @@ class EloquentDataSource extends DataSource
 	 */
 	protected function getDatabaseQueries()
 	{
-		$queries = array();
-
-		foreach ($this->queries as $query)
-			$queries[] = array(
+		return array_map(function ($query) {
+			return [
 				'query'      => $this->createRunnableQuery($query['query'], $query['bindings'], $query['connection']),
 				'duration'   => $query['time'],
 				'connection' => $query['connection'],
 				'file'       => $query['file'],
 				'line'       => $query['line'],
 				'model'      => $query['model']
-			);
-
-		return $queries;
+			];
+		}, $this->queries);
 	}
 
 	/**
@@ -179,7 +174,7 @@ class EloquentDataSource extends DataSource
 		if (interface_exists('Illuminate\Database\Eloquent\Scope')) {
 			// Laravel 5.2
 			return new ResolveModelScope($this);
-		} elseif (interface_exists('Illuminate\Database\Eloquent\ScopeInterface') && function_exists('trait_exists')) {
+		} elseif (interface_exists('Illuminate\Database\Eloquent\ScopeInterface')) {
 			if (trait_exists('Illuminate\Database\Eloquent\SoftDeletingTrait')) {
 				// Laravel 4.2
 				return new ResolveModelOldScope($this);

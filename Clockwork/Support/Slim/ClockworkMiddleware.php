@@ -1,5 +1,4 @@
-<?php
-namespace Clockwork\Support\Slim;
+<?php namespace Clockwork\Support\Slim;
 
 use Clockwork\Clockwork;
 use Clockwork\DataSource\PhpDataSource;
@@ -11,37 +10,33 @@ use Slim\Middleware;
 
 class ClockworkMiddleware extends Middleware
 {
-	private $storage_path_or_clockwork;
+	private $storagePathOrClockwork;
 
-	public function __construct($storage_path_or_clockwork)
+	public function __construct($storagePathOrClockwork)
 	{
-		$this->storage_path_or_clockwork = $storage_path_or_clockwork;
+		$this->storagePathOrClockwork = $storagePathOrClockwork;
 	}
 
 	public function call()
 	{
-		$app = $this->app;
-		$storage_path_or_clockwork = $this->storage_path_or_clockwork;
-
-		$this->app->container->singleton('clockwork', function() use($app, $storage_path_or_clockwork)
-		{
-			if ($storage_path_or_clockwork instanceof Clockwork) {
-				return $storage_path_or_clockwork;
+		$this->app->container->singleton('clockwork', function () {
+			if ($this->storagePathOrClockwork instanceof Clockwork) {
+				return $this->storagePathOrClockwork;
 			}
 
 			$clockwork = new Clockwork();
 
 			$clockwork->addDataSource(new PhpDataSource())
-				->addDataSource(new SlimDataSource($app))
-				->setStorage(new FileStorage($storage_path_or_clockwork));
+				->addDataSource(new SlimDataSource($this->app))
+				->setStorage(new FileStorage($this->storagePathOrClockwork));
 
 			return $clockwork;
 		});
 
-		$original_log_writer = $this->app->getLog()->getWriter();
-		$clockwork_log_writer = new ClockworkLogWriter($this->app->clockwork, $original_log_writer);
+		$originalLogWriter = $this->app->getLog()->getWriter();
+		$clockworkLogWriter = new ClockworkLogWriter($this->app->clockwork, $originalLogWriter);
 
-		$this->app->getLog()->setWriter($clockwork_log_writer);
+		$this->app->getLog()->setWriter($clockworkLogWriter);
 
 		if ($this->app->config('debug') && preg_match('#/__clockwork(/(?<id>[0-9\.]+))?#', $this->app->request()->getPathInfo(), $matches)) {
 			return $this->retrieveRequest($matches['id']);

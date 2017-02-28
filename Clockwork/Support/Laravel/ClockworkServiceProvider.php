@@ -15,7 +15,7 @@ class ClockworkServiceProvider extends ServiceProvider
 {
 	public function boot()
 	{
-		if (!$this->app['clockwork.support']->isCollectingData()) {
+		if (! $this->app['clockwork.support']->isCollectingData()) {
 			return; // Don't bother registering event listeners as we are not collecting data
 		}
 
@@ -28,7 +28,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		// create the clockwork instance so all data sources are initialized at this point
 		$this->app->make('clockwork');
 
-		if (!$this->app['clockwork.support']->isEnabled()) {
+		if (! $this->app['clockwork.support']->isEnabled()) {
 			return; // Clockwork is disabled, don't register the route
 		}
 
@@ -46,40 +46,34 @@ class ClockworkServiceProvider extends ServiceProvider
 		if ($this->isLegacyLaravel() || $this->isOldLaravel()) {
 			$this->package('itsgoingd/clockwork', 'clockwork', __DIR__);
 		} else {
-			$this->publishes(array(__DIR__ . '/config/clockwork.php' => config_path('clockwork.php')));
+			$this->publishes([ __DIR__ . '/config/clockwork.php' => config_path('clockwork.php') ]);
 		}
 
-		$legacy = $this->isLegacyLaravel() || $this->isOldLaravel();
-		$this->app->singleton('clockwork.support', function($app) use($legacy)
-		{
-			return new ClockworkSupport($app, $legacy);
+		$this->app->singleton('clockwork.support', function ($app) {
+			return new ClockworkSupport($app, $this->isLegacyLaravel() || $this->isOldLaravel());
 		});
 
-		$this->app->singleton('clockwork.laravel', function($app)
-		{
+		$this->app->singleton('clockwork.laravel', function ($app) {
 			return new LaravelDataSource($app);
 		});
 
-		$this->app->singleton('clockwork.swift', function($app)
-		{
+		$this->app->singleton('clockwork.swift', function ($app) {
 			return new SwiftDataSource($app['mailer']->getSwiftMailer());
 		});
 
-		$this->app->singleton('clockwork.eloquent', function($app)
-        {
-            return new EloquentDataSource($app['db'], $app['events']);
-        });
+		$this->app->singleton('clockwork.eloquent', function ($app) {
+			return new EloquentDataSource($app['db'], $app['events']);
+		});
 
 		$this->app->singleton('clockwork.cache', function ($app) {
-            return new LaravelCacheDataSource($app['events']);
-        });
+			return new LaravelCacheDataSource($app['events']);
+		});
 
 		foreach ($this->app['clockwork.support']->getAdditionalDataSources() as $name => $callable) {
 			$this->app->singleton($name, $callable);
 		}
 
-		$this->app->singleton('clockwork', function($app)
-		{
+		$this->app->singleton('clockwork', function ($app) {
 			$clockwork = new Clockwork();
 
 			$clockwork
@@ -120,12 +114,10 @@ class ClockworkServiceProvider extends ServiceProvider
 		}
 
 		if ($this->isLegacyLaravel()) {
-			$this->app->middleware('Clockwork\Support\Laravel\ClockworkLegacyMiddleware', array($this->app));
-		} else if ($this->isOldLaravel()) {
-			$app = $this->app;
-			$this->app['router']->after(function($request, $response) use($app)
-			{
-				return $app['clockwork.support']->process($request, $response);
+			$this->app->middleware('Clockwork\Support\Laravel\ClockworkLegacyMiddleware', [ $this->app ]);
+		} elseif ($this->isOldLaravel()) {
+			$this->app['router']->after(function ($request, $response) {
+				return $this->app['clockwork.support']->process($request, $response);
 			});
 		}
 	}
@@ -135,22 +127,19 @@ class ClockworkServiceProvider extends ServiceProvider
 	 */
 	public function registerCommands()
 	{
-		// Clean command
-		$this->app->bind('command.clockwork.clean', 'Clockwork\Support\Laravel\ClockworkCleanCommand');
-
-		$this->commands(
-			'command.clockwork.clean'
-		);
+		$this->commands([
+			'Clockwork\Support\Laravel\ClockworkCleanCommand'
+		]);
 	}
 
 	public function provides()
 	{
-		return array('clockwork');
+		return [ 'clockwork' ];
 	}
 
 	public function isLegacyLaravel()
 	{
-		return Str::startsWith(Application::VERSION, array('4.1', '4.2'));
+		return Str::startsWith(Application::VERSION, [ '4.1', '4.2' ]);
 	}
 
 	public function isOldLaravel()

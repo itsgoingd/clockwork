@@ -2,7 +2,6 @@
 
 use Clockwork\Request\Request;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\ORM\EntityManager;
 
@@ -11,7 +10,7 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 	/**
 	 * Internal array where queries are stored
 	 */
-	protected $queries = array();
+	protected $queries = [];
 
 	/**
 	 * Doctrine entity manager
@@ -30,14 +29,12 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 
 	/**
 	 * Doctrine connection
-	 *
-	 * @var Connection
 	 */
 	protected $connection;
 
 	public function __construct(EntityManager $enm)
 	{
-		$this->enm        = $enm;
+		$this->enm = $enm;
 		$this->connection = $enm->getConnection();
 
 		$enm->getConnection()->getConfiguration()->setSQLLogger($this);
@@ -45,30 +42,28 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 
 	/**
 	 * From SQLLogger Doctrine Interface
-	 *
-	 * @param string $sql
-	 * @param array $params
-	 * @param array $types
 	 */
 	public function startQuery($sql, array $params = null, array $types = null)
 	{
 		$this->start = microtime(true);
-		$sql         = $this->replaceParams($sql, $params);
-		$sql         = $this->formatQuery($sql);
 
-		$this->query = array('sql' => $sql, 'params' => $params, 'types' => $types);
+		$sql = $this->replaceParams($sql, $params);
+		$sql = $this->formatQuery($sql);
+
+		$this->query = [ 'sql' => $sql, 'params' => $params, 'types' => $types ];
 	}
 
 	protected function formatQuery($sql)
 	{
-		$keywords = array('select', 'insert', 'update', 'delete', 'where', 'from', 'limit', 'is', 'null', 'having', 'group by', 'order by', 'asc', 'desc');
-		$regexp   = '/\b' . implode('\b|\b', $keywords) . '\b/i';
+		$keywords = [
+			'select', 'insert', 'update', 'delete', 'where', 'from', 'limit', 'is', 'null', 'having', 'group by',
+			'order by', 'asc', 'desc'
+		];
+		$regexp = '/\b' . implode('\b|\b', $keywords) . '\b/i';
 
-		$sql = preg_replace_callback($regexp, function($match){
+		return preg_replace_callback($regexp, function ($match) {
 			return strtoupper($match[0]);
 		}, $sql);
-
-		return $sql;
 	}
 
 	protected function replaceParams($sql, $params)
@@ -120,16 +115,15 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 
 	/**
 	 * Log the query into the internal store
-	 * @return array
 	 */
 	public function registerQuery($query, $bindings, $time, $connection)
 	{
-		$this->queries[] = array(
+		$this->queries[] = [
 			'query'      => $query,
 			'bindings'   => $bindings,
-			'time'       => $time,
+			'duration'   => $time,
 			'connection' => $connection
-		);
+		];
 	}
 
 	/**
@@ -147,16 +141,6 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 	 */
 	protected function getDatabaseQueries()
 	{
-		$queries = array();
-
-		foreach ($this->queries as $query) {
-			$queries[] = array(
-				'query'      => $query['query'],
-				'duration'   => $query['time'],
-				'connection' => $query['connection']
-			);
-		}
-
-		return $queries;
+		return $this->queries;
 	}
 }

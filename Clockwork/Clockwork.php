@@ -1,5 +1,4 @@
-<?php
-namespace Clockwork;
+<?php namespace Clockwork;
 
 use Clockwork\DataSource\DataSourceInterface;
 use Clockwork\Request\Log;
@@ -18,12 +17,12 @@ class Clockwork implements LoggerInterface
 	/**
 	 * Clockwork version
 	 */
-	const VERSION = '1.14';
+	const VERSION = '2.0-dev';
 
 	/**
 	 * Array of data sources, these objects provide data to be stored in a request object
 	 */
-	protected $dataSources = array();
+	protected $dataSources = [];
 
 	/**
 	 * Request object, data structure which stores data about current application request
@@ -96,21 +95,20 @@ class Clockwork implements LoggerInterface
 	 */
 	public function resolveRequest()
 	{
-		foreach ($this->dataSources as $dataSource)
+		foreach ($this->dataSources as $dataSource) {
 			$dataSource->resolve($this->request);
+		}
 
 		// merge global log and timeline data with data collected from data sources
 		$this->request->log = array_merge($this->request->log, $this->log->toArray());
 		$this->request->timelineData = array_merge($this->request->timelineData, $this->timeline->finalize());
 
 		// sort log and timeline data by time
-		uasort($this->request->log, function($a, $b)
-		{
+		uasort($this->request->log, function($a, $b) {
 			if ($a['time'] == $b['time']) return 0;
 			return $a['time'] < $b['time'] ? -1 : 1;
 		});
-		uasort($this->request->timelineData, function($a, $b)
-		{
+		uasort($this->request->timelineData, function($a, $b) {
 			if ($a['start'] == $b['start']) return 0;
 			return $a['start'] < $b['start'] ? -1 : 1;
 		});
@@ -158,6 +156,8 @@ class Clockwork implements LoggerInterface
 	public function setLog(Log $log)
 	{
 		$this->log = $log;
+
+		return $this;
 	}
 
 	/**
@@ -174,53 +174,55 @@ class Clockwork implements LoggerInterface
 	public function setTimeline(Timeline $timeline)
 	{
 		$this->timeline = $timeline;
+
+		return $this;
 	}
 
 	/**
 	 * Shortcut methods for the current log instance
 	 */
 
-	public function log($level = LogLevel::INFO, $message, array $context = array())
+	public function log($level = LogLevel::INFO, $message, array $context = [])
 	{
 		return $this->getLog()->log($level, $message, $context);
 	}
 
-	public function emergency($message, array $context = array())
+	public function emergency($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::EMERGENCY, $message, $context);
 	}
 
-	public function alert($message, array $context = array())
+	public function alert($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::ALERT, $message, $context);
 	}
 
-	public function critical($message, array $context = array())
+	public function critical($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::CRITICAL, $message, $context);
 	}
 
-	public function error($message, array $context = array())
+	public function error($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::ERROR, $message, $context);
 	}
 
-	public function warning($message, array $context = array())
+	public function warning($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::WARNING, $message, $context);
 	}
 
-	public function notice($message, array $context = array())
+	public function notice($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::NOTICE, $message, $context);
 	}
 
-	public function info($message, array $context = array())
+	public function info($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::INFO, $message, $context);
 	}
 
-	public function debug($message, array $context = array())
+	public function debug($message, array $context = [])
 	{
 		return $this->getLog()->log(LogLevel::DEBUG, $message, $context);
 	}

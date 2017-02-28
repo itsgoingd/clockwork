@@ -1,5 +1,4 @@
-<?php
-namespace Clockwork\Storage;
+<?php namespace Clockwork\Storage;
 
 use Clockwork\Request\Request;
 

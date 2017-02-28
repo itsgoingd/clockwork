@@ -1,9 +1,9 @@
-<?php
-namespace Clockwork\DataSource;
+<?php namespace Clockwork\DataSource;
 
 use Clockwork\Request\Request;
 use Clockwork\Request\Timeline;
 use Clockwork\Support\Swift\SwiftPluginClockworkTimeline;
+
 use Swift_Mailer;
 
 /**
