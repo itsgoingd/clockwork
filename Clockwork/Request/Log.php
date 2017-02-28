@@ -32,7 +32,7 @@ class Log extends AbstractLogger
 			$message = json_encode($message);
 		}
 
-		$caller = StackTrace::get()->firstNonVendor([ 'itsgoingd', 'laravel', 'slim', 'monolog' ]);
+		$caller = StackTrace::get()->firstNonVendor(array('itsgoingd', 'laravel', 'slim', 'monolog'));
 
 		$this->data[] = array(
 			'message' => $message,

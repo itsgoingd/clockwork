@@ -8,7 +8,7 @@ class StackFrame
 	public $class;
 	public $object;
 	public $type;
-	public $args = [];
+	public $args = array();
 	public $shortPath;
 
 	public function __construct(array $data = array(), $basePath = '')
