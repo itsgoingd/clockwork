@@ -3,6 +3,7 @@
 use Clockwork\Clockwork;
 use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\LaravelDataSource;
+use Clockwork\DataSource\LaravelCacheDataSource;
 use Clockwork\DataSource\EloquentDataSource;
 use Clockwork\DataSource\SwiftDataSource;
 
@@ -19,6 +20,10 @@ class ClockworkServiceProvider extends ServiceProvider
 		}
 
 		$this->app['clockwork.eloquent']->listenToEvents();
+
+		if ($this->app['clockwork.support']->isCollectingCacheStats()) {
+			$this->app['clockwork.cache']->listenToEvents();
+		}
 
 		// create the clockwork instance so all data sources are initialized at this point
 		$this->app->make('clockwork');
@@ -65,6 +70,10 @@ class ClockworkServiceProvider extends ServiceProvider
             return new EloquentDataSource($app['db'], $app['events']);
         });
 
+		$this->app->singleton('clockwork.cache', function ($app) {
+            return new LaravelCacheDataSource($app['events']);
+        });
+
 		foreach ($this->app['clockwork.support']->getAdditionalDataSources() as $name => $callable) {
 			$this->app->singleton($name, $callable);
 		}
@@ -80,6 +89,10 @@ class ClockworkServiceProvider extends ServiceProvider
 
 			if ($app['clockwork.support']->isCollectingDatabaseQueries()) {
 				$clockwork->addDataSource($app['clockwork.eloquent']);
+			}
+
+			if ($app['clockwork.support']->isCollectingCacheStats()) {
+				$clockwork->addDataSource($app['clockwork.cache']);
 			}
 
 			foreach ($app['clockwork.support']->getAdditionalDataSources() as $name => $callable) {
