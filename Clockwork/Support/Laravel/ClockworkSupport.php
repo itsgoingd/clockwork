@@ -142,6 +142,8 @@ class ClockworkSupport
 
 	protected function appendServerTimingHeader($response, $request)
 	{
-		$response->headers->set('Server-Timing', ServerTiming::fromRequest($request)->value());
+		if (($eventsCount = $this->getConfig('server_timing', 10)) !== false) {
+			$response->headers->set('Server-Timing', ServerTiming::fromRequest($request, $eventsCount)->value());
+		}
 	}
 }
