@@ -74,11 +74,9 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 	protected function replaceParams($sql, $params)
 	{
 		if (is_array($params)) {
-			$pattern = '/\?/';
-
 			foreach ($params as $param) {
 				$param = $this->convertParam($param);
-				$sql   = preg_replace($pattern, "\"$param\"", $sql, 1);
+				$sql   = preg_replace('/\?/', "$param", $sql, 1);
 			}
 		}
 
@@ -89,21 +87,25 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 	{
 		if (is_object($param)) {
 			if (! method_exists($param, '__toString')) {
-				// Carbon Object
-				if (is_a($param, 'DateTime') || is_a($param, 'DateTimeImmutable')) {
-					$param = $param->format('Y-m-d');
+				if ($param instanceof DateTime || $param instanceof DateTimeImmutable) {
+					$param = $param->format('Y-m-d H:i:s');
 				} else {
-
-					throw new \Exception('Unstringable Object: '.get_class($param));
+					throw new Exception('Given query param is an instance of ' . get_class($param) . ' and could not be converted to a string');
 				}
+			}
+		} elseif (is_array($param)) {
+			if (count($param) !== count($param, COUNT_RECURSIVE)) {
+				$param = json_encode($param, JSON_UNESCAPED_UNICODE);
+			} else {
+				$param = implode(', ', array_map(function ($part) {
+					return '"' . (string) $part . '"';
+				}, $param));
+
+				return '(' . $param . ')';
 			}
 		}
 
-                if (is_array($param)) {
-                    $param = implode(",", $param);
-                }
-
-		return $param;
+		return '"' . (string) $param . '"';
 	}
 
 	/**
