@@ -131,6 +131,23 @@ return array(
 
 	'headers' => array(
 		// 'Accept' => 'application/vnd.com.whatever.v1+json',
-	)
+	),
+
+	/*
+	|--------------------------------------------------------------------------
+	| Server-Timing
+	|--------------------------------------------------------------------------
+	|
+	| Clockwork supports the W3C Server Timing specification, which allows for
+	/ collecting a simple performance metrics in a cross-browser way. Eg. in
+	/ Chrome, your app, database and timeline event timings will be shown
+	/ in the Dev Tools network tab.
+	/ This setting specifies the max number of timeline events that will be sent.
+	| When set to false, Server-Timing headers will not be set.
+	| Default: 10
+	|
+	*/
+
+	'server_timing' => 10
 
 );

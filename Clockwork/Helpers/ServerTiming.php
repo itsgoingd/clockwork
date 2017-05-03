@@ -20,19 +20,19 @@ class ServerTiming
 		}, $this->metrics));
 	}
 
-	public static function fromRequest(Request $request)
+	public static function fromRequest(Request $request, $eventsCount = 10)
 	{
 		$header = new static;
 
-		$header->add('app', $request->getResponseDuration() / 1000, 'Application');
+		$header->add('app', $request->getResponseDuration(), 'Application');
 
 		if ($request->getDatabaseDuration()) {
-			$header->add('db', $request->getDatabaseDuration() / 1000, 'Database');
+			$header->add('db', $request->getDatabaseDuration(), 'Database');
 		}
 
-		// add timeline events limited to first 20 events so the header doesn't get too large
-		foreach (array_slice($request->timelineData, 0, 20) as $i => $event) {
-			$header->add("timeline-event-{$i}", $event['duration'] / 1000, $event['description']);
+		// add timeline events limited to a set number so the header doesn't get too large
+		foreach (array_slice($request->timelineData, 0, $eventsCount) as $i => $event) {
+			$header->add("timeline-event-{$i}", $event['duration'], $event['description']);
 		}
 
 		return $header;
