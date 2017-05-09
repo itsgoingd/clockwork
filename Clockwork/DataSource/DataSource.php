@@ -44,4 +44,24 @@ class DataSource implements DataSourceInterface
 
 		return $data;
 	}
+
+	/**
+	 * Attempts to serialize a variable of unspecified type
+	 */
+	protected function serialize($message)
+	{
+		if (is_object($message)) {
+			if (method_exists($message, '__toString')) {
+				return (string) $message;
+			} elseif (method_exists($message, 'toArray')) {
+				return json_encode($message->toArray());
+			} else {
+				return json_encode((array) $message);
+			}
+		} elseif (is_array($message)) {
+			return json_encode($message);
+		}
+
+		return $message;
+	}
 }

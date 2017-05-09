@@ -77,6 +77,36 @@ class Request
 	public $databaseQueries = array();
 
 	/**
+	 * Cache queries array
+	 */
+	public $cacheQueries = array();
+
+	/**
+	 * Cache reads count
+	 */
+	public $cacheReads;
+
+	/**
+	 * Cache hits count
+	 */
+	public $cacheHits;
+
+	/**
+	 * Cache writes count
+	 */
+	public $cacheWrites;
+
+	/**
+	 * Cache deletes count
+	 */
+	public $cacheDeletes;
+
+	/**
+	 * Cache time
+	 */
+	public $cacheTime;
+
+	/**
 	 * Timeline data array
 	 */
 	public $timelineData = array();
@@ -163,6 +193,12 @@ class Request
 			'responseDuration' => $this->getResponseDuration(),
 			'databaseQueries'  => $this->databaseQueries,
 			'databaseDuration' => $this->getDatabaseDuration(),
+			'cacheQueries'     => $this->cacheQueries,
+			'cacheReads'       => $this->cacheReads,
+			'cacheHits'        => $this->cacheHits,
+			'cacheWrites'      => $this->cacheWrites,
+			'cacheDeletes'     => $this->cacheDeletes,
+			'cacheTime'        => $this->cacheTime,
 			'timelineData'     => $this->timelineData,
 			'log'              => array_values($this->log),
 			'routes'           => $this->routes,
