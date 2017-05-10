@@ -4,11 +4,11 @@ use Clockwork\Request\Request;
 
 class ServerTiming
 {
-	protected $metricsevents = array();
+	protected $metricsevents = [];
 
 	public function add($metric, $value, $description)
 	{
-		$this->metrics[] = array('metric' => $metric, 'value' => $value, 'description' => $description);
+		$this->metrics[] = [ 'metric' => $metric, 'value' => $value, 'description' => $description ];
 
 		return $this;
 	}

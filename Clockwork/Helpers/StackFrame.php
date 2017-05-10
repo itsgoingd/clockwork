@@ -8,10 +8,10 @@ class StackFrame
 	public $class;
 	public $object;
 	public $type;
-	public $args = array();
+	public $args = [];
 	public $shortPath;
 
-	public function __construct(array $data = array(), $basePath = '')
+	public function __construct(array $data = [], $basePath = '')
 	{
 		foreach ($data as $key => $value) {
 			$this->$key = $value;

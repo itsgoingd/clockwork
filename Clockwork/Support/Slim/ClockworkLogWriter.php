@@ -1,19 +1,15 @@
-<?php
-namespace Clockwork\Support\Slim;
+<?php namespace Clockwork\Support\Slim;
 
 use Clockwork\Clockwork;
-use Clockwork\DataSource\PhpDataSource;
-use Clockwork\DataSource\SlimDataSource;
-use Clockwork\Storage\FileStorage;
 
 use Slim\Middleware;
 
 class ClockworkLogWriter
 {
 	protected $clockwork;
-	protected $original_log_writer;
+	protected $originalLogWriter;
 
-	protected $log_levels = array(
+	protected $logLevels = array(
 		1 => 'emergency',
 		2 => 'alert',
 		3 => 'critical',
@@ -24,23 +20,23 @@ class ClockworkLogWriter
 		8 => 'debug'
 	);
 
-	public function __construct(Clockwork $clockwork, $original_log_writer)
+	public function __construct(Clockwork $clockwork, $originalLogWriter)
 	{
 		$this->clockwork = $clockwork;
-		$this->original_log_writer = $original_log_writer;
+		$this->originalLogWriter = $originalLogWriter;
 	}
 
 	public function write($message, $level = null)
 	{
 		$this->clockwork->log($this->getPsrLevel($level), $message);
 
-		if ($this->original_log_writer) {
-			return $this->original_log_writer->write($message, $level);
+		if ($this->originalLogWriter) {
+			return $this->originalLogWriter->write($message, $level);
 		}
 	}
 
 	protected function getPsrLevel($level)
 	{
-		return isset($this->log_levels[$level]) ? $this->log_levels[$level] : $level;
+		return isset($this->logLevels[$level]) ? $this->logLevels[$level] : $level;
 	}
 }

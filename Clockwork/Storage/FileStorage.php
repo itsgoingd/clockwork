@@ -1,9 +1,7 @@
-<?php
-namespace Clockwork\Storage;
+<?php namespace Clockwork\Storage;
 
 use Clockwork\Request\Request;
 use Clockwork\Storage\Storage;
-use Exception;
 
 /**
  * Simple file based storage for requests
@@ -13,24 +11,26 @@ class FileStorage extends Storage
 	/**
 	 * Path where files are stored
 	 */
-	private $path;
+	protected $path;
 
 	/**
 	 * Return new storage, takes path where to store files as argument, throws exception if path is not writable
 	 */
 	public function __construct($path, $dirPermissions = 0700)
 	{
-		if (!file_exists($path)) {
-			# directory doesn't exist, try to create one
-			if (!mkdir($path, $dirPermissions, true))
-				throw new Exception('Directory "' . $path . '" does not exist.');
+		if (! file_exists($path)) {
+			// directory doesn't exist, try to create one
+			if (! mkdir($path, $dirPermissions, true)) {
+				throw new \Exception("Directory \"{$path}\" does not exist.");
+			}
 
-			# create default .gitignore, to ignore stored json files
-			file_put_contents($path . '/.gitignore', "*.json\n");
+			// create default .gitignore, to ignore stored json files
+			file_put_contents("{$path}/.gitignore", "*.json\n");
 		}
 
-		if (!is_writable($path)) 
-			throw new Exception('Path "' . $path . '" is not writable.');
+		if (! is_writable($path)) {
+			throw new \Exception("Path \"{$path}\" is not writable.");
+		}
 
 		$this->path = $path;
 	}
@@ -41,35 +41,32 @@ class FileStorage extends Storage
 	 */
 	public function retrieve($id = null, $last = null)
 	{
-		if ($id && !$last) {
-			if (!is_readable($this->path . '/' . $id . '.json'))
+		if ($id && ! $last) {
+			if (! is_readable("{$this->path}/{$id}.json")) {
 				return null;
+			}
 
-			return new Request(
-				json_decode(file_get_contents($this->path . '/' . $id . '.json'), true)
-			);
+			return new Request(json_decode(file_get_contents("{$this->path}/{$id}.json"), true));
 		}
 
-		$files = glob($this->path . '/*.json');
+		$files = glob("{$this->path}/*.json");
 
-		$id = ($id) ? $id . '.json' : first($files);
-		$last = ($last) ? $last . '.json' : end($files);
+		$id = $id ? "{$id}.json" : first($files);
+		$last = $last ? "{$last}.json" : end($files);
 
-		$requests = array();
+		$requests = [];
 		$add = false;
 
 		foreach ($files as $file) {
-			if ($file == $id)
+			if ($file == $id) {
 				$add = true;
-			elseif ($file == $last)
+			} elseif ($file == $last) {
 				$add = false;
+			}
 
-			if (!$add)
-				continue;
+			if (! $add) continue;
 
-			$requests[] = new Request(
-				json_decode(file_get_contents($file), true)
-			);
+			$requests[] = new Request(json_decode(file_get_contents($file), true));
 		}
 
 		return $requests;
@@ -81,7 +78,7 @@ class FileStorage extends Storage
 	public function store(Request $request)
 	{
 		file_put_contents(
-			$this->path . '/' . $request->id . '.json',
+			"{$this->path}/{$request->id}.json",
 			@json_encode($this->applyFilter($request->toArray()))
 		);
 	}

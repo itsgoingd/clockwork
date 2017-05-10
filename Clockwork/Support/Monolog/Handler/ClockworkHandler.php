@@ -1,5 +1,4 @@
-<?php
-namespace Clockwork\Support\Monolog\Handler;
+<?php namespace Clockwork\Support\Monolog\Handler;
 
 use Clockwork\Request\Log as ClockworkLog;
 
@@ -11,17 +10,17 @@ use Monolog\Handler\AbstractProcessingHandler;
  */
 class ClockworkHandler extends AbstractProcessingHandler
 {
-    protected $clockworkLog;
+	protected $clockworkLog;
 
-    public function __construct(ClockworkLog $clockworkLog)
-    {
-        parent::__construct();
+	public function __construct(ClockworkLog $clockworkLog)
+	{
+		parent::__construct();
 
-        $this->clockworkLog = $clockworkLog;
-    }
+		$this->clockworkLog = $clockworkLog;
+	}
 
-    protected function write(array $record)
-    {
-        $this->clockworkLog->log($record['level'], $record['message']);
-    }
+	protected function write(array $record)
+	{
+		$this->clockworkLog->log($record['level'], $record['message']);
+	}
 }

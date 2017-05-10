@@ -1,10 +1,10 @@
-<?php
-namespace Clockwork\DataSource;
+<?php namespace Clockwork\DataSource;
 
 use Clockwork\DataSource\DataSource;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
 use Clockwork\Support\Monolog\Handler\ClockworkHandler;
+
 use Monolog\Logger as Monolog;
 
 /**
@@ -18,7 +18,7 @@ class MonologDataSource extends DataSource
 	protected $log;
 
 	/**
-	 * Create a new data source, takes Laravel application instance as an argument
+	 * Create a new data source, takes Monolog instance as an argument
 	 */
 	public function __construct(Monolog $monolog)
 	{

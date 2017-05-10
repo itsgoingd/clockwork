@@ -1,5 +1,4 @@
-<?php
-namespace Clockwork\DataSource;
+<?php namespace Clockwork\DataSource;
 
 use Clockwork\DataSource\DataSource;
 use Clockwork\Request\Request;
@@ -43,26 +42,27 @@ class SlimDataSource extends DataSource
 	 */
 	protected function getController()
 	{
-		$matched_routes = $this->slim->router()->getMatchedRoutes(
+		$matchedRoutes = $this->slim->router()->getMatchedRoutes(
 			$this->slim->request()->getMethod(), $this->slim->request()->getResourceUri()
 		);
 
-		if (!count($matched_routes)) {
+		if (! count($matchedRoutes)) {
 			return null;
 		}
 
-		$controller = end($matched_routes)->getCallable();
+		$controller = end($matchedRoutes)->getCallable();
 
 		if ($controller instanceof \Closure) {
 			$controller = 'anonymous function';
-		} else if (is_object($controller)) {
+		} elseif (is_object($controller)) {
 			$controller = 'instance of ' . get_class($controller);
-		} else if (is_array($controller) && count($controller) == 2) {
-			if (is_object($controller[0]))
+		} elseif (is_array($controller) && count($controller) == 2) {
+			if (is_object($controller[0])) {
 				$controller = get_class($controller[0]) . '->' . $controller[1];
-			else
+			} else {
 				$controller = $controller[0] . '::' . $controller[1];
-		} else if (!is_string($controller)) {
+			}
+		} elseif (! is_string($controller)) {
 			$controller = null;
 		}
 
@@ -74,11 +74,10 @@ class SlimDataSource extends DataSource
 	 */
 	protected function getRequestHeaders()
 	{
-		$headers = array();
+		$headers = [];
 
 		foreach ($_SERVER as $key => $value) {
-			if (substr($key, 0, 5) !== 'HTTP_')
-				continue;
+			if (substr($key, 0, 5) !== 'HTTP_') continue;
 
 			$header = substr($key, 5);
 			$header = str_replace('_', ' ', $header);
@@ -87,8 +86,8 @@ class SlimDataSource extends DataSource
 
 			$value = $this->slim->request()->headers($header, $value);
 
-			if (!isset($headers[$header])) {
-				$headers[$header] = array($value);
+			if (! isset($headers[$header])) {
+				$headers[$header] = [ $value ];
 			} else {
 				$headers[$header][] = $value;
 			}

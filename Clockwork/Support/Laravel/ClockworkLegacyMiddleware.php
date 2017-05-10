@@ -18,7 +18,7 @@ class ClockworkLegacyMiddleware implements HttpKernelInterface
 	public function handle(Request $request, $type = self::MASTER_REQUEST, $catch = true)
 	{
 		$response = $this->kernel->handle($request, $type, $catch);
-		
+
 		return $this->app['clockwork.support']->process($request, $response);
 	}
 }

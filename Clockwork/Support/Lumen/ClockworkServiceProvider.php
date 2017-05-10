@@ -13,11 +13,11 @@ class ClockworkServiceProvider extends ServiceProvider
 {
 	public function boot()
 	{
-		if ($this->isRunningWithFacades() && !class_exists('Clockwork')) {
+		if ($this->isRunningWithFacades() && ! class_exists('Clockwork')) {
 			class_alias('Clockwork\Support\Lumen\Facade', 'Clockwork');
 		}
 
-		if (!$this->app['clockwork.support']->isCollectingData()) {
+		if (! $this->app['clockwork.support']->isCollectingData()) {
 			return; // Don't bother registering event listeners as we are not collecting data
 		}
 
@@ -38,32 +38,27 @@ class ClockworkServiceProvider extends ServiceProvider
 
 	public function register()
 	{
-		$this->app->singleton('clockwork.support', function($app)
-		{
+		$this->app->singleton('clockwork.support', function ($app) {
 			return new ClockworkSupport($app);
 		});
 
-		$this->app->singleton('clockwork.lumen', function($app)
-		{
+		$this->app->singleton('clockwork.lumen', function ($app) {
 			return new LumenDataSource($app);
 		});
 
-		$this->app->singleton('clockwork.swift', function($app)
-		{
+		$this->app->singleton('clockwork.swift', function ($app) {
 			return new SwiftDataSource($app['mailer']->getSwiftMailer());
 		});
 
-		$this->app->singleton('clockwork.eloquent', function($app)
-        {
-            return new EloquentDataSource($app['db'], $app['events']);
-        });
+		$this->app->singleton('clockwork.eloquent', function ($app) {
+			return new EloquentDataSource($app['db'], $app['events']);
+		});
 
 		foreach ($this->app['clockwork.support']->getAdditionalDataSources() as $name => $callable) {
 			$this->app->singleton($name, $callable);
 		}
 
-		$this->app->singleton('clockwork', function($app)
-		{
+		$this->app->singleton('clockwork', function ($app) {
 			$clockwork = new Clockwork();
 
 			$clockwork
@@ -109,7 +104,7 @@ class ClockworkServiceProvider extends ServiceProvider
 	public function registerCommands()
 	{
 		// Clean command
-		$this->app->singleton('command.clockwork.clean', function($app){
+		$this->app->singleton('command.clockwork.clean', function ($app) {
 			return new ClockworkCleanCommand();
 		});
 
@@ -120,7 +115,7 @@ class ClockworkServiceProvider extends ServiceProvider
 
 	public function provides()
 	{
-		return array('clockwork');
+		return [ 'clockwork' ];
 	}
 
 	protected function isRunningWithFacades()

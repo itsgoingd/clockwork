@@ -1,10 +1,10 @@
-<?php
-namespace Clockwork\DataSource;
+<?php namespace Clockwork\DataSource;
 
 use Clockwork\DataSource\DataSource;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
 use Clockwork\Request\Timeline;
+
 use Laravel\Lumen\Application;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -45,9 +45,9 @@ class LumenDataSource extends DataSource
 	{
 		$this->app = $app;
 
-		$this->log = new Log();
+		$this->log      = new Log();
 		$this->timeline = new Timeline();
-		$this->views = new Timeline();
+		$this->views    = new Timeline();
 	}
 
 	/**
@@ -83,46 +83,32 @@ class LumenDataSource extends DataSource
 	 */
 	public function listenToEvents()
 	{
-		$timeline = $this->timeline;
+		$this->timeline->startEvent('total', 'Total execution time.', 'start');
 
-		$timeline->startEvent('total', 'Total execution time.', 'start');
-
-		$this->app['events']->listen('clockwork.controller.start', function() use($timeline)
-		{
-			$timeline->startEvent('controller', 'Controller running.');
+		$this->app['events']->listen('clockwork.controller.start', function () {
+			$this->timeline->startEvent('controller', 'Controller running.');
 		});
-		$this->app['events']->listen('clockwork.controller.end', function() use($timeline)
-		{
-			$timeline->endEvent('controller');
+		$this->app['events']->listen('clockwork.controller.end', function () {
+			$this->timeline->endEvent('controller');
 		});
 
-		$log = $this->log;
-
-		$this->app['events']->listen('illuminate.log', function($level, $message, $context) use($log)
-		{
-			$log->log($level, $message, $context);
+		$this->app['events']->listen('illuminate.log', function ($level, $message, $context) {
+			$this->log->log($level, $message, $context);
 		});
 
-		$views = $this->views;
-		$that = $this;
-
-		$this->app['events']->listen('composing:*', function ($view, $data = null) use ($views, $that)
-		{
+		$this->app['events']->listen('composing:*', function ($view, $data = null) {
 			if (is_string($view) && is_array($data)) { // Laravel 5.4 wildcard event
 				$view = $data[0];
 			}
 
 			$time = microtime(true);
 
-			$views->addEvent(
+			$this->views->addEvent(
 				'view ' . $view->getName(),
 				'Rendering a view',
 				$time,
 				$time,
-				array(
-					'name' => $view->getName(),
-					'data' => $that->replaceUnserializable($view->getData())
-				)
+				[ 'name' => $view->getName(), 'data' => $that->replaceUnserializable($view->getData()) ]
 			);
 		});
 	}
@@ -149,7 +135,7 @@ class LumenDataSource extends DataSource
 			$controller = 'anonymous function';
 		} elseif (is_object($controller)) {
 			$controller = 'instance of ' . get_class($controller);
-		} else if (!is_string($controller)) {
+		} elseif (! is_string($controller)) {
 			$controller = null;
 		}
 
@@ -193,20 +179,16 @@ class LumenDataSource extends DataSource
 	 */
 	protected function getRoutes()
 	{
-		$routesData = array();
-
 		$routes = method_exists($this->app, 'getRoutes') ? $this->app->getRoutes() : [];
 
-		foreach ($routes as $route) {
-			$routesData[] = array(
+		return array_map(function ($route) {
+			return [
 				'method' => $route['method'],
 				'uri'    => $route['uri'],
 				'name'   => array_search($route['uri'], $this->app->namedRoutes) ?: null,
 				'action' => isset($route['action']['uses']) && is_string($route['action']['uses']) ? $route['action']['uses'] : 'anonymous function'
-			);
-		}
-
-		return $routesData;
+			];
+		}, $routes);
 	}
 
 	/**
@@ -218,9 +200,7 @@ class LumenDataSource extends DataSource
 			return [];
 		}
 
-		return $this->removePasswords(
-			$this->replaceUnserializable($this->app['session']->all())
-		);
+		return $this->removePasswords($this->replaceUnserializable($this->app['session']->all()));
 	}
 
 	protected function getMethod()
@@ -241,7 +221,7 @@ class LumenDataSource extends DataSource
 		} else {
 			$query = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
 
-			return '/'.trim(str_replace('?'.$query, '', $_SERVER['REQUEST_URI']), '/');
+			return '/' . trim(str_replace("?{$query}", '', $_SERVER['REQUEST_URI']), '/');
 		}
 	}
 }

@@ -3,15 +3,17 @@
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Routing\Controller;
 
-class CurrentController extends Controller {
+class CurrentController extends Controller
+{
+	protected $app;
 
-	public $app;
-
-	public function __construct(Application $app) {
+	public function __construct(Application $app)
+	{
 		$this->app = $app;
 	}
 
-	public function getData($id = null, $last = null) {
+	public function getData($id = null, $last = null)
+	{
 		return $this->app['clockwork.support']->getData($id, $last);
 	}
 }

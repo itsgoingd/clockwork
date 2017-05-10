@@ -3,7 +3,6 @@
 use Clockwork\Clockwork;
 use Clockwork\Request\Request;
 
-use Exception;
 use PDO;
 
 /**
@@ -24,20 +23,20 @@ class SqlStorage extends Storage
 	/**
 	 * List of all fields in the Clockwork requests table
 	 */
-	protected $fields = array(
+	protected $fields = [
 		'id', 'version', 'time', 'method', 'uri', 'headers', 'controller', 'getData',
 		'postData', 'sessionData', 'cookies', 'responseTime', 'responseStatus', 'responseDuration',
 		'databaseQueries', 'databaseDuration', 'cacheQueries', 'cacheReads', 'cacheHits', 'cacheWrites',
 		'cacheDeletes', 'cacheTime', 'timelineData', 'log', 'routes', 'emailsData', 'viewsData', 'userData'
-	);
+	];
 
 	/**
 	 * List of Request keys that need to be serialized before they can be stored in database
 	 */
-	protected $needs_serialization = array(
+	protected $needs_serialization = [
 		'headers', 'getData', 'postData', 'sessionData', 'cookies', 'databaseQueries', 'cacheQueries', 'timelineData',
 		'log', 'routes', 'emailsData', 'viewsData', 'userData'
-	);
+	];
 
 	/**
 	 * Return a new storage, takes PDO object or DSN and optionally a table name and database credentials as arguments
@@ -61,50 +60,38 @@ class SqlStorage extends Storage
 	{
 		$fields = implode(', ', $this->fields);
 
-		if (!$id) {
-			$result = $this->query("SELECT $fields FROM {$this->table}");
+		if (! $id) {
+			$result = $this->query("SELECT {$fields} FROM {$this->table}");
 
 			$data = $result->fetchAll(PDO::FETCH_ASSOC);
 
-			$requests = array();
-
-			foreach ($data as $item) {
-				$requests[] = $this->createRequestFromData($item);
-			}
-
-			return $requests;
+			return array_map(function ($item) { return $this->createRequestFromData($item); }, $data);
 		}
 
-		$result = $this->query("SELECT {$fields} FROM {$this->table} WHERE id = :id", array('id' => $id));
+		$result = $this->query("SELECT {$fields} FROM {$this->table} WHERE id = :id", [ 'id' => $id ]);
 
 		$data = $result->fetch(PDO::FETCH_ASSOC);
 
-		if (!$data) {
+		if (! $data) {
 			return null;
 		}
 
-		if (!$last) {
+		if (! $last) {
 			return $this->createRequestFromData($data);
 		}
 
-		$result = $this->query("SELECT $fields FROM {$this->table} WHERE id = :id", array('id' => $last));
+		$result = $this->query("SELECT {$fields} FROM {$this->table} WHERE id = :id", [ 'id' => $last ]);
 
-		$last_data = $result->fetch(PDO::FETCH_ASSOC);
+		$lastData = $result->fetch(PDO::FETCH_ASSOC);
 
 		$result = $this->query(
-			"SELECT $fields FROM {$this->table} WHERE time >= :from AND time <= :to",
-			array('from' => $data['time'], 'to' => $last_data['time'])
+			"SELECT {$fields} FROM {$this->table} WHERE time >= :from AND time <= :to",
+			[ 'from' => $data['time'], 'to' => $last_data['time'] ]
 		);
 
 		$data = $result->fetchAll(PDO::FETCH_ASSOC);
 
-		$requests = array();
-
-		foreach ($data as $item) {
-			$requests[] = $this->createRequestFromData($item);
-		}
-
-		return $requests;
+		return array_map(function ($item) { return $this->createRequestFromData($item); }, $data);
 	}
 
 	/**
@@ -114,7 +101,7 @@ class SqlStorage extends Storage
 	{
 		$data = $this->applyFilter($request->toArray());
 
-		foreach ($this->needs_serialization as $key) {
+		foreach ($this->needsSerialization as $key) {
 			$data[$key] = @json_encode($data[$key]);
 		}
 
@@ -201,7 +188,7 @@ class SqlStorage extends Storage
 
 	protected function createRequestFromData($data)
 	{
-		foreach ($this->needs_serialization as $key) {
+		foreach ($this->needsSerialization as $key) {
 			$data[$key] = json_decode($data[$key], true);
 		}
 

@@ -26,7 +26,7 @@ class StackTrace
 	{
 		$ignoredPaths = $this->getIgnoredNonVendorCallerPaths($ignoredPackages);
 
-		return $this->first(function($frame) use($ignoredPaths) {
+		return $this->first(function ($frame) use ($ignoredPaths) {
 			return $frame->file && ! $this->isSubdir($frame->file, $ignoredPaths);
 		});
 	}
@@ -60,16 +60,10 @@ class StackTrace
 		$vendorPath = $this->getVendorPath();
 
 		if (! $ignoredPackages) {
-			return array($vendorPath);
+			return [ $vendorPath ];
 		}
 
-		$ignoredPaths = array();
-
-		foreach ($ignoredPackages as $ignoredPackage) {
-			$ignoredPaths[] = "{$vendorPath}{$ignoredPackage}";
-		}
-
-		return $ignoredPaths;
+		return array_map(function ($ignoredPackage) { return "{$vendorPath}{$ignoredPackage}"; }, $ignoredPackages);
 	}
 
 	protected function isSubdir($subdir, array $paths)
