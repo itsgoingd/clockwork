@@ -143,7 +143,7 @@ class EloquentDataSource extends DataSource
 	{
 		$connection = $this->databaseManager->connection($connection);
 
-		if ($connection->getConfig('odbc') === true) {
+		if ($connection->getPdo()->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'odbc') {
 			// PDO_ODBC driver doesn't support the quote method, apply simple MSSQL style quoting instead
 			return "'" . str_replace("'", "''", $binding) . "'";
 		}
