@@ -12,8 +12,8 @@ class CurrentController extends Controller
 		$this->app = $app;
 	}
 
-	public function getData($id = null, $last = null)
+	public function getData($id = null, $direction = null, $count = null)
 	{
-		return $this->app['clockwork.support']->getData($id, $last);
+		return $this->app['clockwork.support']->getData($id, $direction, $count);
 	}
 }

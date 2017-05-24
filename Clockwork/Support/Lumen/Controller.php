@@ -13,8 +13,8 @@ class Controller extends LumenController
 		$this->clockworkSupport = $clockworkSupport;
 	}
 
-	public function getData($id = null, $last = null)
+	public function getData($id = null, $direction = null, $count = null)
 	{
-		return $this->clockworkSupport->getData($id, $last);
+		return $this->clockworkSupport->getData($id, $direction, $count);
 	}
 }

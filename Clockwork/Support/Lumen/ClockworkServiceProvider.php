@@ -33,7 +33,8 @@ class ClockworkServiceProvider extends ServiceProvider
 			return; // Clockwork is disabled, don't register the route
 		}
 
-		$this->app->get('/__clockwork/{id}', 'Clockwork\Support\Lumen\Controller@getData');
+		$this->app->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Lumen\Controller@getData')
+			->where('id', '[0-9\.]+')->where('direction', '(next|previous)')->where('count', '\d+');
 	}
 
 	public function register()

@@ -3,18 +3,25 @@
 use Clockwork\Request\Request;
 
 /**
- * Base storage class, all storages have to extend this class
+ * Interface for requests storage implementations
  */
 interface StorageInterface
 {
-	/**
-	 * Retrieve request specified by id argument, if second argument is specified, array of requests from id to last
-	 * will be returned
-	 */
-	public function retrieve($id = null, $last = null);
+	// Returns all requests
+	public function all();
 
-	/**
-	 * Store request
-	 */
+	// Return a single request by id
+	public function find($id);
+
+	// Return the latest request
+	public function latest();
+
+	// Return requests received before specified id, optionally limited to specified count
+	public function previous($id, $count = null);
+
+	// Return requests received after specified id, optionally limited to specified count
+	public function next($id, $count = null);
+
+	// Store request
 	public function store(Request $request);
 }
