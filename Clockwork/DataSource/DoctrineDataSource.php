@@ -2,9 +2,12 @@
 
 use Clockwork\Request\Request;
 
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\ORM\EntityManager;
+use Exception;
 
 class DoctrineDataSource extends DataSource implements SQLLogger
 {
