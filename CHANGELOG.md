@@ -1,3 +1,6 @@
+1.14.2
+- fixed missing imports in Doctrine data source (thanks jenssegers)
+
 1.14.1
 - fixed collecting Eloquent queries when using PDO_ODBC driver for real (thanks abhimanyu003)
 
