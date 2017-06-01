@@ -29,6 +29,11 @@ Once Clockwork is installed, you need to register Laravel service provider, in y
 ]
 ```
 
+For development environment use
+```php
+'providers' => append_config(['Clockwork\Support\Laravel\ClockworkServiceProvider'])
+```
+
 When using Laravel 5, you need to add Clockwork middleware, in your `app/Http/Kernel.php`:
 
 ```php
