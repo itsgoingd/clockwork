@@ -19,5 +19,15 @@
         "psr-4": {
             "Clockwork\\": "Clockwork/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Clockwork\\Support\\Laravel\\ClockworkServiceProvider"
+            ],
+            "aliases": {
+                "Clockwork": "Clockwork\\Support\\Laravel\\Facade"
+            }
+        }
     }
 }
