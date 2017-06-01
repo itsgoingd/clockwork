@@ -219,7 +219,7 @@ class LaravelDataSource extends DataSource
 				];
 			}, $routes, $names);
 		} else { // Laravel 4.1
-			$routes = $router->getRoutes();
+			$routes = $router->getRoutes()->getRoutes();
 
 			return array_map(function ($route) {
 				return [
