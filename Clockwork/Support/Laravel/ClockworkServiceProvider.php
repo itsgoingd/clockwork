@@ -27,6 +27,8 @@ class ClockworkServiceProvider extends ServiceProvider
 			return; // Clockwork is disabled, don't register the route
 		}
 
+		$this->registerMiddleware();
+
 		if ($this->isLegacyLaravel()) {
 			$this->app['router']->get('/__clockwork/{id}', 'Clockwork\Support\Laravel\Controllers\LegacyController@getData')->where('id', '[0-9\.]+');
 		} elseif ($this->isOldLaravel()) {
@@ -105,7 +107,11 @@ class ClockworkServiceProvider extends ServiceProvider
 		if ($this->app['clockwork.support']->getConfig('register_helpers', true)) {
 			require __DIR__ . '/helpers.php';
 		}
+	}
 
+	// Register middleware
+	public function registerMiddleware()
+	{
 		if ($this->isLegacyLaravel()) {
 			$this->app->middleware('Clockwork\Support\Laravel\ClockworkLegacyMiddleware', array($this->app));
 		} else if ($this->isOldLaravel()) {
@@ -114,6 +120,9 @@ class ClockworkServiceProvider extends ServiceProvider
 			{
 				return $app['clockwork.support']->process($request, $response);
 			});
+		} else {
+			$kernel = $this->app['Illuminate\Contracts\Http\Kernel'];
+			$kernel->prependMiddleware('Clockwork\Support\Laravel\ClockworkMiddleware');
 		}
 	}
 
