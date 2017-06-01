@@ -63,7 +63,9 @@ class StackTrace
 			return [ $vendorPath ];
 		}
 
-		return array_map(function ($ignoredPackage) { return "{$vendorPath}{$ignoredPackage}"; }, $ignoredPackages);
+		return array_map(function ($ignoredPackage) use ($vendorPath) {
+			return "{$vendorPath}{$ignoredPackage}";
+		}, $ignoredPackages);
 	}
 
 	protected function isSubdir($subdir, array $paths)

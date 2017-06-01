@@ -108,7 +108,7 @@ class LumenDataSource extends DataSource
 				'Rendering a view',
 				$time,
 				$time,
-				[ 'name' => $view->getName(), 'data' => $that->replaceUnserializable($view->getData()) ]
+				[ 'name' => $view->getName(), 'data' => $this->replaceUnserializable($view->getData()) ]
 			);
 		});
 	}
