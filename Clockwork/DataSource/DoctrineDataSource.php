@@ -108,20 +108,20 @@ class DoctrineDataSource extends DataSource implements SQLLogger
 	 */
 	public function stopQuery()
 	{
-		$endTime = microtime(true) - $this->start;
+		$duration = (microtime(true) - $this->start) * 1000;
 
-		$this->registerQuery($this->query['sql'], $this->query['params'], $endTime, $this->connection->getDatabase());
+		$this->registerQuery($this->query['sql'], $this->query['params'], $duration, $this->connection->getDatabase());
 	}
 
 	/**
 	 * Log the query into the internal store
 	 */
-	public function registerQuery($query, $bindings, $time, $connection)
+	public function registerQuery($query, $bindings, $duration, $connection)
 	{
 		$this->queries[] = [
 			'query'      => $query,
 			'bindings'   => $bindings,
-			'duration'   => $time,
+			'duration'   => $duration,
 			'connection' => $connection
 		];
 	}
