@@ -1,6 +1,7 @@
 <?php namespace Clockwork\DataSource;
 
 use Clockwork\Request\Request;
+use Clockwork\Request\Timeline;
 
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\DBAL\Logging\LoggerChain;
@@ -9,6 +10,8 @@ use Doctrine\DBAL\Connection;
 
 class DBALDataSource extends DataSource implements SQLLogger
 {
+	const EVENT_NAME = 'database';
+	
 	/**
 	 * Internal array where queries are stored
 	 */
@@ -28,10 +31,19 @@ class DBALDataSource extends DataSource implements SQLLogger
 	 * Doctrine connection
 	 */
 	protected $connection;
+	
+	/**
+	 * Clockwork timeline
+	 */
+	protected $timeline;
 
 	public function __construct(Connection $connection, $options = [])
 	{
 		$this->connection = $connection;
+		
+		$options = array_merge([
+			'timeline' => null
+		], $options);
 		
 		$configuration = $this->connection->getConfiguration();
 		$currentLogger = $configuration->getSQLLogger();
@@ -44,6 +56,10 @@ class DBALDataSource extends DataSource implements SQLLogger
 			$loggerChain->addLogger($this);
 			
 			$configuration->setSQLLogger($loggerChain);
+		}
+		
+		if($options['timeline'] instanceof Timeline) {
+			$this->setTimeline($options['timeline']);
 		}
 	}
 
@@ -58,6 +74,10 @@ class DBALDataSource extends DataSource implements SQLLogger
 		$sql = $this->formatQuery($sql);
 
 		$this->query = [ 'sql' => $sql, 'params' => $params, 'types' => $types ];
+		
+		if($this->timeline !== null) {
+			$this->timeline->startEvent(self::EVENT_NAME, $sql);
+		}
 	}
 
 	protected function formatQuery($sql)
@@ -118,6 +138,10 @@ class DBALDataSource extends DataSource implements SQLLogger
 		$duration = (microtime(true) - $this->start) * 1000;
 
 		$this->registerQuery($this->query['sql'], $this->query['params'], $duration, $this->connection->getDatabase());
+		
+		if($this->timeline !== null) {
+			$this->timeline->endEvent(self::EVENT_NAME);
+		}
 	}
 
 	/**
@@ -149,5 +173,18 @@ class DBALDataSource extends DataSource implements SQLLogger
 	protected function getDatabaseQueries()
 	{
 		return $this->queries;
+	}
+	
+	/**
+	 * Timeline Getter/Setter
+	 */
+	public function getTimeline()
+	{
+		return $this->timeline;
+	}
+	
+	public function setTimeline(Timeline $timeline)
+	{
+		return $this->timeline = $timeline;
 	}
 }
