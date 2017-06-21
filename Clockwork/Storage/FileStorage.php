@@ -8,14 +8,10 @@ use Clockwork\Storage\Storage;
  */
 class FileStorage extends Storage
 {
-	/**
-	 * Path where files are stored
-	 */
+	// Path where files are stored
 	protected $path;
 
-	/**
-	 * Return new storage, takes path where to store files as argument, throws exception if path is not writable
-	 */
+	// Return new storage, takes path where to store files as argument, throws exception if path is not writable
 	public function __construct($path, $dirPermissions = 0700)
 	{
 		if (! file_exists($path)) {
@@ -35,51 +31,72 @@ class FileStorage extends Storage
 		$this->path = $path;
 	}
 
-	/**
-	 * Retrieve request specified by id argument, if second argument is specified, array of requests from id to last
-	 * will be returned
-	 */
-	public function retrieve($id = null, $last = null)
+	// Returns all requests
+	public function all()
 	{
-		if ($id && ! $last) {
-			if (! is_readable("{$this->path}/{$id}.json")) {
-				return null;
-			}
-
-			return new Request(json_decode(file_get_contents("{$this->path}/{$id}.json"), true));
-		}
-
-		$files = glob("{$this->path}/*.json");
-
-		$id = $id ? "{$id}.json" : first($files);
-		$last = $last ? "{$last}.json" : end($files);
-
-		$requests = [];
-		$add = false;
-
-		foreach ($files as $file) {
-			if ($file == $id) {
-				$add = true;
-			} elseif ($file == $last) {
-				$add = false;
-			}
-
-			if (! $add) continue;
-
-			$requests[] = new Request(json_decode(file_get_contents($file), true));
-		}
-
-		return $requests;
+		return $this->idsToRequests($this->ids());
 	}
 
-	/**
-	 * Store request, requests are stored in JSON representation in files named <request id>.json in storage path
-	 */
+	// Return a single request by id
+	public function find($id)
+	{
+		return $this->idsToRequests([ $id ])[0];
+	}
+
+	// Return the latest request
+	public function latest()
+	{
+		$ids = $this->ids();
+		return $this->find(end($ids));
+	}
+
+	// Return requests received before specified id, optionally limited to specified count
+	public function previous($id, $count = null)
+	{
+		$ids = $this->ids();
+
+		$lastIndex = array_search($id, $ids);
+		$firstIndex = $count && $lastIndex - $count > 0 ? $lastIndex - $count : 0;
+
+		return $this->idsToRequests(array_slice($ids, $firstIndex, $lastIndex - $firstIndex));
+	}
+
+	// Return requests received after specified id, optionally limited to specified count
+	public function next($id, $count = null)
+	{
+		$ids = $this->ids();
+
+		$firstIndex = array_search($id, $ids);
+		$lastIndex = $count && $firstIndex + $count < count($ids) ? $firstIndex + $count : count($ids);
+
+		return $this->idsToRequests(array_slice($ids, $firstIndex, $lastIndex - $firstIndex));
+	}
+
+	// Store request, requests are stored in JSON representation in files named <request id>.json in storage path
 	public function store(Request $request)
 	{
 		file_put_contents(
 			"{$this->path}/{$request->id}.json",
 			@json_encode($this->applyFilter($request->toArray()))
 		);
+	}
+
+	// Returns all request ids
+	protected function ids()
+	{
+		return array_map(function ($path) {
+			preg_match('#/(?<id>[^/]+?)\.json$#', $path, $matches);
+			return $matches['id'];
+		}, glob("{$this->path}/*.json"));
+	}
+
+	// Returns array of Request instances from passed ids
+	protected function idsToRequests($ids)
+	{
+		return array_map(function ($id) {
+			if (is_readable("{$this->path}/{$id}.json")) {
+				return new Request(json_decode(file_get_contents("{$this->path}/{$id}.json"), true));
+			}
+		}, $ids);
 	}
 }

@@ -28,13 +28,25 @@ class ClockworkSupport
 		return env('CLOCKWORK_' . strtoupper($key), $default);
 	}
 
-	public function getData($id = null, $last = null)
+	public function getData($id = null, $direction = null, $count = null)
 	{
 		if (isset($this->app['session'])) {
 			$this->app['session.store']->reflash();
 		}
 
-		return new JsonResponse($this->app['clockwork']->getStorage()->retrieve($id, $last));
+		$storage = $this->app['clockwork']->getStorage();
+
+		if ($direction == 'previous') {
+			$data = $storage->previous($id, $count);
+		} elseif ($direction == 'next') {
+			$data = $storage->next($id, $count);
+		} elseif ($id == 'latest') {
+			$data = $storage->latest();
+		} else {
+			$data = $storage->find($id);
+		}
+
+		return new JsonResponse($data);
 	}
 
 	public function getStorage()

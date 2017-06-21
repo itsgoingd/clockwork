@@ -35,11 +35,14 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->registerMiddleware();
 
 		if ($this->isLegacyLaravel()) {
-			$this->app['router']->get('/__clockwork/{id}', 'Clockwork\Support\Laravel\Controllers\LegacyController@getData')->where('id', '[0-9\.]+');
+			$this->app['router']->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Laravel\Controllers\LegacyController@getData')
+				->where('id', '([0-9\.]+|latest)')->where('direction', '(next|previous)')->where('count', '\d+');
 		} elseif ($this->isOldLaravel()) {
-			$this->app['router']->get('/__clockwork/{id}', 'Clockwork\Support\Laravel\Controllers\OldController@getData')->where('id', '[0-9\.]+');
+			$this->app['router']->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Laravel\Controllers\OldController@getData')
+				->where('id', '([0-9\.]+|latest)')->where('direction', '(next|previous)')->where('count', '\d+');
 		} else {
-			$this->app['router']->get('/__clockwork/{id}', 'Clockwork\Support\Laravel\Controllers\CurrentController@getData')->where('id', '[0-9\.]+');
+			$this->app['router']->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Laravel\Controllers\CurrentController@getData')
+				->where('id', '([0-9\.]+|latest)')->where('direction', '(next|previous)')->where('count', '\d+');
 		}
 	}
 

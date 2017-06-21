@@ -38,8 +38,9 @@ class ClockworkMiddleware extends Middleware
 
 		$this->app->getLog()->setWriter($clockworkLogWriter);
 
-		if ($this->app->config('debug') && preg_match('#/__clockwork(/(?<id>[0-9\.]+))?#', $this->app->request()->getPathInfo(), $matches)) {
-			return $this->retrieveRequest($matches['id']);
+		$clockworkDataUri = '#/__clockwork(?:/(?<id>[0-9\.]+))?(?:/(?<direction>(?:previous|next)))?(?:/(?<count>\d+))?#';
+		if ($this->app->config('debug') && preg_match($clockworkDataUri, $this->app->request()->getPathInfo(), $matches)) {
+			return $this->retrieveRequest($matches['id'], $matches['direction'], $matches['count']);
 		}
 
 		try {
@@ -51,9 +52,21 @@ class ClockworkMiddleware extends Middleware
 		}
 	}
 
-	public function retrieveRequest($id = null, $last = null)
+	public function retrieveRequest($id = null, $direction = null, $count = null)
 	{
-		echo $this->app->clockwork->getStorage()->retrieveAsJson($id, $last);
+		$storage = $this->app->clockwork->getStorage();
+
+		if ($direction == 'previous') {
+			$data = $storage->previous($id, $count);
+		} elseif ($direction == 'next') {
+			$data = $storage->next($id, $count);
+		} elseif ($id == 'latest') {
+			$data = $storage->latest();
+		} else {
+			$data = $storage->find($id);
+		}
+
+		echo json_encode($data);
 	}
 
 	protected function logRequest()

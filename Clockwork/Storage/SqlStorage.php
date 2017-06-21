@@ -6,23 +6,17 @@ use Clockwork\Request\Request;
 use PDO;
 
 /**
- * SQL storage for requests
+ * SQL storage for requests using PDO
  */
 class SqlStorage extends Storage
 {
-	/**
-	 * PDO instance
-	 */
+	// PDO instance
 	protected $pdo;
 
-	/**
-	 * Name of the table with Clockwork requests metadata
-	 */
+	// Name of the table with Clockwork requests metadata
 	protected $table;
 
-	/**
-	 * List of all fields in the Clockwork requests table
-	 */
+	// List of all fields in the Clockwork requests table
 	protected $fields = [
 		'id', 'version', 'time', 'method', 'uri', 'headers', 'controller', 'getData',
 		'postData', 'sessionData', 'cookies', 'responseTime', 'responseStatus', 'responseDuration',
@@ -30,17 +24,13 @@ class SqlStorage extends Storage
 		'cacheDeletes', 'cacheTime', 'timelineData', 'log', 'routes', 'emailsData', 'viewsData', 'userData'
 	];
 
-	/**
-	 * List of Request keys that need to be serialized before they can be stored in database
-	 */
-	protected $needs_serialization = [
+	// List of Request keys that need to be serialized before they can be stored in database
+	protected $needsSerialization = [
 		'headers', 'getData', 'postData', 'sessionData', 'cookies', 'databaseQueries', 'cacheQueries', 'timelineData',
 		'log', 'routes', 'emailsData', 'viewsData', 'userData'
 	];
 
-	/**
-	 * Return a new storage, takes PDO object or DSN and optionally a table name and database credentials as arguments
-	 */
+	// Return a new storage, takes PDO object or DSN and optionally a table name and database credentials as arguments
 	public function __construct($dsn, $table = 'clockwork', $username = null, $password = null)
 	{
 		if ($dsn instanceof PDO) {
@@ -52,51 +42,64 @@ class SqlStorage extends Storage
 		$this->table = $table;
 	}
 
-	/**
-	 * Retrieve a request specified by id argument, if second argument is specified, array of requests from id to last
-	 * will be returned
-	 */
-	public function retrieve($id = null, $last = null)
+	// Returns all requests
+	public function all()
 	{
 		$fields = implode(', ', $this->fields);
+		$result = $this->query("SELECT {$fields} FROM {$this->table}");
 
-		if (! $id) {
-			$result = $this->query("SELECT {$fields} FROM {$this->table}");
-
-			$data = $result->fetchAll(PDO::FETCH_ASSOC);
-
-			return array_map(function ($item) { return $this->createRequestFromData($item); }, $data);
-		}
-
-		$result = $this->query("SELECT {$fields} FROM {$this->table} WHERE id = :id", [ 'id' => $id ]);
-
-		$data = $result->fetch(PDO::FETCH_ASSOC);
-
-		if (! $data) {
-			return null;
-		}
-
-		if (! $last) {
-			return $this->createRequestFromData($data);
-		}
-
-		$result = $this->query("SELECT {$fields} FROM {$this->table} WHERE id = :id", [ 'id' => $last ]);
-
-		$lastData = $result->fetch(PDO::FETCH_ASSOC);
-
-		$result = $this->query(
-			"SELECT {$fields} FROM {$this->table} WHERE time >= :from AND time <= :to",
-			[ 'from' => $data['time'], 'to' => $last_data['time'] ]
-		);
-
-		$data = $result->fetchAll(PDO::FETCH_ASSOC);
-
-		return array_map(function ($item) { return $this->createRequestFromData($item); }, $data);
+		return $this->resultsToRequests($result);
 	}
 
-	/**
-	 * Store the request in the database
-	 */
+	// Return a single request by id
+	public function find($id)
+	{
+		$fields = implode(', ', $this->fields);
+		$result = $this->query("SELECT {$fields} FROM {$this->table} WHERE id = :id", [ 'id' => $id ]);
+
+		$requests = $this->resultsToRequests($result);
+		return end($requests);
+	}
+
+	// Return the latest request
+	public function latest()
+	{
+		$fields = implode(', ', $this->fields);
+		$result = $this->query("SELECT {$fields} FROM {$this->table} ORDER BY id DESC LIMIT 1");
+
+		$requests = $this->resultsToRequests($result);
+		return end($requests);
+	}
+
+	// Return requests received before specified id, optionally limited to specified count
+	public function previous($id, $count = null)
+	{
+		$count = (int) $count;
+
+		$fields = implode(', ', $this->fields);
+		$result = $this->query(
+			"SELECT {$fields} FROM {$this->table} WHERE id < :id ORDER BY id DESC " . ($count ? "LIMIT {$count}" : ''),
+			[ 'id' => $id ]
+		);
+
+		return array_reverse($this->resultsToRequests($result));
+	}
+
+	// Return requests received after specified id, optionally limited to specified count
+	public function next($id, $count = null)
+	{
+		$count = (int) $count;
+
+		$fields = implode(', ', $this->fields);
+		$result = $this->query(
+			"SELECT {$fields} FROM {$this->table} WHERE id > :id ORDER BY id ASC " . ($count ? "LIMIT {$count}" : ''),
+			[ 'id' => $id ]
+		);
+
+		return $this->resultsToRequests($result);
+	}
+
+	// Store the request in the database
 	public function store(Request $request)
 	{
 		$data = $this->applyFilter($request->toArray());
@@ -113,9 +116,7 @@ class SqlStorage extends Storage
 		$this->query("INSERT INTO {$this->table} ($fields) VALUES ($bindings)", $data);
 	}
 
-	/**
-	 * Create or update the Clockwork metadata table
-	 */
+	// Create or update the Clockwork metadata table
 	protected function initialize()
 	{
 		// first we get rid of existing table if it exists by renaming it so we won't lose any data
@@ -161,10 +162,8 @@ class SqlStorage extends Storage
 		);
 	}
 
-	/**
-	 * Executes an sql query, lazily initiates the clockwork database schema if it's old or doesn't exist yet, returns
-	 * executed statement or false on error
-	 */
+	// Executes an sql query, lazily initiates the clockwork database schema if it's old or doesn't exist yet, returns
+	// executed statement or false on error
 	protected function query($query, array $bindings = array(), $firstTry = true)
 	{
 		try {
@@ -186,7 +185,16 @@ class SqlStorage extends Storage
 		return $stmt;
 	}
 
-	protected function createRequestFromData($data)
+	// Returns array of Requests instances from the executed PDO statement
+	protected function resultsToRequests($stmt)
+	{
+		return array_map(function ($data) {
+			return $this->dataToRequest($data);
+		}, $stmt->fetchAll(PDO::FETCH_ASSOC));
+	}
+
+	// Returns a Request instance from a single database record
+	protected function dataToRequest($data)
 	{
 		foreach ($this->needsSerialization as $key) {
 			$data[$key] = json_decode($data[$key], true);
