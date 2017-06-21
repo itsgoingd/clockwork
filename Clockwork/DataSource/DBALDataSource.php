@@ -3,6 +3,7 @@
 use Clockwork\Request\Request;
 
 use Doctrine\DBAL\Logging\SQLLogger;
+use Doctrine\DBAL\Logging\LoggerChain;
 use Doctrine\ORM\EntityManager;
 use Doctrine\DBAL\Connection;
 
@@ -28,11 +29,22 @@ class DBALDataSource extends DataSource implements SQLLogger
 	 */
 	protected $connection;
 
-	public function __construct(Connection $connection)
+	public function __construct(Connection $connection, $options = [])
 	{
 		$this->connection = $connection;
-
-		$this->connection->getConfiguration()->setSQLLogger($this);
+		
+		$configuration = $this->connection->getConfiguration();
+		$currentLogger = $configuration->getSQLLogger();
+		
+		if($currentLogger === null) {
+			$configuration->setSQLLogger($this);
+		} else {
+			$loggerChain = new LoggerChain();
+			$loggerChain->addLogger($currentLogger);
+			$loggerChain->addLogger($this);
+			
+			$configuration->setSQLLogger($loggerChain);
+		}
 	}
 
 	/**
