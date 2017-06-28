@@ -45,7 +45,7 @@ class SqlStorage extends Storage
 	// Returns all requests
 	public function all()
 	{
-		$fields = implode(', ', $this->fields);
+		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, $this->fields));
 		$result = $this->query("SELECT {$fields} FROM {$this->table}");
 
 		return $this->resultsToRequests($result);
@@ -54,7 +54,7 @@ class SqlStorage extends Storage
 	// Return a single request by id
 	public function find($id)
 	{
-		$fields = implode(', ', $this->fields);
+		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, $this->fields));
 		$result = $this->query("SELECT {$fields} FROM {$this->table} WHERE id = :id", [ 'id' => $id ]);
 
 		$requests = $this->resultsToRequests($result);
@@ -64,7 +64,7 @@ class SqlStorage extends Storage
 	// Return the latest request
 	public function latest()
 	{
-		$fields = implode(', ', $this->fields);
+		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, $this->fields));
 		$result = $this->query("SELECT {$fields} FROM {$this->table} ORDER BY id DESC LIMIT 1");
 
 		$requests = $this->resultsToRequests($result);
@@ -76,7 +76,7 @@ class SqlStorage extends Storage
 	{
 		$count = (int) $count;
 
-		$fields = implode(', ', $this->fields);
+		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, $this->fields));
 		$result = $this->query(
 			"SELECT {$fields} FROM {$this->table} WHERE id < :id ORDER BY id DESC " . ($count ? "LIMIT {$count}" : ''),
 			[ 'id' => $id ]
@@ -90,7 +90,7 @@ class SqlStorage extends Storage
 	{
 		$count = (int) $count;
 
-		$fields = implode(', ', $this->fields);
+		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, $this->fields));
 		$result = $this->query(
 			"SELECT {$fields} FROM {$this->table} WHERE id > :id ORDER BY id ASC " . ($count ? "LIMIT {$count}" : ''),
 			[ 'id' => $id ]
@@ -108,9 +108,7 @@ class SqlStorage extends Storage
 			$data[$key] = @json_encode($data[$key]);
 		}
 
-		$data['version'] = Clockwork::VERSION;
-
-		$fields = implode(', ', $this->fields);
+		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, $this->fields));
 		$bindings = implode(', ', array_map(function ($field) { return ":{$field}"; }, $this->fields));
 
 		$this->query("INSERT INTO {$this->table} ($fields) VALUES ($bindings)", $data);
@@ -121,53 +119,59 @@ class SqlStorage extends Storage
 	{
 		// first we get rid of existing table if it exists by renaming it so we won't lose any data
 		try {
-			$backupTableName = "{$this->table}_backup_" . date('Ymd');
-			$this->pdo->exec("ALTER TABLE {$this->table} RENAME TO {$backupTableName};");
+			$table = $this->quote($this->table);
+			$backupTableName = $this->quote("{$this->table}_backup_" . date('Ymd'));
+			$this->pdo->exec("ALTER TABLE {$table} RENAME TO {$backupTableName};");
 		} catch (\PDOException $e) {
 			// this just means the table doesn't yet exist, nothing to do here
 		}
 
 		// create the metadata table
+		$textType = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql' ? 'MEDIUMTEXT' : 'TEXT';
+
 		$this->pdo->exec(
-			"CREATE TABLE {$this->table} (" .
-				'id VARCHAR(100), ' .
-				'version INTEGER, ' .
-				'time DOUBLE NULL, ' .
-				'method VARCHAR(10) NULL, ' .
-				'uri VARCHAR(250) NULL, ' .
-				'headers MEDIUMTEXT NULL, ' .
-				'controller VARCHAR(250) NULL, ' .
-				'getData MEDIUMTEXT NULL, ' .
-				'postData MEDIUMTEXT NULL, ' .
-				'sessionData MEDIUMTEXT NULL, ' .
-				'cookies MEDIUMTEXT NULL, ' .
-				'responseTime DOUBLE NULL, ' .
-				'responseStatus INTEGER NULL, ' .
-				'responseDuration DOUBLE NULL, ' .
-				'databaseQueries MEDIUMTEXT NULL, ' .
-				'databaseDuration DOUBLE NULL, ' .
-				'cacheQueries MEDIUMTEXT NULL, ' .
-				'cacheReads INTEGER NULL, ' .
-				'cacheHits INTEGER NULL, ' .
-				'cacheWrites INTEGER NULL, ' .
-				'cacheDeletes INTEGER NULL, ' .
-				'cacheTime DOUBLE NULL, ' .
-				'timelineData MEDIUMTEXT NULL, ' .
-				'log MEDIUMTEXT NULL, ' .
-				'routes MEDIUMTEXT NULL, ' .
-				'emailsData MEDIUMTEXT NULL, ' .
-				'viewsData MEDIUMTEXT NULL, ' .
-				'userData MEDIUMTEXT NULL' .
+			"CREATE TABLE {$table} (" .
+				$this->quote('id') . ' VARCHAR(100), ' .
+				$this->quote('version') . ' INTEGER, ' .
+				$this->quote('time') . ' DOUBLE PRECISION NULL, ' .
+				$this->quote('method') . ' VARCHAR(10) NULL, ' .
+				$this->quote('uri') . ' VARCHAR(250) NULL, ' .
+				$this->quote('headers') . " {$textType} NULL, " .
+				$this->quote('controller') . ' VARCHAR(250) NULL, ' .
+				$this->quote('getData') . " {$textType} NULL, " .
+				$this->quote('postData') . " {$textType} NULL, " .
+				$this->quote('sessionData') . " {$textType} NULL, " .
+				$this->quote('cookies') . " {$textType} NULL, " .
+				$this->quote('responseTime') . ' DOUBLE PRECISION NULL, ' .
+				$this->quote('responseStatus') . ' INTEGER NULL, ' .
+				$this->quote('responseDuration') . ' DOUBLE PRECISION NULL, ' .
+				$this->quote('databaseQueries') . " {$textType} NULL, " .
+				$this->quote('databaseDuration') . ' DOUBLE PRECISION NULL, ' .
+				$this->quote('cacheQueries') . " {$textType} NULL, " .
+				$this->quote('cacheReads') . ' INTEGER NULL, ' .
+				$this->quote('cacheHits') . ' INTEGER NULL, ' .
+				$this->quote('cacheWrites') . ' INTEGER NULL, ' .
+				$this->quote('cacheDeletes') . ' INTEGER NULL, ' .
+				$this->quote('cacheTime') . ' DOUBLE PRECISION NULL, ' .
+				$this->quote('timelineData') . " {$textType} NULL, " .
+				$this->quote('log') . " {$textType} NULL, " .
+				$this->quote('routes') . " {$textType} NULL, " .
+				$this->quote('emailsData') . " {$textType} NULL, " .
+				$this->quote('viewsData') . " {$textType} NULL, " .
+				$this->quote('userData') . " {$textType} NULL" .
 			');'
 		);
 	}
 
 	// Executes an sql query, lazily initiates the clockwork database schema if it's old or doesn't exist yet, returns
 	// executed statement or false on error
-	protected function query($query, array $bindings = array(), $firstTry = true)
+	protected function query($query, array $bindings = [], $firstTry = true)
 	{
 		try {
-			$stmt = $this->pdo->prepare($query);
+			if ($stmt = $this->pdo->prepare($query)) {
+				$stmt->execute($bindings);
+				return $stmt;
+			}
 		} catch (\PDOException $e) {
 			$stmt = false;
 		}
@@ -175,14 +179,14 @@ class SqlStorage extends Storage
 		// the query failed to execute, assume it's caused by missing or old schema, try to reinitialize database
 		if (! $stmt && $firstTry) {
 			$this->initialize();
-			$this->query($query, $bindings, false);
+			return $this->query($query, $bindings, false);
 		}
+	}
 
-		if ($stmt) {
-			$stmt->execute($bindings);
-		}
-
-		return $stmt;
+	// Quotes SQL identifier name properly for the current database
+	protected function quote($identifier)
+	{
+		return $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql' ? "`{$identifier}`" : "\"{$identifier}\"";
 	}
 
 	// Returns array of Requests instances from the executed PDO statement

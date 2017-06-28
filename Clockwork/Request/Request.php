@@ -175,6 +175,7 @@ class Request
 	{
 		return [
 			'id'               => $this->id,
+			'version'          => $this->version,
 			'time'             => $this->time,
 			'method'           => $this->method,
 			'uri'              => $this->uri,
