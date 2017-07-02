@@ -95,6 +95,8 @@ Simply specify the setting as environment variable prefixed with `CLOCKWORK_`, e
 
 Clockwork also comes with a `clock()` helper function (see examples above) and a facade thats automatically registered when you enable facades in your `bootstrap/app.php`.
 
+Please note that for collecting database queries you need to enable `$app->withEloquent()` in `bootstrap/app.php`, this has no performance impact if your app executes database queries on most requests.
+
 ### Slim 2
 
 Once Clockwork is installed, you need to add Slim middleware to your app:
