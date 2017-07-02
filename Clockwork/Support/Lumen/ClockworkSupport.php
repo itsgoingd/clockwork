@@ -86,7 +86,7 @@ class ClockworkSupport
 		// don't collect data for configured URIs
 		$requestUri = $request->getRequestUri();
 		$filterUris = $this->getConfig('filter_uris', []);
-		$filterUris[] = '/__clockwork/[0-9\.]+'; // don't collect data for Clockwork requests
+		$filterUris[] = '/__clockwork(?:/.*)?'; // don't collect data for Clockwork requests
 
 		foreach ($filterUris as $uri) {
 			$regexp = '#' . str_replace('#', '\#', $uri) . '#';
