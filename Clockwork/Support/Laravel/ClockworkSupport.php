@@ -142,7 +142,7 @@ class ClockworkSupport
 
 	public function isCollectingData()
 	{
-		return $this->isEnabled() || $this->getConfig('collect_data_always', false);
+		return ($this->isEnabled() || $this->getConfig('collect_data_always', false)) && ! $this->app->runningInConsole();
 	}
 
 	public function isCollectingDatabaseQueries()
