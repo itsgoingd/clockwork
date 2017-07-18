@@ -116,6 +116,11 @@ class Request
 	public $log = [];
 
 	/**
+	 * Fired events array
+	 */
+	public $events = [];
+
+	/**
 	 * Application routes array
 	 */
 	public $routes = [];
@@ -198,6 +203,7 @@ class Request
 			'cacheTime'        => $this->cacheTime,
 			'timelineData'     => $this->timelineData,
 			'log'              => array_values($this->log),
+			'events'           => $this->events,
 			'routes'           => $this->routes,
 			'emailsData'       => $this->emailsData,
 			'viewsData'        => $this->viewsData,

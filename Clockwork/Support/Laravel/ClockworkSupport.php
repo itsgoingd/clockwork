@@ -155,6 +155,11 @@ class ClockworkSupport
 		return ! in_array('cache', $this->getFilter());
 	}
 
+	public function isCollectingEvents()
+	{
+		return ! in_array('events', $this->getFilter());
+	}
+
 	protected function appendServerTimingHeader($response, $request)
 	{
 		if (($eventsCount = $this->getConfig('server_timing', 10)) !== false) {
