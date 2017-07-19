@@ -56,6 +56,20 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
+	| Metadata expiration
+	|--------------------------------------------------------------------------
+	|
+	| Maximum lifetime of the metadata in seconds, metadata for older requests
+	| will automatically be deleted when storing new requests.
+	| When set to false, metadata will never be deleted.
+	| Default: about a month
+	|
+	*/
+
+	'storage_expiration' => 60 * 24 * 30,
+
+	/*
+	|--------------------------------------------------------------------------
 	| Filter collected data
 	|--------------------------------------------------------------------------
 	|

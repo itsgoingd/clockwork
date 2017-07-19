@@ -16,6 +16,9 @@ class SqlStorage extends Storage
 	// Name of the table with Clockwork requests metadata
 	protected $table;
 
+	// Metadata expiration time in minutes
+	protected $expiration;
+
 	// List of all fields in the Clockwork requests table
 	protected $fields = [
 		'id', 'version', 'time', 'method', 'uri', 'headers', 'controller', 'getData', 'postData', 'sessionData',
@@ -31,15 +34,11 @@ class SqlStorage extends Storage
 	];
 
 	// Return a new storage, takes PDO object or DSN and optionally a table name and database credentials as arguments
-	public function __construct($dsn, $table = 'clockwork', $username = null, $password = null)
+	public function __construct($dsn, $table = 'clockwork', $username = null, $password = null, $expiration = null)
 	{
-		if ($dsn instanceof PDO) {
-			$this->pdo = $dsn;
-		} else {
-			$this->pdo = new PDO($dsn, $username, $password);
-		}
-
+		$this->pdo = $dsn instanceof PDO ? $dsn : new PDO($dsn, $username, $password);
 		$this->table = $table;
+		$this->expiration = $expiration === null ? 60 * 24 * 30 * 6 : $expiration;
 	}
 
 	// Returns all requests
@@ -112,6 +111,16 @@ class SqlStorage extends Storage
 		$bindings = implode(', ', array_map(function ($field) { return ":{$field}"; }, $this->fields));
 
 		$this->query("INSERT INTO {$this->table} ($fields) VALUES ($bindings)", $data);
+
+		$this->cleanup();
+	}
+
+	// Cleanup old requests
+	public function cleanup()
+	{
+		if ($this->expiration === false) return;
+
+		$this->query("DELETE FROM {$this->table} WHERE time < :time", [ 'time' => time() - ($this->expiration * 60) ]);
 	}
 
 	// Create or update the Clockwork metadata table

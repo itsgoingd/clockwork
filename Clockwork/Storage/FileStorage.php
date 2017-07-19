@@ -11,8 +11,14 @@ class FileStorage extends Storage
 	// Path where files are stored
 	protected $path;
 
+	// Metadata expiration time in minutes
+	protected $expiration;
+
+	// Metadata cleanup chance
+	protected $cleanupChance = 100;
+
 	// Return new storage, takes path where to store files as argument, throws exception if path is not writable
-	public function __construct($path, $dirPermissions = 0700)
+	public function __construct($path, $dirPermissions = 0700, $expiration = null)
 	{
 		if (! file_exists($path)) {
 			// directory doesn't exist, try to create one
@@ -29,6 +35,7 @@ class FileStorage extends Storage
 		}
 
 		$this->path = $path;
+		$this->expiration = $expiration === null ? 60 * 24 * 30 : $expiration;
 	}
 
 	// Returns all requests
@@ -79,6 +86,25 @@ class FileStorage extends Storage
 			"{$this->path}/{$request->id}.json",
 			@json_encode($this->applyFilter($request->toArray()))
 		);
+
+		$this->cleanup();
+	}
+
+	// Cleanup old requests
+	public function cleanup()
+	{
+		if ($this->expiration === false || rand(1, $this->cleanupChance) != 1) return;
+
+		$expirationTime = time() - ($this->expiration * 60);
+
+		$ids = array_filter($this->ids(), function ($id) use ($expirationTime) {
+			preg_match('#(?<time>\d+\.\d+)\.\d+#', $id, $matches);
+			return $matches['time'] < $expirationTime;
+		});
+
+		foreach ($ids as $id) {
+			unlink("{$this->path}/{$id}.json");
+		}
 	}
 
 	// Returns all request ids
