@@ -61,7 +61,7 @@ class LaravelEventsDataSource extends DataSource
 		$this->events[] = [
 			'event'     => $event,
 			'data'      => Serializer::simplify(count($data) == 1 ? $data[0] : $data),
-			'time'      => time(),
+			'time'      => microtime(true),
 			'listeners' => $this->findListenersFor($event),
 			'file'      => $firedAt->shortPath,
 			'line'      => $firedAt->line
