@@ -1,5 +1,6 @@
 <?php namespace Clockwork\DataSource;
 
+use Clockwork\Helpers\Serializer;
 use Clockwork\Helpers\StackTrace;
 use Clockwork\Request\Request;
 
@@ -105,7 +106,7 @@ class LaravelCacheDataSource extends DataSource
 			return array_merge($query, [
 				'connection' => null,
 				'time' => null,
-				'value' => isset($query['value']) ? $this->serialize($query['value']) : null
+				'value' => isset($query['value']) ? Serializer::simplify($query['value']) : null
 			]);
 		}, $this->queries);
 	}

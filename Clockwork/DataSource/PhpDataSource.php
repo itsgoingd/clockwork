@@ -1,6 +1,7 @@
 <?php namespace Clockwork\DataSource;
 
 use Clockwork\DataSource\DataSource;
+use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Request;
 
 /**
@@ -33,7 +34,7 @@ class PhpDataSource extends DataSource
 	 */
 	protected function getCookies()
 	{
-		return $this->removePasswords($this->replaceUnserializable($_COOKIE));
+		return $this->removePasswords(Serializer::simplify($_COOKIE));
 	}
 
 	/**
@@ -41,7 +42,7 @@ class PhpDataSource extends DataSource
 	 */
 	protected function getGetData()
 	{
-		return $this->removePasswords($this->replaceUnserializable($_GET));
+		return $this->removePasswords(Serializer::simplify($_GET));
 	}
 
 	/**
@@ -49,7 +50,7 @@ class PhpDataSource extends DataSource
 	 */
 	protected function getPostData()
 	{
-		return $this->removePasswords($this->replaceUnserializable($_POST));
+		return $this->removePasswords(Serializer::simplify($_POST));
 	}
 
 	/**
@@ -136,6 +137,6 @@ class PhpDataSource extends DataSource
 			return [];
 		}
 
-		return $this->removePasswords($this->replaceUnserializable($_SESSION));
+		return $this->removePasswords(Serializer::simplify($_SESSION));
 	}
 }

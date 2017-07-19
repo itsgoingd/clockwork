@@ -1,6 +1,7 @@
 <?php namespace Clockwork\DataSource;
 
 use Clockwork\DataSource\DataSource;
+use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
 use Clockwork\Request\Timeline;
@@ -108,7 +109,7 @@ class LumenDataSource extends DataSource
 				'Rendering a view',
 				$time,
 				$time,
-				[ 'name' => $view->getName(), 'data' => $this->replaceUnserializable($view->getData()) ]
+				[ 'name' => $view->getName(), 'data' => Serializer::simplify($view->getData()) ]
 			);
 		});
 	}
@@ -200,7 +201,7 @@ class LumenDataSource extends DataSource
 			return [];
 		}
 
-		return $this->removePasswords($this->replaceUnserializable($this->app['session']->all()));
+		return $this->removePasswords(Serializer::simplify($this->app['session']->all()));
 	}
 
 	protected function getMethod()

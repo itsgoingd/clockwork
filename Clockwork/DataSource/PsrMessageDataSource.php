@@ -2,6 +2,7 @@
 namespace Clockwork\DataSource;
 
 use Clockwork\DataSource\DataSource;
+use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Request;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Message\ResponseInterface as PsrResponse;
@@ -16,12 +17,12 @@ class PsrMessageDataSource extends DataSource
 	 */
 	protected $psrRequest;
 	protected $psrResponse;
-	
+
 	public function __construct(PsrRequest $psrRequest = null, PsrResponse $psrResponse = null) {
 		$this->psrRequest = $psrRequest;
 		$this->psrResponse = $psrResponse;
 	}
-	
+
 	/**
 	 * Add request time, method, URI, headers, get and post data, session data, response status and time to the request
 	 */
@@ -35,9 +36,9 @@ class PsrMessageDataSource extends DataSource
 			$request->postData       = $this->sanitize($this->psrRequest->getParsedBody());
 			$request->cookies        = $this->sanitize($this->psrRequest->getCookieParams());
 			$request->time           = $this->getRequestTime();
-			
+
 		}
-		
+
 		if($this->psrResponse !== null) {
 			$request->responseStatus = $this->psrResponse->getStatusCode();
 			$request->responseTime = $this->getResponseTime();
@@ -45,7 +46,7 @@ class PsrMessageDataSource extends DataSource
 
 		return $request;
 	}
-	
+
 	/**
 	 * Replace unserializable items in array, attempt to remove passwords
 	 */
@@ -54,10 +55,8 @@ class PsrMessageDataSource extends DataSource
 		if($array === null) {
 			return null;
 		}
-		
-		return $this->removePasswords(
-			$this->replaceUnserializable($array)
-		);
+
+		return $this->removePasswords(Serializer::simplify($array));
 	}
 
 	/**
@@ -66,16 +65,16 @@ class PsrMessageDataSource extends DataSource
 	protected function getRequestTime()
 	{
 		$env = $this->psrRequest->getServerParams();
-		
+
 		if (isset($env['REQUEST_TIME_FLOAT'])) {
 			return $env['REQUEST_TIME_FLOAT'];
 		} elseif (isset($env['REQUEST_TIME'])) {
 			return $env['REQUEST_TIME'];
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Return response time (current time, assuming most application scripts have already run at this point)
 	 */
@@ -83,28 +82,28 @@ class PsrMessageDataSource extends DataSource
 	{
 		return microtime(true);
 	}
-	
+
 	/**
 	 * Return headers
 	 */
 	protected function getRequestHeaders()
 	{
 		$headers = array();
-		
+
 		foreach ($this->psrRequest->getHeaders() as $header => $values) {
 			if (strtoupper(substr($header, 0, 5)) === 'HTTP_') {
 				$header = substr($header, 5);
 			}
-			
+
 			$header = str_replace('_', ' ', $header);
 			$header = ucwords(strtolower($header));
 			$header = str_replace(' ', '-', $header);
-			
+
 			$headers[$header] = $values;
 		}
-		
+
 		ksort($headers);
-		
+
 		return $headers;
 	}
 }

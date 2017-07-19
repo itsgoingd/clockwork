@@ -16,24 +16,6 @@ class DataSource implements DataSourceInterface
 	}
 
 	/**
-	 * Replaces unserializable items such as closures, resources and objects in an array with textual representation
-	 */
-	public function replaceUnserializable(array $data)
-	{
-		return array_map(function ($item) {
-			if ($item instanceof \Closure) {
-				return 'anonymous function';
-			} elseif (is_resource($item)) {
-				return 'resource';
-			} elseif (is_object($item)) {
-				return 'instance of ' . get_class($item);
-			} else {
-				return $item;
-			}
-		}, $data);
-	}
-
-	/**
 	 * Censors passwords in an array, identified by key containing "pass" substring
 	 */
 	public function removePasswords(array $data)
@@ -44,25 +26,5 @@ class DataSource implements DataSourceInterface
 		}, $data, $keys);
 
 		return array_combine($keys, $values);
-	}
-
-	/**
-	 * Attempts to serialize a variable of unspecified type
-	 */
-	protected function serialize($message)
-	{
-		if (is_object($message)) {
-			if (method_exists($message, '__toString')) {
-				return (string) $message;
-			} elseif (method_exists($message, 'toArray')) {
-				return json_encode($message->toArray());
-			} else {
-				return json_encode((array) $message);
-			}
-		} elseif (is_array($message)) {
-			return json_encode($message);
-		}
-
-		return $message;
 	}
 }

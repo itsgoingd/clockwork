@@ -1,5 +1,6 @@
 <?php namespace Clockwork\Request;
 
+use Clockwork\Helpers\Serializer;
 use Clockwork\Helpers\StackTrace;
 
 use Psr\Log\AbstractLogger;
@@ -20,23 +21,11 @@ class Log extends AbstractLogger
 	 */
 	public function log($level = LogLevel::INFO, $message, array $context = [])
 	{
-		if (is_object($message)) {
-			if (method_exists($message, '__toString')) {
-				$message = (string) $message;
-			} elseif (method_exists($message, 'toArray')) {
-				$message = json_encode($message->toArray());
-			} else {
-				$message = json_encode((array) $message);
-			}
-		} elseif (is_array($message)) {
-			$message = json_encode($message);
-		}
-
 		$caller = StackTrace::get()->firstNonVendor([ 'itsgoingd', 'laravel', 'slim', 'monolog' ]);
 
 		$this->data[] = [
-			'message' => $message,
-			'context' => @json_encode($context),
+			'message' => Serializer::simplify($message, 3, [ 'toString' => true ]),
+			'context' => Serializer::simplify($context),
 			'level'   => $level,
 			'time'    => microtime(true),
 			'file'    => $caller->shortPath,

@@ -3,7 +3,7 @@
 class Serializer
 {
 	// prepares the passed data for serialization with additional metadata up to specified levels of recursion
-	public static function simplify($data, $levels = 3)
+	public static function simplify($data, $levels = 3, $options = [])
 	{
 		if ($data instanceof \Closure) {
 			return 'anonymous function';
@@ -14,6 +14,10 @@ class Serializer
 				return static::simplify($item, $levels - 1);
 			}, $data);
 		} elseif (is_object($data)) {
+			if (isset($options['toString']) && $options['toString'] && method_exists($data, '__toString')) {
+				return (string) $data;
+			}
+
 			if (! $levels) return $data;
 
 			return array_merge(
