@@ -1,0 +1,78 @@
+.pretty-jason {
+	font-family: "Menlo", "Monaco", "Consolas", monospace;
+	font-size: 12px;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	color: #222;
+}
+
+.pretty-jason ul {
+	list-style: none;
+	padding-left: 12px;
+}
+
+.pretty-jason li {
+	padding: 1px 0;
+}
+
+.pretty-jason-key {
+	color: rgb(136, 18, 128);
+}
+
+.pretty-jason-value-number {
+	color: rgb(28, 0, 207);
+}
+
+.pretty-jason-value-string {
+    color: rgb(196, 26, 22);
+}
+
+.pretty-jason-value-null,
+.pretty-jason-value-undefined {
+	color: rgb(128, 128, 128);
+}
+
+.pretty-jason-icon,
+.pretty-jason-icon-closed,
+.pretty-jason-icon-open {
+	display: inline-block;
+	width: 0;
+	height: 0;
+}
+
+.pretty-jason-icon {
+	width: 12px;
+}
+
+.pretty-jason-icon-closed {
+	border-style: solid;
+	border-width: 4.5px 0 4.5px 7.8px;
+	border-color: transparent transparent transparent #7f7f80;
+}
+
+.pretty-jason-icon-open {
+	border-style: solid;
+	border-width: 7.8px 4.5px 0 4.5px;
+	border-color: #7f7f80 transparent transparent transparent;
+}
+
+.pretty-jason-preview {
+	font-style: italic;
+}
+
+.pretty-jason-preview:before {
+	content: '{';
+}
+
+.pretty-jason-preview:after {
+	content: '}';
+}
+
+.pretty-jason-preview-item:after {
+	content: ', ';
+}
+
+.pretty-jason-preview .pretty-jason-preview-item:last-child:after {
+	content: '';
+}

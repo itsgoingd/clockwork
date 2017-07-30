@@ -1,0 +1,482 @@
+<!doctype html>
+<html ng-app="Clockwork" ng-csp="">
+	<head>
+		<link rel="stylesheet" type="text/css" href="assets/vendor/stylesheets/angular-csp.css">
+		<link rel="stylesheet" type="text/css" href="assets/vendor/stylesheets/jquery.resizableColumns.css">
+		<link rel="stylesheet" type="text/css" href="assets/vendor/stylesheets/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="assets/vendor/stylesheets/pretty-jason.css">
+		<link rel="stylesheet" type="text/css" href="assets/stylesheets/panel.css">
+
+		<script src="assets/vendor/javascripts/jquery-3.2.1.slim.min.js"></script>
+		<script src="assets/vendor/javascripts/stupidtable.min.js"></script>
+		<script src="assets/vendor/javascripts/URI.min.js"></script>
+		<script src="assets/vendor/javascripts/keymaster.min.js"></script>
+		<script src="assets/vendor/javascripts/angular.min.js"></script>
+		<script src="assets/vendor/javascripts/pretty-jason.js"></script>
+		<script src="assets/vendor/javascripts/jquery.resizableColumns.min.js"></script>
+
+		<script src="assets/javascripts/app.js"></script>
+		<script src="assets/javascripts/directives/load-more-requests.js"></script>
+		<script src="assets/javascripts/directives/pretty-print.js"></script>
+		<script src="assets/javascripts/directives/resizable-columns.js"></script>
+		<script src="assets/javascripts/directives/scroll-to-new.js"></script>
+		<script src="assets/javascripts/directives/shortened-text.js"></script>
+		<script src="assets/javascripts/directives/stupid-table.js"></script>
+		<script src="assets/javascripts/directives/tabs.js"></script>
+		<script src="assets/javascripts/extension.js"></script>
+		<script src="assets/javascripts/panel.js"></script>
+		<script src="assets/javascripts/request.js"></script>
+		<script src="assets/javascripts/requests.js"></script>
+		<script src="assets/javascripts/standalone.js"></script>
+	</head>
+	<body>
+		<div class="split-view" ng-controller="PanelController" ng-init="init()">
+			<div class="split-view-pane split-view-requests" ng-show="! requestsListCollapsed">
+				<table id="requests-header" resizable-columns data-resizable-columns-sync="#requests">
+					<thead>
+						<tr>
+							<th class="controller">
+								Path<br><small>Controller</small>
+							</th>
+							<th class="method">
+								Method
+							</th>
+							<th class="status">
+								Status
+							</th>
+							<th class="duration">
+								Time<br><small>Database</small>
+							</th>
+						</tr>
+					</thead>
+				</table>
+				<div class="requests-container" load-more-requests>
+					<div class="load-more">
+						<p class="load" ng-show="! loadingMoreRequests">
+							<a href="#" ng-click="loadMoreRequests()">load more</a>
+						</p>
+						<p class="loading" ng-show="loadingMoreRequests">
+							loading...
+						</p>
+					</div>
+					<table id="requests" resizable-columns data-resizable-columns-sync="#requests-header">
+						<tr class="sizing">
+							<td class="controller"></td>
+							<td class="method"></td>
+							<td class="status"></td>
+							<td class="duration"></td>
+						</tr>
+						<tr ng-repeat="request in requests" ng-click="showRequest(request.id)" ng-class="getRequestClass(request.id)" scroll-to-new>
+							<td class="controller" title="{{request.uri}} ({{ request.controller}}">
+								<span class="notifications-count">
+									<span class="errors-count" ng-show="request.errorsCount">
+										<i class="fa fa-exclamation-circle"></i> {{request.errorsCount}}
+									</span>
+									<span class="warnings-count" ng-show="request.warningsCount">
+										<i class="fa fa-exclamation-triangle"></i> {{request.warningsCount}}
+									</span>
+								</span>
+								{{request.uri}}<br>
+								<small>{{request.controller}}</small>
+							</td>
+							<td class="method" title="{{request.method}}">
+								{{request.method}}
+							</td>
+							<td class="status" title="{{request.responseStatus}}">
+								{{request.responseStatus}}
+							</td>
+							<td class="duration" title="{{request.responseDurationRounded}} ms ({{request.databaseDurationRounded}} ms)">
+								{{request.responseDurationRounded}} ms<br>
+								<small>{{request.databaseDurationRounded}} ms</small>
+							</td>
+						</tr>
+						<tr class="filler">
+							<td class="controller"></td>
+							<td class="method"></td>
+							<td class="status"></td>
+							<td class="duration"></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+
+			<div class="split-view-pane split-view-details" tabs>
+
+				<div class="details-header">
+					<div class="icons">
+						<a href="#" title="Toggle requests" ng-show="! requestsListCollapsed" ng-click="toggleRequestsList()">
+							<span class="fa fa-outdent"></span>
+						</a>
+						<a href="#" title="Toggle requests" ng-show="requestsListCollapsed" ng-click="toggleRequestsList()">
+							<span class="fa fa-indent"></span>
+						</a>
+					</div>
+
+					<div class="details-header-tabs">
+						<a tab-name="request" class="details-header-tab active" href="#">Request</a>
+						<a tab-name="timeline" ng-show="request.timeline.length" class="details-header-tab" href="#">Timeline</a>
+						<a tab-name="log" ng-show="request.log.length" class="details-header-tab" href="#">Log</a>
+						<a tab-name="events" ng-show="request.events.length" class="details-header-tab" href="#">Events</a>
+						<a tab-name="db" ng-show="request.databaseQueries.length" class="details-header-tab" href="#">Database</a>
+						<a tab-name="cache" ng-show="showCacheTab()" class="details-header-tab" href="#">Cache</a>
+						<a tab-name="session" ng-show="request.sessionData.length" class="details-header-tab" href="#">Session</a>
+						<a tab-name="views" ng-show="request.views.length" class="details-header-tab" href="#">Views</a>
+						<a tab-name="emails" ng-show="request.emails.length" class="details-header-tab" href="#">Emails</a>
+						<a tab-name="routes" ng-show="request.routes.length" class="details-header-tab" href="#">Routes</a>
+					</div>
+
+					<div class="icons">
+						<a href="#" title="Clear" ng-click="clear()">
+							<span class="fa fa-ban"></span>
+						</a>
+					</div>
+				</div>
+
+				<div class="details-content">
+
+					<div tab-content="request">
+						<table ng-show="request.headers.length">
+							<thead>
+								<tr>
+									<th colspan="2">Request Headers</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="param in request.headers">
+									<td class="key">{{param.name}}</td>
+									<td class="value"><pretty-print data="param.value"></pretty-print></td>
+								</tr>
+							</tbody>
+						</table>
+
+						<table ng-show="request.getData.length">
+							<thead>
+								<tr>
+									<th colspan="2">GET parameters</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="param in request.getData">
+									<td class="key">{{param.name}}</td>
+									<td class="value"><pretty-print data="param.value"></pretty-print></td>
+								</tr>
+							</tbody>
+						</table>
+
+						<table ng-show="request.postData.length">
+							<thead>
+								<tr>
+									<th colspan="2">POST parameters</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="param in request.postData">
+									<td class="key">{{param.name}}</td>
+									<td class="value"><pretty-print data="param.value"></pretty-print></td>
+								</tr>
+							</tbody>
+						</table>
+
+						<table ng-show="request.cookies.length">
+							<thead>
+								<tr>
+									<th colspan="2">Cookies</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="param in request.cookies">
+									<td class="key">{{param.name}}</td>
+									<td class="value"><pretty-print data="param.value"></pretty-print></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div tab-content="events">
+						<table stupid-table>
+							<thead>
+								<tr>
+									<th data-sort="string">Time</th>
+									<th data-sort="string">Event</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="event in request.events">
+									<td>{{event.time | date:'HH:mm:ss'}}</td>
+									<td>
+										<div class="fired-event">
+											<div class="fired-event-content">
+												<div ng-if="event.objectEvent">
+													<pretty-print data="event.data"></pretty-print>
+												</div>
+												<div ng-if="! event.objectEvent">
+													{{event.event}}
+												</div>
+											</div>
+											<div class="fired-event-path">
+												<div shortened-text="{{event.fullPath}}">{{event.shortPath}}</div>
+											</div>
+										</div>
+										<div class="fired-event-details" ng-show="isEventExpanded(event)">
+											<div class="fired-event-parameters" ng-if="! event.objectEvent">
+												<h4>Parameters</h4>
+												<pretty-print data="event.data"></pretty-print>
+											</div>
+											<div class="fired-event-listeners">
+												<h4>Listeners</h4>
+												<div ng-repeat="listener in event.listeners" shortened-text="{{listener.name}}">
+													{{listener.shortName}}
+												</div>
+											</div>
+										</div>
+									</td>
+									<td class="fired-event-actions">
+										<a href="#" ng-show="! isEventExpanded(event)" ng-click="toggleEvent(event)">
+											<span class="fa fa-chevron-down"></span>
+										</a>
+										<a href="#" ng-show="isEventExpanded(event)" ng-click="toggleEvent(event)">
+											<span class="fa fa-chevron-up"></span>
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div tab-content="db">
+						<table stupid-table>
+							<thead>
+								<tr>
+									<th data-sort="string">Model</th>
+									<th data-sort="string" ng-show="showDatabaseConnectionColumn()">Connection</th>
+									<th data-sort="string">SQL</th>
+									<th data-sort="float" class="duration">Duration</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="query in request.databaseQueries">
+									<td>
+										<div shortened-text="{{query.model}}">{{query.shortModel}}</div>
+									</td>
+									<td ng-show="showDatabaseConnectionColumn()">{{query.connection}}</td>
+									<td>
+										<div class="database-query">
+											<div class="database-query-content">{{query.query}}</div>
+											<div class="database-query-path">
+												<div shortened-text="{{query.fullPath}}">{{query.shortPath}}</div>
+											</div>
+										</div>
+									</td>
+									<td class="database-duration">{{query.duration | number:3}} ms</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="number-of-queries">Number of queries: {{request.databaseQueries.length}}</div>
+					</div>
+
+					<div tab-content="cache">
+						<div class="counters-row">
+							<div class="counter" ng-show="request.cacheReads !== null">
+								<div class="counter-value">{{request.cacheReads}}</div>
+								<div class="counter-title">reads</div>
+							</div>
+							<div class="counter" ng-show="request.cacheHits !== null">
+								<div class="counter-value">{{request.cacheHits}}</div>
+								<div class="counter-title">hits</div>
+							</div>
+							<div class="counter" ng-show="request.cacheMisses !== null">
+								<div class="counter-value">{{request.cacheMisses}}</div>
+								<div class="counter-title">misses</div>
+							</div>
+							<div class="counter" ng-show="request.cacheWrites !== null">
+								<div class="counter-value">{{request.cacheWrites}}</div>
+								<div class="counter-title">writes</div>
+							</div>
+							<div class="counter" ng-show="request.cacheDeletes !== null">
+								<div class="counter-value">{{request.cacheDeletes}}</div>
+								<div class="counter-title">deletes</div>
+							</div>
+							<div class="counter" ng-show="request.cacheTime !== null">
+								<div class="counter-value">{{request.cacheTime}}</div>
+								<div class="counter-title">time</div>
+							</div>
+						</div>
+
+						<table stupid-table ng-show="request.cacheQueries.length">
+							<thead>
+								<tr>
+									<th data-sort="string" ng-show="showCacheQueriesConnectionColumn()">Connection</th>
+									<th data-sort="string">Action</th>
+									<th data-sort="string">Key</th>
+									<th data-sort="string">Value</th>
+									<th data-sort="float">Expires</th>
+									<th data-sort="float" class="duration" ng-show="showCacheQueriesDurationColumn()">Duration</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="query in request.cacheQueries">
+									<td ng-show="showCacheQueriesConnectionColumn()">{{query.connection}}</td>
+									<td class="cache-query-type">{{query.type}}</td>
+									<td>{{query.key}}</td>
+									<td>
+										<div class="database-query">
+											<div class="database-query-content">
+												<pretty-print data="query.value"></pretty-print>
+											</div>
+											<div class="database-query-path">
+												<div shortened-text="{{query.fullPath}}">{{query.shortPath}}</div>
+											</div>
+										</div>
+									</td>
+									<td><span ng-show="query.expiration">{{query.expiration}}</span></td>
+									<td ng-show="showCacheQueriesDurationColumn()">{{query.duration | number:3}} ms</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="number-of-queries">Number of queries: {{request.cacheQueries.length}}</div>
+					</div>
+
+					<div tab-content="log">
+						<table stupid-table>
+							<thead>
+								<tr>
+									<th data-sort="string">Time</th>
+									<th data-sort="string">Level</th>
+									<th data-sort="string">Message</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="message in request.log">
+									<td class="log-date">{{message.time | date:'HH:mm:ss'}}</td>
+									<td class="log-level">{{message.level}}</td>
+									<td>
+										<div class="log-message">
+											<div class="log-message-content">
+												<pretty-print data="message.message"></pretty-print>
+												<div ng-show="message.context && message.context.length">
+													<pretty-print data="message.context"></pretty-print>
+												</div>
+											</div>
+											<div class="log-message-path">
+												<div shortened-text="{{message.fullPath}}">{{message.shortPath}}</div>
+											</div>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div tab-content="timeline">
+						<table class="timeline">
+							<thead>
+								<tr>
+									<th class="timeline-graph">
+										Timeline
+										<span ng-repeat="item in timelineLegend" class="timeline-bar-time" style="left:{{item.left}}px">{{item.time}} ms</span>
+									</th>
+									<th class="timeline-duration">Duration</th>
+									<th class="timeline-description">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="item in request.timeline">
+									<td class="timeline-graph">
+										<div class="timeline-bar {{item.style}}" style="width:{{item.width}}%;margin-left:{{item.left}}%;"></div>
+									</td>
+									<td class="timeline-duration">{{item.durationRounded}} ms</td>
+									<td class="timeline-description">{{item.description}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div tab-content="session">
+						<table>
+							<thead>
+								<tr>
+									<th colspan="2">Session</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="param in request.sessionData">
+									<td class="key">{{param.name}}</td>
+									<td class="value"><pretty-print data="param.value"></pretty-print></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div tab-content="views">
+						<table stupid-table>
+							<thead>
+								<tr>
+									<th data-sort="string">Name</th>
+									<th>Data</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="view in request.views">
+									<td>{{view.name}}</td>
+									<td><pretty-print data="view.data"></pretty-print></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div tab-content="emails">
+						<table stupid-table>
+							<thead>
+								<tr>
+									<th data-sort="string">To</th>
+									<th data-sort="string">Subject</th>
+								</tr>
+								<tr>
+									<th colspan="2">Headers</th>
+								</tr>
+							</thead>
+							<tbody ng-repeat="email in request.emails">
+								<tr>
+									<td>{{email.to}}</td>
+									<td>{{email.subject}}</td>
+								</tr>
+								<tr>
+									<td colspan="2"><pretty-print data="email.headers"></pretty-print></td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="number-of-queries">Number of emails: {{request.emails.length}}</div>
+					</div>
+
+					<div tab-content="routes">
+						<table stupid-table>
+							<thead>
+								<tr>
+									<th data-sort="string">Method</th>
+									<th data-sort="string">URI</th>
+									<th data-sort="string">Action</th>
+									<th data-sort="string">Name</th>
+									<th data-sort="string">Before</th>
+									<th data-sort="string">After</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="param in request.routes">
+									<td>{{param.method}}</td>
+									<td>{{param.uri}}</td>
+									<td>{{param.action}}</td>
+									<td>{{param.name}}</td>
+									<td>{{param.before}}</td>
+									<td>{{param.after}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+	</body>
+</html>

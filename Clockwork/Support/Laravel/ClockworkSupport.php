@@ -7,6 +7,8 @@ use Clockwork\Storage\SqlStorage;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ClockworkSupport
 {
@@ -89,6 +91,22 @@ class ClockworkSupport
 		return $this->getConfig('filter', array());
 	}
 
+	public function getWebAsset($path)
+	{
+		$path = realpath(__DIR__ . '/../../Web/' . $path);
+		$publicPath = realpath(__DIR__ . '/../../Web/');
+
+		if (strpos($path, $publicPath) === false) return;
+
+		$mime = strpos($path, '.css') ? 'text/css' : 'text/html';
+
+		if (! file_exists($path)) {
+			throw new NotFoundHttpException;
+		}
+
+		return new BinaryFileResponse($path, 200, [ 'Content-Type' => $mime ]);
+	}
+
 	public function process($request, $response)
 	{
 		if (! $this->isCollectingData()) {
@@ -162,6 +180,11 @@ class ClockworkSupport
 	public function isCollectingEvents()
 	{
 		return ! in_array('events', $this->getFilter());
+	}
+
+	public function isWebEnabled()
+	{
+		return $this->getConfig('web', true);
 	}
 
 	protected function appendServerTimingHeader($response, $request)
