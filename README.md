@@ -37,6 +37,7 @@ protected $middleware = [
 	...
 ]
 ```
+Note: If you are using Laravels route caching you will need to clear the cache using the `php artisan route:cache` as Clockwork adds its own routes for retrieving the data.
 
 By default, Clockwork will only be available in debug mode, you can change this and other settings in the configuration file. Use the following Artisan command to publish the configuration file into your config directory:
 
