@@ -42,7 +42,7 @@ class ClockworkCleanCommand extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         $data_dir = storage_path() . '/clockwork';
 
