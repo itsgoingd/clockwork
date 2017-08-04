@@ -26,7 +26,7 @@ class ClockworkCleanCommand extends Command
 	/**
 	 * Execute the console command.
 	 */
-	public function fire()
+	public function handle()
 	{
 		$dataDir = storage_path() . '/clockwork';
 
