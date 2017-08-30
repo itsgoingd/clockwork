@@ -55,4 +55,10 @@ class ClockworkCleanCommand extends Command
 
 		$this->info("{$count} files removed.");
 	}
+
+	// compatibility for old Laravel versions
+    public function fire()
+    {
+        return $this->handle();
+    }
 }
