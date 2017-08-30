@@ -14,13 +14,13 @@ This extension provides out of the box support for Laravel, Slim 2 and CodeIgnit
 
 To install latest version simply add it to your `composer.json`:
 
-```javascript
-"itsgoingd/clockwork": "~1.14"
+```bash
+composer require
 ```
 
 ### Laravel
 
-Once Clockwork is installed, you need to register Laravel service provider, in your `config/app.php`:
+If you are using an older version of Laravel, you'll need to register the service provider, in your `config/app.php`:
 
 ```php
 'providers' => [
@@ -29,15 +29,7 @@ Once Clockwork is installed, you need to register Laravel service provider, in y
 ]
 ```
 
-When using Laravel 5, you need to add Clockwork middleware, in your `app/Http/Kernel.php`:
-
-```php
-protected $middleware = [
-	\Clockwork\Support\Laravel\ClockworkMiddleware::class,
-	...
-]
-```
-Note: If you are using Laravels route caching you will need to clear the cache using the `php artisan route:cache` as Clockwork adds its own routes for retrieving the data.
+Note: If you are using Laravel's route caching you will need to clear the cache using the `php artisan route:cache` as Clockwork adds its own routes for retrieving the data.
 
 By default, Clockwork will only be available in debug mode, you can change this and other settings in the configuration file. Use the following Artisan command to publish the configuration file into your config directory:
 

@@ -1,3 +1,9 @@
+1.14.3
+- added support for Laravel 5.5 package auto-discovery (thanks Omranic)
+- added automatic registration of the Laravel middleware (no need to edit your `Http/Kernel.php` anymore, existing installations don't need to be changed)
+- updated Laravel artisan clockwork:clean command for Laravel 5.5 (thanks rosswilson252)
+- fixed crash when retrieving all requests from Sql storage (thanks pies)
+
 1.14.2
 - fixed missing imports in Doctrine data source (thanks jenssegers)
 
