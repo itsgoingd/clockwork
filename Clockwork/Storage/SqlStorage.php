@@ -51,12 +51,12 @@ class SqlStorage extends Storage
 	{
 		if (!$id) {
 			$stmt = $this->pdo->prepare(
-				'SELECT (id, version, time, method, uri, headers, controller, getData, postData, sessionData, cookies, responseTime, responseStatus, responseDuration, databaseQueries, databaseDuration, timelineData, log, routes, emailsData, viewsData, userData) ' .
+				'SELECT id, version, time, method, uri, headers, controller, getData, postData, sessionData, cookies, responseTime, responseStatus, responseDuration, databaseQueries, databaseDuration, timelineData, log, routes, emailsData, viewsData, userData ' .
 				"FROM {$this->table} "
 			);
 
 			$stmt->execute();
-			$data = $stms->fetchAll(PDO::FETCH_ASSOC);
+			$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 			$requests = array();
 
