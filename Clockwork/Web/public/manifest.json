@@ -1,0 +1,22 @@
+{
+	"name": "Clockwork",
+	"version": "1.6",
+	"manifest_version": 2,
+	"description": "Devtools panel for PHP development",
+	"devtools_page": "devtools.html",
+	"background": {
+		"scripts": [
+			"assets/javascripts/chrome/background.js"
+		]
+	},
+	"permissions": [
+		"debugger",
+		"webRequest",
+		"http://*/",
+		"https://*/"
+	],
+	"icons": {
+		 "48": "assets/images/logo-48x48.png",
+		"128": "assets/images/logo-128x128.png"
+	}
+}

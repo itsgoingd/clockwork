@@ -62,7 +62,7 @@ class FileStorage extends Storage
 	{
 		$ids = $this->ids();
 
-		$lastIndex = array_search($id, $ids);
+		$lastIndex = array_search($id, $ids) - 1;
 		$firstIndex = $count && $lastIndex - $count > 0 ? $lastIndex - $count : 0;
 
 		return $this->idsToRequests(array_slice($ids, $firstIndex, $lastIndex - $firstIndex));
@@ -73,7 +73,7 @@ class FileStorage extends Storage
 	{
 		$ids = $this->ids();
 
-		$firstIndex = array_search($id, $ids);
+		$firstIndex = array_search($id, $ids) + 1;
 		$lastIndex = $count && $firstIndex + $count < count($ids) ? $firstIndex + $count : count($ids);
 
 		return $this->idsToRequests(array_slice($ids, $firstIndex, $lastIndex - $firstIndex));

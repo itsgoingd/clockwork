@@ -4,9 +4,12 @@ use Clockwork\Clockwork;
 use Clockwork\Helpers\ServerTiming;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\SqlStorage;
+use Clockwork\Web\Web;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ClockworkSupport
 {
@@ -89,6 +92,17 @@ class ClockworkSupport
 		return $this->getConfig('filter', array());
 	}
 
+	public function getWebAsset($path)
+	{
+		$web = new Web;
+
+		if ($asset = $web->asset($path)) {
+			return new BinaryFileResponse($asset['path'], 200, [ 'Content-Type' => $asset['mime'] ]);
+		} else {
+			throw new NotFoundHttpException;
+		}
+	}
+
 	public function process($request, $response)
 	{
 		if (! $this->isCollectingData()) {
@@ -162,6 +176,11 @@ class ClockworkSupport
 	public function isCollectingEvents()
 	{
 		return ! in_array('events', $this->getFilter());
+	}
+
+	public function isWebEnabled()
+	{
+		return $this->getConfig('web', true);
 	}
 
 	protected function appendServerTimingHeader($response, $request)

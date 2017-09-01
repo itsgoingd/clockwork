@@ -36,20 +36,15 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->make('clockwork');
 
 		if (! $this->app['clockwork.support']->isEnabled()) {
-			return; // Clockwork is disabled, don't register the route
+			return; // Clockwork is disabled, don't register the middleware and routes
 		}
 
 		$this->registerMiddleware();
+		$this->registerRoutes();
 
-		if ($this->isLegacyLaravel()) {
-			$this->app['router']->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Laravel\Controllers\LegacyController@getData')
-				->where('id', '([0-9\.]+|latest)')->where('direction', '(next|previous)')->where('count', '\d+');
-		} elseif ($this->isOldLaravel()) {
-			$this->app['router']->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Laravel\Controllers\OldController@getData')
-				->where('id', '([0-9\.]+|latest)')->where('direction', '(next|previous)')->where('count', '\d+');
-		} else {
-			$this->app['router']->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Laravel\Controllers\CurrentController@getData')
-				->where('id', '([0-9\.]+|latest)')->where('direction', '(next|previous)')->where('count', '\d+');
+		// register the Clockwork Web UI routes
+		if ($this->app['clockwork.support']->isWebEnabled()) {
+			$this->registerWebRoutes();
 		}
 	}
 
@@ -154,6 +149,37 @@ class ClockworkServiceProvider extends ServiceProvider
 		} else {
 			$kernel = $this->app['Illuminate\Contracts\Http\Kernel'];
 			$kernel->prependMiddleware('Clockwork\Support\Laravel\ClockworkMiddleware');
+		}
+	}
+
+	public function registerRoutes()
+	{
+		if ($this->isLegacyLaravel()) {
+			$this->app['router']->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Laravel\Controllers\LegacyController@getData')
+				->where('id', '([0-9\.]+|latest)')->where('direction', '(next|previous)')->where('count', '\d+');
+		} elseif ($this->isOldLaravel()) {
+			$this->app['router']->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Laravel\Controllers\OldController@getData')
+				->where('id', '([0-9\.]+|latest)')->where('direction', '(next|previous)')->where('count', '\d+');
+		} else {
+			$this->app['router']->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Laravel\Controllers\CurrentController@getData')
+				->where('id', '([0-9\.]+|latest)')->where('direction', '(next|previous)')->where('count', '\d+');
+		}
+	}
+
+	public function registerWebRoutes()
+	{
+		if ($this->isLegacyLaravel()) {
+			$this->app['router']->get('/__clockwork', 'Clockwork\Support\Laravel\Controllers\LegacyController@webRedirect');
+			$this->app['router']->get('/__clockwork/app', 'Clockwork\Support\Laravel\Controllers\LegacyController@webIndex');
+			$this->app['router']->get('/__clockwork/assets/{path}', 'Clockwork\Support\Laravel\Controllers\LegacyController@webAsset')->where('path', '.+');
+		} elseif ($this->isOldLaravel()) {
+			$this->app['router']->get('/__clockwork', 'Clockwork\Support\Laravel\Controllers\OldController@webRedirect');
+			$this->app['router']->get('/__clockwork/app', 'Clockwork\Support\Laravel\Controllers\OldController@webIndex');
+			$this->app['router']->get('/__clockwork/assets/{path}', 'Clockwork\Support\Laravel\Controllers\OldController@webAsset')->where('path', '.+');
+		} else {
+			$this->app['router']->get('/__clockwork', 'Clockwork\Support\Laravel\Controllers\CurrentController@webRedirect');
+			$this->app['router']->get('/__clockwork/app', 'Clockwork\Support\Laravel\Controllers\CurrentController@webIndex');
+			$this->app['router']->get('/__clockwork/assets/{path}', 'Clockwork\Support\Laravel\Controllers\CurrentController@webAsset')->where('path', '.+');
 		}
 	}
 
