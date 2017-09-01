@@ -4,6 +4,7 @@ use Clockwork\Clockwork;
 use Clockwork\Helpers\ServerTiming;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\SqlStorage;
+use Clockwork\Web\Web;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
@@ -93,18 +94,13 @@ class ClockworkSupport
 
 	public function getWebAsset($path)
 	{
-		$path = realpath(__DIR__ . '/../../Web/' . $path);
-		$publicPath = realpath(__DIR__ . '/../../Web/');
+		$web = new Web;
 
-		if (strpos($path, $publicPath) === false) return;
-
-		$mime = strpos($path, '.css') ? 'text/css' : 'text/html';
-
-		if (! file_exists($path)) {
+		if ($asset = $web->asset($path)) {
+			return new BinaryFileResponse($asset['path'], 200, [ 'Content-Type' => $asset['mime'] ]);
+		} else {
 			throw new NotFoundHttpException;
 		}
-
-		return new BinaryFileResponse($path, 200, [ 'Content-Type' => $mime ]);
 	}
 
 	public function process($request, $response)
