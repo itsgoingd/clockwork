@@ -15,7 +15,7 @@ This extension provides out of the box support for Laravel, Slim 2 and CodeIgnit
 To install latest version simply add it to your `composer.json`:
 
 ```bash
-composer require
+composer require itsgoingd/clockwork
 ```
 
 ### Laravel
