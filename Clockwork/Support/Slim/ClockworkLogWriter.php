@@ -9,7 +9,7 @@ class ClockworkLogWriter
 	protected $clockwork;
 	protected $originalLogWriter;
 
-	protected $logLevels = array(
+	protected $logLevels = [
 		1 => 'emergency',
 		2 => 'alert',
 		3 => 'critical',
@@ -18,7 +18,7 @@ class ClockworkLogWriter
 		6 => 'notice',
 		7 => 'info',
 		8 => 'debug'
-	);
+	];
 
 	public function __construct(Clockwork $clockwork, $originalLogWriter)
 	{

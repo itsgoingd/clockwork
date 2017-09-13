@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
 
 	/*
 	|--------------------------------------------------------------------------
@@ -90,11 +90,11 @@ return array(
 	|
 	*/
 
-	'filter' => array(
+	'filter' => [
 		'cacheQueries', // collecting cache queries in cache-heavy might have a negative performance impact and use a lot of disk space
 		'routes', // collecting routes data on every request might use a lot of disk space
 		'viewsData', // collecting views data, including all variables passed to the view on every request might use a lot of disk space
-	),
+	],
 
 	/*
 	|--------------------------------------------------------------------------
@@ -106,9 +106,9 @@ return array(
 	|
 	*/
 
-	'filter_uris' => array(
+	'filter_uris' => [
 		'/__clockwork/.*', // disable collecting data for clockwork-web assets
-	),
+	],
 
 	/*
 	|--------------------------------------------------------------------------
@@ -136,7 +136,7 @@ return array(
 	|
 	*/
 
-	'additional_data_sources' => array(
+	'additional_data_sources' => [
 		// Note, this is for example only, laravel-doctrine contains Clockwork support out of the box, please follow the
 		// documentation at http://www.laraveldoctrine.org/docs/current/orm/config-file
 
@@ -144,7 +144,7 @@ return array(
 		// {
 		// 	return new \Clockwork\DataSource\DoctrineDataSource($app['Doctrine\ORM\EntityManager']);
 		// }
-	),
+	],
 
 	/*
 	|--------------------------------------------------------------------------
@@ -170,9 +170,9 @@ return array(
 	|
 	*/
 
-	'headers' => array(
+	'headers' => [
 		// 'Accept' => 'application/vnd.com.whatever.v1+json',
-	),
+	],
 
 	/*
 	|--------------------------------------------------------------------------
@@ -191,4 +191,4 @@ return array(
 
 	'server_timing' => 10
 
-);
+];

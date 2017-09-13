@@ -89,7 +89,7 @@ class ClockworkSupport
 
 	public function getFilter()
 	{
-		return $this->getConfig('filter', array());
+		return $this->getConfig('filter', []);
 	}
 
 	public function getWebAsset($path)

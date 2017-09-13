@@ -88,7 +88,7 @@ class PsrMessageDataSource extends DataSource
 	 */
 	protected function getRequestHeaders()
 	{
-		$headers = array();
+		$headers = [];
 
 		foreach ($this->psrRequest->getHeaders() as $header => $values) {
 			if (strtoupper(substr($header, 0, 5)) === 'HTTP_') {
