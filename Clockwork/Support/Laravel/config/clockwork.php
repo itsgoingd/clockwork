@@ -91,7 +91,8 @@ return array(
 	*/
 
 	'filter' => array(
-		'routes',    // collecting routes data on every request might use a lot of disk space
+		'cacheQueries', // collecting cache queries in cache-heavy might have a negative performance impact and use a lot of disk space
+		'routes', // collecting routes data on every request might use a lot of disk space
 		'viewsData', // collecting views data, including all variables passed to the view on every request might use a lot of disk space
 	),
 
