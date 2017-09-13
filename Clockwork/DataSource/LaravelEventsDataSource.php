@@ -18,13 +18,14 @@ class LaravelEventsDataSource extends DataSource
 	protected $events = [];
 
 	// Whether framework events should be collected
-	protected $includeFrameworkEvents = false;
+	protected $ignoredEvents = false;
 
 	// Create a new data source instance, takes an event dispatcher as argument
-	public function __construct(Dispatcher $dispatcher, $includeFrameworkEvents = false)
+	public function __construct(Dispatcher $dispatcher, $ignoredEvents = [])
 	{
 		$this->dispatcher = $dispatcher;
-		$this->includeFrameworkEvents = $includeFrameworkEvents;
+		$this->ignoredEvents = is_array($ignoredEvents)
+			? array_merge($ignoredEvents, $this->defaultIgnoredEvents()) : [];
 	}
 
 	// Start listening to the events
@@ -105,10 +106,16 @@ class LaravelEventsDataSource extends DataSource
 		}, $this->dispatcher->getListeners($event)));
 	}
 
-	// Returns whether the event should be collected (depending on whether we collect system events)
+	// Returns whether the event should be collected (depending on ignored events)
 	protected function shouldCollect($event)
 	{
-		$systemEvents = [
+		return ! preg_match('/^(?:' . implode('|', $this->ignoredEvents) . ')$/', $event);
+	}
+
+	// Returns default ignored events (framework-specific events)
+	protected function defaultIgnoredEvents()
+	{
+		return [
 			'Illuminate\\\\.+',
 			'auth\.(?:attempt|login|logout)',
 			'artisan\.start',
@@ -125,9 +132,5 @@ class LaravelEventsDataSource extends DataSource
 			'locale\.changed',
 			'clockwork\..+'
 		];
-
-		$systemEventsRegex = '/^(?:' . implode('|', $systemEvents) . ')$/';
-
-		return $this->includeFrameworkEvents || ! preg_match($systemEventsRegex, $event);
 	}
 }

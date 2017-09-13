@@ -77,7 +77,9 @@ class ClockworkServiceProvider extends ServiceProvider
 		});
 
 		$this->app->singleton('clockwork.events', function ($app) {
-			return new LaravelEventsDataSource($app['events']);
+			return new LaravelEventsDataSource(
+				$app['events'], $app['clockwork.support']->getConfig('ignored_events', [])
+			);
 		});
 
 		foreach ($this->app['clockwork.support']->getAdditionalDataSources() as $name => $callable) {

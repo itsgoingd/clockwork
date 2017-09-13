@@ -111,6 +111,20 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
+	| Ignored events
+	|--------------------------------------------------------------------------
+	|
+	| Array of event names that will be ignored when collecting data for the "events" tab.
+	| By default all framework-specific events are also ignored, set to false to log
+	| all possible fired events.
+	|
+	*/
+
+	'ignored_events' => [
+	],
+
+	/*
+	|--------------------------------------------------------------------------
 	| Additional data sources
 	|--------------------------------------------------------------------------
 	|
