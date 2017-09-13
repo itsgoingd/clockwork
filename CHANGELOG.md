@@ -1,3 +1,6 @@
+1.14.4
+- added support for Lumen 5.5 (thanks nebez)
+
 1.14.3
 - added support for Laravel 5.5 package auto-discovery (thanks Omranic)
 - added automatic registration of the Laravel middleware (no need to edit your `Http/Kernel.php` anymore, existing installations don't need to be changed)
