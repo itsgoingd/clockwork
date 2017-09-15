@@ -1,3 +1,6 @@
+1.14.5
+- fixed incompatibility with Laravel 4.1 an 4.2 (introduced in 1.14.3)
+
 1.14.4
 - added support for Lumen 5.5 (thanks nebez)
 
