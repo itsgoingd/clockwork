@@ -1,89 +1,91 @@
 <?php namespace Clockwork\Support\Slim3;
 
+use Clockwork\Clockwork;
+use Clockwork\DataSource\PsrMessageDataSource;
+use Clockwork\Storage\FileStorage;
+use Clockwork\Helpers\ServerTiming;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Clockwork\DataSource\PsrMessageDataSource;
-use Clockwork\Helpers\ServerTiming;
-use Clockwork\Clockwork;
 
-class ClockworkMiddleware {
-    private $clockwork;
-    private $startTime;
-    private $baseUrl;
-    
-    const DEFAULT_BASE_URL = '/__clockwork/';
+class ClockworkMiddleware
+{
+    protected $clockwork;
+    protected $startTime;
 
-	public function __construct(Clockwork $clockwork, $options = [])
+	public function __construct($storagePathOrClockwork, $startTime = null)
 	{
-		$this->clockwork = $clockwork;
-		
-		$options = array_merge([
-			'baseUrl' => self::DEFAULT_BASE_URL,
-			'startTime' => null
-		], $options);
-		
-		$this->baseUrl = $options['baseUrl'];
-		$this->startTime = $options['startTime'];
+		$this->clockwork = $storagePathOrClockwork instanceof Clockwork
+            ? $storagePathOrClockwork : $this->createDefaultClockwork($storagePathOrClockwork);
+		$this->startTime = $startTime ?: microtime(true);
 	}
-    
-    public function __invoke(Request $request, Response $response, callable $next) 
+
+    public function __invoke(Request $request, Response $response, callable $next)
     {
         return $this->process($request, $response, $next);
     }
-    
-    public function process(Request $request, Response $response, callable $next) 
+
+    public function process(Request $request, Response $response, callable $next)
     {
-    	$pathPattern = '#^'.preg_quote(rtrim($this->baseUrl, '/'), '#').'(?:/(?<id>[0-9\.]+))?(?:/(?<direction>(?:previous|next)))?(?:/(?<count>\d+))?#';
-    	$matches = null;
-    	if(preg_match($pathPattern, $request->getUri()->getPath(), $matches)) {
-    		$id = isset($matches['id']) ? $matches['id'] : null;
-    		$direction = isset($matches['direction']) ? $matches['direction'] : null;
-    		$count = isset($matches['count']) ? intval($matches['count']) : null;
-    		return $this->retrieveRequest($id, $direction, $count, $response);
-    	}
-    	
+        $clockworkDataUri = '#/__clockwork(?:/(?<id>[0-9\.]+))?(?:/(?<direction>(?:previous|next)))?(?:/(?<count>\d+))?#';
+        // use both base path and path here as path is set incorrectly when the URI contains dot (at least with php built-in server)
+        $path = $request->getUri()->getBasePath() . $request->getUri()->getPath();
+		if (preg_match($clockworkDataUri, $path, $matches)) {
+            $matches = array_merge([ 'direction' => null, 'count' => null ], $matches);
+			return $this->retrieveRequest($response, $matches['id'], $matches['direction'], $matches['count']);
+		}
+
         $response = $next($request, $response);
-        
+
         return $this->logRequest($request, $response);
     }
-    
-    private function retrieveRequest($id, $direction, $count, Response $response) 
+
+    protected function retrieveRequest(Response $response, $id, $direction, $count)
     {
     	$storage = $this->clockwork->getStorage();
-    	
-		if ($direction === 'previous') {
+
+		if ($direction == 'previous') {
 			$data = $storage->previous($id, $count);
-		} elseif ($direction === 'next') {
+		} elseif ($direction == 'next') {
 			$data = $storage->next($id, $count);
-		} elseif ($id === 'latest') {
+		} elseif ($id == 'latest') {
 			$data = $storage->latest();
 		} else {
 			$data = $storage->find($id);
 		}
-    	
+
 		return $response
 		    ->withHeader('Content-Type', 'application/json')
 		    ->withJson($data);
     }
-    
-    private function logRequest(Request $request, Response $response) 
+
+    protected function logRequest(Request $request, Response $response)
     {
-    	if(is_null($this->clockwork)) {
-    		return $response;
-    	}
-    	
     	$this->clockwork->getTimeline()->finalize($this->startTime);
     	$this->clockwork->addDataSource(new PsrMessageDataSource($request, $response));
-    	
+
     	$this->clockwork->resolveRequest();
     	$this->clockwork->storeRequest();
-    	
+
     	$clockworkRequest = $this->clockwork->getRequest();
-    	
-    	return $response->withHeader('X-Clockwork-Id', $clockworkRequest->id)
-	    				->withHeader('X-Clockwork-Version', Clockwork::VERSION)
-				    	->withHeader('X-Clockwork-Path', $request->getUri()->getBasePath() . $this->baseUrl)
-				    	->withHeader('Server-Timing', ServerTiming::fromRequest($clockworkRequest)->value());
+
+    	$response = $response
+            ->withHeader('X-Clockwork-Id', $clockworkRequest->id)
+			->withHeader('X-Clockwork-Version', Clockwork::VERSION);
+
+        if ($basePath = $request->getUri()->getBasePath()) {
+            $response = $response->withHeader('X-Clockwork-Path', $basePath);
+        }
+
+	    return $response->withHeader('Server-Timing', ServerTiming::fromRequest($clockworkRequest)->value());
+    }
+
+    protected function createDefaultClockwork($storagePath)
+    {
+        $clockwork = new Clockwork();
+
+        $clockwork->setStorage(new FileStorage($storagePath));
+
+        return $clockwork;
     }
 }
