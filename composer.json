@@ -1,14 +1,14 @@
 {
     "name": "itsgoingd/clockwork",
     "description": "Server-side component of Clockwork, a Chrome extension for PHP development",
-    "keywords": ["debugging", "profiling", "logging", "laravel"],
-    "homepage": "http://github.com/itsgoingd/clockwork",
+    "keywords": ["debugging", "profiling", "logging", "laravel", "lumen", "slim", "devtools"],
+    "homepage": "https://underground.works/clockwork",
     "license": "MIT",
     "authors": [
         {
             "name": "itsgoingd",
             "email": "itsgoingd@luzer.sk",
-            "homepage": "http://twitter.com/itsgoingd"
+            "homepage": "https://twitter.com/itsgoingd"
         }
     ],
     "require": {

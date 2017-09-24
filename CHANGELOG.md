@@ -1,3 +1,40 @@
+2.0
+
+- added Web UI
+- added new Laravel cache data source
+- added new Laravel events data source
+- added new more robust metadata storage API
+- added automatic metadata cleanup (defaults to 1 month)
+- added better metadata serialization including class names for objects
+- added PostgreSQL compatibility for the SQL storage (thanks oldskool73)
+- added Slim 3 middleware (thanks sperrichon)
+- added PSR message data source (thanks sperrichon)
+- added Doctrine DBAL data source (thanks sperrichon)
+- changed Laravel and Lumen integrations to no longer log data for console commands
+- changed simplified the clock Laravel helper (thanks Jergus Lejko)
+- fixed wrong version data logged in SQL storage
+- removed PHP 5.3 support, code style changes
+- removed CodeIgniter support
+
+1.14.5
+
+- fixed incompatibility with Laravel 4.1 an 4.2 (introduced in 1.14.3)
+
+1.14.4
+
+- added support for Lumen 5.5 (thanks nebez)
+
+1.14.3
+
+- added support for Laravel 5.5 package auto-discovery (thanks Omranic)
+- added automatic registration of the Laravel middleware (no need to edit your Http/Kernel.php anymore, existing installations don't need to be changed)
+- updated Laravel artisan clockwork:clean command for Laravel 5.5 (thanks rosswilson252)
+- fixed crash when retrieving all requests from Sql storage (thanks pies)
+
+1.14.2
+
+- fixed missing imports in Doctrine data source (thanks jenssegers)
+
 1.14.1
 - fixed collecting Eloquent queries when using PDO_ODBC driver for real (thanks abhimanyu003)
 
