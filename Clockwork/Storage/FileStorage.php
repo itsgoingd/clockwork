@@ -91,9 +91,9 @@ class FileStorage extends Storage
 	}
 
 	// Cleanup old requests
-	public function cleanup()
+	public function cleanup($force = false)
 	{
-		if ($this->expiration === false || rand(1, $this->cleanupChance) != 1) return;
+		if ($this->expiration === false || (! $force && rand(1, $this->cleanupChance) != 1)) return;
 
 		$expirationTime = time() - ($this->expiration * 60);
 

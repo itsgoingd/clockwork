@@ -5,6 +5,7 @@ use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\LumenDataSource;
 use Clockwork\DataSource\EloquentDataSource;
 use Clockwork\DataSource\SwiftDataSource;
+use Clockwork\Support\Laravel\ClockworkCleanCommand;
 
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;

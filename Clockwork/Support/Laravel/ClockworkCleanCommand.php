@@ -6,57 +6,35 @@ use Symfony\Component\Console\Input\InputOption;
 
 class ClockworkCleanCommand extends Command
 {
-	/**
-	 * The console command name.
-	 */
+	// The console command name.
 	protected $name = 'clockwork:clean';
 
-	/**
-	 * The console command description.
-	 */
-	protected $description = 'Cleans all request metadata';
+	// The console command description.
+	protected $description = 'Cleans Clockwork request metadata';
 
 	public function getOptions()
 	{
 		return [
-			[ 'age', 'a', InputOption::VALUE_OPTIONAL, 'delete data about requests older then specified time in hours', null ],
+			[ 'all', 'a', InputOption::VALUE_NONE, 'cleans all data' ],
+			[ 'expiration', 'e', InputOption::VALUE_REQUIRED, 'cleans data older then specified value in seconds' ]
 		];
 	}
 
-	/**
-	 * Execute the console command.
-	 */
+	// Execute the console command.
 	public function handle()
 	{
-		$dataDir = storage_path() . '/clockwork';
-
-		$this->info("Cleaning {$dataDir}...");
-
-		$files = glob("{$dataDir}/*.json");
-
-		if (! $files || ! count($files)) {
-			$this->info('Nothing to clean up.');
-			return;
+		if ($this->option('all')) {
+			$this->laravel['config']->set('clockwork.storage_expiration', 0);
+		} elseif ($expiration = $this->option('expiration')) {
+			$this->laravel['config']->set('clockwork.storage_expiration', $expiration);
 		}
 
-		$maxAge = $this->option('age') ? time() - $this->option('age') * 60 * 60 : null;
+		$this->laravel['clockwork.support']->getStorage()->cleanup($force = true);
 
-		$count = 0;
-		foreach ($files as $file) {
-			$tokens = explode('.', basename($file));
-
-			if ($maxAge && $tokens[0] > $maxAge) {
-				continue;
-			}
-
-			unlink($file);
-			$count++;
-		}
-
-		$this->info("{$count} files removed.");
+		$this->info('Metadata cleaned successfully.');
 	}
 
-	// compatibility for old Laravel versions
+	// Compatibility for old Laravel versions
     public function fire()
     {
         return $this->handle();
