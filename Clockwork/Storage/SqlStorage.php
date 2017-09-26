@@ -38,7 +38,7 @@ class SqlStorage extends Storage
 	{
 		$this->pdo = $dsn instanceof PDO ? $dsn : new PDO($dsn, $username, $password);
 		$this->table = $table;
-		$this->expiration = $expiration === null ? 60 * 24 * 30 * 6 : $expiration;
+		$this->expiration = $expiration === null ? 60 * 24 * 7 : $expiration;
 	}
 
 	// Returns all requests

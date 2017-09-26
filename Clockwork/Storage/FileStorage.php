@@ -35,7 +35,7 @@ class FileStorage extends Storage
 		}
 
 		$this->path = $path;
-		$this->expiration = $expiration === null ? 60 * 24 * 30 : $expiration;
+		$this->expiration = $expiration === null ? 60 * 24 * 7 : $expiration;
 	}
 
 	// Returns all requests
