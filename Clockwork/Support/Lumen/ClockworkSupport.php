@@ -4,10 +4,13 @@ use Clockwork\Clockwork;
 use Clockwork\Helpers\ServerTiming;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\SqlStorage;
+use Clockwork\Web\Web;
 
 use Illuminate\Http\JsonResponse;
 use Laravel\Lumen\Application;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ClockworkSupport
 {
@@ -47,6 +50,17 @@ class ClockworkSupport
 		}
 
 		return new JsonResponse($data);
+	}
+
+	public function getWebAsset($path)
+	{
+		$web = new Web;
+
+		if ($asset = $web->asset($path)) {
+			return new BinaryFileResponse($asset['path'], 200, [ 'Content-Type' => $asset['mime'] ]);
+		} else {
+			throw new NotFoundHttpException;
+		}
 	}
 
 	public function getStorage()
@@ -162,6 +176,11 @@ class ClockworkSupport
 	public function isCollectingEvents()
 	{
 		return ! in_array('events', $this->getFilter());
+	}
+
+	public function isWebEnabled()
+	{
+		return $this->getConfig('web', true);
 	}
 
 	protected function appendServerTimingHeader($response, $request)

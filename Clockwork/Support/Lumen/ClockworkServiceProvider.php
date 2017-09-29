@@ -44,9 +44,12 @@ class ClockworkServiceProvider extends ServiceProvider
 			return; // Clockwork is disabled, don't register the route
 		}
 
-		$router = isset($this->app->router) ? $this->app->router : $this->app;
+		$this->registerRoutes();
 
-		$router->get('/__clockwork/{id:[0-9-]+}[/{direction:(?:next|previous)}/{count:\d+}]', 'Clockwork\Support\Lumen\Controller@getData');
+		// register the Clockwork Web UI routes
+		if ($this->app['clockwork.support']->isWebEnabled()) {
+			$this->registerWebRoutes();
+		}
 	}
 
 	public function register()
@@ -142,6 +145,22 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->commands(
 			'command.clockwork.clean'
 		);
+	}
+
+	public function registerRoutes()
+	{
+		$router = isset($this->app->router) ? $this->app->router : $this->app;
+
+		$router->get('/__clockwork/{id:(?:[0-9-]+|latest)}[/{direction:(?:next|previous)}[/{count:\d+}]]', 'Clockwork\Support\Lumen\Controller@getData');
+	}
+
+	public function registerWebRoutes()
+	{
+		$router = isset($this->app->router) ? $this->app->router : $this->app;
+
+		$router->get('/__clockwork', 'Clockwork\Support\Lumen\Controller@webRedirect');
+		$router->get('/__clockwork/app', 'Clockwork\Support\Lumen\Controller@webIndex');
+		$router->get('/__clockwork/assets/{path:.+}', 'Clockwork\Support\Lumen\Controller@webAsset');
 	}
 
 	public function provides()
