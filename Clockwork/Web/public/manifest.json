@@ -1,22 +1,25 @@
 {
-	"name": "Clockwork",
-	"version": "1.6",
 	"manifest_version": 2,
-	"description": "Devtools panel for PHP development",
-	"devtools_page": "devtools.html",
-	"background": {
-		"scripts": [
-			"assets/javascripts/chrome/background.js"
-		]
+	"name": "Clockwork",
+	"version": "2.0",
+
+	"description": "php dev tools integrated to your browser",
+	"homepage_url": "https://github.com/itsgoingd/clockwork-chrome",
+
+	"icons": {
+		"48": "assets/images/logo-48x48.png",
+		"128": "assets/images/logo-128x128.png"
 	},
+
+	"devtools_page": "devtools.html",
+
+	"background": {
+		"scripts": [ "assets/javascripts/chrome/background.js" ]
+	},
+
 	"permissions": [
-		"debugger",
 		"webRequest",
 		"http://*/",
 		"https://*/"
-	],
-	"icons": {
-		 "48": "assets/images/logo-48x48.png",
-		"128": "assets/images/logo-128x128.png"
-	}
+	]
 }

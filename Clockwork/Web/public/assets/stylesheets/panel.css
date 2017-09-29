@@ -60,7 +60,6 @@ a {
 .split-view-requests {
   cursor: default; }
   .split-view-requests table {
-    height: 100%;
     line-height: 1.4;
     table-layout: fixed; }
   .split-view-requests tr {
@@ -91,7 +90,7 @@ a {
       body.dark .split-view-requests tr.selected small {
         color: white; }
     .split-view-requests tr.selected .notifications-count {
-      background: #2786f3; }
+      background: #2786f3 !important; }
       .split-view-requests tr.selected .notifications-count .errors-count i, .split-view-requests tr.selected .notifications-count .warnings-count i {
         color: #fff; }
       body.dark .split-view-requests tr.selected .notifications-count {
@@ -154,9 +153,13 @@ a {
       margin-left: 2px; }
     body.dark .split-view-requests .notifications-count {
       background: rgba(31, 31, 31, 0.8); }
+  .split-view-requests .requests-header {
+    height: 31px; }
   .split-view-requests .requests-container {
     height: calc(100% - 30px);
     overflow: auto; }
+    .split-view-requests .requests-container table {
+      height: 100%; }
   .split-view-requests .load-more {
     align-items: center;
     border-bottom: 1px solid #d1d1d1;
@@ -243,25 +246,26 @@ a {
         word-break: break-all; }
   .details-content .counters-row {
     display: flex;
-    margin: 10px 0 15px; }
+    margin: 0 0 10px; }
     .details-content .counters-row .counter {
       border: 1px solid #d1d1d1;
       border-radius: 3px;
       box-shadow: 0 2px 3px #e5e5e5;
       margin: 0 5px;
       flex: 1;
-      padding: 20px;
+      padding: 8px 20px 10px;
       text-align: center; }
       body.dark .details-content .counters-row .counter {
-        border: 1px solid #363636; }
+        border: 1px solid #404040;
+        box-shadow: 0 2px 3px #292929; }
       .details-content .counters-row .counter:first-child {
         margin-left: 0; }
       .details-content .counters-row .counter:last-child {
         margin-right: 0; }
       .details-content .counters-row .counter .counter-value {
-        font-size: 200%; }
+        font-size: 175%; }
       .details-content .counters-row .counter .counter-title {
-        font-size: 125%;
+        font-size: 120%;
         font-variant: small-caps; }
   .details-content .timeline {
     position: relative; }
@@ -370,6 +374,18 @@ a {
   font-size: 11px;
   padding: 7px 0 0 5px;
   font-weight: bold; }
+
+.update-notification {
+  background: #e9f3fb;
+  border-radius: 3px;
+  display: flex;
+  margin-bottom: 10px;
+  padding: 6px 10px; }
+  .update-notification a {
+    color: #258cdb;
+    text-decoration: none; }
+  .update-notification .updateNotification-close {
+    margin-left: auto; }
 
 [stupid-table] th {
   cursor: default; }

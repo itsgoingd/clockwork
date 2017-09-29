@@ -18,11 +18,21 @@ class Requests
 
 	// loads request by id, inserts a placeholder to the items array which is replaced once the metadata is retrieved
 	loadId (id) {
+		let request = this.findId(id)
+
+		if (request) return Promise.resolve(request)
+
 		let placeholder = new Request({ id: id, loading: true })
 		this.items.push(placeholder)
 
 		return this.callRemote(this.remoteUrl + id).then(data => {
-			this.items[this.items.indexOf(placeholder)] = data[0]
+			if (data[0]) {
+				this.items[this.items.indexOf(placeholder)] = data[0]
+			} else {
+				this.items.splice(this.items.indexOf(placeholder), 1)
+			}
+
+			return Promise.resolve(data[0])
 		})
 	}
 
@@ -77,8 +87,8 @@ class Requests
 		url = new URI(url)
 
 		let [ pathname, query ] = options.path.split('?')
-		url.pathname(pathname)
-		url.query(query)
+		url.pathname(pathname || '')
+		url.query(query || '')
 
 		this.remoteUrl = url.toString()
 		this.remoteHeaders = options.headers || {}

@@ -8,7 +8,6 @@ html {
 	font-size: 11px;
 	height: 100%;
 	overflow: hidden;
-
 }
 
 body {
@@ -87,7 +86,6 @@ a {
 	cursor: default;
 
 	table {
-		height: 100%;
 		line-height: 1.4;
 		table-layout: fixed;
 	}
@@ -146,7 +144,7 @@ a {
 			}
 
 			.notifications-count {
-				background: rgb(39, 134, 243);
+				background: rgb(39, 134, 243) !important;
 
 				.errors-count i, .warnings-count i {
 					color: #fff;
@@ -253,9 +251,17 @@ a {
 		}
 	}
 
+	.requests-header {
+		height: 31px;
+	}
+
 	.requests-container {
 		height: calc(100% - 30px);
 		overflow: auto;
+
+		table {
+			height: 100%;
+		}
 	}
 
 	.load-more {
@@ -397,7 +403,7 @@ a {
 
 	.counters-row {
 		display: flex;
-		margin: 10px 0 15px;
+		margin: 0 0 10px;
 
 		.counter {
 			border: 1px solid rgb(209, 209, 209);
@@ -405,11 +411,12 @@ a {
 			box-shadow: 0 2px 3px #e5e5e5;
 			margin: 0 5px;
 			flex: 1;
-			padding: 20px;
+			padding: 8px 20px 10px;
 			text-align: center;
 
 			body.dark & {
-				border: 1px solid rgb(54, 54, 54);
+				border: 1px solid rgb(64, 64, 64);
+				box-shadow: 0 2px 3px #292929;
 			}
 
 			&:first-child {
@@ -421,11 +428,11 @@ a {
 			}
 
 			.counter-value {
-				font-size: 200%;
+				font-size: 175%;
 			}
 
 			.counter-title {
-				font-size: 125%;
+				font-size: 120%;
 				font-variant: small-caps;
 			}
 		}
@@ -616,6 +623,23 @@ a {
 	font-size: 11px;
 	padding: 7px 0 0 5px;
 	font-weight: bold;
+}
+
+.update-notification {
+	background: hsl(206, 71%, 95%);
+	border-radius: 3px;
+	display: flex;
+	margin-bottom: 10px;
+	padding: 6px 10px;
+
+	a {
+		color: rgb(37, 140, 219);
+		text-decoration: none;
+	}
+
+	.updateNotification-close {
+		margin-left: auto;
+	}
 }
 
 // Directives

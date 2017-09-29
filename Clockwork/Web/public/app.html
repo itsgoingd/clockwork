@@ -28,11 +28,12 @@
 		<script src="assets/javascripts/request.js"></script>
 		<script src="assets/javascripts/requests.js"></script>
 		<script src="assets/javascripts/standalone.js"></script>
+		<script src="assets/javascripts/update-notification.js"></script>
 	</head>
 	<body>
 		<div class="split-view" ng-controller="PanelController" ng-init="init()">
 			<div class="split-view-pane split-view-requests" ng-show="! requestsListCollapsed">
-				<table id="requests-header" resizable-columns data-resizable-columns-sync="#requests">
+				<table class="requests-header" id="requests-header" resizable-columns data-resizable-columns-sync="#requests">
 					<thead>
 						<tr>
 							<th class="controller">
@@ -67,7 +68,7 @@
 							<td class="duration"></td>
 						</tr>
 						<tr ng-repeat="request in requests" ng-click="showRequest(request.id)" ng-class="getRequestClass(request.id)" scroll-to-new>
-							<td class="controller" title="{{request.uri}} ({{ request.controller}}">
+							<td class="controller" title="{{request.uri}} ({{ request.controller}})">
 								<span class="notifications-count">
 									<span class="errors-count" ng-show="request.errorsCount">
 										<i class="fa fa-exclamation-circle"></i> {{request.errorsCount}}
@@ -135,6 +136,16 @@
 				<div class="details-content">
 
 					<div tab-content="request">
+						<div class="update-notification" ng-show="updateNotification">
+							<span>
+								A new Clockwork server-side version is available, {{updateNotification.version}}, you are using {{updateNotification.currentVersion}}.
+								<a ng-show="updateNotification.url" href="{{updateNotification.url}}" target="_blank">Read more</a>
+							</span>
+							<span class="updateNotification-close">
+								<a ng-click="closeUpdateNotification()" href="#">Close</a>
+							</span>
+						</div>
+
 						<table ng-show="request.headers.length">
 							<thead>
 								<tr>
