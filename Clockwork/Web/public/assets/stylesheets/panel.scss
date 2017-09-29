@@ -632,9 +632,17 @@ a {
 	margin-bottom: 10px;
 	padding: 6px 10px;
 
+	body.dark & {
+		background: hsl(30, 97%, 20%);
+	}
+
 	a {
 		color: rgb(37, 140, 219);
 		text-decoration: none;
+
+		body.dark & {
+			color: rgb(253, 148, 39);
+		}
 	}
 
 	.updateNotification-close {

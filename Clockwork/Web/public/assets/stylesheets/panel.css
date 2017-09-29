@@ -381,9 +381,13 @@ a {
   display: flex;
   margin-bottom: 10px;
   padding: 6px 10px; }
+  body.dark .update-notification {
+    background: #643302; }
   .update-notification a {
     color: #258cdb;
     text-decoration: none; }
+    body.dark .update-notification a {
+      color: #fd9427; }
   .update-notification .updateNotification-close {
     margin-left: auto; }
 
