@@ -128,7 +128,8 @@ class LaravelEventsDataSource extends DataSource
 			'kernel\.handled',
 			'illuminate\.log',
 			'mailer\.sending',
-			'router\.matched',
+			'router\.(?:before|after|matched)',
+			'router.filter:.+',
 			'locale\.changed',
 			'clockwork\..+'
 		];
