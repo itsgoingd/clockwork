@@ -1,9 +1,11 @@
 <?php namespace Clockwork\Support\Lumen;
 
 use Clockwork\Clockwork;
-use Clockwork\DataSource\PhpDataSource;
-use Clockwork\DataSource\LumenDataSource;
 use Clockwork\DataSource\EloquentDataSource;
+use Clockwork\DataSource\LaravelCacheDataSource;
+use Clockwork\DataSource\LaravelEventsDataSource;
+use Clockwork\DataSource\LumenDataSource;
+use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\SwiftDataSource;
 use Clockwork\Support\Laravel\ClockworkCleanCommand;
 
@@ -28,6 +30,14 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		if ($this->app['clockwork.support']->isCollectingEmails()) {
 			$this->app->make('clockwork.swift');
+		}
+
+		if ($this->app['clockwork.support']->isCollectingCacheStats()) {
+			$this->app['clockwork.cache']->listenToEvents();
+		}
+
+		if ($this->app['clockwork.support']->isCollectingEvents()) {
+			$this->app['clockwork.events']->listenToEvents();
 		}
 
 		if (!$this->app['clockwork.support']->isEnabled()) {
@@ -57,6 +67,16 @@ class ClockworkServiceProvider extends ServiceProvider
 			return new EloquentDataSource($app['db'], $app['events']);
 		});
 
+		$this->app->singleton('clockwork.cache', function ($app) {
+			return new LaravelCacheDataSource($app['events']);
+		});
+
+		$this->app->singleton('clockwork.events', function ($app) {
+			return new LaravelEventsDataSource(
+				$app['events'], $app['clockwork.support']->getConfig('ignored_events', [])
+			);
+		});
+
 		foreach ($this->app['clockwork.support']->getAdditionalDataSources() as $name => $callable) {
 			$this->app->singleton($name, $callable);
 		}
@@ -74,6 +94,14 @@ class ClockworkServiceProvider extends ServiceProvider
 
 			if ($app['clockwork.support']->isCollectingEmails()) {
 				$clockwork->addDataSource($app['clockwork.swift']);
+			}
+
+			if ($app['clockwork.support']->isCollectingCacheStats()) {
+				$clockwork->addDataSource($app['clockwork.cache']);
+			}
+
+			if ($app['clockwork.support']->isCollectingEvents()) {
+				$clockwork->addDataSource($app['clockwork.events']);
 			}
 
 			foreach ($app['clockwork.support']->getAdditionalDataSources() as $name => $callable) {
