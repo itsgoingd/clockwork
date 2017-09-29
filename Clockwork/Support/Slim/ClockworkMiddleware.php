@@ -27,10 +27,8 @@ class ClockworkMiddleware
 
     public function process(Request $request, Response $response, callable $next)
     {
-        $clockworkDataUri = '#/__clockwork(?:/(?<id>[0-9\.]+))?(?:/(?<direction>(?:previous|next)))?(?:/(?<count>\d+))?#';
-        // use both base path and path here as path is set incorrectly when the URI contains dot (at least with php built-in server)
-        $path = $request->getUri()->getBasePath() . $request->getUri()->getPath();
-		if (preg_match($clockworkDataUri, $path, $matches)) {
+        $clockworkDataUri = '#/__clockwork(?:/(?<id>[0-9-]+))?(?:/(?<direction>(?:previous|next)))?(?:/(?<count>\d+))?#';
+		if (preg_match($clockworkDataUri, $request->getUri()->getPath(), $matches)) {
             $matches = array_merge([ 'direction' => null, 'count' => null ], $matches);
 			return $this->retrieveRequest($response, $matches['id'], $matches['direction'], $matches['count']);
 		}
