@@ -224,6 +224,6 @@ class Request
 	 */
 	protected function generateRequestId()
 	{
-		return sprintf('%.4F', microtime(true)) . '.' . mt_rand();
+		return str_replace('.', '-', sprintf('%.4F', microtime(true))) . '-' . mt_rand();
 	}
 }
