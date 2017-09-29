@@ -9,8 +9,8 @@ class Extension
 	get api () { return chrome || browser }
 
 	static runningAsExtension () {
-		let api = chrome || browser
-		return api && api.devtools
+		return (typeof chrome == 'object' && chrome.devtools)
+			|| (typeof browser == 'object' && browser.devtools);
 	}
 
 	init () {
