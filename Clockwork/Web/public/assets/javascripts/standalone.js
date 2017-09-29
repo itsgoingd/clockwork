@@ -15,7 +15,7 @@ class Standalone
 
 	setMetadataUrl () {
 		this.requests.setRemote(
-			window.location.href, { path: URI(window.location.href.split('/').slice(0, -1).join('/')).path() }
+			window.location.href, { path: URI(window.location.href.split('/').slice(0, -1).join('/')).path() + '/' }
 		)
 	}
 
