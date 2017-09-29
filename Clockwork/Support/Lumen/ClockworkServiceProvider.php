@@ -36,8 +36,7 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		$router = isset($this->app->router) ? $this->app->router : $this->app;
 
-		$router->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Lumen\Controller@getData')
-			->where('id', '[0-9-]+')->where('direction', '(next|previous)')->where('count', '\d+');
+		$router->get('/__clockwork/{id:[0-9-]+}[/{direction:(?:next|previous)}/{count:\d+}]', 'Clockwork\Support\Lumen\Controller@getData');
 	}
 
 	public function register()
