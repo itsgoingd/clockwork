@@ -16,7 +16,7 @@ class UpdateNotification
 	}
 
 	show (host) {
-		if (this.ignoresUpdate(host)) {
+		if (this.ignoresUpdate(host) || ! this.serverVersion) {
 			return
 		}
 
