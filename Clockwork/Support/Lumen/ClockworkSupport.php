@@ -21,11 +21,6 @@ class ClockworkSupport
 		$this->app = $app;
 	}
 
-	public function getAdditionalDataSources()
-	{
-		return $this->getConfig('additional_data_sources', []);
-	}
-
 	public function getConfig($key, $default = null)
 	{
 		return env('CLOCKWORK_' . strtoupper($key), $default);

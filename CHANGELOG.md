@@ -16,6 +16,7 @@
 - fixed wrong version data logged in SQL storage
 - removed PHP 5.3 support, code style changes
 - removed CodeIgniter support
+- removed ability to register additional data sources via Clockwork config
 
 UPGRADING
 
@@ -23,6 +24,7 @@ UPGRADING
 - PHP 5.3 - no longer supported, you can continue using the latest 1.x version
 - CodeIgniter - no longer supported, you can continue using the lastest 1.x version
 - Slim 2 - update the imported namespace from Clockwork\Support\Slim to Clockwork\Support\Slim\Legacy
+- ability to register additional data sources via Clockwork config was removed, please call app('clockwork')->addDataSource(...) in your own service provider
 
 1.14.5
 

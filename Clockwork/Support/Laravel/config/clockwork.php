@@ -126,28 +126,6 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Additional data sources
-	|--------------------------------------------------------------------------
-	|
-	| You can use this option to register additional data sources with Clockwork.
-	| Keys specify the name under which the data source will be registered in the
-	| IoC container, values are closures accepting Laravel application instance as
-	| the only argument and returning an instance of the data source.
-	|
-	*/
-
-	'additional_data_sources' => [
-		// Note, this is for example only, laravel-doctrine contains Clockwork support out of the box, please follow the
-		// documentation at http://www.laraveldoctrine.org/docs/current/orm/config-file
-
-		// 'clockwork.doctrine' => function($app)
-		// {
-		// 	return new \Clockwork\DataSource\DoctrineDataSource($app['Doctrine\ORM\EntityManager']);
-		// }
-	],
-
-	/*
-	|--------------------------------------------------------------------------
 	| Register helpers
 	|--------------------------------------------------------------------------
 	|

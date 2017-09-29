@@ -22,11 +22,6 @@ class ClockworkSupport
 		$this->legacy = $legacy;
 	}
 
-	public function getAdditionalDataSources()
-	{
-		return $this->getConfig('additional_data_sources', []);
-	}
-
 	public function getConfig($key, $default = null)
 	{
 		if ($this->legacy) {

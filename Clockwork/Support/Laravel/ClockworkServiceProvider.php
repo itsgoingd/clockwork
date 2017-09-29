@@ -81,10 +81,6 @@ class ClockworkServiceProvider extends ServiceProvider
 			);
 		});
 
-		foreach ($this->app['clockwork.support']->getAdditionalDataSources() as $name => $callable) {
-			$this->app->singleton($name, $callable);
-		}
-
 		$this->app->singleton('clockwork', function ($app) {
 			$clockwork = new Clockwork();
 
@@ -103,10 +99,6 @@ class ClockworkServiceProvider extends ServiceProvider
 
 			if ($app['clockwork.support']->isCollectingEvents()) {
 				$clockwork->addDataSource($app['clockwork.events']);
-			}
-
-			foreach ($app['clockwork.support']->getAdditionalDataSources() as $name => $callable) {
-				$clockwork->addDataSource($app[$name]);
 			}
 
 			$clockwork->setStorage($app['clockwork.support']->getStorage());
