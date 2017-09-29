@@ -62,6 +62,8 @@ class Extension
 
 	listenToRequestsFirefox () {
 		this.api.runtime.onMessage.addListener(message => {
+			if (message.request.tabId != this.api.devtools.inspectedWindow.tabId) return
+
 			let options = this.parseHeaders(message.request.responseHeaders)
 
 			if (! options) return

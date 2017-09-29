@@ -14,7 +14,7 @@ class Standalone
 	}
 
 	setMetadataUrl () {
-		this.requests.setRemote('/__clockwork')
+		this.requests.setRemote(window.location.href.split('/').slice(0, -1).join('/'))
 	}
 
 	setMetadataClient () {
