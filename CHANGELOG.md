@@ -10,6 +10,7 @@
 - added Slim 3 middleware (thanks sperrichon)
 - added PSR message data source (thanks sperrichon)
 - added Doctrine DBAL data source (thanks sperrichon)
+- changed Clockwork request ids now use dashes instead of dots (thanks Tibbelit)
 - changed Laravel and Lumen integrations to no longer log data for console commands
 - changed simplified the clock Laravel helper (thanks Jergus Lejko)
 - fixed wrong version data logged in SQL storage
