@@ -4,7 +4,7 @@
 - added new Laravel cache data source
 - added new Laravel events data source
 - added new more robust metadata storage API
-- added automatic metadata cleanup (defaults to 1 month)
+- added automatic metadata cleanup (defaults to 1 week)
 - added better metadata serialization including class names for objects
 - added PostgreSQL compatibility for the SQL storage (thanks oldskool73)
 - added Slim 3 middleware (thanks sperrichon)
@@ -16,6 +16,13 @@
 - fixed wrong version data logged in SQL storage
 - removed PHP 5.3 support, code style changes
 - removed CodeIgniter support
+
+UPGRADING
+
+- update the required Clockwork version to ^2.0 in your composer.json
+- PHP 5.3 - no longer supported, you can continue using the latest 1.x version
+- CodeIgniter - no longer supported, you can continue using the lastest 1.x version
+- Slim 2 - update the imported namespace from Clockwork\Support\Slim to Clockwork\Support\Slim\Legacy
 
 1.14.5
 
