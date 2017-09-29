@@ -1,3 +1,7 @@
+2.0.1
+
+- fixed Web UI not working in Firefox
+
 2.0
 
 - added Web UI
