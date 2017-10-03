@@ -1,3 +1,7 @@
+2.0.2
+
+- fixed crash on attempt to clean up file storage if the project contains Clockwork 1.x metadata
+
 2.0.1
 
 - fixed Web UI not working in Firefox
