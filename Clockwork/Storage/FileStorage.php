@@ -99,7 +99,7 @@ class FileStorage extends Storage
 
 		$ids = array_filter($this->ids(), function ($id) use ($expirationTime) {
 			preg_match('#(?<time>\d+\-\d+)\-\d+#', $id, $matches);
-			return str_replace('-', '.', $matches['time']) < $expirationTime;
+			return ! isset($matches['time']) || str_replace('-', '.', $matches['time']) < $expirationTime;
 		});
 
 		foreach ($ids as $id) {
