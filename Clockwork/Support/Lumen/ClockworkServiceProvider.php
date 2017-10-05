@@ -20,10 +20,24 @@ class ClockworkServiceProvider extends ServiceProvider
 			class_alias('Clockwork\Support\Lumen\Facade', 'Clockwork');
 		}
 
-		if (! $this->app['clockwork.support']->isCollectingData()) {
-			return; // Don't bother registering event listeners as we are not collecting data
+		if ($this->app['clockwork.support']->isCollectingData()) {
+			$this->listenToEvents();
 		}
 
+		if (! $this->app['clockwork.support']->isEnabled()) {
+			return; // Clockwork is disabled, don't register the middleware and routes
+		}
+
+		$this->registerRoutes();
+
+		// register the Clockwork Web UI routes
+		if ($this->app['clockwork.support']->isWebEnabled()) {
+			$this->registerWebRoutes();
+		}
+	}
+
+	protected function listenToEvents()
+	{
 		if ($this->app['clockwork.support']->isCollectingDatabaseQueries()) {
 			$this->app['clockwork.eloquent']->listenToEvents();
 		}
@@ -38,17 +52,6 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		if ($this->app['clockwork.support']->isCollectingEvents()) {
 			$this->app['clockwork.events']->listenToEvents();
-		}
-
-		if (!$this->app['clockwork.support']->isEnabled()) {
-			return; // Clockwork is disabled, don't register the route
-		}
-
-		$this->registerRoutes();
-
-		// register the Clockwork Web UI routes
-		if ($this->app['clockwork.support']->isWebEnabled()) {
-			$this->registerWebRoutes();
 		}
 	}
 

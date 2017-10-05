@@ -16,24 +16,9 @@ class ClockworkServiceProvider extends ServiceProvider
 {
 	public function boot()
 	{
-		if (! $this->app['clockwork.support']->isCollectingData()) {
-			return; // Don't bother registering event listeners as we are not collecting data
+		if ($this->app['clockwork.support']->isCollectingData()) {
+			$this->listenToEvents();
 		}
-
-		if ($this->app['clockwork.support']->isCollectingDatabaseQueries()) {
-			$this->app['clockwork.eloquent']->listenToEvents();
-		}
-
-		if ($this->app['clockwork.support']->isCollectingCacheStats()) {
-			$this->app['clockwork.cache']->listenToEvents();
-		}
-
-		if ($this->app['clockwork.support']->isCollectingEvents()) {
-			$this->app['clockwork.events']->listenToEvents();
-		}
-
-		// create the clockwork instance so all data sources are initialized at this point
-		$this->app->make('clockwork');
 
 		if (! $this->app['clockwork.support']->isEnabled()) {
 			return; // Clockwork is disabled, don't register the middleware and routes
@@ -44,6 +29,21 @@ class ClockworkServiceProvider extends ServiceProvider
 		// register the Clockwork Web UI routes
 		if ($this->app['clockwork.support']->isWebEnabled()) {
 			$this->registerWebRoutes();
+		}
+	}
+
+	protected function listenToEvents()
+	{
+		if ($this->app['clockwork.support']->isCollectingDatabaseQueries()) {
+			$this->app['clockwork.eloquent']->listenToEvents();
+		}
+
+		if ($this->app['clockwork.support']->isCollectingCacheStats()) {
+			$this->app['clockwork.cache']->listenToEvents();
+		}
+
+		if ($this->app['clockwork.support']->isCollectingEvents()) {
+			$this->app['clockwork.events']->listenToEvents();
 		}
 	}
 
