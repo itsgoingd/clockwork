@@ -1,3 +1,7 @@
+2.0.3
+
+- fixed Clockwork now working when used with Laravel route cache
+
 2.0.2
 
 - fixed crash on attempt to clean up file storage if the project contains Clockwork 1.x metadata
