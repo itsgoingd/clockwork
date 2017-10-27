@@ -66,7 +66,7 @@ You can also access Clockwork using the `Clockwork` facade, resolving from the c
 
 All data logged using the Laravel log methods will also appear in the Clockwork log tab for the request.
 
-You can also use the Clockwork log directly, with the benefit of rich logging capabilities. You can safely log any variable, from a simple strings to an object.
+You can also use the Clockwork log directly, with the benefit of rich logging capabilities. You can safely log any variable, from a simple string to an object.
 
 Logging data to Clockwork can be done using the helper function, which even supports logging multiple values at once
 
@@ -102,9 +102,9 @@ Events that are not stopped explicitly will simply finish when the application r
 
 By default, Clockwork will only be available in debug mode, you can change this and more settings in the configuration file.
 
-You can publish the configuration file using the vendor:publish artisan command to
+You can publish the configuration file using the `vendor:publish` artisan command to
 
-- set when should Clockwork be enabled
+- set when Clockwork should be enabled
 - enable or disable the web UI
 - configure how the request metadata is stored
 - set what data should be collected
