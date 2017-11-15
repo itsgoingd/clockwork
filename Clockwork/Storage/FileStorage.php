@@ -22,7 +22,7 @@ class FileStorage extends Storage
 	{
 		if (! file_exists($path)) {
 			// directory doesn't exist, try to create one
-			if (! mkdir($path, $dirPermissions, true)) {
+			if (! @mkdir($path, $dirPermissions, true)) {
 				throw new \Exception("Directory \"{$path}\" does not exist.");
 			}
 
