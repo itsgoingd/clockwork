@@ -7,7 +7,7 @@ use Clockwork\Support\Laravel\Eloquent\ResolveModelLegacyScope;
 use Clockwork\Support\Laravel\Eloquent\ResolveModelOldScope;
 
 use Illuminate\Database\DatabaseManager;
-use Illuminate\Events\Dispatcher as EventDispatcher;
+use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 
 /**
  * Data source for Eloquent (Laravel ORM), provides database queries
