@@ -1,15 +1,16 @@
-<?php namespace Clockwork\Support\Laravel\Controllers;
+<?php namespace Clockwork\Support\Laravel;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Controllers\Controller;
+use Illuminate\Routing\Controller;
 
-class OldController extends Controller
+class ClockworkController extends Controller
 {
 	protected $app;
 
-	public function __construct()
+	public function __construct(Application $app)
 	{
-		$this->app = app();
+		$this->app = $app;
 	}
 
 	public function getData($id = null, $direction = null, $count = null)

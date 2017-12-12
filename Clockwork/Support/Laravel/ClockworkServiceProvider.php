@@ -49,14 +49,10 @@ class ClockworkServiceProvider extends ServiceProvider
 
 	public function register()
 	{
-		if ($this->isLegacyLaravel() || $this->isOldLaravel()) {
-			$this->package('itsgoingd/clockwork', 'clockwork', __DIR__);
-		} else {
-			$this->publishes([ __DIR__ . '/config/clockwork.php' => config_path('clockwork.php') ]);
-		}
+		$this->publishes([ __DIR__ . '/config/clockwork.php' => config_path('clockwork.php') ]);
 
 		$this->app->singleton('clockwork.support', function ($app) {
-			return new ClockworkSupport($app, $this->isLegacyLaravel() || $this->isOldLaravel());
+			return new ClockworkSupport($app);
 		});
 
 		$this->app->singleton('clockwork.laravel', function ($app) {
@@ -134,61 +130,25 @@ class ClockworkServiceProvider extends ServiceProvider
 	// Register middleware
 	public function registerMiddleware()
 	{
-		if ($this->isLegacyLaravel()) {
-			$this->app->middleware('Clockwork\Support\Laravel\ClockworkLegacyMiddleware', [ $this->app ]);
-		} elseif ($this->isOldLaravel()) {
-			$this->app['router']->after(function ($request, $response) {
-				return $this->app['clockwork.support']->process($request, $response);
-			});
-		} else {
-			$kernel = $this->app['Illuminate\Contracts\Http\Kernel'];
-			$kernel->prependMiddleware('Clockwork\Support\Laravel\ClockworkMiddleware');
-		}
+		$kernel = $this->app['Illuminate\Contracts\Http\Kernel'];
+		$kernel->prependMiddleware('Clockwork\Support\Laravel\ClockworkMiddleware');
 	}
 
 	public function registerRoutes()
 	{
-		if ($this->isLegacyLaravel()) {
-			$this->app['router']->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Laravel\Controllers\LegacyController@getData')
-				->where('id', '([0-9-]+|latest)')->where('direction', '(next|previous)')->where('count', '\d+');
-		} elseif ($this->isOldLaravel()) {
-			$this->app['router']->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Laravel\Controllers\OldController@getData')
-				->where('id', '([0-9-]+|latest)')->where('direction', '(next|previous)')->where('count', '\d+');
-		} else {
-			$this->app['router']->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Laravel\Controllers\CurrentController@getData')
-				->where('id', '([0-9-]+|latest)')->where('direction', '(next|previous)')->where('count', '\d+');
-		}
+		$this->app['router']->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Laravel\ClockworkController@getData')
+			->where('id', '([0-9-]+|latest)')->where('direction', '(next|previous)')->where('count', '\d+');
 	}
 
 	public function registerWebRoutes()
 	{
-		if ($this->isLegacyLaravel()) {
-			$this->app['router']->get('/__clockwork', 'Clockwork\Support\Laravel\Controllers\LegacyController@webRedirect');
-			$this->app['router']->get('/__clockwork/app', 'Clockwork\Support\Laravel\Controllers\LegacyController@webIndex');
-			$this->app['router']->get('/__clockwork/assets/{path}', 'Clockwork\Support\Laravel\Controllers\LegacyController@webAsset')->where('path', '.+');
-		} elseif ($this->isOldLaravel()) {
-			$this->app['router']->get('/__clockwork', 'Clockwork\Support\Laravel\Controllers\OldController@webRedirect');
-			$this->app['router']->get('/__clockwork/app', 'Clockwork\Support\Laravel\Controllers\OldController@webIndex');
-			$this->app['router']->get('/__clockwork/assets/{path}', 'Clockwork\Support\Laravel\Controllers\OldController@webAsset')->where('path', '.+');
-		} else {
-			$this->app['router']->get('/__clockwork', 'Clockwork\Support\Laravel\Controllers\CurrentController@webRedirect');
-			$this->app['router']->get('/__clockwork/app', 'Clockwork\Support\Laravel\Controllers\CurrentController@webIndex');
-			$this->app['router']->get('/__clockwork/assets/{path}', 'Clockwork\Support\Laravel\Controllers\CurrentController@webAsset')->where('path', '.+');
-		}
+		$this->app['router']->get('/__clockwork', 'Clockwork\Support\Laravel\ClockworkController@webRedirect');
+		$this->app['router']->get('/__clockwork/app', 'Clockwork\Support\Laravel\ClockworkController@webIndex');
+		$this->app['router']->get('/__clockwork/assets/{path}', 'Clockwork\Support\Laravel\ClockworkController@webAsset')->where('path', '.+');
 	}
 
 	public function provides()
 	{
 		return [ 'clockwork' ];
-	}
-
-	public function isLegacyLaravel()
-	{
-		return Str::startsWith(Application::VERSION, [ '4.1', '4.2' ]);
-	}
-
-	public function isOldLaravel()
-	{
-		return Str::startsWith(Application::VERSION, '4.0');
 	}
 }
