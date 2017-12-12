@@ -34,7 +34,7 @@ class LaravelCacheDataSource extends DataSource
 	 */
 	public function listenToEvents()
 	{
-		if (! class_exists('Illuminate\Cache\Events\CacheHit')) {
+		if (! class_exists(\Illuminate\Cache\Events\CacheHit::class)) {
 			// legacy Laravel 5.1 style events
 			$this->eventDispatcher->listen('cache.hit', function ($key, $value) {
 				$this->registerQuery([ 'type' => 'hit', 'key' => $key, 'value' => $value ]);
@@ -54,18 +54,18 @@ class LaravelCacheDataSource extends DataSource
 			return;
 		}
 
-		$this->eventDispatcher->listen('Illuminate\Cache\Events\CacheHit', function ($event) {
+		$this->eventDispatcher->listen(\Illuminate\Cache\Events\CacheHit::class, function ($event) {
 			$this->registerQuery([ 'type' => 'hit', 'key' => $event->key, 'value' => $event->value ]);
 		});
-		$this->eventDispatcher->listen('Illuminate\Cache\Events\CacheMissed', function ($event) {
+		$this->eventDispatcher->listen(\Illuminate\Cache\Events\CacheMissed::class, function ($event) {
 			$this->registerQuery([ 'type' => 'miss', 'key' => $event->key ]);
 		});
-		$this->eventDispatcher->listen('Illuminate\Cache\Events\KeyWritten', function ($event) {
+		$this->eventDispatcher->listen(\Illuminate\Cache\Events\KeyWritten::class, function ($event) {
 			$this->registerQuery([
 				'type' => 'write', 'key' => $event->key, 'value' => $event->value, 'expiration' => $event->minutes * 60
 			]);
 		});
-		$this->eventDispatcher->listen('Illuminate\Cache\Events\KeyForgotten', function ($event) {
+		$this->eventDispatcher->listen(\Illuminate\Cache\Events\KeyForgotten::class, function ($event) {
 			$this->registerQuery([ 'type' => 'delete', 'key' => $event->key ]);
 		});
 	}

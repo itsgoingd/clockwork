@@ -17,7 +17,7 @@ class ClockworkServiceProvider extends ServiceProvider
 	public function boot()
 	{
 		if ($this->isRunningWithFacades() && ! class_exists('Clockwork')) {
-			class_alias('Clockwork\Support\Lumen\Facade', 'Clockwork');
+			class_alias(\Clockwork\Support\Lumen\Facade::class, 'Clockwork');
 		}
 
 		if ($this->app['clockwork.support']->isCollectingData()) {
@@ -114,11 +114,11 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app['clockwork.lumen']->listenToEvents();
 
 		// set up aliases for all Clockwork parts so they can be resolved by the IoC container
-		$this->app->alias('clockwork.support', 'Clockwork\Support\Lumen\ClockworkSupport');
-		$this->app->alias('clockwork.lumen', 'Clockwork\DataSource\LumenDataSource');
-		$this->app->alias('clockwork.swift', 'Clockwork\DataSource\SwiftDataSource');
-		$this->app->alias('clockwork.eloquent', 'Clockwork\DataSource\EloquentDataSource');
-		$this->app->alias('clockwork', 'Clockwork\Clockwork');
+		$this->app->alias('clockwork.support', ClockworkSupport::class);
+		$this->app->alias('clockwork.lumen', LumenDataSource::class);
+		$this->app->alias('clockwork.swift', SwiftDataSource::class);
+		$this->app->alias('clockwork.eloquent', EloquentDataSource::class);
+		$this->app->alias('clockwork', Clockwork::class);
 
 		$this->registerCommands();
 
@@ -132,14 +132,9 @@ class ClockworkServiceProvider extends ServiceProvider
 	 */
 	public function registerCommands()
 	{
-		// Clean command
-		$this->app->singleton('command.clockwork.clean', function ($app) {
-			return new ClockworkCleanCommand();
-		});
-
-		$this->commands(
-			'command.clockwork.clean'
-		);
+		$this->commands([
+			\ClockworkCleanCommand::class
+		]);
 	}
 
 	public function registerRoutes()

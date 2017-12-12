@@ -11,7 +11,7 @@ use Doctrine\DBAL\Connection;
 class DBALDataSource extends DataSource implements SQLLogger
 {
 	const EVENT_NAME = 'database';
-	
+
 	/**
 	 * Internal array where queries are stored
 	 */
@@ -31,7 +31,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 	 * Doctrine connection
 	 */
 	protected $connection;
-	
+
 	/**
 	 * Clockwork timeline
 	 */
@@ -40,25 +40,23 @@ class DBALDataSource extends DataSource implements SQLLogger
 	public function __construct(Connection $connection, $options = [])
 	{
 		$this->connection = $connection;
-		
-		$options = array_merge([
-			'timeline' => null
-		], $options);
-		
+
+		$options = array_merge([ 'timeline' => null ], $options);
+
 		$configuration = $this->connection->getConfiguration();
 		$currentLogger = $configuration->getSQLLogger();
-		
-		if($currentLogger === null) {
+
+		if ($currentLogger === null) {
 			$configuration->setSQLLogger($this);
 		} else {
 			$loggerChain = new LoggerChain();
 			$loggerChain->addLogger($currentLogger);
 			$loggerChain->addLogger($this);
-			
+
 			$configuration->setSQLLogger($loggerChain);
 		}
-		
-		if($options['timeline'] instanceof Timeline) {
+
+		if ($options['timeline'] instanceof Timeline) {
 			$this->setTimeline($options['timeline']);
 		}
 	}
@@ -74,8 +72,8 @@ class DBALDataSource extends DataSource implements SQLLogger
 		$sql = $this->formatQuery($sql);
 
 		$this->query = [ 'sql' => $sql, 'params' => $params, 'types' => $types ];
-		
-		if($this->timeline !== null) {
+
+		if ($this->timeline !== null) {
 			$this->timeline->startEvent(self::EVENT_NAME, $sql);
 		}
 	}
@@ -138,8 +136,8 @@ class DBALDataSource extends DataSource implements SQLLogger
 		$duration = (microtime(true) - $this->start) * 1000;
 
 		$this->registerQuery($this->query['sql'], $this->query['params'], $duration, $this->connection->getDatabase());
-		
-		if($this->timeline !== null) {
+
+		if ($this->timeline !== null) {
 			$this->timeline->endEvent(self::EVENT_NAME);
 		}
 	}
@@ -174,7 +172,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 	{
 		return $this->queries;
 	}
-	
+
 	/**
 	 * Timeline Getter/Setter
 	 */
@@ -182,7 +180,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 	{
 		return $this->timeline;
 	}
-	
+
 	public function setTimeline(Timeline $timeline)
 	{
 		return $this->timeline = $timeline;

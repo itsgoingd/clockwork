@@ -105,9 +105,9 @@ class LaravelDataSource extends DataSource
 			$this->timeline->endEvent('controller');
 		});
 
-		if (class_exists('Illuminate\Log\Events\MessageLogged')) {
+		if (class_exists(\Illuminate\Log\Events\MessageLogged::class)) {
 			// Laravel 5.4
-			$this->app['events']->listen('Illuminate\Log\Events\MessageLogged', function ($event) {
+			$this->app['events']->listen(\Illuminate\Log\Events\MessageLogged::class, function ($event) {
 				$this->log->log($event->level, $event->message, $event->context);
 			});
 		} else {

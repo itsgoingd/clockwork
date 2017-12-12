@@ -97,8 +97,6 @@ class PhpDataSource extends DataSource
 	{
 		if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
 			return $_SERVER['REQUEST_TIME_FLOAT'];
-		} elseif (isset($_SERVER['REQUEST_TIME'])) {
-			return $_SERVER['REQUEST_TIME'];
 		}
 	}
 
