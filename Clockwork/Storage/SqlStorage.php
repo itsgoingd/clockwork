@@ -104,7 +104,7 @@ class SqlStorage extends Storage
 		$data = $this->applyFilter($request->toArray());
 
 		foreach ($this->needsSerialization as $key) {
-			$data[$key] = @json_encode($data[$key]);
+			$data[$key] = @json_encode($data[$key], \JSON_PARTIAL_OUTPUT_ON_ERROR);
 		}
 
 		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, $this->fields));
