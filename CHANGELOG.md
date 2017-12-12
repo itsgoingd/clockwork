@@ -1,3 +1,8 @@
+2.0.4
+
+- improved mkdir error handling in FileStorage (thanks FBnil)
+- fixed crash in LaravelEventsDataSource when firing events with associative array as payload
+
 2.0.3
 
 - fixed Clockwork now working when used with Laravel route cache
