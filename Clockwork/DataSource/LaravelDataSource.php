@@ -6,7 +6,7 @@ use Clockwork\Request\Log;
 use Clockwork\Request\Request;
 use Clockwork\Request\Timeline;
 
-use Illuminate\Foundation\Application;
+use Illuminate\Contracts\Foundation\Application;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -111,7 +111,7 @@ class LaravelDataSource extends DataSource
 				$this->log->log($event->level, $event->message, $event->context);
 			});
 		} else {
-			// Laravel 4.0 to 5.3
+			// Laravel 5.0 to 5.3
 			$this->app['events']->listen('illuminate.log', function ($level, $message, $context) {
 				$this->log->log($level, $message, $context);
 			});
@@ -141,13 +141,8 @@ class LaravelDataSource extends DataSource
 	{
 		$router = $this->app['router'];
 
-		if (strpos(Application::VERSION, '4.0') === 0) { // Laravel 4.0
-			$route = $router->getCurrentRoute();
-			$controller = $route ? $route->getAction() : null;
-		} else { // Laravel 4.1
-			$route = $router->current();
-			$controller = $route ? $route->getActionName() : null;
-		}
+		$route = $router->current();
+		$controller = $route ? $route->getActionName() : null;
 
 		if ($controller instanceof \Closure) {
 			$controller = 'anonymous function';
@@ -203,36 +198,16 @@ class LaravelDataSource extends DataSource
 	 */
 	protected function getRoutes()
 	{
-		$router = $this->app['router'];
-
-		if (strpos(Application::VERSION, '4.0') === 0) { // Laravel 4.0
-			$routes = $router->getRoutes()->all();
-			$names = array_keys($routes);
-
-			return array_map(function ($route, $name) {
-				return [
-					'method' => implode(', ', $route->getMethods()),
-					'uri'    => $route->getPath(),
-					'name'   => $name,
-					'action' => $route->getAction() ?: 'anonymous function',
-					'before' => implode(', ', $route->getBeforeFilters()),
-					'after'  => implode(', ', $route->getAfterFilters())
-				];
-			}, $routes, $names);
-		} else { // Laravel 4.1
-			$routes = $router->getRoutes()->getRoutes();
-
-			return array_map(function ($route) {
-				return [
-					'method' => implode(', ', $route->methods()),
-					'uri'    => $route->uri(),
-					'name'   => $route->getName(),
-					'action' => $route->getActionName() ?: 'anonymous function',
-					'before' => method_exists($route, 'beforeFilters') ? implode(', ', array_keys($route->beforeFilters())) : '',
-					'after'  => method_exists($route, 'afterFilters') ? implode(', ', array_keys($route->afterFilters())) : ''
-				];
-			}, $routes);
-		}
+		return array_map(function ($route) {
+			return [
+				'method' => implode(', ', $route->methods()),
+				'uri'    => $route->uri(),
+				'name'   => $route->getName(),
+				'action' => $route->getActionName() ?: 'anonymous function',
+				'before' => method_exists($route, 'beforeFilters') ? implode(', ', array_keys($route->beforeFilters())) : '',
+				'after'  => method_exists($route, 'afterFilters') ? implode(', ', array_keys($route->afterFilters())) : ''
+			];
+		}, $this->app['router']->getRoutes()->getRoutes());
 	}
 
 	/**

@@ -4,9 +4,8 @@ use Clockwork\Helpers\StackTrace;
 use Clockwork\Request\Request;
 use Clockwork\Support\Laravel\Eloquent\ResolveModelScope;
 use Clockwork\Support\Laravel\Eloquent\ResolveModelLegacyScope;
-use Clockwork\Support\Laravel\Eloquent\ResolveModelOldScope;
 
-use Illuminate\Database\DatabaseManager;
+use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 
 /**
@@ -32,7 +31,7 @@ class EloquentDataSource extends DataSource
 	/**
 	 * Create a new data source instance, takes a database manager and an event dispatcher as arguments
 	 */
-	public function __construct(DatabaseManager $databaseManager, EventDispatcher $eventDispatcher)
+	public function __construct(ConnectionResolverInterface $databaseManager, EventDispatcher $eventDispatcher)
 	{
 		$this->databaseManager = $databaseManager;
 		$this->eventDispatcher = $eventDispatcher;
@@ -54,10 +53,10 @@ class EloquentDataSource extends DataSource
 		}
 
 		if (class_exists('Illuminate\Database\Events\QueryExecuted')) {
-			// Laravel 5.2
+			// Laravel 5.2 and up
 			$this->eventDispatcher->listen('Illuminate\Database\Events\QueryExecuted', [ $this, 'registerQuery' ]);
 		} else {
-			// Laravel 4.0 to 5.1
+			// Laravel 5.0 to 5.1
 			$this->eventDispatcher->listen('illuminate.query', [ $this, 'registerLegacyQuery' ]);
 		}
 	}
@@ -171,17 +170,11 @@ class EloquentDataSource extends DataSource
 	 */
 	protected function getModelResolvingScope()
 	{
-		if (interface_exists('Illuminate\Database\Eloquent\Scope')) {
-			// Laravel 5.2
-			return new ResolveModelScope($this);
-		} elseif (interface_exists('Illuminate\Database\Eloquent\ScopeInterface')) {
-			if (trait_exists('Illuminate\Database\Eloquent\SoftDeletingTrait')) {
-				// Laravel 4.2
-				return new ResolveModelOldScope($this);
-			} else {
-				// Laravel 5.0 to 5.1
-				return new ResolveModelLegacyScope($this);
-			}
+		if (interface_exists('Illuminate\Database\Eloquent\ScopeInterface')) {
+			// Laravel 5.0 to 5.1
+			return new ResolveModelLegacyScope($this);
 		}
+
+		return new ResolveModelScope($this);
 	}
 }
