@@ -32,12 +32,9 @@ class LaravelEventsDataSource extends DataSource
 	public function listenToEvents()
 	{
 		$this->dispatcher->listen('*', function ($event = null, $data = null) {
-			if (method_exists($this->dispatcher, 'firing')) { // Laravel 4.1 - 5.3
+			if (method_exists($this->dispatcher, 'firing')) { // Laravel 5.0 - 5.3
 				$data = func_get_args();
 				$event = $this->dispatcher->firing();
-			} elseif (count(func_get_args()) > 2 || ! is_array($data)) { // Laravel 4.0
-				$data = func_get_args();
-				$event = array_pop($data);
 			}
 
 			$this->registerEvent($event, $data);
