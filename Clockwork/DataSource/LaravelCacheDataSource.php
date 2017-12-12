@@ -4,7 +4,7 @@ use Clockwork\Helpers\Serializer;
 use Clockwork\Helpers\StackTrace;
 use Clockwork\Request\Request;
 
-use Illuminate\Events\Dispatcher as EventDispatcher;
+use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 
 /**
  * Data source for Laravel cache component, provides cache queries and stats

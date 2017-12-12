@@ -6,7 +6,7 @@ use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\SqlStorage;
 use Clockwork\Web\Web;
 
-use Illuminate\Foundation\Application;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

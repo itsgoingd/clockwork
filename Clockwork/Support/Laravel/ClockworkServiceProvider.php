@@ -8,9 +8,7 @@ use Clockwork\DataSource\LaravelEventsDataSource;
 use Clockwork\DataSource\EloquentDataSource;
 use Clockwork\DataSource\SwiftDataSource;
 
-use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 
 class ClockworkServiceProvider extends ServiceProvider
 {

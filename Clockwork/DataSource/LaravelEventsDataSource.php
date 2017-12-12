@@ -4,7 +4,7 @@ use Clockwork\Helpers\Serializer;
 use Clockwork\Helpers\StackTrace;
 use Clockwork\Request\Request;
 
-use Illuminate\Events\Dispatcher;
+use Illuminate\Contracts\Events\Dispatcher;
 
 /**
  * Data source for Laravel events component, provides fired events
