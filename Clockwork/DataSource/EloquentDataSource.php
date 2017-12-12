@@ -52,9 +52,9 @@ class EloquentDataSource extends DataSource
 			});
 		}
 
-		if (class_exists('Illuminate\Database\Events\QueryExecuted')) {
+		if (class_exists(\Illuminate\Database\Events\QueryExecuted::class)) {
 			// Laravel 5.2 and up
-			$this->eventDispatcher->listen('Illuminate\Database\Events\QueryExecuted', [ $this, 'registerQuery' ]);
+			$this->eventDispatcher->listen(\Illuminate\Database\Events\QueryExecuted::class, [ $this, 'registerQuery' ]);
 		} else {
 			// Laravel 5.0 to 5.1
 			$this->eventDispatcher->listen('illuminate.query', [ $this, 'registerLegacyQuery' ]);
@@ -170,7 +170,7 @@ class EloquentDataSource extends DataSource
 	 */
 	protected function getModelResolvingScope()
 	{
-		if (interface_exists('Illuminate\Database\Eloquent\ScopeInterface')) {
+		if (interface_exists(\Illuminate\Database\Eloquent\ScopeInterface::class)) {
 			// Laravel 5.0 to 5.1
 			return new ResolveModelLegacyScope($this);
 		}

@@ -1,5 +1,6 @@
 <?php namespace Clockwork\Support\Laravel;
 
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
 
 class ClockworkMiddleware
@@ -27,8 +28,8 @@ class ClockworkMiddleware
 		try {
 			$response = $next($request);
 		} catch (\Exception $e) {
-			$this->app['Illuminate\Contracts\Debug\ExceptionHandler']->report($e);
-			$response = $this->app['Illuminate\Contracts\Debug\ExceptionHandler']->render($request, $e);
+			$this->app[ExceptionHandler::class]->report($e);
+			$response = $this->app[ExceptionHandler::class]->render($request, $e);
 		}
 
 		return $this->app['clockwork.support']->process($request, $response);

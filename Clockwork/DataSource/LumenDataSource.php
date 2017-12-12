@@ -206,8 +206,8 @@ class LumenDataSource extends DataSource
 
 	protected function getMethod()
 	{
-		if ($this->app->bound('Illuminate\Http\Request')) {
-			return $this->app['Illuminate\Http\Request']->getMethod();
+		if ($this->app->bound(\Illuminate\Http\Request::class)) {
+			return $this->app[\Illuminate\Http\Request::class]->getMethod();
 		} elseif (isset($_POST['_method'])) {
 			return strtoupper($_POST['_method']);
 		} else {
@@ -217,8 +217,8 @@ class LumenDataSource extends DataSource
 
 	protected function getPathInfo()
 	{
-		if ($this->app->bound('Illuminate\Http\Request')) {
-			return $this->app['Illuminate\Http\Request']->getPathInfo();
+		if ($this->app->bound(\Illuminate\Http\Request::class)) {
+			return $this->app[\Illuminate\Http\Request::class]->getPathInfo();
 		} else {
 			$query = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
 

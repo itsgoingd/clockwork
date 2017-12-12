@@ -103,11 +103,11 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app['clockwork.laravel']->listenToEvents();
 
 		// set up aliases for all Clockwork parts so they can be resolved by the IoC container
-		$this->app->alias('clockwork.support', 'Clockwork\Support\Laravel\ClockworkSupport');
-		$this->app->alias('clockwork.laravel', 'Clockwork\DataSource\LaravelDataSource');
-		$this->app->alias('clockwork.swift', 'Clockwork\DataSource\SwiftDataSource');
-		$this->app->alias('clockwork.eloquent', 'Clockwork\DataSource\EloquentDataSource');
-		$this->app->alias('clockwork', 'Clockwork\Clockwork');
+		$this->app->alias('clockwork.support', ClockworkSupport::class);
+		$this->app->alias('clockwork.laravel', LaravelDataSource::class);
+		$this->app->alias('clockwork.swift', SwiftDataSource::class);
+		$this->app->alias('clockwork.eloquent', EloquentDataSource::class);
+		$this->app->alias('clockwork', Clockwork::class);
 
 		$this->registerCommands();
 		$this->registerMiddleware();
@@ -121,15 +121,15 @@ class ClockworkServiceProvider extends ServiceProvider
 	public function registerCommands()
 	{
 		$this->commands([
-			'Clockwork\Support\Laravel\ClockworkCleanCommand'
+			ClockworkCleanCommand::class
 		]);
 	}
 
 	// Register middleware
 	public function registerMiddleware()
 	{
-		$kernel = $this->app['Illuminate\Contracts\Http\Kernel'];
-		$kernel->prependMiddleware('Clockwork\Support\Laravel\ClockworkMiddleware');
+		$this->app[\Illuminate\Contracts\Http\Kernel::class]
+			->prependMiddleware(ClockworkMiddleware::class);
 	}
 
 	public function registerRoutes()

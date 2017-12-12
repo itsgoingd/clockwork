@@ -53,8 +53,6 @@ class PsrMessageDataSource extends DataSource
 
 		if (isset($env['REQUEST_TIME_FLOAT'])) {
 			return $env['REQUEST_TIME_FLOAT'];
-		} elseif (isset($env['REQUEST_TIME'])) {
-			return $env['REQUEST_TIME'];
 		}
 	}
 
