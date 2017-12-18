@@ -111,7 +111,7 @@ You can publish the configuration file using the `vendor:publish` artisan comman
 
 ### Licence
 
-Copyright (c) 2013 Miroslav Rigler
+Copyright (c) 2017 Miroslav Rigler
 
 MIT License
 
