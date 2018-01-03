@@ -23,7 +23,7 @@ class ClockworkSupport
 
 	public function getConfig($key, $default = null)
 	{
-		return env('CLOCKWORK_' . strtoupper($key), $default);
+		return $this->app['config']->get("clockwork.{$key}", $default);
 	}
 
 	public function getData($id = null, $direction = null, $count = null)
