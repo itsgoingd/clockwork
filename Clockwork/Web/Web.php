@@ -16,7 +16,7 @@ class Web
 
 	protected function resolveAssetPath($path)
 	{
-		$publicPath = __DIR__ . '/public';
+		$publicPath = realpath(__DIR__ . '/public');
 
 		$path = realpath("$publicPath/{$path}");
 
