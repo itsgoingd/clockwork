@@ -107,10 +107,10 @@ class DBALDataSource extends DataSource implements SQLLogger
 	{
 		if (is_object($param)) {
 			if (! method_exists($param, '__toString')) {
-				if ($param instanceof DateTime || $param instanceof DateTimeImmutable) {
+				if ($param instanceof \DateTime || $param instanceof \DateTimeImmutable) {
 					$param = $param->format('Y-m-d H:i:s');
 				} else {
-					throw new Exception('Given query param is an instance of ' . get_class($param) . ' and could not be converted to a string');
+					throw new \Exception('Given query param is an instance of ' . get_class($param) . ' and could not be converted to a string');
 				}
 			}
 		} elseif (is_array($param)) {
