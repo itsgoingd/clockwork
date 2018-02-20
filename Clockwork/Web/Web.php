@@ -8,9 +8,21 @@ class Web
 
 		if (! $path) return;
 
+		switch (pathinfo($path, PATHINFO_EXTENSION)) {
+			case 'css':
+				$mime = 'text/css';
+				break;
+			case 'js':
+				$mime = 'application/javascript';
+				break;
+			default:
+				$mime = 'text/html';
+				break;
+		}
+
 		return [
 			'path' => $path,
-			'mime' => strpos($path, '.css') ? 'text/css' : 'text/html'
+			'mime' => $mime
 		];
 	}
 
