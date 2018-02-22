@@ -2,6 +2,7 @@
     "name": "itsgoingd/clockwork",
     "description": "php dev tools integrated to your browser",
     "keywords": ["debugging", "profiling", "logging", "laravel", "lumen", "slim", "devtools"],
+    "type": "laravel-package",
     "homepage": "https://underground.works/clockwork",
     "license": "MIT",
     "authors": [
