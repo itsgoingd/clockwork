@@ -1,6 +1,7 @@
 let api = chrome || browser
+let lastClockworkRequestPerTab = {}
 
-function onMessage(message, sender, callback) {
+api.runtime.onMessage.addListener((message, sender, callback) => {
 	if (message.action == 'getJSON') {
 		let xhr = new XMLHttpRequest()
 
@@ -9,20 +10,23 @@ function onMessage(message, sender, callback) {
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState != 4) return
 
+			let data
+
 			if (xhr.status != 200) {
-				callback([])
-				console.log('Error getting Clockwork metadata:')
-				console.log(xhr.responseText)
-				return
+				return callback({ error: 'Server returned an error response.' })
 			}
 
 			try {
-				callback(JSON.parse(xhr.responseText))
+				data = JSON.parse(xhr.responseText)
 			} catch (e) {
-				callback([])
-				console.log('Invalid Clockwork metadata:')
-				console.log(xhr.responseText)
+				return callback({ error: 'Server returned an invalid JSON.' })
 			}
+
+			if (! Object.keys(data).length) {
+				return callback({ error: 'Server returned an empty metadata.' })
+			}
+
+			callback({ data })
 		}
 
 		Object.keys(message.headers || {}).forEach(headerName => {
@@ -35,33 +39,29 @@ function onMessage(message, sender, callback) {
 	}
 
 	return true
-}
+})
 
-api.runtime.onMessage.addListener(onMessage)
-
-// track last clockwork-enabled request per tab
-let lastClockworkRequestPerTab = {}
-
-api.webRequest.onCompleted.addListener(
+// listen to http requests and send them to the app
+api.webRequest.onHeadersReceived.addListener(
 	request => {
-		if (request.responseHeaders.find((x) => x.name.toLowerCase() == 'x-clockwork-id')) {
-			lastClockworkRequestPerTab[request.tabId] = { url: request.url, headers: request.responseHeaders }
-		}
-	},
-	{ urls: [ '<all_urls>' ], types: [ 'main_frame' ] },
-	[ 'responseHeaders' ]
-)
-
-api.tabs.onRemoved.addListener((tabId) => delete lastClockworkRequestPerTab[tabId])
-
-// chrome.devtools.network.onRequestFinished replacement for Firefox
-api.webRequest.onCompleted.addListener(
-	request => {
-		// ignore requests executed from extension itself
+		// ignore requests executed from the extension itself
 		if (request.documentUrl && request.documentUrl.match(new RegExp('^moz-extension://'))) return
 
-		api.runtime.sendMessage({ action: 'requestCompleted', request: request })
+		// track last clockwork-enabled request per tab
+		if (request.responseHeaders.find(x => x.name.toLowerCase() == 'x-clockwork-id')) {
+			lastClockworkRequestPerTab[request.tabId] = request
+		}
+
+		api.runtime.sendMessage({ action: 'requestCompleted', request })
 	},
 	{ urls: [ '<all_urls>' ] },
 	[ 'responseHeaders' ]
 )
+
+// listen to before navigate events and send tem to the app (used for preserve log feature)
+api.webNavigation.onBeforeNavigate.addListener(details => {
+	api.runtime.sendMessage({ action: 'navigationStarted', details })
+})
+
+// clean up last request when tab is closed
+api.tabs.onRemoved.addListener(tabId => delete lastClockworkRequestPerTab[tabId])

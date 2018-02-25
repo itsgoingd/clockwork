@@ -10,8 +10,8 @@ class UpdateNotification
 
 	latest () {
 		return {
-			version: '2.0',
-			url: 'https://underground.works/blog/introducing-clockwork-2.0'
+			version: '2.1',
+			url: 'https://underground.works/clockwork/changelog'
 		}
 	}
 
@@ -20,7 +20,7 @@ class UpdateNotification
 			return
 		}
 
-		if (this.versionCompare(this.latest().version, this.serverVersion)) {
+		if (this.versionCompare(this.latest().version, this.serverVersion) == 1) {
 			return { version: this.latest().version, url: this.latest().url, currentVersion: this.serverVersion }
 		}
 	}

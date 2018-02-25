@@ -3,8 +3,6 @@ class Request
 	constructor (data) {
 		Object.assign(this, data)
 
-		if (this.loading) return
-
 		this.responseDurationRounded = this.responseDuration ? Math.round(this.responseDuration) : 0
 		this.databaseDurationRounded = this.databaseDuration ? Math.round(this.databaseDuration) : 0
 
@@ -24,6 +22,30 @@ class Request
 
 		this.errorsCount = this.getErrorsCount()
 		this.warningsCount = this.getWarningsCount()
+	}
+
+	static placeholder (id, request) {
+		return Object.assign(new Request({
+			loading: true,
+			id: id,
+			uri: (new URI(request.url)).pathname(),
+			controller: 'Waiting...',
+			method: request.method,
+			responseStatus: '?'
+		}), {
+			responseDurationRounded: '?',
+			databaseDurationRounded: '?'
+		})
+	}
+
+	resolve (request) {
+		Object.assign(this, request, { loading: false })
+		return this
+	}
+
+	resolveWithError (error) {
+		Object.assign(this, { loading: false, error })
+		return this
 	}
 
 	createKeypairs (data) {
@@ -128,7 +150,7 @@ class Request
 
 		return data.map(message => {
 			message.time = new Date(message.time * 1000)
-			message.context = message.context !== '[]' ? message.context : undefined
+			message.context = message.context instanceof Object && Object.keys(message.context).length ? message.context : undefined
 			message.fullPath = message.file && message.line ? message.file.replace(/^\//, '') + ':' + message.line : undefined
 			message.shortPath = message.fullPath ? message.fullPath.split(/[\/\\]/).pop() : undefined
 
@@ -137,6 +159,8 @@ class Request
 	}
 
 	processTimeline (data) {
+		if (! (data instanceof Object)) return []
+
 		return Object.values(data).map((entry, i) => {
 			entry.style = 'style' + (i % 4 + 1)
 			entry.left = (entry.start - this.time) * 1000 / this.responseDuration * 100

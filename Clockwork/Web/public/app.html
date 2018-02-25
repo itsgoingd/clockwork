@@ -5,6 +5,7 @@
 		<link rel="stylesheet" type="text/css" href="assets/vendor/stylesheets/jquery.resizableColumns.css">
 		<link rel="stylesheet" type="text/css" href="assets/vendor/stylesheets/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="assets/vendor/stylesheets/pretty-jason.css">
+		<link rel="stylesheet" type="text/css" href="assets/vendor/stylesheets/spinkit.css">
 		<link rel="stylesheet" type="text/css" href="assets/stylesheets/panel.css">
 
 		<script src="assets/vendor/javascripts/jquery-3.2.1.slim.min.js"></script>
@@ -127,6 +128,12 @@
 					</div>
 
 					<div class="icons">
+						<a href="#" title="Preserve log" ng-show="! preserveLog" ng-click="togglePreserveLog()">
+							<span class="fa fa-circle-o"></span>
+						</a>
+						<a href="#" title="Preserve log" ng-show="preserveLog" ng-click="togglePreserveLog()">
+							<span class="fa fa-circle"></span>
+						</a>
 						<a href="#" title="Clear" ng-click="clear()">
 							<span class="fa fa-ban"></span>
 						</a>
@@ -365,7 +372,7 @@
 										<div class="log-message">
 											<div class="log-message-content">
 												<pretty-print data="message.message"></pretty-print>
-												<div ng-show="message.context && message.context.length">
+												<div ng-show="message.context">
 													<pretty-print data="message.context"></pretty-print>
 												</div>
 											</div>
@@ -485,6 +492,29 @@
 						</table>
 					</div>
 
+				</div>
+
+				<div class="details-loading-overlay" ng-show="request.loading">
+					<div class="sk-fading-circle">
+						<div class="sk-circle1 sk-circle"></div>
+						<div class="sk-circle2 sk-circle"></div>
+						<div class="sk-circle3 sk-circle"></div>
+						<div class="sk-circle4 sk-circle"></div>
+						<div class="sk-circle5 sk-circle"></div>
+						<div class="sk-circle6 sk-circle"></div>
+						<div class="sk-circle7 sk-circle"></div>
+						<div class="sk-circle8 sk-circle"></div>
+						<div class="sk-circle9 sk-circle"></div>
+						<div class="sk-circle10 sk-circle"></div>
+						<div class="sk-circle11 sk-circle"></div>
+						<div class="sk-circle12 sk-circle"></div>
+					</div>
+				</div>
+
+				<div class="details-error-overlay" ng-show="request.error">
+					<span class="fa fa-exclamation-circle"></span>
+					<p class="title">Error loading request metadata.</p>
+					<p class="message">{{ request.error }}</p>
 				</div>
 
 			</div>

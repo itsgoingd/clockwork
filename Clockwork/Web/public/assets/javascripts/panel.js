@@ -6,6 +6,7 @@ Clockwork.controller('PanelController', function ($scope, $http, requests, updat
 	$scope.timelineLegend = []
 
 	$scope.loadingMoreRequests = false
+	$scope.preserveLog = true
 	$scope.requestsListCollapsed = false
 	$scope.showIncomingRequests = true
 
@@ -39,7 +40,9 @@ Clockwork.controller('PanelController', function ($scope, $http, requests, updat
 	$scope.refreshRequests = function (activeRequest) {
 		$scope.requests = requests.all()
 
-		if ($scope.showIncomingRequests && $scope.requests.length) {
+		if (! $scope.preserveLog) {
+			$scope.showRequest($scope.requests[0].id)
+		} else if ($scope.showIncomingRequests && $scope.requests.length) {
 			$scope.showRequest(activeRequest ? activeRequest.id : $scope.requests[$scope.requests.length - 1].id)
 			$scope.showIncomingRequests = true
 		}
@@ -137,6 +140,10 @@ Clockwork.controller('PanelController', function ($scope, $http, requests, updat
 		$scope.requestsListCollapsed = ! $scope.requestsListCollapsed
 	}
 
+	$scope.togglePreserveLog = function () {
+		$scope.preserveLog = ! $scope.preserveLog
+	}
+
 	$scope.isEventExpanded = function (event) {
 		return $scope.expandedEvents.indexOf(event) !== -1
 	}
@@ -154,7 +161,7 @@ Clockwork.controller('PanelController', function ($scope, $http, requests, updat
 
 		updateNotification.ignoreUpdate(requests.remoteUrl)
 	}
-	
+
 	angular.element(window).bind('resize', () => {
 		$scope.$apply(() => $scope.timelineLegend = $scope.generateTimelineLegend())
     })
