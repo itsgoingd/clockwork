@@ -34,35 +34,25 @@ class Extension
 	}
 
 	setMetadataClient () {
-		this.requests.setClient((url, headers, callback) => {
-			this.api.runtime.sendMessage(
-				{ action: 'getJSON', url, headers }, (data) => callback(data)
-			)
-		})
-	}
-
-	listenToRequests () {
-		if (! this.api.devtools.network.onRequestFinished) {
-			return this.listenToRequestsFirefox()
-		}
-
-		this.api.devtools.network.onRequestFinished.addListener(request => {
-			let options = this.parseHeaders(request.response.headers)
-
-			if (! options) return
-
-			this.updateNotification.serverVersion = options.version
-
-			this.requests.setRemote(request.request.url, options)
-			this.requests.loadId(options.id).then(activeRequest => {
-				this.$scope.$apply(() => this.$scope.refreshRequests(activeRequest))
+		this.requests.setClient((url, headers) => {
+			return new Promise((accept, reject) => {
+				this.api.runtime.sendMessage(
+					{ action: 'getJSON', url, headers }, (message) => {
+						message.error ? reject(message.error) : accept(message.data)
+					}
+				)
 			})
 		})
 	}
 
-	listenToRequestsFirefox () {
+	listenToRequests () {
 		this.api.runtime.onMessage.addListener(message => {
-			if (message.request.tabId != this.api.devtools.inspectedWindow.tabId) return
+			if (message.action !== 'requestCompleted') return;
+
+			// skip this check in firefox 57.0 to work around a bug where request.tabId is always -1
+			if (navigator.userAgent.toLowerCase().indexOf('firefox/57.0') === -1) {
+				if (message.request.tabId != this.api.devtools.inspectedWindow.tabId) return
+			}
 
 			let options = this.parseHeaders(message.request.responseHeaders)
 
@@ -71,28 +61,41 @@ class Extension
 			this.updateNotification.serverVersion = options.version
 
 			this.requests.setRemote(message.request.url, options)
-			this.requests.loadId(options.id).then(activeRequest => {
-				this.$scope.$apply(() => this.$scope.refreshRequests(activeRequest))
+			this.requests.loadId(options.id, Request.placeholder(options.id, message.request)).then(() => {
+				this.$scope.$apply(() => this.$scope.refreshRequests())
 			})
+
+			this.$scope.$apply(() => this.$scope.refreshRequests())
+		})
+
+		// handle clearing of requests list if we are not preserving log
+		this.api.runtime.onMessage.addListener(message => {
+			// preserve log is enabled
+			if (this.$scope.preserveLog) return
+
+			// navigation event from a different tab
+			if (message.details.tabId != this.api.devtools.inspectedWindow.tabId) return
+
+			this.requests.clear()
 		})
 	}
 
 	loadLastRequest () {
 		this.api.runtime.sendMessage(
 			{ action: 'getLastClockworkRequestInTab', tabId: this.api.devtools.inspectedWindow.tabId },
-			(data) => {
-				if (! data) return
+			(request) => {
+				if (! request) return
 
-				let options = this.parseHeaders(data.headers)
+				let options = this.parseHeaders(request.responseHeaders)
 
 				this.updateNotification.serverVersion = options.version
 
-				this.requests.setRemote(data.url, options)
-				this.requests.loadId(options.id).then(() => {
-					this.requests.loadNext().then(activeRequest => {
-						this.$scope.$apply(() => this.$scope.refreshRequests(activeRequest))
-					})
+				this.requests.setRemote(request.url, options)
+				this.requests.loadId(options.id, Request.placeholder(options.id, request)).then(() => {
+					this.$scope.$apply(() => this.$scope.refreshRequests())
 				})
+
+				this.$scope.$apply(() => this.$scope.refreshRequests())
 			}
 		)
 	}
@@ -111,8 +114,8 @@ class Extension
 		let headers = {}
 		requestHeaders.forEach((header) => {
 			if (header.name.toLowerCase().indexOf('x-clockwork-header-') === 0) {
-				let name = header.name.toLowerCase().replace('x-clockwork-header-', '')
-				headers[originalName] = header.value
+				let name = header.name.replace(/^x-clockwork-header-/i, '')
+				headers[name] = header.value
 			}
 		})
 
