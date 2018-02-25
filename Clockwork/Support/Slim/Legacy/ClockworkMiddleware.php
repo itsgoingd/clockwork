@@ -67,7 +67,7 @@ class ClockworkMiddleware extends Middleware
 			$data = $storage->find($id);
 		}
 
-		echo json_encode($data, \JSON_PARTIAL_OUTPUT_ON_ERROR);
+		echo json_encode($data, defined('JSON_PARTIAL_OUTPUT_ON_ERROR') ? \JSON_PARTIAL_OUTPUT_ON_ERROR : 0);
 	}
 
 	protected function logRequest()

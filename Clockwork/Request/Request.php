@@ -216,7 +216,7 @@ class Request
 	 */
 	public function toJson()
 	{
-		return json_encode($this->toArray(), \JSON_PARTIAL_OUTPUT_ON_ERROR);
+		return json_encode($this->toArray(), defined('JSON_PARTIAL_OUTPUT_ON_ERROR') ? \JSON_PARTIAL_OUTPUT_ON_ERROR : 0);
 	}
 
 	/**

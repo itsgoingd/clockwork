@@ -84,7 +84,7 @@ class FileStorage extends Storage
 	{
 		file_put_contents(
 			"{$this->path}/{$request->id}.json",
-			@json_encode($this->applyFilter($request->toArray()), \JSON_PARTIAL_OUTPUT_ON_ERROR)
+			@json_encode($this->applyFilter($request->toArray()), defined('JSON_PARTIAL_OUTPUT_ON_ERROR') ? \JSON_PARTIAL_OUTPUT_ON_ERROR : 0)
 		);
 
 		$this->cleanup();
