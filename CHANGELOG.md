@@ -1,3 +1,13 @@
+2.1
+
+- updated Web UI to match Clockwork Chrome 2.1
+- improved Laravel support to load the default config and use env variables in the default config
+- improved Lumen support to use the standard config subsystem instead of directly accessing env variables (thanks davoaust, SunMar)
+- improved reliability of storing metadata in some cases (by using JSON_PARTIAL_OUTPUT_ON_ERROR when supported)
+- fixed wrong mime-type for javascript assets in Web UI causing it to not work in some browsers (thanks sleavitt)
+- fixed path checking in Web UI causing it to not work on Windows (thanks Malezha)
+- fixed parameters conversion in DBALDataSource (thanks andrzejenne)
+
 2.0.4
 
 - improved mkdir error handling in FileStorage (thanks FBnil)
