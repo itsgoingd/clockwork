@@ -48,6 +48,7 @@ class ClockworkServiceProvider extends ServiceProvider
 	public function register()
 	{
 		$this->publishes([ __DIR__ . '/config/clockwork.php' => config_path('clockwork.php') ]);
+		$this->mergeConfigFrom(__DIR__ . '/config/clockwork.php', 'clockwork');
 
 		$this->app->singleton('clockwork.support', function ($app) {
 			return new ClockworkSupport($app);

@@ -57,6 +57,8 @@ class ClockworkServiceProvider extends ServiceProvider
 
 	public function register()
 	{
+		$this->mergeConfigFrom(__DIR__ . '/../Laravel/config/clockwork.php', 'clockwork');
+
 		$this->app->singleton('clockwork.support', function ($app) {
 			return new ClockworkSupport($app);
 		});

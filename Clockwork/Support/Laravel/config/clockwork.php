@@ -16,7 +16,7 @@ return [
 	|
 	*/
 
-	'enable' => null,
+	'enable' => env('CLOCKWORK_ENABLE', null),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -28,7 +28,7 @@ return [
 	|
 	*/
 
-	'web' => true,
+	'web' => env('CLOCKWORK_WEB', true),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -41,7 +41,7 @@ return [
 	|
 	*/
 
-	'collect_data_always' => false,
+	'collect_data_always' => env('CLOCKWORK_COLLECT_DATA_ALWAYS', false),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -59,12 +59,12 @@ return [
 	|
 	*/
 
-	'storage' => 'files',
+	'storage' => env('CLOCKWORK_STORAGE', 'files'),
 
-	'storage_files_path' => storage_path('clockwork'),
+	'storage_files_path' => env('CLOCKWORK_STORAGE_FILES_PATH', storage_path('clockwork')),
 
-	'storage_sql_database' => storage_path('clockwork.sqlite'),
-	'storage_sql_table'    => 'clockwork',
+	'storage_sql_database' => env('CLOCKWORK_STORAGE_SQL_DATABASE', storage_path('clockwork.sqlite')),
+	'storage_sql_table'    => env('CLOCKWORK_STORAGE_SQL_TABLE', 'clockwork'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -78,7 +78,7 @@ return [
 	|
 	*/
 
-	'storage_expiration' => 60 * 24 * 7,
+	'storage_expiration' => env('CLOCKWORK_STORAGE_EXPIRATION', 60 * 24 * 7),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -134,7 +134,7 @@ return [
 	|
 	*/
 
-	'register_helpers' => true,
+	'register_helpers' => env('CLOCKWORK_REGISTER_HELPERS', true),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -167,6 +167,6 @@ return [
 	|
 	*/
 
-	'server_timing' => 10
+	'server_timing' => env('CLOCKWORK_SERVER_TIMING', 10)
 
 ];
