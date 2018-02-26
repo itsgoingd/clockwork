@@ -1,3 +1,7 @@
+2.1.1
+
+- fixed Laravel 4.x support (added legacy version of the config file) (thanks bcalik)
+
 2.1
 
 - updated Web UI to match Clockwork Chrome 2.1
