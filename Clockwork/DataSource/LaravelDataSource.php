@@ -204,6 +204,7 @@ class LaravelDataSource extends DataSource
 				'uri'    => $route->uri(),
 				'name'   => $route->getName(),
 				'action' => $route->getActionName() ?: 'anonymous function',
+				'middleware' => method_exists($route, 'gatherMiddleware') ? $route->gatherMiddleware() : [],
 				'before' => method_exists($route, 'beforeFilters') ? implode(', ', array_keys($route->beforeFilters())) : '',
 				'after'  => method_exists($route, 'afterFilters') ? implode(', ', array_keys($route->afterFilters())) : ''
 			];
