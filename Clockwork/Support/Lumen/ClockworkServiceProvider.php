@@ -28,6 +28,7 @@ class ClockworkServiceProvider extends ServiceProvider
 			return; // Clockwork is disabled, don't register the middleware and routes
 		}
 
+		$this->registerMiddleware();
 		$this->registerRoutes();
 
 		// register the Clockwork Web UI routes
@@ -142,6 +143,11 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->commands(
 			'command.clockwork.clean'
 		);
+	}
+
+	public function registerMiddleware()
+	{
+		$this->app->middleware([ ClockworkMiddleware::class ]);
 	}
 
 	public function registerRoutes()
