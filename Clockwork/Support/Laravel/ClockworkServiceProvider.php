@@ -34,6 +34,8 @@ class ClockworkServiceProvider extends ServiceProvider
 
 	protected function listenToEvents()
 	{
+		$this->app['clockwork.laravel']->listenToEvents();
+
 		if ($this->app['clockwork.support']->isCollectingDatabaseQueries()) {
 			$this->app['clockwork.eloquent']->listenToEvents();
 		}
@@ -107,7 +109,7 @@ class ClockworkServiceProvider extends ServiceProvider
 			return $clockwork;
 		});
 
-		$this->app['clockwork.laravel']->listenToEvents();
+		$this->app['clockwork.laravel']->listenToEarlyEvents();
 
 		// set up aliases for all Clockwork parts so they can be resolved by the IoC container
 		$this->app->alias('clockwork.support', 'Clockwork\Support\Laravel\ClockworkSupport');
