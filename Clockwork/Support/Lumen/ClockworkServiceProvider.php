@@ -58,6 +58,7 @@ class ClockworkServiceProvider extends ServiceProvider
 
 	public function register()
 	{
+		$this->app->configure('clockwork');
 		$this->mergeConfigFrom(__DIR__ . '/../Laravel/config/clockwork.php', 'clockwork');
 
 		$this->app->singleton('clockwork.support', function ($app) {
@@ -136,7 +137,7 @@ class ClockworkServiceProvider extends ServiceProvider
 	public function registerCommands()
 	{
 		$this->commands([
-			\ClockworkCleanCommand::class
+			ClockworkCleanCommand::class
 		]);
 	}
 
