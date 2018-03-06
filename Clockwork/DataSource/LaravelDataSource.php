@@ -84,20 +84,6 @@ class LaravelDataSource extends DataSource
 	 */
 	public function listenToEvents()
 	{
-		$this->timeline->startEvent('total', 'Total execution time.', 'start');
-
-		$this->timeline->startEvent('initialisation', 'Application initialisation.', 'start');
-
-		$this->app->booting(function () {
-			$this->timeline->endEvent('initialisation');
-			$this->timeline->startEvent('boot', 'Framework booting.');
-			$this->timeline->startEvent('run', 'Framework running.');
-		});
-
-		$this->app->booted(function () {
-			$this->timeline->endEvent('boot');
-		});
-
 		$this->app['events']->listen('clockwork.controller.start', function () {
 			$this->timeline->startEvent('controller', 'Controller running.');
 		});
@@ -133,6 +119,25 @@ class LaravelDataSource extends DataSource
 			);
 		});
 	}
+
+	/**
+	 * Hook up callbacks for some Laravel events, that we need to register as soon as possible
+	 */
+	public function listenToEarlyEvents()
+ 	{
+		$this->timeline->startEvent('total', 'Total execution time.', 'start');
+		$this->timeline->startEvent('initialisation', 'Application initialisation.', 'start');
+
+ 		$this->app->booting(function () {
+ 			$this->timeline->endEvent('initialisation');
+ 			$this->timeline->startEvent('boot', 'Framework booting.');
+ 			$this->timeline->startEvent('run', 'Framework running.');
+ 		});
+
+ 		$this->app->booted(function () {
+ 			$this->timeline->endEvent('boot');
+ 		});
+ 	}
 
 	/**
 	 * Return a textual representation of current route's controller
