@@ -180,14 +180,21 @@ class LumenDataSource extends DataSource
 	 */
 	protected function getRoutes()
 	{
-		$routes = method_exists($this->app, 'getRoutes') ? $this->app->getRoutes() : [];
+		if (isset($this->app->router)) {
+			$routes = array_values($this->app->router->getRoutes());
+		} elseif (method_exists($this->app, 'getRoutes')) {
+			$routes = array_values($this->app->getRoutes());
+		} else {
+			$routes = [];
+		}
 
 		return array_map(function ($route) {
 			return [
 				'method' => $route['method'],
 				'uri'    => $route['uri'],
-				'name'   => array_search($route['uri'], $this->app->namedRoutes) ?: null,
-				'action' => isset($route['action']['uses']) && is_string($route['action']['uses']) ? $route['action']['uses'] : 'anonymous function'
+				'name'   => isset($route['action']['as']) ? $route['action']['as'] : null,
+				'action' => isset($route['action']['uses']) && is_string($route['action']['uses']) ? $route['action']['uses'] : 'anonymous function',
+				'middleware' => isset($route['action']['middleware']) ? $route['action']['middleware'] : null,
 			];
 		}, $routes);
 	}
