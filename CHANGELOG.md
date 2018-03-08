@@ -1,3 +1,7 @@
+2.2.1
+
+- fixed Laravel 4.x support once again (thanks bcalik)
+
 2.2
 
 - added support for collecting route middleware (thanks Vercoutere)
