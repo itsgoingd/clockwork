@@ -70,6 +70,8 @@ class Extension
 
 		// handle clearing of requests list if we are not preserving log
 		this.api.runtime.onMessage.addListener(message => {
+			if (message.action !== 'navigationStarted') return;
+
 			// preserve log is enabled
 			if (this.$scope.preserveLog) return
 

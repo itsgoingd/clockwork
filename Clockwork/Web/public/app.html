@@ -475,6 +475,7 @@
 									<th data-sort="string">URI</th>
 									<th data-sort="string">Action</th>
 									<th data-sort="string">Name</th>
+									<th data-sort="string">Middleware</th>
 									<th data-sort="string">Before</th>
 									<th data-sort="string">After</th>
 								</tr>
@@ -485,6 +486,7 @@
 									<td>{{param.uri}}</td>
 									<td>{{param.action}}</td>
 									<td>{{param.name}}</td>
+									<td><span ng-repeat="middleware in param.middleware">{{middleware}}{{$last ? '' : ', '}}</span></td>
 									<td>{{param.before}}</td>
 									<td>{{param.after}}</td>
 								</tr>
