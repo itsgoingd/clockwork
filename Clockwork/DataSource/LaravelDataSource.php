@@ -251,7 +251,7 @@ class LaravelDataSource extends DataSource
 		}
 
 		return array_unique(array_merge(
-			$route->middleware(),
+			method_exists($route, 'middleware') ? $route->middleware() : [],
 			method_exists($route, 'controllerMiddleware') ? $route->controllerMiddleware() : []
 		), SORT_REGULAR);
 	}
