@@ -1,3 +1,12 @@
+2.2
+
+- added support for collecting route middleware (thanks Vercoutere)
+- added support for collecting routes and middleware in newer Lumen versions
+- updated Web UI ti match Clockwork Chrome 2.2
+- improved Laravel support to register most event handlers only when collecting data
+- fixed Lumen middleware not being registered automatically (thanks lucian-dragomir)
+- fixed published Lumen config not being loaded
+
 2.1.1
 
 - fixed Laravel 4.x support (added legacy version of the config file) (thanks bcalik)
