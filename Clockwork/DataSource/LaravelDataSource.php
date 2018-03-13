@@ -221,13 +221,13 @@ class LaravelDataSource extends DataSource
 	 */
 	protected function getRouteMiddleware($route)
 	{
-		if (method_exists($route, 'gatherMiddleware')) {
+		if (is_callable([ $route, 'gatherMiddleware' ])) {
 			return $route->gatherMiddleware();
 		}
 
 		return array_unique(array_merge(
 			$route->middleware(),
-			method_exists($route, 'controllerMiddleware') ? $route->controllerMiddleware() : []
+			is_callable([ $route, 'controllerMiddleware' ]) ? $route->controllerMiddleware() : []
 		), SORT_REGULAR);
 	}
 
