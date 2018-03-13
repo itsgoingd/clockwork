@@ -1,3 +1,7 @@
+2.2.2
+
+- fixed compatibility with Laravel 5.2 (thanks peppeocchi)
+
 2.2.1
 
 - fixed Laravel 4.x support once again (thanks bcalik)
