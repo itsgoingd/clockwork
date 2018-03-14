@@ -1,3 +1,8 @@
+2.2.3
+
+- improved Server-Timing now uses the new header format (thanks kohenkatz)
+- fixed Laravel crash when gathering middleware if the controller class doesn't exist
+
 2.2.2
 
 - fixed compatibility with Laravel 5.2 (thanks peppeocchi)
@@ -10,7 +15,7 @@
 
 - added support for collecting route middleware (thanks Vercoutere)
 - added support for collecting routes and middleware in newer Lumen versions
-- updated Web UI ti match Clockwork Chrome 2.2
+- updated Web UI to match Clockwork Chrome 2.2
 - improved Laravel support to register most event handlers only when collecting data
 - fixed Lumen middleware not being registered automatically (thanks lucian-dragomir)
 - fixed published Lumen config not being loaded
