@@ -16,7 +16,7 @@ class ServerTiming
 	public function value()
 	{
 		return implode(', ', array_map(function ($metric) {
-			return "{$metric['metric']}={$metric['value']}; \"{$metric['description']}\"";
+			return "{$metric['metric']}; dur={$metric['value']}; desc=\"{$metric['description']}\"";
 		}, $this->metrics));
 	}
 
