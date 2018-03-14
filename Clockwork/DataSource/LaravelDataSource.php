@@ -246,14 +246,20 @@ class LaravelDataSource extends DataSource
 	 */
 	protected function getRouteMiddleware($route)
 	{
-		if (is_callable([ $route, 'gatherMiddleware' ])) {
-			return $route->gatherMiddleware();
-		}
+		try {
+			if (is_callable([ $route, 'gatherMiddleware' ])) {
+				return $route->gatherMiddleware();
+			}
 
-		return array_unique(array_merge(
-			is_callable([ $route, 'middleware' ]) ? $route->middleware() : [],
-			is_callable([ $route, 'controllerMiddleware' ]) ? $route->controllerMiddleware() : []
-		), SORT_REGULAR);
+			return array_unique(array_merge(
+				is_callable([ $route, 'middleware' ]) ? $route->middleware() : [],
+				is_callable([ $route, 'controllerMiddleware' ]) ? $route->controllerMiddleware() : []
+			), SORT_REGULAR);
+		} catch (\Exception $e) {
+			// gathering controller middleware will throw an exception if the controller class doesn't exist,
+			// return only the route middleware in that case
+			return is_callable([ $route, 'middleware' ]) ? $route->middleware() : [];
+		}
 	}
 
 	/**
