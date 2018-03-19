@@ -240,4 +240,13 @@ class Clockwork implements LoggerInterface
 	{
 		return $this->getTimeline()->endEvent($name);
 	}
+
+	/**
+	 * Shortcut methods for recording subrequests
+	 */
+
+	public function subrequest($url, $id)
+	{
+		return $this->getRequest()->addSubrequest($url, $id);
+	}
 }
