@@ -126,7 +126,7 @@ class ClockworkSupport
 		}
 
 		foreach ($this->app['clockwork']->getRequest()->subrequests as $subrequest) {
-			$response->headers->set('X-Clockwork-Subrequest', "{$subrequest['id']};{$subrequest['url']}", false);
+			$response->headers->set('X-Clockwork-Subrequest', "{$subrequest['id']};{$subrequest['url']};{$subrequest['path']}", false);
 		}
 
 		$this->appendServerTimingHeader($response, $this->app['clockwork']->getRequest());

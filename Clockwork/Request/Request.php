@@ -223,11 +223,11 @@ class Request
 	}
 
 	/**
-	 * Record executed subrequest, takes the requested url and returned Clockwork ID
+	 * Record executed subrequest, takes the requested url, returned Clockwork ID and optional path if non-default
 	 */
-	public function addSubrequest($url, $id)
+	public function addSubrequest($url, $id, $path = null)
 	{
-		$this->subrequests[] = compact('url', 'id');
+		$this->subrequests[] = compact('url', 'id', 'path');
 	}
 
 	/**

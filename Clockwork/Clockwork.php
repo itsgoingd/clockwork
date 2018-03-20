@@ -245,8 +245,8 @@ class Clockwork implements LoggerInterface
 	 * Shortcut methods for recording subrequests
 	 */
 
-	public function subrequest($url, $id)
+	public function subrequest($url, $id, $path = null)
 	{
-		return $this->getRequest()->addSubrequest($url, $id);
+		return $this->getRequest()->addSubrequest($url, $id, $path);
 	}
 }
