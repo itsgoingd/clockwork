@@ -227,7 +227,11 @@ class Request
 	 */
 	public function addSubrequest($url, $id, $path = null)
 	{
-		$this->subrequests[] = compact('url', 'id', 'path');
+		$this->subrequests[] = [
+			'url'  => urlencode($url),
+			'id'   => $id,
+			'path' => $path
+		];
 	}
 
 	/**
