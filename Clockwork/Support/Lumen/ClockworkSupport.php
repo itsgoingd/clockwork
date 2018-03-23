@@ -132,6 +132,10 @@ class ClockworkSupport
 			$response->headers->set("X-Clockwork-Header-{$headerName}", $headerValue);
 		}
 
+		foreach ($this->app['clockwork']->getRequest()->subrequests as $subrequest) {
+			$response->headers->set('X-Clockwork-Subrequest', "{$subrequest['id']};{$subrequest['url']}", false);
+		}
+
 		$this->appendServerTimingHeader($response, $this->app['clockwork']->getRequest());
 
 		return $response;
