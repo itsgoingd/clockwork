@@ -2,23 +2,48 @@
 
 class StackTrace
 {
-	protected $basePath;
+	protected $frames;
 
-	protected $backtrace;
+	protected $basePath;
+	protected $vendorPath;
 
 	public static function get()
 	{
-		return new static;
+		$basePath = static::resolveBasePath();
+		$vendorPath = static::resolveVendorPath();
+
+		$backbacktrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS);
+
+		return new static(array_map(function ($frame) use ($basePath, $vendorPath) {
+			return new StackFrame($frame, $basePath, $vendorPath);
+		}, $backbacktrace), $basePath, $vendorPath);
+	}
+
+	public function __construct(array $frames, $basePath, $vendorPath)
+	{
+		$this->frames = $frames;
+		$this->basePath = $basePath;
+		$this->vendorPath = $vendorPath;
+	}
+
+	public function frames()
+	{
+		return $this->frames;
+	}
+
+	public function framesBefore(StackFrame $frame)
+	{
+		return new static(
+			array_slice($this->frames, array_search($frame, $this->frames) + 1),
+			$this->basePath,
+			$this->vendorPath
+		);
 	}
 
 	public function first(callable $callback)
 	{
-		foreach ($this->getBacktrace() as $frame) {
-			$frame = new StackFrame($frame, $this->getBasePath());
-
-			if ($callback($frame)) {
-				return $frame;
-			}
+		foreach ($this->frames as $frame) {
+			if ($callback($frame)) return $frame;
 		}
 	}
 
@@ -31,40 +56,14 @@ class StackTrace
 		});
 	}
 
-	protected function getBacktrace()
-	{
-		if (! $this->backtrace) {
-			$this->backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS);
-		}
-
-		return $this->backtrace;
-	}
-
-	protected function getBasePath()
-	{
-		if (! $this->basePath) {
-			$vendorDir = DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR;
-			$this->basePath = substr(__DIR__, 0, strpos(__DIR__, $vendorDir));
-		}
-
-		return $this->basePath;
-	}
-
-	protected function getVendorPath()
-	{
-		return $this->getBasePath() . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR;
-	}
-
 	protected function getIgnoredNonVendorCallerPaths(array $ignoredPackages = null)
 	{
-		$vendorPath = $this->getVendorPath();
-
 		if (! $ignoredPackages) {
-			return [ $vendorPath ];
+			return [ $this->vendorPath ];
 		}
 
-		return array_map(function ($ignoredPackage) use ($vendorPath) {
-			return "{$vendorPath}{$ignoredPackage}";
+		return array_map(function ($ignoredPackage) {
+			return "{$this->vendorPath}{$ignoredPackage}";
 		}, $ignoredPackages);
 	}
 
@@ -77,5 +76,15 @@ class StackTrace
 		}
 
 		return false;
+	}
+
+	protected static function resolveBasePath()
+	{
+		return substr(__DIR__, 0, strpos(__DIR__, DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR));
+	}
+
+	protected static function resolveVendorPath()
+	{
+		return static::resolveBasePath() . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR;
 	}
 }

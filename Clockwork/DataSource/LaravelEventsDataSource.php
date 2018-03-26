@@ -54,7 +54,8 @@ class LaravelEventsDataSource extends DataSource
 	{
 		if (! $this->shouldCollect($event)) return;
 
-		$firedAt = StackTrace::get()->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
+		$trace = StackTrace::get();
+		$firedAt = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
 
 		$this->events[] = [
 			'event'     => $event,
@@ -62,7 +63,8 @@ class LaravelEventsDataSource extends DataSource
 			'time'      => microtime(true),
 			'listeners' => $this->findListenersFor($event),
 			'file'      => $firedAt->shortPath,
-			'line'      => $firedAt->line
+			'line'      => $firedAt->line,
+			'trace'     => Serializer::trace($trace->framesBefore($firedAt)),
 		];
 	}
 

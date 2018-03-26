@@ -1,5 +1,6 @@
 <?php namespace Clockwork\DataSource;
 
+use Clockwork\Helpers\Serializer;
 use Clockwork\Helpers\StackTrace;
 use Clockwork\Request\Request;
 use Clockwork\Support\Laravel\Eloquent\ResolveModelScope;
@@ -66,7 +67,8 @@ class EloquentDataSource extends DataSource
 	 */
 	public function registerQuery($event)
 	{
-		$caller = StackTrace::get()->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
+		$trace = StackTrace::get();
+		$caller = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
 
 		$this->queries[] = [
 			'query'      => $event->sql,
@@ -75,6 +77,7 @@ class EloquentDataSource extends DataSource
 			'connection' => $event->connectionName,
 			'file'       => $caller->shortPath,
 			'line'       => $caller->line,
+			'trace'      => Serializer::trace($trace->framesBefore($caller)),
 			'model'      => $this->nextQueryModel
 		];
 
@@ -160,6 +163,7 @@ class EloquentDataSource extends DataSource
 				'connection' => $query['connection'],
 				'file'       => $query['file'],
 				'line'       => $query['line'],
+				'trace'      => $query['trace'],
 				'model'      => $query['model']
 			];
 		}, $this->queries);

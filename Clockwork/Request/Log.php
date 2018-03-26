@@ -21,7 +21,8 @@ class Log extends AbstractLogger
 	 */
 	public function log($level = LogLevel::INFO, $message, array $context = [])
 	{
-		$caller = StackTrace::get()->firstNonVendor([ 'itsgoingd', 'laravel', 'slim', 'monolog' ]);
+		$trace = StackTrace::get();
+		$caller = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'slim', 'monolog' ]);
 
 		$this->data[] = [
 			'message' => Serializer::simplify($message, 3, [ 'toString' => true ]),
@@ -29,7 +30,8 @@ class Log extends AbstractLogger
 			'level'   => $level,
 			'time'    => microtime(true),
 			'file'    => $caller->shortPath,
-			'line'    => $caller->line
+			'line'    => $caller->line,
+			'trace'   => Serializer::trace($trace->framesBefore($caller))
 		];
 	}
 
