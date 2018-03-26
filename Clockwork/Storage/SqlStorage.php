@@ -168,7 +168,7 @@ class SqlStorage extends Storage
 				$this->quote('routes') . " {$textType} NULL, " .
 				$this->quote('emailsData') . " {$textType} NULL, " .
 				$this->quote('viewsData') . " {$textType} NULL, " .
-				$this->quote('userData') . " {$textType} NULL" .
+				$this->quote('userData') . " {$textType} NULL, " .
 				$this->quote('subrequests') . " {$textType} NULL" .
 			');'
 		);
