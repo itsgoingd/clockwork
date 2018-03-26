@@ -64,7 +64,7 @@ class LaravelEventsDataSource extends DataSource
 			'listeners' => $this->findListenersFor($event),
 			'file'      => $firedAt->shortPath,
 			'line'      => $firedAt->line,
-			'trace'     => Serializer::trace($trace->framesBefore($firedAt)),
+			'trace'     => $this->collectStackTraces ? Serializer::trace($trace->framesBefore($firedAt)) : null,
 		];
 	}
 

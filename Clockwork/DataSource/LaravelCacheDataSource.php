@@ -95,7 +95,7 @@ class LaravelCacheDataSource extends DataSource
 		$this->queries[] = array_merge($query, [
 			'file'  => $caller->shortPath,
 			'line'  => $caller->line,
-			'trace' => Serializer::trace($trace->framesBefore($caller))
+			'trace' => $this->collectStackTraces ? Serializer::trace($trace->framesBefore($caller)) : null
 		]);
 	}
 
