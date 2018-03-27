@@ -65,40 +65,47 @@ class ClockworkServiceProvider extends ServiceProvider
 		});
 
 		$this->app->singleton('clockwork.eloquent', function ($app) {
-			return new EloquentDataSource($app['db'], $app['events']);
+			return (new EloquentDataSource($app['db'], $app['events']))
+				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
 		});
 
 		$this->app->singleton('clockwork.cache', function ($app) {
-			return new LaravelCacheDataSource($app['events']);
+			return (new LaravelCacheDataSource($app['events']))
+				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
 		});
 
 		$this->app->singleton('clockwork.events', function ($app) {
-			return new LaravelEventsDataSource(
-				$app['events'], $app['clockwork.support']->getConfig('ignored_events', [])
-			);
+			$support = $app['clockwork.support'];
+			return (new LaravelEventsDataSource($app['events'], $support->getConfig('ignored_events', [])))
+				->collectStackTraces($support->getConfig('collect_stack_traces'));
 		});
 
 		$this->app->singleton('clockwork', function ($app) {
 			$clockwork = new Clockwork();
+			$support = $app['clockwork.support'];
 
 			$clockwork
 				->addDataSource(new PhpDataSource())
 				->addDataSource($app['clockwork.laravel'])
 				->addDataSource($app['clockwork.swift']);
 
-			if ($app['clockwork.support']->isCollectingDatabaseQueries()) {
+			if ($support->isCollectingDatabaseQueries()) {
 				$clockwork->addDataSource($app['clockwork.eloquent']);
 			}
 
-			if ($app['clockwork.support']->isCollectingCacheStats()) {
+			if ($support->isCollectingCacheStats()) {
 				$clockwork->addDataSource($app['clockwork.cache']);
 			}
 
-			if ($app['clockwork.support']->isCollectingEvents()) {
+			if ($support->isCollectingEvents()) {
 				$clockwork->addDataSource($app['clockwork.events']);
 			}
 
-			$clockwork->setStorage($app['clockwork.support']->getStorage());
+			if ($support->getConfig('collect_stack_traces')) {
+				$clockwork->getLog()->collectStackTraces(true);
+			}
+
+			$clockwork->setStorage($support->getStorage());
 
 			return $clockwork;
 		});

@@ -7,12 +7,23 @@ use Clockwork\Request\Request;
  */
 class DataSource implements DataSourceInterface
 {
+	// Whether the data source should collect stack traces (when applicable)
+	protected $collectStackTraces;
+
 	/**
 	 * Adds data to the request and returns it, custom implementation should be provided in child classes
 	 */
 	public function resolve(Request $request)
 	{
 		return $request;
+	}
+
+	// Enable or disable collecting of stack traces
+	public function collectStackTraces($enable = true)
+	{
+		$this->collectStackTraces = $enable;
+
+		return $this;
 	}
 
 	/**

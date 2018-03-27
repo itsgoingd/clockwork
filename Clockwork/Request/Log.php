@@ -16,12 +16,17 @@ class Log extends AbstractLogger
 	 */
 	public $data = [];
 
+	// Whether the log messages should have stack traces
+	protected $collectStackTraces;
+
 	/**
-	 * Add a new timestamped message, with an optional level
+	 * Add a new timestamped message, with a level and context,
+	 * $context['trace'] = true can be used to force collecting a stack trace
 	 */
 	public function log($level = LogLevel::INFO, $message, array $context = [])
 	{
-		$caller = StackTrace::get()->firstNonVendor([ 'itsgoingd', 'laravel', 'slim', 'monolog' ]);
+		$trace = StackTrace::get();
+		$caller = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'slim', 'monolog' ]);
 
 		$this->data[] = [
 			'message' => Serializer::simplify($message, 3, [ 'toString' => true ]),
@@ -29,7 +34,9 @@ class Log extends AbstractLogger
 			'level'   => $level,
 			'time'    => microtime(true),
 			'file'    => $caller->shortPath,
-			'line'    => $caller->line
+			'line'    => $caller->line,
+			'trace'   => $this->collectStackTraces || ! empty($context['trace'])
+				? Serializer::trace($trace->framesBefore($caller)) : null
 		];
 	}
 
@@ -39,5 +46,11 @@ class Log extends AbstractLogger
 	public function toArray()
 	{
 		return $this->data;
+	}
+
+	// Enable or disable collecting of stack traces
+	public function collectStackTraces($enable = true)
+	{
+		$this->collectStackTraces = $enable;
 	}
 }

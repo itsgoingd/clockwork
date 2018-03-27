@@ -30,4 +30,16 @@ class Serializer
 
 		return $data;
 	}
+
+	public static function trace(StackTrace $trace)
+	{
+		return array_map(function ($frame) {
+			return [
+				'call' => $frame->call,
+				'file' => $frame->file,
+				'line' => $frame->line,
+				'isVendor' => $frame->isVendor
+			];
+		}, $trace->frames());
+	}
 }

@@ -112,6 +112,23 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Enable collecting of stack traces
+	|--------------------------------------------------------------------------
+	|
+	| This setting controls, whether log messages and certain data sources, like
+	/ the database or cache data sources, should collect stack traces.
+	/ You might want to disable this if you are collecting 100s of queries or
+	/ log messages, as the stack traces can considerably increase the metadata size.
+	/ You can force collecting of stack trace for a single log call by passing
+	/ [ 'trace' => true ] as $context.
+	| Default: true
+	|
+	*/
+
+	'collect_stack_traces' => env('CLOCKWORK_COLLECT_STACK_TRACES', true),
+
+	/*
+	|--------------------------------------------------------------------------
 	| Ignored events
 	|--------------------------------------------------------------------------
 	|
