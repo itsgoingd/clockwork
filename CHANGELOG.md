@@ -1,3 +1,7 @@
+2.2.4
+
+- drop support for collecting Laravel controller middleware (as this can have unexpected side-effects) (thanks phh)
+
 2.2.3
 
 - improved Server-Timing now uses the new header format (thanks kohenkatz)
