@@ -1,6 +1,8 @@
 <?php namespace Clockwork\Support\Lumen;
 
 use Clockwork\Clockwork;
+use Clockwork\Authentication\NullAuthenticator;
+use Clockwork\Authentication\SimpleAuthenticator;
 use Clockwork\Helpers\ServerTiming;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\SqlStorage;
@@ -32,7 +34,14 @@ class ClockworkSupport
 			$this->app['session.store']->reflash();
 		}
 
+		$authenticator = $this->app['clockwork']->getAuthenticator();
 		$storage = $this->app['clockwork']->getStorage();
+
+		$authenticated = $authenticator->check($this->app['request']->header('X-Clockwork-Auth'));
+
+		if ($authenticated !== true) {
+			return new JsonResponse([ 'message' => $authenticated, 'requires' => $authenticator->requires() ], 403);
+		}
 
 		if ($direction == 'previous') {
 			$data = $storage->previous($id, $count);
@@ -82,6 +91,19 @@ class ClockworkSupport
 		$storage->filter = $this->getFilter();
 
 		return $storage;
+	}
+
+	public function getAuthenticator()
+	{
+		$authenticator = $this->getConfig('authentication');
+
+		if (is_string($authenticator)) {
+			return $this->app->make($authenticator);
+		} elseif ($authenticator) {
+			return new SimpleAuthenticator($this->getConfig('authentication_password'));
+		} else {
+			return new NullAuthenticator;
+		}
 	}
 
 	public function getFilter()
