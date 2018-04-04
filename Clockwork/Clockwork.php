@@ -1,6 +1,7 @@
 <?php namespace Clockwork;
 
 use Clockwork\Authentication\AuthenticatorInterface;
+use Clockwork\Authentication\NullAuthenticator;
 use Clockwork\DataSource\DataSourceInterface;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
@@ -53,9 +54,10 @@ class Clockwork implements LoggerInterface
 	 */
 	public function __construct()
 	{
-		$this->request = new Request();
-		$this->log = new Log();
-		$this->timeline = new Timeline();
+		$this->request = new Request;
+		$this->log = new Log;
+		$this->timeline = new Timeline;
+		$this->authenticator = new NullAuthenticator;
 	}
 
 	/**
