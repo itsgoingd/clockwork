@@ -1,17 +1,31 @@
 <?php namespace Clockwork\Support\Lumen;
 
+use Clockwork\Clockwork;
 use Clockwork\Support\Lumen\ClockworkSupport;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as LumenController;
 
 class Controller extends LumenController
 {
+	public $clockwork;
 	public $clockworkSupport;
 
-	public function __construct(ClockworkSupport $clockworkSupport)
+	public function __construct(Clockwork $clockwork, ClockworkSupport $clockworkSupport)
 	{
+		$this->clockwork = $clockwork;
 		$this->clockworkSupport = $clockworkSupport;
+	}
+
+	public function authenticate(Request $request)
+	{
+		$token = $this->clockwork->getAuthenticator()->attempt(
+			$request->only([ 'username', 'password' ])
+		);
+
+		return new JsonResponse([ 'token' => $token ], $token ? 200 : 403);
 	}
 
 	public function getData($id = null, $direction = null, $count = null)

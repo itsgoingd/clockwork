@@ -1,5 +1,7 @@
 <?php namespace Clockwork;
 
+use Clockwork\Authentication\AuthenticatorInterface;
+use Clockwork\Authentication\NullAuthenticator;
 use Clockwork\DataSource\DataSourceInterface;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
@@ -34,6 +36,9 @@ class Clockwork implements LoggerInterface
 	 */
 	protected $storage;
 
+	// Authenticator implementation, authenticates requests for clockwork metadata
+	protected $authenticator;
+
 	/**
 	 * Request\Log instance, data structure which stores data for the log view
 	 */
@@ -49,9 +54,10 @@ class Clockwork implements LoggerInterface
 	 */
 	public function __construct()
 	{
-		$this->request = new Request();
-		$this->log = new Log();
-		$this->timeline = new Timeline();
+		$this->request = new Request;
+		$this->log = new Log;
+		$this->timeline = new Timeline;
+		$this->authenticator = new NullAuthenticator;
 	}
 
 	/**
@@ -138,6 +144,24 @@ class Clockwork implements LoggerInterface
 	public function setStorage(StorageInterface $storage)
 	{
 		$this->storage = $storage;
+
+		return $this;
+	}
+
+	/**
+	 * Return the authenticator object
+	 */
+	public function getAuthenticator()
+	{
+		return $this->authenticator;
+	}
+
+	/**
+	 * Set a custom authenticator object
+	 */
+	public function setAuthenticator(AuthenticatorInterface $authenticator)
+	{
+		$this->authenticator = $authenticator;
 
 		return $this;
 	}

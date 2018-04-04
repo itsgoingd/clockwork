@@ -1,6 +1,7 @@
 <?php namespace Clockwork\Support\Lumen;
 
 use Clockwork\Clockwork;
+use Clockwork\Authentication\AuthenticatorInterface;
 use Clockwork\DataSource\EloquentDataSource;
 use Clockwork\DataSource\LaravelCacheDataSource;
 use Clockwork\DataSource\LaravelEventsDataSource;
@@ -67,6 +68,10 @@ class ClockworkServiceProvider extends ServiceProvider
 			return new ClockworkSupport($app);
 		});
 
+		$this->app->singleton('clockwork.authenticator', function ($app) {
+			return $app['clockwork.support']->getAuthenticator();
+		});
+
 		$this->app->singleton('clockwork.lumen', function ($app) {
 			return new LumenDataSource($app);
 		});
@@ -113,12 +118,14 @@ class ClockworkServiceProvider extends ServiceProvider
 			}
 
 			$clockwork->setStorage($app['clockwork.support']->getStorage());
+			$clockwork->setAuthenticator($app['clockwork.authenticator']);
 
 			return $clockwork;
 		});
 
 		// set up aliases for all Clockwork parts so they can be resolved by the IoC container
 		$this->app->alias('clockwork.support', ClockworkSupport::class);
+		$this->app->alias('clockwork.authenticator', AuthenticatorInterface::class);
 		$this->app->alias('clockwork.lumen', LumenDataSource::class);
 		$this->app->alias('clockwork.swift', SwiftDataSource::class);
 		$this->app->alias('clockwork.eloquent', EloquentDataSource::class);
@@ -151,6 +158,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		$router = isset($this->app->router) ? $this->app->router : $this->app;
 
 		$router->get('/__clockwork/{id:(?:[0-9-]+|latest)}[/{direction:(?:next|previous)}[/{count:\d+}]]', 'Clockwork\Support\Lumen\Controller@getData');
+		$router->post('/__clockwork/auth', 'Clockwork\Support\Lumen\Controller@authenticate');
 	}
 
 	public function registerWebRoutes()

@@ -82,6 +82,25 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Authentication
+	|--------------------------------------------------------------------------
+	|
+	| Clockwork can be configured to require authentication before allowing
+	/ access to the collected data. This is recommended when the application
+	/ is publicly accessible, as the metadata might contain sensitive information.
+	/ Setting to "true" enables authentication with a single password set below,
+	/ "false" disables authentication.
+	/ You can also pass a class name of a custom authentication implementation.
+	/ Default: false
+	|
+	*/
+
+	'authentication' => env('CLOCKWORK_AUTHENTICATION', false),
+
+	'authentication_password' => env('CLOCKWORK_AUTHENTICATION_PASSWORD', 'VerySecretPassword'),
+
+	/*
+	|--------------------------------------------------------------------------
 	| Filter collected data
 	|--------------------------------------------------------------------------
 	|
