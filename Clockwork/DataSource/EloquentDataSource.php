@@ -46,7 +46,7 @@ class EloquentDataSource extends DataSource
 		if ($scope = $this->getModelResolvingScope()) {
 			$this->eventDispatcher->listen('eloquent.booted: *', function ($model, $data = null) use ($scope) {
 				if (is_string($model) && is_array($data)) { // Laravel 5.4 wildcard event
-					$model = $data[0];
+					$model = reset($data);
 				}
 
 				$model->addGlobalScope($scope);
