@@ -17,6 +17,7 @@ class Request
 		this.log = this.processLog(this.log)
 		this.postData = this.createKeypairs(this.postData)
 		this.sessionData = this.createKeypairs(this.sessionData)
+		this.performanceMetrics = this.processPerformanceMetrics(this.performanceMetrics)
 		this.timeline = this.processTimeline(this.timelineData)
 		this.views = this.processViews(this.viewsData)
 
@@ -24,14 +25,15 @@ class Request
 		this.warningsCount = this.getWarningsCount()
 	}
 
-	static placeholder (id, request) {
+	static placeholder (id, request, parent) {
 		return Object.assign(new Request({
 			loading: true,
 			id: id,
-			uri: (new URI(request.url)).pathname(),
+			uri: request ? (new URI(request.url)).pathname() : '/',
 			controller: 'Waiting...',
-			method: request.method,
-			responseStatus: '?'
+			method: request ? request.method : 'GET',
+			responseStatus: '?',
+			parent
 		}), {
 			responseDurationRounded: '?',
 			databaseDurationRounded: '?'
@@ -39,7 +41,7 @@ class Request
 	}
 
 	resolve (request) {
-		Object.assign(this, request, { loading: false })
+		Object.assign(this, request, { loading: false, error: undefined })
 		return this
 	}
 
@@ -73,6 +75,7 @@ class Request
 			query.value = query.type == 'hit' || query.type == 'write' ? query.value : ''
 			query.fullPath = query.file && query.line ? query.file.replace(/^\//, '') + ':' + query.line : undefined
 			query.shortPath = query.fullPath ? query.fullPath.split(/[\/\\]/).pop() : undefined
+			query.trace = this.processStackTrace(query.trace)
 
 			return query
 		})
@@ -86,6 +89,7 @@ class Request
 			query.shortModel = query.model ? query.model.split('\\').pop() : '-'
 			query.fullPath = query.file && query.line ? query.file.replace(/^\//, '') + ':' + query.line : undefined
 			query.shortPath = query.fullPath ? query.fullPath.split(/[\/\\]/).pop() : undefined
+			query.trace = this.processStackTrace(query.trace)
 
 			return query
 		})
@@ -105,6 +109,7 @@ class Request
 			event.time = new Date(event.time * 1000)
 			event.fullPath = event.file && event.line ? event.file.replace(/^\//, '') + ':' + event.line : undefined
 			event.shortPath = event.fullPath ? event.fullPath.split(/[\/\\]/).pop() : undefined
+			event.trace = this.processStackTrace(event.trace)
 
 			event.listeners = event.listeners instanceof Array ? event.listeners : []
 			event.listeners = event.listeners.map(listener => {
@@ -153,9 +158,32 @@ class Request
 			message.context = message.context instanceof Object && Object.keys(message.context).length ? message.context : undefined
 			message.fullPath = message.file && message.line ? message.file.replace(/^\//, '') + ':' + message.line : undefined
 			message.shortPath = message.fullPath ? message.fullPath.split(/[\/\\]/).pop() : undefined
+			message.trace = this.processStackTrace(message.trace)
 
 			return message
 		})
+	}
+
+	processPerformanceMetrics (data) {
+		if (! data) {
+			return [
+				{ name: 'Database', value: this.databaseDurationRounded, style: 'style2' },
+				{ name: 'Cache', value: this.cacheTime, style: 'style3' },
+				{ name: 'Other', value: this.responseDurationRounded - this.databaseDurationRounded - this.cacheTime, style: 'style1' }
+			].filter(metric => metric.value !== null && metric.value !== undefined)
+		}
+
+		data = data.filter(metric => metric instanceof Object)
+			.map((metric, index) => {
+				metric.style = 'style' + (index + 2)
+				return metric
+			})
+
+		let metricsSum = data.reduce((sum, metric) => { return sum + metric.value }, 0)
+
+		data.push({ name: 'Other', value: this.responseDurationRounded - metricsSum, style: 'style1' })
+
+		return data
 	}
 
 	processTimeline (data) {
@@ -177,6 +205,17 @@ class Request
 		if (! (data instanceof Object)) return []
 
 		return Object.values(data).filter(view => view.data instanceof Object).map(view => view.data)
+	}
+
+	processStackTrace (trace) {
+		if (! trace) return undefined
+
+		return trace.map(frame => {
+			frame.fullPath = frame.file && frame.line ? frame.file.replace(/^\//, '') + ':' + frame.line : undefined
+			frame.shortPath = frame.fullPath ? frame.fullPath.split(/[\/\\]/).pop() : undefined
+
+			return frame
+		})
 	}
 
 	getErrorsCount () {

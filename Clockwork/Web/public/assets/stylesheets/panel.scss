@@ -39,7 +39,7 @@ a {
 		color: rgb(59, 59, 59);
 
 		body.dark & {
-			color: rgb(253, 148, 39);
+			color: hsl(31, 98%, 48%);
 		}
 	}
 
@@ -132,7 +132,7 @@ a {
 				color: white;
 
 				body.dark & {
-					background: rgb(253, 148, 39) !important;
+					background: hsl(31, 98%, 48%) !important;
 				}
 			}
 
@@ -152,7 +152,7 @@ a {
 				}
 
 				body.dark & {
-					background: rgb(253, 148, 39) !important;
+					background: hsl(31, 98%, 48%) !important;
 				}
 			}
 		}
@@ -181,7 +181,6 @@ a {
 		font-weight: normal;
 		height: 30px;
 		line-height: 1.1;
-		overflow: hidden;
 		padding: 2px 4px;
 		white-space: nowrap;
 
@@ -286,7 +285,7 @@ a {
 				color: rgb(37, 140, 219);
 
 				body.dark & {
-					color: rgb(253, 148, 39);
+					color: hsl(31, 98%, 48%);
 				}
 			}
 
@@ -332,7 +331,7 @@ a {
 				color: rgb(37, 140, 219);
 
 				body.dark & {
-					color: rgb(253, 148, 39);
+					color: hsl(31, 98%, 48%);
 				}
 			}
 
@@ -363,6 +362,31 @@ a {
 		font-size: 12px;
 		margin-bottom: 18px;
 
+		thead {
+			th:last-child {
+				padding-right: 20px;
+				position: relative;
+			}
+
+			.fa-angle-down, .fa-angle-up {
+				font-weight: bold;
+				margin-left: 4px;
+			}
+
+			.toggle-filter {
+				position: absolute;
+				right: 0;
+				top: 4px;
+				visibility: hidden;
+			}
+
+			&:hover {
+				.toggle-filter {
+					visibility: visible;
+				}
+			}
+		}
+
 		tr {
 			&:first-child td {
 				border-top: 1px solid rgb(209, 209, 209);
@@ -389,7 +413,6 @@ a {
 		}
 
 		td {
-			overflow: hidden;
 			padding: 8px 10px;
 			vertical-align: top;
 
@@ -400,6 +423,64 @@ a {
 
 			&.value {
 				word-break: break-all;
+			}
+		}
+
+		.filter {
+			background: none !important;
+
+			td {
+				border-top: 1px solid #d1d1d1;
+				padding: 2px 10px;
+
+				body.dark & {
+					border-top: 1px solid rgb(54, 54, 54);
+				}
+			}
+
+			label {
+				align-items: center;
+				display: flex;
+				position: relative;
+			}
+
+			.fa {
+				color: #696969;
+				padding: 0 4px;
+			}
+
+			input {
+				background: transparent;
+				border: none;
+				width: 100%;
+
+				&:focus {
+					outline: none;
+				}
+
+				&::placeholder {
+					color: #a9a9a9;
+
+					body.dark & {
+						color: #777;
+					}
+				}
+
+				body.dark & {
+					color: #b2b2b2;
+				}
+			}
+
+			.example {
+				color: #a9a9a9;
+				font-size: 11px;
+				pointer-events: none;
+				position: absolute;
+				right: 0;
+
+				body.dark & {
+					color: #777;
+				}
 			}
 		}
 	}
@@ -413,7 +494,7 @@ a {
 			border-radius: 3px;
 			box-shadow: 0 2px 3px #e5e5e5;
 			margin: 0 5px;
-			flex: 1;
+			flex: 0 1 120px;
 			padding: 8px 20px 10px;
 			text-align: center;
 
@@ -437,11 +518,57 @@ a {
 			.counter-title {
 				font-size: 120%;
 				font-variant: small-caps;
+				text-transform: lowercase;
 			}
 		}
 	}
 
-	// Timeline tab
+	// Performance tab
+
+	.performance-chart-container {
+		flex: 0 1 100px;
+	}
+
+	.performance-chart {
+		height: 60px;
+		margin: 0 auto;
+		position: relative;
+		width: 60px;
+	}
+
+	.performance-chart-legend {
+		&.style1 {
+			border-left: 3px solid rgb(120, 177, 222) !important;
+
+			body.dark & {
+				border-left: 3px solid rgb(100, 157, 202) !important;
+			}
+		}
+
+		&.style2 {
+			border-left: 3px solid rgb(231, 150, 151) !important;
+
+			body.dark & {
+				border-left: 3px solid rgb(211, 130, 131) !important;
+			}
+		}
+
+		&.style3 {
+			border-left: 3px solid rgb(177, 202, 109) !important;
+
+			body.dark & {
+				border-left: 3px solid rgb(157, 182, 89) !important;
+			}
+		}
+
+		&.style4 {
+			border-left: 3px solid rgb(186, 148, 230) !important;
+
+			body.dark & {
+				border-left: 3px solid rgb(166, 128, 210) !important;
+			}
+		}
+	}
 
 	.timeline {
 		position: relative;
@@ -527,6 +654,60 @@ a {
 	}
 
 	// Log tab
+
+	.log-row {
+		&.error {
+			background: rgb(255, 235, 235);
+			color: rgb(197, 31, 36);
+
+			&:nth-child(even) {
+				background: hsl(0, 100%, 94%);
+			}
+
+			.log-message-path {
+				color: hsl(358, 55%, 70%);
+			}
+
+			body.dark & {
+				background: hsl(0, 100%, 11%);
+				color: rgb(237, 121, 122);
+
+				&:nth-child(even) {
+					background: hsl(0, 100%, 9%);
+				}
+
+				.log-message-path {
+					color: hsl(359, 38%, 62%);
+				}
+			}
+		}
+
+		&.warning {
+			background: rgb(255, 250, 226);
+			color: rgb(168, 89, 25);
+
+			&:nth-child(even) {
+				background: hsl(50, 100%, 88%);
+			}
+
+			.log-message-path {
+				color: hsl(27, 55%, 65%);
+			}
+
+			body.dark & {
+				background: hsl(50, 100%, 11%);
+				color: rgb(250, 216, 159);
+
+				&:nth-child(even) {
+					background: hsl(50, 100%, 9%);
+				}
+
+				.log-message-path {
+					color: hsl(38, 42%, 68%);
+				}
+			}
+		}
+	}
 
 	.log-date, .log-level {
 		width: 70px;
@@ -622,19 +803,20 @@ a {
 	}
 }
 
-.details-loading-overlay, .details-error-overlay {
+.details-loading-overlay, .details-error-overlay, .details-authentication-overlay {
 	align-items: center;
 	display: flex;
 	flex-direction: column;
 	font-size: 16px;
-	height: 100%;
+	height: calc(100% - 31px);
 	justify-content: center;
 	left: 0;
 	position: absolute;
-	top: 0;
+	top: 31px;
 	width: 100%;
 
 	.fa {
+		color: #696969;
 		font-size: 46px;
 	}
 
@@ -649,13 +831,70 @@ a {
 	}
 }
 
-.number-of-queries {
-	font-size: 11px;
-	padding: 7px 0 0 5px;
-	font-weight: bold;
+.details-authentication-overlay {
+	text-align: center;
+
+	.title, .message {
+		font-size: 80%;
+	}
+
+	.title.failed {
+		display: none;
+	}
+
+	p {
+		margin: 1.3em 0;
+	}
+
+	input {
+		background: #eee;
+		border: 1px solid #eee;
+		border-radius: 4px;
+		font-size: 14px;
+		height: 30px;
+		padding: 0 10px;
+
+		body.dark & {
+			background: #2e2e2e;
+			border: 1px solid #2e2e2e;
+			color: #ccc;
+		}
+	}
+
+	button {
+		background: transparent;
+		border: none;
+		color: #258cdb;
+		font-size: 90%;
+
+		body.dark & {
+		    color: #f27e02;
+		}
+	}
+
+	&.failed {
+		.title {
+			display: none;
+
+			&.failed {
+				display: block;
+			}
+		}
+
+		.fa {
+			animation: shake 0.77s linear;
+		}
+
+		@keyframes shake {
+			10%, 90% { transform: translate(-2px); }
+			20%, 80% { transform: translate(3px); }
+			30%, 50%, 70% { transform: translate(-5px); }
+			40%, 60% { transform: translate(5px); }
+		}
+	}
 }
 
-.update-notification {
+.update-notification, .parent-request {
 	background: hsl(206, 71%, 95%);
 	border-radius: 3px;
 	display: flex;
@@ -671,13 +910,123 @@ a {
 		text-decoration: none;
 
 		body.dark & {
-			color: rgb(253, 148, 39);
+			color: hsl(31, 98%, 48%);
 		}
 	}
 
-	.updateNotification-close {
+	.updateNotification-close, .parentRequest-close {
 		margin-left: auto;
 	}
+}
+
+.stack-trace {
+	cursor: pointer;
+
+	.popover {
+		cursor: default;
+	}
+
+	.stack-frame {
+		color: #000;
+		padding: 6px 10px;
+		text-align: left;
+		word-break: break-word;
+
+		body.dark & {
+			color: rgb(178, 178, 178);
+		}
+
+		&:nth-child(even) {
+			background: rgb(245, 245, 245);
+
+			body.dark & {
+				background: rgb(27, 27, 27);
+			}
+		}
+
+
+		.stack-frame-call {
+			font-size: 12px;
+			padding-bottom: 3px;
+		}
+
+		.stack-frame-file {
+			color: #aaa;
+			font-size: 11px;
+		}
+
+		&.is-vendor {
+			.stack-frame-call {
+				font-size: 10px;
+			}
+
+			.stack-frame-file {
+				font-size: 10px
+			}
+		}
+	}
+}
+
+.popover {
+	padding-right: 20px;
+	position: absolute;
+	right: 100%;
+	top: -20px;
+	width: 300px;
+	z-index: 666;
+
+	.popover-content {
+		background: #fff;
+		border: 1px solid rgb(209, 209, 209);
+		border-radius: 5px;
+		box-shadow: 0 0 4px #e5e5e5;
+		max-height: 400px;
+		overflow: auto;
+		padding: 5px 0;
+		text-align: center;
+		width: 100%;
+
+		body.dark & {
+			background: rgb(31, 31, 31);
+			border: 1px solid #404040;
+			box-shadow: 0 0 4px #292929;
+		}
+
+		&:before, &:after {
+			border-style: solid;
+			content: '';
+			height: 0;
+			position: absolute;
+			width: 0;
+		}
+
+		&:before {
+			border-color: transparent transparent transparent #fff;
+			border-width: 14px 0 14px 14px;
+			right: 8px;
+			top: 13px;
+			z-index: 500;
+
+			body.dark & {
+				border-color: transparent transparent transparent rgb(31, 31, 31);
+			}
+		}
+
+		&:after {
+			border-color: transparent transparent transparent #e5e5e5;
+			border-width: 15px 0 15px 15px;
+			right: 6px;
+			top: 12px;
+
+			body.dark & {
+				border-color: transparent transparent transparent #292929;
+			}
+		}
+	}
+}
+
+.popover-container {
+	position: relative;
 }
 
 // Directives

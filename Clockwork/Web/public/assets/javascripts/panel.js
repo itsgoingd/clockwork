@@ -1,4 +1,4 @@
-Clockwork.controller('PanelController', function ($scope, $http, requests, updateNotification)
+Clockwork.controller('PanelController', function ($scope, $q, $http, filter, requests, updateNotification)
 {
 	$scope.requests = []
 	$scope.request = null
@@ -16,12 +16,90 @@ Clockwork.controller('PanelController', function ($scope, $http, requests, updat
 		key('⌘+k, ctrl+l', () => $scope.$apply(() => $scope.clear()))
 
 		if (Extension.runningAsExtension()) {
-			$scope.$integration = new Extension($scope, requests, updateNotification)
+			$scope.$integration = new Extension($scope, $q, requests, updateNotification)
 		} else {
 			$scope.$integration = new Standalone($scope, $http, requests)
 		}
 
 		$scope.$integration.init()
+
+		this.initFilters()
+
+		this.authentication = new Authentication($scope, $q, requests)
+	}
+
+	$scope.initFilters = function () {
+		$scope.headersFilter = filter.create([
+			{ tag: 'name' }
+		])
+
+		$scope.getDataFilter = filter.create([
+			{ tag: 'name' }
+		])
+
+		$scope.postDataFilter = filter.create([
+			{ tag: 'name' }
+		])
+
+		$scope.cookiesFilter = filter.create([
+			{ tag: 'name' }
+		])
+
+		$scope.eventsFilter = filter.create([
+			{ tag: 'time', type: 'date' },
+			{ tag: 'file', map: item => item.shortPath }
+		])
+
+		$scope.databaseQueriesFilter = filter.create([
+			{ tag: 'model' },
+			{ tag: 'type', apply: (item, tagValue) => {
+				let types = [ 'select', 'update', 'insert', 'delete' ]
+				if (types.includes(tagValue.toLowerCase())) {
+					return item.query.match(new RegExp(`^${tagValue.toLowerCase()}`, 'i'))
+				}
+			} },
+			{ tag: 'file', map: item => item.shortPath },
+			{ tag: 'duration', type: 'number' }
+		])
+
+		$scope.cacheQueriesFilter = filter.create([
+			{ tag: 'action', apply: (item, tagValue) => {
+				let actions = [ 'read', 'write', 'delete', 'miss' ]
+				if (actions.includes(tagValue.toLowerCase())) {
+					return item.type.toLowerCase() == tagValue.toLowerCase()
+				}
+			} },
+			{ tag: 'key' },
+			{ tag: 'file', map: item => item.shortPath }
+		])
+
+		$scope.logFilter = filter.create([
+			{ tag: 'time', type: 'date' },
+			{ tag: 'level' },
+			{ tag: 'file', map: item => item.shortPath }
+		], item => item.message)
+
+		$scope.sessionFilter = filter.create([
+			{ tag: 'name' }
+		])
+
+		$scope.viewsFilter = filter.create([
+			{ tag: 'name' }
+		])
+
+		$scope.emailsFilter = filter.create([
+			{ tag: 'to' }
+		])
+
+		$scope.routesFilter = filter.create([
+			{ tag: 'method', apply: (item, tagValue) => {
+				let methods = [ 'get', 'post', 'put', 'delete', 'head', 'patch' ]
+				if (methods.includes(tagValue.toLowerCase())) {
+					return item.method.toLowerCase() == tagValue.toLowerCase()
+				}
+			} },
+			{ tag: 'uri' }
+		])
 	}
 
 	$scope.clear = function () {
@@ -52,13 +130,46 @@ Clockwork.controller('PanelController', function ($scope, $http, requests, updat
 		$scope.request = requests.findId(id)
 
 		$scope.updateNotification = updateNotification.show(requests.remoteUrl)
+		$scope.performanceMetricsChartValues = $scope.getPerformanceMetricsChartValues()
+		$scope.performanceMetricsChartColors = $scope.getPerformanceMetricsChartColors()
+		$scope.performanceMetricsChartOptions = $scope.getPerformanceMetricsChartOptions()
+		$scope.databaseQueriesStats = $scope.getDatabaseQueriesStats()
 		$scope.timelineLegend = $scope.generateTimelineLegend()
+
+		if ($scope.request && $scope.request.error && $scope.request.error.error == 'requires-authentication') {
+			$scope.authentication.request($scope.request.error.message, $scope.request.error.requires)
+		}
 
 		$scope.showIncomingRequests = (id == $scope.requests[$scope.requests.length - 1].id)
 	}
 
 	$scope.getRequestClass = function (id) {
 		return $scope.request && $scope.request.id == id ? 'selected' : ''
+	}
+
+	$scope.getPerformanceMetricsChartValues = function () {
+		return $scope.request.performanceMetrics.map(metric => metric.value)
+	}
+
+	$scope.getPerformanceMetricsChartColors = function () {
+		let colors = {
+			style1: { light: '#78b1de', dark: '#649dca' },
+			style2: { light: '#e79697', dark: '#d38283' },
+			style3: { light: '#b1ca6d', dark: '#9db659' },
+			style4: { light: '#ba94e6', dark: '#a680d2' }
+		}
+		let theme = document.querySelector('body').classList.contains('dark') ? 'dark' : 'light'
+
+		return $scope.request.performanceMetrics.map(metric => colors[metric.style][theme])
+	}
+
+	$scope.getPerformanceMetricsChartOptions = function () {
+		return {
+			aspectRatio: 1,
+			tooltips: { enabled: false },
+			hover: { mode: null },
+			elements: { arc: { borderColor: document.querySelector('body').classList.contains('dark') ? '#1f1f1f' : '#fff' } }
+		}
 	}
 
 	$scope.showDatabaseConnectionColumn = function () {
@@ -69,6 +180,17 @@ Clockwork.controller('PanelController', function ($scope, $http, requests, updat
 			.filter((connection, i, connections) => connections.indexOf(connection) == i)
 
 		return connnections.length > 1
+	}
+
+	$scope.getDatabaseQueriesStats = function () {
+		return {
+			queries: $scope.request.databaseQueries.length,
+			selects: $scope.request.databaseQueries.filter(query => query.query.match(/^select /i)).length,
+			inserts: $scope.request.databaseQueries.filter(query => query.query.match(/^insert /i)).length,
+			updates: $scope.request.databaseQueries.filter(query => query.query.match(/^update /i)).length,
+			deletes: $scope.request.databaseQueries.filter(query => query.query.match(/^delete /i)).length,
+			other: $scope.request.databaseQueries.filter(query => ! query.query.match(/^(select|insert|update|delete) /i)).length
+		}
 	}
 
 	$scope.showCacheTab = function () {
@@ -114,13 +236,13 @@ Clockwork.controller('PanelController', function ($scope, $http, requests, updat
 	}
 
 	$scope.getTimelineWidth = function () {
-		let timelineShown = $('[tab-content="timeline"]').css('display') !== 'none'
+		let timelineShown = document.querySelector('[tab-content="performance"]').style.display !== 'none'
 
-		if (! timelineShown) $('[tab-content="timeline"]').show()
+		if (! timelineShown) document.querySelector('[tab-content="performance"]').style.display = 'block'
 
-		let width = $('.timeline-graph').width()
+		let width = document.querySelector('.timeline-graph').offsetWidth
 
-		if (! timelineShown) $('[tab-content="timeline"]').hide()
+		if (! timelineShown) document.querySelector('[tab-content="performance"]').style.display = 'none'
 
 		return width
 	}
@@ -129,10 +251,8 @@ Clockwork.controller('PanelController', function ($scope, $http, requests, updat
 		$scope.loadingMoreRequests = true
 
 		requests.loadPrevious(10).then(() => {
-			$scope.$apply(() => {
-				$scope.requests = requests.all()
-				$scope.loadingMoreRequests = false
-			})
+			$scope.requests = requests.all()
+			$scope.loadingMoreRequests = false
 		})
 	}
 

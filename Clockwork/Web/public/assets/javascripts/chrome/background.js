@@ -5,21 +5,25 @@ api.runtime.onMessage.addListener((message, sender, callback) => {
 	if (message.action == 'getJSON') {
 		let xhr = new XMLHttpRequest()
 
-		xhr.open('GET', message.url, true)
+		xhr.open(message.method || 'GET', message.url, true)
 
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState != 4) return
 
-			let data
-
-			if (xhr.status != 200) {
+			if (xhr.status != 200 && xhr.status != 403) {
 				return callback({ error: 'Server returned an error response.' })
 			}
+
+			let data
 
 			try {
 				data = JSON.parse(xhr.responseText)
 			} catch (e) {
 				return callback({ error: 'Server returned an invalid JSON.' })
+			}
+
+			if (xhr.status == 403) {
+				return callback({ error: 'requires-authentication', message: data.message, requires: data.requires })
 			}
 
 			if (! Object.keys(data).length) {
@@ -33,7 +37,10 @@ api.runtime.onMessage.addListener((message, sender, callback) => {
 			xhr.setRequestHeader(headerName, message.headers[headerName])
 		})
 
-		xhr.send()
+		let formData = new FormData
+		Object.keys(message.data).forEach(key => formData.append(key, message.data[key]))
+
+		xhr.send(formData)
 	} else if (message.action == 'getLastClockworkRequestInTab') {
 		callback(lastClockworkRequestPerTab[message.tabId])
 	}
