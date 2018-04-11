@@ -23,12 +23,15 @@ return [
 	| Enable web UI
 	|--------------------------------------------------------------------------
 	|
-	| Enable or disable the Clockwork web UI available at  http://your.app/__clockwork
+	| Enable or disable the Clockwork web UI available at  http://your.app/__clockwork.
+	| You can also set whether to use the dark theme by default.
 	| Default: true
 	|
 	*/
 
 	'web' => env('CLOCKWORK_WEB', true),
+
+	'web_dark_theme' => env('CLOCKWORK_WEB_DARK_THEME', false),
 
 	/*
 	|--------------------------------------------------------------------------

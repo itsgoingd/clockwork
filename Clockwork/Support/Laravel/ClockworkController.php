@@ -30,6 +30,10 @@ class ClockworkController extends Controller
 
 	public function webIndex()
 	{
+		if ($this->app['clockwork.support']->isWebUsingDarkTheme() && ! $this->app['request']->has('dark')) {
+			return new RedirectResponse('/__clockwork/app?dark');
+		}
+
 		return $this->app['clockwork.support']->getWebAsset('app.html');
 	}
 

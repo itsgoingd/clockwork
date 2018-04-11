@@ -1,7 +1,8 @@
 class Extension
 {
-	constructor ($scope, requests, updateNotification) {
+	constructor ($scope, $q, requests, updateNotification) {
 		this.$scope = $scope
+		this.$q = $q
 		this.requests = requests
 		this.updateNotification = updateNotification
 	}
@@ -25,7 +26,7 @@ class Extension
 
 	useProperTheme () {
 		if (this.api.devtools.panels.themeName === 'dark') {
-			$('body').addClass('dark')
+			document.querySelector('body').classList.add('dark')
 		}
 	}
 
@@ -34,11 +35,11 @@ class Extension
 	}
 
 	setMetadataClient () {
-		this.requests.setClient((url, headers) => {
-			return new Promise((accept, reject) => {
+		this.requests.setClient((method, url, data, headers) => {
+			return this.$q((accept, reject) => {
 				this.api.runtime.sendMessage(
-					{ action: 'getJSON', url, headers }, (message) => {
-						message.error ? reject(message.error) : accept(message.data)
+					{ action: 'getJSON', method, url, data, headers }, (message) => {
+						message.error ? reject(message) : accept(message.data)
 					}
 				)
 			})
@@ -61,15 +62,28 @@ class Extension
 			this.updateNotification.serverVersion = options.version
 
 			this.requests.setRemote(message.request.url, options)
-			this.requests.loadId(options.id, Request.placeholder(options.id, message.request)).then(() => {
-				this.$scope.$apply(() => this.$scope.refreshRequests())
+
+			let request = Request.placeholder(options.id, message.request)
+			this.requests.loadId(options.id, request).then(() => {
+				this.$scope.refreshRequests()
 			})
 
-			this.$scope.$apply(() => this.$scope.refreshRequests())
+			options.subrequests.forEach(subrequest => {
+				this.requests.setRemote(subrequest.url, { path: subrequest.path })
+				this.requests.loadId(subrequest.id, Request.placeholder(subrequest.id, subrequest, request)).then(() => {
+					this.$scope.refreshRequests()
+				})
+			})
+
+			this.requests.setRemote(message.request.url, options)
+
+			// this.$scope.$apply(() => this.$scope.refreshRequests())
 		})
 
 		// handle clearing of requests list if we are not preserving log
 		this.api.runtime.onMessage.addListener(message => {
+			if (message.action !== 'navigationStarted') return;
+
 			// preserve log is enabled
 			if (this.$scope.preserveLog) return
 
@@ -92,10 +106,10 @@ class Extension
 
 				this.requests.setRemote(request.url, options)
 				this.requests.loadId(options.id, Request.placeholder(options.id, request)).then(() => {
-					this.$scope.$apply(() => this.$scope.refreshRequests())
+					this.$scope.refreshRequests()
 				})
 
-				this.$scope.$apply(() => this.$scope.refreshRequests())
+				this.$scope.refreshRequests()
 			}
 		)
 	}
@@ -119,6 +133,16 @@ class Extension
 			}
 		})
 
-		return { id, path, version, headers }
+		let subrequests = requestHeaders.filter(header => header.name.toLowerCase() == 'x-clockwork-subrequest')
+			.reduce((subrequests, header) => {
+				return subrequests.concat(
+					header.value.split(',').map(value => {
+						let data = value.trim().split(';')
+						return { id: data[0], url: data[1], path: data[2] }
+					})
+				)
+			}, [])
+
+		return { id, path, version, headers, subrequests }
 	}
 }

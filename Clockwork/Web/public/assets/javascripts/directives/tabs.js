@@ -1,18 +1,21 @@
 Clockwork.directive('tabs', function ($parse) {
 	return {
 		link: function (scope, element, attrs) {
-			$(element).find('[tab-name]').on('click', function () {
-				let tabs = $(this).parents('[tabs]')
-				let tabName = $(this).attr('tab-name')
+			let tabs = element[0]
 
-				tabs.find('[tab-name]').removeClass('active')
-				$(this).addClass('active')
+			tabs.querySelectorAll('[tab-name]').forEach(el => {
+				el.addEventListener('click', ev => {
+					let tabName = ev.currentTarget.getAttribute('tab-name')
 
-				tabs.find('[tab-content]').hide()
-				tabs.find('[tab-content="' + tabName + '"]').show()
+					tabs.querySelectorAll('[tab-name]').forEach(el => el.classList.remove('active'))
+					ev.currentTarget.classList.add('active')
+
+					tabs.querySelectorAll('[tab-content]').forEach(el => el.style.display = 'none')
+					tabs.querySelector(`[tab-content="${tabName}"]`).style.display = 'block'
+				})
 			})
 
-			$(element).find('[tab-name].active').click()
+			tabs.querySelector('[tab-name].active').click()
 		}
 	}
 })

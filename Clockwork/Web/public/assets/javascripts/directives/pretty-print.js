@@ -6,33 +6,27 @@ Clockwork.directive('prettyPrint', function ($parse) {
 		scope: { data: '=data' },
 		link: function (scope, element, attrs) {
 			let data = scope.data
-			let jason
+			let rendered = document.createElement('div')
 
 			if (data === true) {
-				data = '<i>true</i>'
+				rendered.innerHTML = '<i>true</i>'
 			} else if (data === false) {
-				data = '<i>false</i>'
+				rendered.innerHTML = '<i>false</i>'
 			} else if (data === undefined) {
-				data = '<i>undefined</i>'
+				rendered.innerHTML = '<i>undefined</i>'
 			} else if (data === null) {
-				data = '<i>null</i>'
-			} else if (typeof data !== 'number') {
+				rendered.innerHTML = '<i>null</i>'
+			} else if (typeof data === 'number') {
+				rendered.innerText = data
+			} else {
 				try {
-					jason = new PrettyJason(data)
+					rendered.append((new PrettyJason(data)).generateHtml())
 				} catch (e) {
-					data = $('<div>').text(data).html()
+					rendered.innerText = data
 				}
 			}
 
-			var $el = $('<div></div>');
-
-			if (jason) {
-				$el.append(jason.generateHtml())
-			} else {
-				$el.html(data)
-			}
-
-			element.replaceWith($el)
+			element.replaceWith(rendered)
 		}
 	}
 })
