@@ -192,6 +192,11 @@ class ClockworkSupport
 		return $this->getConfig('web', true);
 	}
 
+	public function isWebUsingDarkTheme()
+	{
+		return $this->getConfig('web_dark_theme', false);
+	}
+
 	protected function appendServerTimingHeader($response, $request)
 	{
 		if (($eventsCount = $this->getConfig('server_timing', 10)) !== false) {
