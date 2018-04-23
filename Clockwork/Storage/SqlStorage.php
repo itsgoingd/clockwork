@@ -144,7 +144,7 @@ class SqlStorage extends Storage
 				$this->quote('version') . ' INTEGER, ' .
 				$this->quote('time') . ' DOUBLE PRECISION NULL, ' .
 				$this->quote('method') . ' VARCHAR(10) NULL, ' .
-				$this->quote('uri') . ' VARCHAR(250) NULL, ' .
+				$this->quote('uri') . " {$textType} NULL, " .
 				$this->quote('headers') . " {$textType} NULL, " .
 				$this->quote('controller') . ' VARCHAR(250) NULL, ' .
 				$this->quote('getData') . " {$textType} NULL, " .
