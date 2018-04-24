@@ -1,3 +1,9 @@
+2.2.5
+
+- changed SQL storage schema URI column type from VARCHAR to TEXT (thanks sumidatx)
+- fixed possible crash in file storage cleanup if the file was already deleted (thanks bcalik)
+- fixed event handling in Eloquent data source compatibility with some 3rd party packages (thanks erikgaal)
+
 2.2.4
 
 - drop support for collecting Laravel controller middleware (as this can have unexpected side-effects) (thanks phh)
