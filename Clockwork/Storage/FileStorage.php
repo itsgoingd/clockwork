@@ -103,7 +103,7 @@ class FileStorage extends Storage
 		});
 
 		foreach ($ids as $id) {
-			unlink("{$this->path}/{$id}.json");
+			@unlink("{$this->path}/{$id}.json");
 		}
 	}
 
