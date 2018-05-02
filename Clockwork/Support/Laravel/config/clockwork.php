@@ -74,7 +74,7 @@ return [
 	| Metadata expiration
 	|--------------------------------------------------------------------------
 	|
-	| Maximum lifetime of the metadata in seconds, metadata for older requests
+	| Maximum lifetime of the metadata in minutes, metadata for older requests
 	| will automatically be deleted when storing new requests.
 	| When set to false, metadata will never be deleted.
 	| Default: 1 week
