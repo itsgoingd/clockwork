@@ -17,6 +17,7 @@ class PhpDataSource extends DataSource
 	{
 		$request->time           = $this->getRequestTime();
 		$request->method         = $this->getRequestMethod();
+		$request->url            = $this->getRequestUrl();
 		$request->uri            = $this->getRequestUri();
 		$request->headers        = $this->getRequestHeaders();
 		$request->getData        = $this->getGetData();
@@ -98,6 +99,24 @@ class PhpDataSource extends DataSource
 		if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
 			return $_SERVER['REQUEST_TIME_FLOAT'];
 		}
+	}
+
+	/**
+	 * Return request URL
+	 */
+	protected function getRequestUrl()
+	{
+		$https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on';
+		$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null;
+		$addr = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : null;
+		$port = isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : null;
+		$uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
+
+		$scheme = $https ? 'https' : 'http';
+		$host = $host ?: $addr;
+		$port = (! $https && $port != 80 || $https && $port != 443) ? ":{$port}" : '';
+
+		return "{$scheme}://{$host}{$port}{$uri}";
 	}
 
 	/**

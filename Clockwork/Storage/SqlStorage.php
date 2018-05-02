@@ -21,7 +21,7 @@ class SqlStorage extends Storage
 
 	// List of all fields in the Clockwork requests table
 	protected $fields = [
-		'id', 'version', 'time', 'method', 'uri', 'headers', 'controller', 'getData', 'postData', 'sessionData',
+		'id', 'version', 'time', 'method', 'url', 'uri', 'headers', 'controller', 'getData', 'postData', 'sessionData',
 		'cookies', 'responseTime', 'responseStatus', 'responseDuration', 'databaseQueries', 'databaseDuration',
 		'cacheQueries', 'cacheReads', 'cacheHits', 'cacheWrites', 'cacheDeletes', 'cacheTime', 'timelineData', 'log',
 		'events', 'routes', 'emailsData', 'viewsData', 'userData', 'subrequests'
@@ -144,6 +144,7 @@ class SqlStorage extends Storage
 				$this->quote('version') . ' INTEGER, ' .
 				$this->quote('time') . ' DOUBLE PRECISION NULL, ' .
 				$this->quote('method') . ' VARCHAR(10) NULL, ' .
+				$this->quote('url') . " {$textType} NULL, " .
 				$this->quote('uri') . " {$textType} NULL, " .
 				$this->quote('headers') . " {$textType} NULL, " .
 				$this->quote('controller') . ' VARCHAR(250) NULL, ' .

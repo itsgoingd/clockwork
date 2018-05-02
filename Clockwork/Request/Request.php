@@ -26,6 +26,11 @@ class Request
 	public $method;
 
 	/**
+	 * Request URL
+	 */
+	public $url;
+
+	/**
 	 * Request URI
 	 */
 	public $uri;
@@ -185,6 +190,7 @@ class Request
 			'version'          => $this->version,
 			'time'             => $this->time,
 			'method'           => $this->method,
+			'url'              => $this->url,
 			'uri'              => $this->uri,
 			'headers'          => $this->headers,
 			'controller'       => $this->controller,

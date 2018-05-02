@@ -57,6 +57,7 @@ class LaravelDataSource extends DataSource
 	public function resolve(Request $request)
 	{
 		$request->method         = $this->getRequestMethod();
+		$request->url            = $this->getRequestUrl();
 		$request->uri            = $this->getRequestUri();
 		$request->controller     = $this->getController();
 		$request->headers        = $this->getRequestHeaders();
@@ -180,6 +181,14 @@ class LaravelDataSource extends DataSource
 	protected function getRequestMethod()
 	{
 		return $this->app['request']->getMethod();
+	}
+
+	/**
+	 * Return request URL
+	 */
+	protected function getRequestUrl()
+	{
+		return $this->app['request']->url();
 	}
 
 	/**
