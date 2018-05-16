@@ -140,7 +140,7 @@ class SqlStorage extends Storage
 
 		$this->pdo->exec(
 			"CREATE TABLE {$table} (" .
-				$this->quote('id') . ' VARCHAR(100), ' .
+				$this->quote('id') . ' VARCHAR(100) PRIMARY KEY, ' .
 				$this->quote('version') . ' INTEGER, ' .
 				$this->quote('time') . ' DOUBLE PRECISION NULL, ' .
 				$this->quote('method') . ' VARCHAR(10) NULL, ' .
@@ -173,6 +173,9 @@ class SqlStorage extends Storage
 				$this->quote('subrequests') . " {$textType} NULL" .
 			');'
 		);
+
+		$indexName = $this->quote("{$this->table}_time_index");
+		$this->pdo->exec("CREATE INDEX {$indexName} ON {$table} (". $this->quote('time') .')');
 	}
 
 	// Executes an sql query, lazily initiates the clockwork database schema if it's old or doesn't exist yet, returns
