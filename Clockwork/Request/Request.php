@@ -143,7 +143,7 @@ class Request
 	/**
 	 * Custom user data (not used by Clockwork app)
 	 */
-	public $userData;
+	public $userData = [];
 
 	public $subrequests = [];
 
@@ -215,7 +215,9 @@ class Request
 			'routes'           => $this->routes,
 			'emailsData'       => $this->emailsData,
 			'viewsData'        => $this->viewsData,
-			'userData'         => $this->userData,
+			'userData'         => array_map(function ($data) {
+				return $data instanceof UserData ? $data->toArray() : $data;
+			}, $this->userData),
 			'subrequests'      => $this->subrequests
 		];
 	}
@@ -238,6 +240,18 @@ class Request
 			'id'   => $id,
 			'path' => $path
 		];
+	}
+
+	// Add custom user data (presented as additional tabs in the official app)
+	public function userData($key = null)
+	{
+		if ($key && isset($this->userData[$key])) {
+			return $this->userData[$key];
+		}
+
+		$userData = (new UserData)->title($key);
+
+		return $key ? $this->userData[$key] = $userData : $this->userData[] = $userData;
 	}
 
 	/**
