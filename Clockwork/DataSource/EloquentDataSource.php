@@ -118,6 +118,9 @@ class EloquentDataSource extends DataSource
 		foreach ($bindings as $binding) {
 			$binding = $this->quoteBinding($binding, $connection);
 
+			// convert binary bindings to hexadecimal representation
+			if (! preg_match('//u', $binding)) $binding = '0x' . bin2hex($binding);
+
 			// escape backslashes in the binding (preg_replace requires to do so)
 			$binding = str_replace('\\', '\\\\', $binding);
 
