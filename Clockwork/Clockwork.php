@@ -273,4 +273,10 @@ class Clockwork implements LoggerInterface
 	{
 		return $this->getRequest()->addSubrequest($url, $id, $path);
 	}
+
+	// Add custom user data (presented as additional tabs in the official app)
+	public function userData($key = null)
+	{
+		return $this->getRequest()->userData($key);
+	}
 }

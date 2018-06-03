@@ -243,13 +243,15 @@ class Request
 	}
 
 	// Add custom user data (presented as additional tabs in the official app)
-	public function addUserData($key = null)
+	public function userData($key = null)
 	{
-		if ($key) {
-			return $this->userData[$key] = new UserData;
+		if ($key && isset($this->userData[$key])) {
+			return $this->userData[$key];
 		}
 
-		return $this->userData[] = new UserData;
+		$userData = (new UserData)->title($key);
+
+		return $key ? $this->userData[$key] = $userData : $this->userData[] = $userData;
 	}
 
 	/**
