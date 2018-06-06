@@ -8,6 +8,7 @@ use Clockwork\DataSource\LaravelCacheDataSource;
 use Clockwork\DataSource\LaravelEventsDataSource;
 use Clockwork\DataSource\EloquentDataSource;
 use Clockwork\DataSource\SwiftDataSource;
+use Clockwork\Request\Log;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -57,12 +58,18 @@ class ClockworkServiceProvider extends ServiceProvider
 			return new ClockworkSupport($app);
 		});
 
+		$this->app->singleton('clockwork.log', function ($app) {
+			return (new Log)
+				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
+		});
+
 		$this->app->singleton('clockwork.authenticator', function ($app) {
 			return $app['clockwork.support']->getAuthenticator();
 		});
 
 		$this->app->singleton('clockwork.laravel', function ($app) {
-			return new LaravelDataSource($app);
+			return (new LaravelDataSource($app))
+				->setLog($app['clockwork.log']);
 		});
 
 		$this->app->singleton('clockwork.swift', function ($app) {
@@ -106,12 +113,9 @@ class ClockworkServiceProvider extends ServiceProvider
 				$clockwork->addDataSource($app['clockwork.events']);
 			}
 
-			if ($support->getConfig('collect_stack_traces')) {
-				$clockwork->getLog()->collectStackTraces(true);
-			}
-
-			$clockwork->setStorage($support->getStorage());
 			$clockwork->setAuthenticator($app['clockwork.authenticator']);
+			$clockwork->setLog($app['clockwork.log']);
+			$clockwork->setStorage($support->getStorage());
 
 			return $clockwork;
 		});
@@ -120,6 +124,7 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		// set up aliases for all Clockwork parts so they can be resolved by the IoC container
 		$this->app->alias('clockwork.support', ClockworkSupport::class);
+		$this->app->alias('clockwork.log', Log::class);
 		$this->app->alias('clockwork.authenticator', AuthenticatorInterface::class);
 		$this->app->alias('clockwork.laravel', LaravelDataSource::class);
 		$this->app->alias('clockwork.swift', SwiftDataSource::class);

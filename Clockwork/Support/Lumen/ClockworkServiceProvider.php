@@ -68,6 +68,11 @@ class ClockworkServiceProvider extends ServiceProvider
 			return new ClockworkSupport($app);
 		});
 
+		$this->app->singleton('clockwork.log', function ($app) {
+			return (new Log)
+				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
+		});
+
 		$this->app->singleton('clockwork.authenticator', function ($app) {
 			return $app['clockwork.support']->getAuthenticator();
 		});
@@ -96,29 +101,31 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		$this->app->singleton('clockwork', function ($app) {
 			$clockwork = new Clockwork();
+			$support = $app['clockwork.support'];
 
 			$clockwork
 				->addDataSource(new PhpDataSource())
 				->addDataSource($app['clockwork.lumen']);
 
-			if ($app['clockwork.support']->isCollectingDatabaseQueries()) {
+			if ($support->isCollectingDatabaseQueries()) {
 				$clockwork->addDataSource($app['clockwork.eloquent']);
 			}
 
-			if ($app['clockwork.support']->isCollectingEmails()) {
+			if ($support->isCollectingEmails()) {
 				$clockwork->addDataSource($app['clockwork.swift']);
 			}
 
-			if ($app['clockwork.support']->isCollectingCacheStats()) {
+			if ($support->isCollectingCacheStats()) {
 				$clockwork->addDataSource($app['clockwork.cache']);
 			}
 
-			if ($app['clockwork.support']->isCollectingEvents()) {
+			if ($support->isCollectingEvents()) {
 				$clockwork->addDataSource($app['clockwork.events']);
 			}
 
-			$clockwork->setStorage($app['clockwork.support']->getStorage());
 			$clockwork->setAuthenticator($app['clockwork.authenticator']);
+			$clockwork->setLog($app['clockwork.log']);
+			$clockwork->setStorage($support->getStorage());
 
 			return $clockwork;
 		});

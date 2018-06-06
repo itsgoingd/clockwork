@@ -46,7 +46,6 @@ class LumenDataSource extends DataSource
 	{
 		$this->app = $app;
 
-		$this->log      = new Log();
 		$this->timeline = new Timeline();
 		$this->views    = new Timeline();
 	}
@@ -64,11 +63,17 @@ class LumenDataSource extends DataSource
 		$request->routes         = $this->getRoutes();
 		$request->sessionData    = $this->getSessionData();
 
-		$request->log          = array_merge($request->log, $this->log->toArray());
 		$request->timelineData = $this->timeline->finalize($request->time);
 		$request->viewsData    = $this->views->finalize();
 
 		return $request;
+	}
+
+	// Set a log instance
+	public function setLog(Log $log)
+	{
+		$this->log = $log;
+		return $this;
 	}
 
 	/**
@@ -77,6 +82,7 @@ class LumenDataSource extends DataSource
 	public function setResponse(Response $response)
 	{
 		$this->response = $response;
+		return $this;
 	}
 
 	/**

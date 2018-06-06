@@ -52,5 +52,6 @@ class Log extends AbstractLogger
 	public function collectStackTraces($enable = true)
 	{
 		$this->collectStackTraces = $enable;
+		return $this;
 	}
 }
