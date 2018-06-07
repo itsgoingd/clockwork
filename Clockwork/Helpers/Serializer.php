@@ -8,11 +8,17 @@ class Serializer
 		if ($data instanceof \Closure) {
 			return 'anonymous function';
 		} elseif (is_array($data)) {
-			if (! $levels) return $data;
+			$cleanData = [];
+			foreach ($data as $key => $item) {
+				$key = preg_match('/^\x00(?:.*?)\x00(.+)/', $key, $matches) ? $matches[1] : $key;
+				$cleanData[$key] = $item;
+			}
+
+			if (!$levels) return $cleanData;
 
 			return array_map(function ($item) use ($levels) {
 				return static::simplify($item, $levels - 1);
-			}, $data);
+			}, $cleanData);
 		} elseif (is_object($data)) {
 			if (isset($options['toString']) && $options['toString'] && method_exists($data, '__toString')) {
 				return (string) $data;
