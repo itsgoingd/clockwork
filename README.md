@@ -108,6 +108,7 @@ You can publish the configuration file using the `vendor:publish` artisan comman
 - enable or disable the web UI
 - configure how the request metadata is stored
 - set what data should be collected
+- how long Clockwork stores log files
 
 ### Licence
 
