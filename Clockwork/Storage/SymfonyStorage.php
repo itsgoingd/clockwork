@@ -33,9 +33,9 @@ class SymfonyStorage extends FileStorage
 	// Return all ids (Symfony profiler tokens)
 	protected function ids()
 	{
-		return array_map(function ($item) {
+		return array_reverse(array_map(function ($item) {
 			return $item['token'];
-		}, $this->profiler->find(null, null, PHP_INT_MAX, null, null, null, null));
+		}, $this->profiler->find(null, null, PHP_INT_MAX, null, null, null, null)));
 	}
 
 	// Return request instances for passed tokens

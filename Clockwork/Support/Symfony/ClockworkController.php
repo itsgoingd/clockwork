@@ -1,16 +1,15 @@
 <?php namespace Clockwork\Support\Symfony;
 
-use Clockwork\Clockwork;
-
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
 
 class ClockworkController extends Controller
 {
-	private $clockwork;
-	private $profiler;
+	protected $clockwork;
+	protected $profiler;
 
-	public function __construct(Clockwork $clockwork, Profiler $profiler)
+	public function __construct(ClockworkSupport $clockwork, Profiler $profiler)
 	{
 		$this->clockwork = $clockwork;
 		$this->profiler = $profiler;
@@ -20,6 +19,31 @@ class ClockworkController extends Controller
 	{
 		$this->profiler->disable();
 
-		return $this->container->get('clockwork.support')->getData($id, $direction, $count);
+		return $this->clockwork->getData($id, $direction, $count);
+	}
+
+	public function webIndex(Request $request)
+	{
+		$this->profiler->disable();
+
+		if ($this->clockwork->isWebUsingDarkTheme() && ! $request->query->has('dark')) {
+			return $this->redirect('/__clockwork/app?dark');
+		}
+
+		return $this->clockwork->getWebAsset('app.html');
+	}
+
+	public function webAsset($path)
+	{
+		$this->profiler->disable();
+
+		return $this->clockwork->getWebAsset("assets/{$path}");
+	}
+
+	public function webRedirect()
+	{
+		$this->profiler->disable();
+
+		return $this->redirect('/__clockwork/app');
 	}
 }

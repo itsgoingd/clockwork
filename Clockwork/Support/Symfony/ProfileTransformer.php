@@ -9,7 +9,7 @@ class ProfileTransformer
 {
 	public function transform(Profile $profile)
 	{
-		$request = new Request;
+		$request = new Request([ 'id' => $profile->getToken() ]);
 
 		$this->transformCacheData($profile, $request);
 		$this->transformDoctrineData($profile, $request);

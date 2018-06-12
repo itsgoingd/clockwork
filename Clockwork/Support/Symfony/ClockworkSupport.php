@@ -1,7 +1,11 @@
 <?php namespace Clockwork\Support\Symfony;
 
+use Clockwork\Web\Web;
+
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ClockworkSupport
 {
@@ -34,14 +38,30 @@ class ClockworkSupport
 		}
 
 		$data = is_array($data)
-			? array_map(function ($request) { return $request->toArray(); }, $request)
+			? array_map(function ($request) { return $request->toArray(); }, $data)
 			: $data->toArray();
 
 		return new JsonResponse($data);
 	}
 
+	public function getWebAsset($path)
+	{
+		$web = new Web;
+
+		if ($asset = $web->asset($path)) {
+			return new BinaryFileResponse($asset['path'], 200, [ 'Content-Type' => $asset['mime'] ]);
+		} else {
+			throw new NotFoundHttpException;
+		}
+	}
+
 	public function isEnabled()
 	{
 		return $this->getConfig('enable', false);
+	}
+
+	public function isWebUsingDarkTheme()
+	{
+		return $this->getConfig('web_dark_theme', false);
 	}
 }

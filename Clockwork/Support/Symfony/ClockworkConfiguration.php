@@ -17,7 +17,9 @@ class ClockworkConfiguration implements ConfigurationInterface
 		return (new TreeBuilder)->root('clockwork')
 			->children()
 				->booleanNode('enable')->defaultValue($this->debug)->end()
-                ->end()
+				->booleanNode('web')->defaultValue(true)->end()
+				->booleanNode('web_dark_theme')->defaultValue(false)->end()
+				->end()
 			->end();
 	}
 }
