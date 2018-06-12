@@ -11,7 +11,7 @@ $container->register(Clockwork\Support\Symfony\ClockworkSupport::class)
 	->setArgument('$config', [])
 	->setPublic(true);
 
-$container->register(Clockwork\Support\Symfony\ClockworkListener::class)
+$container->autowire(Clockwork\Support\Symfony\ClockworkListener::class)
 	->addTag('kernel.event_subscriber');
 
 $container->autowire(Clockwork\Storage\SymfonyStorage::class)

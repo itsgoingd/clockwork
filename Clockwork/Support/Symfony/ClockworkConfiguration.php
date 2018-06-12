@@ -5,17 +5,19 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class ClockworkConfiguration implements ConfigurationInterface
 {
+	protected $debug;
+
+	public function __construct($debug)
+	{
+		$this->debug = $debug;
+	}
+
 	public function getConfigTreeBuilder()
 	{
-		$treeBuilder = new TreeBuilder();
-		$rootNode = $treeBuilder->root('clockwork');
-
-		$rootNode
+		return (new TreeBuilder)->root('clockwork')
 			->children()
-				->booleanNode('enabled')->defaultTrue()->end()
-			->end()
-		;
-
-		return $treeBuilder;
+				->booleanNode('enable')->defaultValue($this->debug)->end()
+                ->end()
+			->end();
 	}
 }

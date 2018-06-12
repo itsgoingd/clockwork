@@ -8,15 +8,23 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ClockworkListener implements EventSubscriberInterface
 {
+	protected $clockwork;
+
+	public function __construct(ClockworkSupport $clockwork)
+	{
+		$this->clockwork = $clockwork;
+	}
+
 	public function onKernelResponse(FilterResponseEvent $event)
 	{
-		$response = $event->getResponse();
-		$request = $event->getRequest();
+		if (! $this->clockwork->isEnabled()) return;
 
-		if ($response->headers->has('X-Debug-Token')) {
-			$response->headers->set('X-Clockwork-Id', $response->headers->get('X-Debug-Token'));
-			$response->headers->set('X-Clockwork-Version', Clockwork::VERSION);
-		}
+		$response = $event->getResponse();
+
+		if (! $response->headers->has('X-Debug-Token')) return;
+
+		$response->headers->set('X-Clockwork-Id', $response->headers->get('X-Debug-Token'));
+		$response->headers->set('X-Clockwork-Version', Clockwork::VERSION);
 	}
 
 	public static function getSubscribedEvents()

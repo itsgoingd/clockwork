@@ -28,6 +28,8 @@ class ProfileTransformer
 
 	protected function transformCacheData(Profile $profile, Request $request)
 	{
+		if (! $profile->hasCollector('cache')) return;
+
 		$data = $profile->getCollector('cache');
 
 		$request->cacheQueries = $this->getCacheQueries($data);
@@ -62,6 +64,8 @@ class ProfileTransformer
 
 	protected function transformDoctrineData(Profile $profile, Request $request)
 	{
+		if (! $profile->hasCollector('db')) return;
+
 		$data = $profile->getCollector('db');
 
 		$request->databaseDuration = $data->getTime();
@@ -110,6 +114,8 @@ class ProfileTransformer
 
 	protected function transformEventsData(Profile $profile, Request $request)
 	{
+		if (! $profile->hasCollector('events')) return;
+
 		$data = $profile->getCollector('events');
 
 		$request->events = $this->getEvents($data);
@@ -138,6 +144,8 @@ class ProfileTransformer
 
 	protected function transformLoggerData(Profile $profile, Request $request)
 	{
+		if (! $profile->hasCollector('logger')) return;
+
 		$data = $profile->getCollector('logger');
 
 		$request->log = $this->getLog($data);
@@ -166,6 +174,8 @@ class ProfileTransformer
 
 	protected function transformRequestData(Profile $profile, Request $request)
 	{
+		if (! $profile->hasCollector('request')) return;
+
 		$data = $profile->getCollector('request');
 
 		$request->method         = $data->getMethod();
@@ -194,6 +204,8 @@ class ProfileTransformer
 
 	protected function transformTimeData(Profile $profile, Request $request)
 	{
+		if (! $profile->hasCollector('time')) return;
+
 		$data = $profile->getCollector('time');
 
 		$request->time         = $data->getStartTime() / 1000;
@@ -242,6 +254,8 @@ class ProfileTransformer
 
 	protected function transformTwigData(Profile $profile, Request $request)
 	{
+		if (! $profile->hasCollector('twig')) return;
+
 		$data = $profile->getCollector('twig');
 
 		$request->viewsData = $this->getViews($data);

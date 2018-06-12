@@ -39,4 +39,9 @@ class ClockworkSupport
 
 		return new JsonResponse($data);
 	}
+
+	public function isEnabled()
+	{
+		return $this->getConfig('enable', false);
+	}
 }

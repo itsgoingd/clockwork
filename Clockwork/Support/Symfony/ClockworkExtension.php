@@ -17,6 +17,6 @@ class ClockworkExtension extends ConfigurableExtension
 
 	public function getConfiguration(array $config, ContainerBuilder $container)
 	{
-		return new ClockworkConfiguration;
+		return new ClockworkConfiguration($container->getParameter('kernel.debug'));
 	}
 }
