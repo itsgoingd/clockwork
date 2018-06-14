@@ -19,6 +19,8 @@ class ClockworkConfiguration implements ConfigurationInterface
 				->booleanNode('enable')->defaultValue($this->debug)->end()
 				->booleanNode('web')->defaultValue(true)->end()
 				->booleanNode('web_dark_theme')->defaultValue(false)->end()
+				->booleanNode('authentication')->defaultValue(false)->end()
+				->scalarNode('authentication_password')->defaultValue('VerySecretPassword')->end()
 				->end()
 			->end();
 	}

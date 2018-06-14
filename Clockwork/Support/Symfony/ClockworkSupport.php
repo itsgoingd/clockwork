@@ -1,10 +1,13 @@
 <?php namespace Clockwork\Support\Symfony;
 
+use Clockwork\Authentication\NullAuthenticator;
+use Clockwork\Authentication\SimpleAuthenticator;
 use Clockwork\Web\Web;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ClockworkSupport
@@ -23,9 +26,16 @@ class ClockworkSupport
 		return isset($this->config[$key]) ? $this->config[$key] : $default;
 	}
 
-	public function getData($id = null, $direction = null, $count = null)
+	public function getData(Request $request, $id = null, $direction = null, $count = null)
 	{
+		$authenticator = $this->container->get('clockwork')->getAuthenticator();
 		$storage = $this->container->get('clockwork')->getStorage();
+
+		$authenticated = $authenticator->check($request->headers->get('X-Clockwork-Auth'));
+
+		if ($authenticated !== true) {
+			return new JsonResponse([ 'message' => $authenticated, 'requires' => $authenticator->requires() ], 403);
+		}
 
 		if ($direction == 'previous') {
 			$data = $storage->previous($id, $count);
@@ -52,6 +62,19 @@ class ClockworkSupport
 			return new BinaryFileResponse($asset['path'], 200, [ 'Content-Type' => $asset['mime'] ]);
 		} else {
 			throw new NotFoundHttpException;
+		}
+	}
+
+	public function getAuthenticator()
+	{
+		$authenticator = $this->getConfig('authentication');
+
+		if (is_string($authenticator)) {
+			return $this->container->get($authenticator);
+		} elseif ($authenticator) {
+			return new SimpleAuthenticator($this->getConfig('authentication_password'));
+		} else {
+			return new NullAuthenticator;
 		}
 	}
 
