@@ -1,0 +1,36 @@
+<?php namespace Clockwork\Support\Symfony;
+
+use Clockwork\Clockwork;
+use Clockwork\Storage\SymfonyStorage;
+
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
+class ClockworkFactory
+{
+	public function __construct(ContainerInterface $container)
+	{
+		$this->container = $container;
+	}
+
+	public function clockwork()
+	{
+		return (new Clockwork)
+			->setAuthenticator($this->container->get('clockwork.authenticator'))
+			->setStorage($this->container->get('clockwork.storage'));
+	}
+
+	public function clockworkAuthenticator()
+	{
+		return $this->container->get('clockwork.support')->getAuthenticator();
+	}
+
+	public function clockworkStorage()
+	{
+		return new SymfonyStorage($this->container->get('profiler'));
+	}
+
+	public function clockworkSupport($config)
+	{
+		return new ClockworkSupport($this->container, $config);
+	}
+}
