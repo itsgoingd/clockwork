@@ -89,7 +89,7 @@ class LaravelCacheDataSource extends DataSource
 	 */
 	public function registerQuery(array $query)
 	{
-		$trace = StackTrace::get();
+		$trace = StackTrace::get()->resolveViewName();
 		$caller = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
 
 		$this->queries[] = array_merge($query, [
