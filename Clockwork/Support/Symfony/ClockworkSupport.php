@@ -51,7 +51,7 @@ class ClockworkSupport
 			? array_map(function ($request) { return $request->toArray(); }, $data)
 			: $data->toArray();
 
-		return new JsonResponse($data);
+		return (new JsonResponse)->setData($data);
 	}
 
 	public function getWebAsset($path)

@@ -50,7 +50,7 @@ class ClockworkSupport
 			$data = $storage->find($id);
 		}
 
-		return new JsonResponse($data);
+		return (new JsonResponse)->setData($data);
 	}
 
 	public function getStorage()
