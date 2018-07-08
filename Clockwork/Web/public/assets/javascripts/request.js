@@ -20,6 +20,7 @@ class Request
 		this.performanceMetrics = this.processPerformanceMetrics(this.performanceMetrics)
 		this.timeline = this.processTimeline(this.timelineData)
 		this.views = this.processViews(this.viewsData)
+		this.userData = this.processUserData(this.userData)
 
 		this.errorsCount = this.getErrorsCount()
 		this.warningsCount = this.getWarningsCount()
@@ -105,8 +106,8 @@ class Request
 		if (! (data instanceof Array)) return []
 
 		return data.map(event => {
-			event.objectEvent = (event.event == event.data.__class__)
-			event.time = new Date(event.time * 1000)
+			event.objectEvent = (event.data instanceof Object && event.event == event.data.__class__)
+			event.time = event.time ? new Date(event.time * 1000) : undefined
 			event.fullPath = event.file && event.line ? event.file.replace(/^\//, '') + ':' + event.line : undefined
 			event.shortPath = event.fullPath ? event.fullPath.split(/[\/\\]/).pop() : undefined
 			event.trace = this.processStackTrace(event.trace)
@@ -191,8 +192,23 @@ class Request
 
 		return Object.values(data).map((entry, i) => {
 			entry.style = 'style' + (i % 4 + 1)
-			entry.left = (entry.start - this.time) * 1000 / this.responseDuration * 100
-			entry.width = entry.duration / this.responseDuration * 100
+			entry.startPercentual = (entry.start - this.time) * 1000 / this.responseDuration * 100
+			entry.durationPercentual = entry.duration / this.responseDuration * 100
+
+			entry.barLeft = `${entry.startPercentual}%`
+			entry.barWidth = entry.startPercentual + entry.durationPercentual < 100
+				? `${entry.durationPercentual}%` : `${100 - entry.startPercentual}%`
+
+			entry.labelAlign = 'left'
+			entry.labelLeft = entry.barLeft
+			entry.labelRight = 'auto'
+
+			if (entry.startPercentual > 50) {
+				entry.labelAlign = 'right'
+				entry.labelLeft = 'auto'
+				entry.labelRight = entry.durationPercentual < 1
+					? `calc(100% - ${entry.barLeft} - 8px)` : `calc(100% - ${entry.barLeft} - ${entry.barWidth})`
+			}
 
 			entry.durationRounded = Math.round(entry.duration)
 			if (entry.durationRounded === 0) entry.durationRounded = '< 1'
@@ -206,6 +222,73 @@ class Request
 
 		return Object.values(data).filter(view => view.data instanceof Object).map(view => view.data)
 	}
+
+	processUserData (tabs) {
+		if (! (tabs instanceof Object)) return []
+
+		let stripMeta = ([ key, section ]) => key != '__meta'
+		let labeledValues = (labels) => ([ key, value ]) => ({ key: labels[key] || key, value })
+
+		return Object.entries(tabs).filter(([ key, tab ]) => {
+			return (tab instanceof Object) || tab.__meta || tab.__meta.title
+		}).map(([ key, tab ]) => {
+			return {
+				key,
+				title: tab.__meta.title,
+				sections: Object.entries(tab).filter(stripMeta).map(([ key, section ]) => {
+					let labels = section.__meta.labels || {}
+					let data = section.__meta.showAs == 'counters'
+						? Object.entries(section).filter(stripMeta).map(labeledValues(labels))
+						: Object.entries(section).filter(stripMeta).map(([ key, value ]) => {
+							return Object.entries(value).map(labeledValues(labels))
+						})
+
+					return {
+						data,
+						showAs: section.__meta.showAs,
+						title: section.__meta.title
+					}
+				})
+			}
+		})
+	}
+
+	// processUserData (data) {
+	// 	if (! (data instanceof Object)) return []
+	//
+	// 	return Object.entries(data).map(([ key, data ]) => {
+	// 		if (! (data instanceof Object) || ! data.__meta || ! data.__meta.title) return
+	//
+	// 		return {
+	// 			key,
+	// 			data: Object.entries(data).map(([ key, item ]) => {
+	// 				if (key == '__meta' || ! (item instanceof Object)) return
+	//
+	// 				let labels = item.__meta.labels || {}
+	// 				let data
+	//
+	// 				if (item.__meta.showAs == 'counters') {
+	// 					data = Object.entries(item).filter(([ key, value ]) => key != '__meta').map(([ key, value ]) => {
+	// 						return [ labels[key] || key, value ]
+	// 					})
+	// 				} else {
+	// 					data = Object.entries(item).filter(([ key, value ]) => key != '__meta').map(([ key, value ]) => {
+	// 						return Object.entries(value).map(([ key, value ]) => {
+	// 							return [ labels[key] || key, value ]
+	// 						})
+	// 					})
+	// 				}
+	//
+	// 				return {
+	// 					data,
+	// 					showAs: item.__meta.showAs,
+	// 					title: item.__meta.title
+	// 				}
+	// 			}).filter(Boolean),
+	// 			title: data.__meta.title
+	// 		}
+	// 	}).filter(Boolean)
+	// }
 
 	processStackTrace (trace) {
 		if (! trace) return undefined

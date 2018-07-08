@@ -1,4 +1,4 @@
-let Clockwork = angular.module('Clockwork', [ 'chart.js' ])
+let Clockwork = angular.module('Clockwork', [ 'chart.js', 'ngclipboard' ])
 	.config([ '$compileProvider', ($compileProvider) => {
 		$compileProvider.debugInfoEnabled(false)
 		$compileProvider.commentDirectivesEnabled(false)

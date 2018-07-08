@@ -15,6 +15,8 @@
 		<script src="assets/vendor/javascripts/moment.min.js"></script>
 		<script src="assets/vendor/javascripts/Chart.min.js"></script>
 		<script src="assets/vendor/javascripts/angular-chart.min.js"></script>
+		<script src="assets/vendor/javascripts/clipboard.min.js"></script>
+		<script src="assets/vendor/javascripts/ngclipboard.min.js"></script>
 
 		<script src="assets/javascripts/app.js"></script>
 		<script src="assets/javascripts/directives/load-more-requests.js"></script>
@@ -126,6 +128,7 @@
 						<a tab-name="views" ng-show="request.views.length" class="details-header-tab" href="#">Views</a>
 						<a tab-name="emails" ng-show="request.emails.length" class="details-header-tab" href="#">Emails</a>
 						<a tab-name="routes" ng-show="request.routes.length" class="details-header-tab" href="#">Routes</a>
+						<a ng-repeat="userTab in request.userData" tab-name="user-{{ userTab.key }}" class="details-header-tab" href="#">{{ userTab.title }}</a>
 					</div>
 
 					<div class="icons">
@@ -161,6 +164,36 @@
 							<span class="parentRequest-close">
 								<a ng-click="showRequest(request.parent.id)" href="#">Show</a>
 							</span>
+						</div>
+
+						<div class="request-tab-info">
+							<div class="field">
+								<div class="field-title">Method</div>
+								<div class="field-value">
+									<div>{{request.method}}</div>
+								</div>
+							</div>
+							<div class="field action">
+								<div class="field-title">Action</div>
+								<div class="field-value">
+									<div>{{request.uri}}</div>
+									<div class="small">{{request.controller}}</div>
+								</div>
+							</div>
+							<div class="field link">
+								<div class="field-title">&nbsp;</div>
+								<div class="field-value">
+									<a href="#" ng-show="request.url" ngclipboard data-clipboard-text="{{request.url}}" title="Copy url">
+										<span class="fa fa-link"></span>
+									</a>
+								</div>
+							</div>
+							<div class="field">
+								<div class="field-title">Status</div>
+								<div class="field-value">
+									<div>{{request.responseStatus}}</div>
+								</div>
+							</div>
 						</div>
 
 						<table ng-show="request.headers.length">
@@ -592,27 +625,58 @@
 							</div>
 						</div>
 
-						<table class="timeline">
-							<thead>
-								<tr>
-									<th class="timeline-graph">
-										Timeline
-										<span ng-repeat="item in timelineLegend" class="timeline-bar-time" style="left:{{item.left}}px">{{item.time}} ms</span>
-									</th>
-									<th class="timeline-duration">Duration</th>
-									<th class="timeline-description">Description</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr ng-repeat="item in request.timeline">
-									<td class="timeline-graph">
-										<div class="timeline-bar {{item.style}}" style="width:{{item.width}}%;margin-left:{{item.left}}%;"></div>
-									</td>
-									<td class="timeline-duration">{{item.durationRounded}} ms</td>
-									<td class="timeline-description">{{item.description}}</td>
-								</tr>
-							</tbody>
-						</table>
+						<div class="timeline" ng-class="{ 'table-view': timelineView == 'table' }">
+							<div class="timeline-controls">
+								<span class="timeline-control-group">
+									<a href="#" class="toggle-filter" ng-click="timelineFilter.toggle($event)">
+										<span class="fa fa-search"></span>
+									</a>
+								</span>
+								<span class="timeline-control-group">
+									<a href="#" ng-click="setTimelineView('chart')" ng-class="{ 'active': timelineView == 'chart' }">
+										<span class="fa fa-bar-chart"></span>
+									</a>
+									<a href="#" ng-click="setTimelineView('table')" ng-class="{ 'active': timelineView == 'table' }">
+										<span class="fa fa-bars"></span>
+									</a>
+								</span>
+							</div>
+							<table class="timeline-table">
+								<thead>
+									<tr>
+										<th>Timeline</th>
+										<th class="timeline-duration">Duration</th>
+										<th class="timeline-description">Description</th>
+									</tr>
+									<tr class="filter" ng-show="timelineFilter.shown">
+										<td colspan="3">
+											<label>
+												<span class="fa fa-search"></span>
+												<input type="search" placeholder="Filter..." ng-model="timelineFilter.input">
+												<span class="example" ng-hide="timelineFilter.input">eg. database query duration:>50</span>
+											</div>
+										</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="item in request.timeline | filter:timelineFilter.filter()">
+										<td class="timeline-graph">
+											<div ng-if="$first" class="timeline-legend">
+												<span ng-repeat="item in timelineLegend" class="timeline-legend-time" style="left:{{item.left}}%">{{item.time}} ms</span>
+											</div>
+											<div class="timeline-bar {{item.style}}">
+												<div class="label" style="text-align:{{item.labelAlign}};margin-left:{{item.labelLeft}};margin-right:{{item.labelRight}};">
+													{{item.description}} ({{item.durationRounded}} ms)
+												</div>
+												<div class="bar" style="width:{{item.barWidth}};margin-left:{{item.barLeft}};"></div>
+											</div>
+										</td>
+										<td class="timeline-duration">{{item.durationRounded}} ms</td>
+										<td class="timeline-description">{{item.description}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</div>
 
 					<div tab-content="session">
@@ -779,6 +843,48 @@
 								</tr>
 							</tbody>
 						</table>
+					</div>
+
+					<div ng-repeat="userTab in request.userData" tab-content="user-{{userTab.key}}">
+						<div ng-repeat="(sectionIndex, section) in userTab.sections">
+							<div ng-if="section.showAs == 'counters'" class="counters-row">
+								<div ng-repeat="item in section.data" class="counter">
+									<div class="counter-value">{{item.value}}</div>
+									<div class="counter-title">{{item.key}}</div>
+								</div>
+							</div>
+
+							<h3 ng-if="section.title">
+								{{section.title}}
+							</h3>
+
+							<table ng-if="section.showAs == 'table'">
+								<thead>
+									<tr>
+										<th ng-repeat="item in section.data[0]" ng-click="userDataFilter[userTab.key][sectionIndex].sortBy(item.key)">
+											{{item.key}}
+											<span ng-show="userDataFilter[userTab.key][sectionIndex].sortedBy == item.key" ng-class="userDataFilter[userTab.key][sectionIndex].sortedDesc ? 'fa fa-angle-down' : 'fa fa-angle-up'"></span>
+											<a href="#" class="toggle-filter" ng-click="userDataFilter[userTab.key][sectionIndex].toggle($event)" ng-if="$last">
+												<span class="fa fa-search"></span>
+											</a>
+										</th>
+									</tr>
+									<tr class="filter" ng-show="userDataFilter[userTab.key][sectionIndex].shown">
+										<td colspan="2">
+											<label>
+												<span class="fa fa-search"></span>
+												<input type="search" placeholder="Filter..." ng-model="userDataFilter[userTab.key][sectionIndex].input">
+											</div>
+										</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="item in section.data | filter:userDataFilter[userTab.key][sectionIndex].filter() | orderBy:userDataFilter[userTab.key][sectionIndex].sortedBy:userDataFilter[userTab.key][sectionIndex].sortedDesc">
+										<td ng-repeat="item in item">{{item.value}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</div>
 
 				</div>

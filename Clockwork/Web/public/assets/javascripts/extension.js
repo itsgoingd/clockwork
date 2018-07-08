@@ -77,7 +77,7 @@ class Extension
 
 			this.requests.setRemote(message.request.url, options)
 
-			// this.$scope.$apply(() => this.$scope.refreshRequests())
+			this.$scope.$apply(() => this.$scope.refreshRequests())
 		})
 
 		// handle clearing of requests list if we are not preserving log

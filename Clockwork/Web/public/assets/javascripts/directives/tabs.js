@@ -3,16 +3,16 @@ Clockwork.directive('tabs', function ($parse) {
 		link: function (scope, element, attrs) {
 			let tabs = element[0]
 
-			tabs.querySelectorAll('[tab-name]').forEach(el => {
-				el.addEventListener('click', ev => {
-					let tabName = ev.currentTarget.getAttribute('tab-name')
+			tabs.addEventListener('click', ev => {
+				if (! ev.target.getAttribute('tab-name')) return
 
-					tabs.querySelectorAll('[tab-name]').forEach(el => el.classList.remove('active'))
-					ev.currentTarget.classList.add('active')
+				let tabName = ev.target.getAttribute('tab-name')
 
-					tabs.querySelectorAll('[tab-content]').forEach(el => el.style.display = 'none')
-					tabs.querySelector(`[tab-content="${tabName}"]`).style.display = 'block'
-				})
+				tabs.querySelectorAll('[tab-name]').forEach(el => el.classList.remove('active'))
+				ev.target.classList.add('active')
+
+				tabs.querySelectorAll('[tab-content]').forEach(el => el.style.display = 'none')
+				tabs.querySelector(`[tab-content="${tabName}"]`).style.display = 'block'
 			})
 
 			tabs.querySelector('[tab-name].active').click()

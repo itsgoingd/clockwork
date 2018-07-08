@@ -4,6 +4,7 @@ Clockwork.controller('PanelController', function ($scope, $q, $http, filter, req
 	$scope.request = null
 
 	$scope.timelineLegend = []
+	$scope.timelineView = 'chart'
 
 	$scope.loadingMoreRequests = false
 	$scope.preserveLog = true
@@ -100,6 +101,22 @@ Clockwork.controller('PanelController', function ($scope, $q, $http, filter, req
 			} },
 			{ tag: 'uri' }
 		])
+
+		$scope.timelineFilter = filter.create([
+			{ tag: 'duration', type: 'number' }
+		], item => item.description)
+	}
+
+	$scope.initUserDataFilters = function () {
+		$scope.userDataFilter = {}
+
+		$scope.request.userData.forEach(tab => {
+			$scope.userDataFilter[tab.key] = tab.sections.map(section => {
+				if (section.showAs != 'table') return
+
+				return filter.create(section.data[0].map(item => ({ tag: item.key })))
+			})
+		})
 	}
 
 	$scope.clear = function () {
@@ -135,6 +152,8 @@ Clockwork.controller('PanelController', function ($scope, $q, $http, filter, req
 		$scope.performanceMetricsChartOptions = $scope.getPerformanceMetricsChartOptions()
 		$scope.databaseQueriesStats = $scope.getDatabaseQueriesStats()
 		$scope.timelineLegend = $scope.generateTimelineLegend()
+
+		this.initUserDataFilters()
 
 		if ($scope.request && $scope.request.error && $scope.request.error.error == 'requires-authentication') {
 			$scope.authentication.request($scope.request.error.message, $scope.request.error.requires)
@@ -209,25 +228,29 @@ Clockwork.controller('PanelController', function ($scope, $q, $http, filter, req
 		return $scope.request && $scope.request.cacheQueries.some(query => query.duration)
 	}
 
+	$scope.setTimelineView = function (view) {
+		$scope.timelineView = view
+	}
+
 	$scope.generateTimelineLegend = function () {
-		if (! $scope.request) return []
+		if (! $scope.request || $scope.request.loading) return []
 
 		let items = []
 		let maxWidth = $scope.getTimelineWidth()
 		let labelCount = Math.floor(maxWidth / 80)
-		let step = $scope.request.responseDuration / (maxWidth - 20)
+		let step = $scope.request.responseDuration / maxWidth
 		let j
 
-		for (j = 2; j < labelCount + 1; j++) {
+		for (j = 1; j < labelCount + 1; j++) {
 			items.push({
-				left: (j * 80 - 40).toString(),
+				left: ((j * 80 - 44) / maxWidth * 100).toString(),
 				time: Math.round(j * 80 * step).toString()
 			})
 		}
 
 		if (maxWidth - ((j - 1) * 80) > 45) {
 			items.push({
-				left: (maxWidth - 35).toString(),
+				left: ((maxWidth - 38) / maxWidth * 100).toString(),
 				time: Math.round(maxWidth * step).toString()
 			});
 		}
@@ -240,11 +263,11 @@ Clockwork.controller('PanelController', function ($scope, $q, $http, filter, req
 
 		if (! timelineShown) document.querySelector('[tab-content="performance"]').style.display = 'block'
 
-		let width = document.querySelector('.timeline-graph').offsetWidth
+		let width = document.querySelector('.timeline-table').offsetWidth
 
 		if (! timelineShown) document.querySelector('[tab-content="performance"]').style.display = 'none'
 
-		return width
+		return width - 8
 	}
 
 	$scope.loadMoreRequests = function () {

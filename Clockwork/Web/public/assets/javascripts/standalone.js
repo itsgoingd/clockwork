@@ -57,6 +57,8 @@ class Standalone
 		this.requests.loadLatest().then(() => {
 			this.lastRequestId = this.requests.last().id
 
+			this.$scope.refreshRequests()
+
 			this.pollRequests()
 		}).catch(error => {
 			if (error.error == 'requires-authentication') {
@@ -71,13 +73,17 @@ class Standalone
 
 	pollRequests () {
 		this.requests.loadNext(null, this.lastRequestId).then(() => {
-			if (this.requests.last()) this.lastRequestId = this.requests.last().id
-
 			if (! this.$scope.preserveLog) {
 				this.requests.setItems(this.requests.all().slice(-1))
 			}
 
-			this.$scope.refreshRequests()
+			if (this.requests.last()) {
+				if (this.lastRequestId != this.requests.last().id) {
+					this.$scope.refreshRequests()
+				}
+
+				this.lastRequestId = this.requests.last().id
+			}
 
 			setTimeout(() => this.pollRequests(), 1000)
 		}).catch(() => {
