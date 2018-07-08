@@ -22,9 +22,9 @@ class SqlStorage extends Storage
 	// List of all fields in the Clockwork requests table
 	protected $fields = [
 		'id', 'version', 'time', 'method', 'url', 'uri', 'headers', 'controller', 'getData', 'postData', 'sessionData',
-		'cookies', 'responseTime', 'responseStatus', 'responseDuration', 'databaseQueries', 'databaseDuration',
-		'cacheQueries', 'cacheReads', 'cacheHits', 'cacheWrites', 'cacheDeletes', 'cacheTime', 'timelineData', 'log',
-		'events', 'routes', 'emailsData', 'viewsData', 'userData', 'subrequests'
+		'cookies', 'responseTime', 'responseStatus', 'responseDuration', 'memoryUsage', 'databaseQueries',
+		'databaseDuration', 'cacheQueries', 'cacheReads', 'cacheHits', 'cacheWrites', 'cacheDeletes', 'cacheTime',
+		'timelineData', 'log', 'events', 'routes', 'emailsData', 'viewsData', 'userData', 'subrequests'
 	];
 
 	// List of Request keys that need to be serialized before they can be stored in database
@@ -155,6 +155,7 @@ class SqlStorage extends Storage
 				$this->quote('responseTime') . ' DOUBLE PRECISION NULL, ' .
 				$this->quote('responseStatus') . ' INTEGER NULL, ' .
 				$this->quote('responseDuration') . ' DOUBLE PRECISION NULL, ' .
+				$this->quote('memoryUsage') . ' DOUBLE PRECISION NULL, ' .
 				$this->quote('databaseQueries') . " {$textType} NULL, " .
 				$this->quote('databaseDuration') . ' DOUBLE PRECISION NULL, ' .
 				$this->quote('cacheQueries') . " {$textType} NULL, " .

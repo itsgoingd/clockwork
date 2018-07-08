@@ -10,8 +10,8 @@ use Clockwork\Request\Request;
 class PhpDataSource extends DataSource
 {
 	/**
-	 * Add request time, method, URI, headers, get and post data, session data, cookies, response status and time to
-	 * the request
+	 * Add request time, method, URI, headers, get and post data, session data, cookies, response status, response time
+	 * and peak memory usage to the request
 	 */
 	public function resolve(Request $request)
 	{
@@ -26,6 +26,7 @@ class PhpDataSource extends DataSource
 		$request->cookies        = $this->getCookies();
 		$request->responseStatus = $this->getResponseStatus();
 		$request->responseTime   = $this->getResponseTime();
+		$request->memoryUsage    = $this->getMemoryUsage();
 
 		return $request;
 	}
@@ -155,5 +156,11 @@ class PhpDataSource extends DataSource
 		}
 
 		return $this->removePasswords(Serializer::simplify($_SESSION));
+	}
+
+	// Return peak memory usage in bytes
+	protected function getMemoryUsage()
+	{
+		return memory_get_peak_usage(true);
 	}
 }

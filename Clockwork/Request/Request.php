@@ -75,6 +75,9 @@ class Request
 	 */
 	public $responseStatus;
 
+	// Peak memory usage in bytes
+	public $memoryUsage;
+
 	/**
 	 * Database queries array
 	 */
@@ -201,6 +204,7 @@ class Request
 			'responseTime'     => $this->responseTime,
 			'responseStatus'   => $this->responseStatus,
 			'responseDuration' => $this->getResponseDuration(),
+			'memoryUsage'      => $this->memoryUsage,
 			'databaseQueries'  => $this->databaseQueries,
 			'databaseDuration' => $this->getDatabaseDuration(),
 			'cacheQueries'     => $this->cacheQueries,
