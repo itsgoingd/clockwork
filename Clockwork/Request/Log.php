@@ -29,14 +29,14 @@ class Log extends AbstractLogger
 		$caller = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'slim', 'monolog' ]);
 
 		$this->data[] = [
-			'message' => Serializer::simplify($message, 3, [ 'toString' => true ]),
-			'context' => Serializer::simplify($context),
+			'message' => (new Serializer([ 'toString' => true ]))->normalize($message),
+			'context' => (new Serializer)->normalize($context),
 			'level'   => $level,
 			'time'    => microtime(true),
 			'file'    => $caller->shortPath,
 			'line'    => $caller->line,
 			'trace'   => $this->collectStackTraces || ! empty($context['trace'])
-				? Serializer::trace($trace->framesBefore($caller)) : null
+				? (new Serializer)->trace($trace->framesBefore($caller)) : null
 		];
 	}
 

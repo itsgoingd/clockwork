@@ -163,7 +163,7 @@ class ProfileTransformer
 					array_values($replacements),
 					$log['message']
 				),
-				'context' => Serializer::simplify($log['context']),
+				'context' => (new Serializer)->normalize($log['context']),
 				'level'   => strtolower($log['priorityName']),
 				'time'    => $log['timestamp']
 			];
@@ -186,7 +186,7 @@ class ProfileTransformer
 		$request->getData        = $this->unwrap($data->getRequestQuery());
 		$request->postData       = $this->unwrap($data->getRequestRequest());
 		$request->cookies        = $this->unwrap($data->getRequestCookies());
-		$request->sessionData    = Serializer::simplify($this->unwrap($data->getSessionAttributes()));
+		$request->sessionData    = (new Serializer)->normalize($this->unwrap($data->getSessionAttributes()));
 	}
 
 	protected function getController($data)

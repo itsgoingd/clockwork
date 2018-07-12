@@ -2,36 +2,64 @@
 
 class Serializer
 {
-	// prepares the passed data for serialization with additional metadata up to specified levels of recursion
-	public static function simplify($data, $levels = 3, $options = [])
-	{
-		if ($data instanceof \Closure) {
-			return 'anonymous function';
-		} elseif (is_array($data)) {
-			if (! $levels) return $data;
+	protected $cache = [];
+	protected $options = [ 'toString' => false ];
 
-			return array_map(function ($item) use ($levels) {
-				return static::simplify($item, $levels - 1);
-			}, $data);
+	public function __construct(array $options = [])
+	{
+		$this->options += $options;
+	}
+
+	// prepares the passed data to be ready for serialization
+	public function normalize($data, $context = null, $limit = 500)
+	{
+		if (! $context) $context = [ 'references' => [] ];
+		if ($limit < 1) return $data;
+
+		if ($data instanceof \Closure) {
+			return [ '__type__' => 'anonymous function' ];
+		} elseif (is_array($data)) {
+			return array_merge(
+				[ '__type__' => 'array' ],
+				array_map(function ($item) use ($context, $limit) {
+					return $this->normalize($item, $context, $limit - 1);
+				}, $data)
+			);
 		} elseif (is_object($data)) {
-			if (isset($options['toString']) && $options['toString'] && method_exists($data, '__toString')) {
+			if ($this->options['toString'] && method_exists($data, '__toString')) {
 				return (string) $data;
 			}
 
-			if (! $levels) return $data;
+			$className = get_class($data);
+			$objectHash = spl_object_hash($data);
 
-			return array_merge(
-				[ '__class__' => get_class($data) ],
-				static::simplify((array) $data, $levels - 1)
-			);
+			if (isset($context['references'][$objectHash])) {
+				return [ '__type__' => 'recursion' ];
+			}
+
+			$context['references'][$objectHash] = true;
+
+			if (isset($this->cache[$objectHash])) {
+				return $this->cache[$objectHash];
+			}
+
+			$data = (array) $data;
+			$data = array_column(array_map(function ($key, $item) use ($className, $context, $limit) {
+				return [
+					str_replace([ "\0*\0", "\0{$className}\0" ], [ '*', '~' ], $key),
+					$this->normalize($item, $context, $limit - 1)
+				];
+			}, array_keys($data), $data), 1, 0);
+
+			return $this->cache[$objectHash] = array_merge([ '__class__' => $className ], $data);
 		} elseif (is_resource($data)) {
-			return 'resource';
+			return [ '__type__' => 'resource' ];
 		}
 
 		return $data;
 	}
 
-	public static function trace(StackTrace $trace)
+	public function trace(StackTrace $trace)
 	{
 		return array_map(function ($frame) {
 			return [

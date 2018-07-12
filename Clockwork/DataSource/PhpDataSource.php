@@ -36,7 +36,7 @@ class PhpDataSource extends DataSource
 	 */
 	protected function getCookies()
 	{
-		return $this->removePasswords(Serializer::simplify($_COOKIE));
+		return $this->removePasswords((new Serializer)->normalize($_COOKIE));
 	}
 
 	/**
@@ -44,7 +44,7 @@ class PhpDataSource extends DataSource
 	 */
 	protected function getGetData()
 	{
-		return $this->removePasswords(Serializer::simplify($_GET));
+		return $this->removePasswords((new Serializer)->normalize($_GET));
 	}
 
 	/**
@@ -52,7 +52,7 @@ class PhpDataSource extends DataSource
 	 */
 	protected function getPostData()
 	{
-		return $this->removePasswords(Serializer::simplify($_POST));
+		return $this->removePasswords((new Serializer)->normalize($_POST));
 	}
 
 	/**
@@ -155,7 +155,7 @@ class PhpDataSource extends DataSource
 			return [];
 		}
 
-		return $this->removePasswords(Serializer::simplify($_SESSION));
+		return $this->removePasswords((new Serializer)->normalize($_SESSION));
 	}
 
 	// Return peak memory usage in bytes
