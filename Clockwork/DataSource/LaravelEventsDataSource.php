@@ -59,12 +59,12 @@ class LaravelEventsDataSource extends DataSource
 
 		$this->events[] = [
 			'event'     => $event,
-			'data'      => Serializer::simplify(count($data) == 1 && isset($data[0]) ? $data[0] : $data),
+			'data'      => (new Serializer)->normalize(count($data) == 1 && isset($data[0]) ? $data[0] : $data),
 			'time'      => microtime(true),
 			'listeners' => $this->findListenersFor($event),
 			'file'      => $firedAt->shortPath,
 			'line'      => $firedAt->line,
-			'trace'     => $this->collectStackTraces ? Serializer::trace($trace->framesBefore($firedAt)) : null,
+			'trace'     => $this->collectStackTraces ? (new Serializer)->trace($trace->framesBefore($firedAt)) : null,
 		];
 	}
 

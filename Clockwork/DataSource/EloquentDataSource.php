@@ -77,7 +77,7 @@ class EloquentDataSource extends DataSource
 			'connection' => $event->connectionName,
 			'file'       => $caller->shortPath,
 			'line'       => $caller->line,
-			'trace'      => $this->collectStackTraces ? Serializer::trace($trace->framesBefore($caller)) : null,
+			'trace'      => $this->collectStackTraces ? (new Serializer)->trace($trace->framesBefore($caller)) : null,
 			'model'      => $this->nextQueryModel
 		];
 

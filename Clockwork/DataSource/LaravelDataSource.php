@@ -122,7 +122,7 @@ class LaravelDataSource extends DataSource
 				'Rendering a view',
 				$time,
 				$time,
-				[ 'name' => $view->getName(), 'data' => Serializer::simplify($view->getData()) ]
+				[ 'name' => $view->getName(), 'data' => (new Serializer)->normalize($view->getData()) ]
 			);
 		});
 	}
@@ -236,6 +236,6 @@ class LaravelDataSource extends DataSource
 	 */
 	protected function getSessionData()
 	{
-		return $this->removePasswords(Serializer::simplify($this->app['session']->all()));
+		return $this->removePasswords((new Serializer)->normalize($this->app['session']->all()));
 	}
 }
