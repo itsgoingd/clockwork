@@ -25,7 +25,7 @@ class Log extends AbstractLogger
 	 */
 	public function log($level = LogLevel::INFO, $message, array $context = [])
 	{
-		$trace = StackTrace::get();
+		$trace = StackTrace::get()->resolveViewName();
 		$caller = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'slim', 'monolog' ]);
 
 		$this->data[] = [

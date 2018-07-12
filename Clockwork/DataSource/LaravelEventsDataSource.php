@@ -54,7 +54,7 @@ class LaravelEventsDataSource extends DataSource
 	{
 		if (! $this->shouldCollect($event)) return;
 
-		$trace = StackTrace::get();
+		$trace = StackTrace::get()->resolveViewName();
 		$firedAt = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
 
 		$this->events[] = [

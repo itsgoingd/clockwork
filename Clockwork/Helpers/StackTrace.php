@@ -2,6 +2,8 @@
 
 class StackTrace
 {
+	use Concerns\ResolvesViewName;
+
 	protected $frames;
 
 	protected $basePath;
