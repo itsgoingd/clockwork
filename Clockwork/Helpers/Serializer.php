@@ -59,6 +59,11 @@ class Serializer
 		return $data;
 	}
 
+	// normalize each member of an array (doesn't add metadata for top level)
+	public function normalizeEach($data) {
+		return array_map(function ($item) { return $this->normalize($item); }, $data);
+	}
+
 	public function trace(StackTrace $trace)
 	{
 		return array_map(function ($frame) {

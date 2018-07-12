@@ -186,7 +186,7 @@ class ProfileTransformer
 		$request->getData        = $this->unwrap($data->getRequestQuery());
 		$request->postData       = $this->unwrap($data->getRequestRequest());
 		$request->cookies        = $this->unwrap($data->getRequestCookies());
-		$request->sessionData    = (new Serializer)->normalize($this->unwrap($data->getSessionAttributes()));
+		$request->sessionData    = (new Serializer)->normalizeEach($this->unwrap($data->getSessionAttributes()));
 	}
 
 	protected function getController($data)

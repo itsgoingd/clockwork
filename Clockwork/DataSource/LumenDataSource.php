@@ -214,7 +214,7 @@ class LumenDataSource extends DataSource
 			return [];
 		}
 
-		return $this->removePasswords((new Serializer)->normalize($this->app['session']->all()));
+		return $this->removePasswords((new Serializer)->normalizeEach($this->app['session']->all()));
 	}
 
 	protected function getMethod()

@@ -43,7 +43,7 @@ class PsrMessageDataSource extends DataSource
 	// Replace unserializable items in array, attempt to remove passwords
 	protected function sanitize($data)
 	{
-		return is_array($data) ? $this->removePasswords((new Serializer)->normalize($data)) : $data;
+		return is_array($data) ? $this->removePasswords((new Serializer)->normalizeEach($data)) : $data;
 	}
 
 	// Return response time in most precise form, fetching it from ServerParams
