@@ -35,7 +35,7 @@ class Controller extends LumenController
 
 	public function getExtendedData($id = null)
 	{
-		return $this->app['clockwork.support']->getExtendedData($id);
+		return $this->clockworkSupport->getExtendedData($id);
 	}
 
 	public function webIndex(Request $request)

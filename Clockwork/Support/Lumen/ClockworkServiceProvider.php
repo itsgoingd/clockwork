@@ -177,6 +177,7 @@ class ClockworkServiceProvider extends ServiceProvider
 	{
 		$router = isset($this->app->router) ? $this->app->router : $this->app;
 
+		$router->get('/__clockwork/{id:(?:[0-9-]+|latest)}/extended', 'Clockwork\Support\Lumen\Controller@getExtendedData');
 		$router->get('/__clockwork/{id:(?:[0-9-]+|latest)}[/{direction:(?:next|previous)}[/{count:\d+}]]', 'Clockwork\Support\Lumen\Controller@getData');
 		$router->post('/__clockwork/auth', 'Clockwork\Support\Lumen\Controller@authenticate');
 	}
