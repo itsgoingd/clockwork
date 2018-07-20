@@ -28,6 +28,11 @@ class ClockworkController extends Controller
 		return $this->app['clockwork.support']->getData($id, $direction, $count);
 	}
 
+	public function getExtendedData($id = null)
+	{
+		return $this->app['clockwork.support']->getExtendedData($id);
+	}
+
 	public function webIndex()
 	{
 		if ($this->app['clockwork.support']->isWebUsingDarkTheme() && ! $this->app['request']->has('dark')) {

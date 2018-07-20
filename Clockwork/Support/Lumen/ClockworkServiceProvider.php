@@ -8,6 +8,8 @@ use Clockwork\DataSource\LaravelEventsDataSource;
 use Clockwork\DataSource\LumenDataSource;
 use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\SwiftDataSource;
+use Clockwork\DataSource\XdebugDataSource;
+use Clockwork\Request\Log;
 use Clockwork\Support\Laravel\ClockworkCleanCommand;
 
 use Illuminate\Support\Facades\Facade;
@@ -99,6 +101,10 @@ class ClockworkServiceProvider extends ServiceProvider
 			);
 		});
 
+		$this->app->singleton('clockwork.xdebug', function ($app) {
+			return new XdebugDataSource;
+		});
+
 		$this->app->singleton('clockwork', function ($app) {
 			$clockwork = new Clockwork();
 			$support = $app['clockwork.support'];
@@ -123,6 +129,10 @@ class ClockworkServiceProvider extends ServiceProvider
 				$clockwork->addDataSource($app['clockwork.events']);
 			}
 
+			if (in_array('xdebug', get_loaded_extensions())) {
+				$clockwork->addDataSource($app['clockwork.xdebug']);
+			}
+
 			$clockwork->setAuthenticator($app['clockwork.authenticator']);
 			$clockwork->setLog($app['clockwork.log']);
 			$clockwork->setStorage($support->getStorage());
@@ -136,6 +146,9 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->alias('clockwork.lumen', LumenDataSource::class);
 		$this->app->alias('clockwork.swift', SwiftDataSource::class);
 		$this->app->alias('clockwork.eloquent', EloquentDataSource::class);
+		$this->app->alias('clockwork.cache', LaravelCacheDataSource::class);
+		$this->app->alias('clockwork.events', LaravelEventsDataSource::class);
+		$this->app->alias('clockwork.xdebug', XdebugDataSource::class);
 		$this->app->alias('clockwork', Clockwork::class);
 
 		$this->registerCommands();

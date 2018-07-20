@@ -24,13 +24,13 @@ class SqlStorage extends Storage
 		'id', 'version', 'time', 'method', 'url', 'uri', 'headers', 'controller', 'getData', 'postData', 'sessionData',
 		'cookies', 'responseTime', 'responseStatus', 'responseDuration', 'memoryUsage', 'databaseQueries',
 		'databaseDuration', 'cacheQueries', 'cacheReads', 'cacheHits', 'cacheWrites', 'cacheDeletes', 'cacheTime',
-		'timelineData', 'log', 'events', 'routes', 'emailsData', 'viewsData', 'userData', 'subrequests'
+		'timelineData', 'log', 'events', 'routes', 'emailsData', 'viewsData', 'userData', 'subrequests', 'xdebug'
 	];
 
 	// List of Request keys that need to be serialized before they can be stored in database
 	protected $needsSerialization = [
 		'headers', 'getData', 'postData', 'sessionData', 'cookies', 'databaseQueries', 'cacheQueries', 'timelineData',
-		'log', 'events', 'routes', 'emailsData', 'viewsData', 'userData', 'subrequests'
+		'log', 'events', 'routes', 'emailsData', 'viewsData', 'userData', 'subrequests', 'xdebug'
 	];
 
 	// Return a new storage, takes PDO object or DSN and optionally a table name and database credentials as arguments
@@ -171,7 +171,8 @@ class SqlStorage extends Storage
 				$this->quote('emailsData') . " {$textType} NULL, " .
 				$this->quote('viewsData') . " {$textType} NULL, " .
 				$this->quote('userData') . " {$textType} NULL, " .
-				$this->quote('subrequests') . " {$textType} NULL" .
+				$this->quote('subrequests') . " {$textType} NULL," .
+				$this->quote('xdebug') . " {$textType} NULL" .
 			');'
 		);
 

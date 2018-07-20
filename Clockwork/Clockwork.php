@@ -122,6 +122,16 @@ class Clockwork implements LoggerInterface
 		return $this;
 	}
 
+	// Extends the request with additional data form all data sources when being shown in the Clockwork app
+	public function extendRequest(Request $request = null)
+	{
+		foreach ($this->dataSources as $dataSource) {
+			$dataSource->extend($request ?: $this->request);
+		}
+
+		return $this;
+	}
+
 	/**
 	 * Store request via storage object
 	 */

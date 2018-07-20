@@ -2,12 +2,13 @@
 
 use Clockwork\Clockwork;
 use Clockwork\Authentication\AuthenticatorInterface;
-use Clockwork\DataSource\PhpDataSource;
+use Clockwork\DataSource\EloquentDataSource;
 use Clockwork\DataSource\LaravelDataSource;
 use Clockwork\DataSource\LaravelCacheDataSource;
 use Clockwork\DataSource\LaravelEventsDataSource;
-use Clockwork\DataSource\EloquentDataSource;
+use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\SwiftDataSource;
+use Clockwork\DataSource\XdebugDataSource;
 use Clockwork\Request\Log;
 
 use Illuminate\Support\ServiceProvider;
@@ -93,6 +94,10 @@ class ClockworkServiceProvider extends ServiceProvider
 				->collectStackTraces($support->getConfig('collect_stack_traces'));
 		});
 
+		$this->app->singleton('clockwork.xdebug', function ($app) {
+			return new XdebugDataSource;
+		});
+
 		$this->app->singleton('clockwork', function ($app) {
 			$clockwork = new Clockwork();
 			$support = $app['clockwork.support'];
@@ -114,6 +119,10 @@ class ClockworkServiceProvider extends ServiceProvider
 				$clockwork->addDataSource($app['clockwork.events']);
 			}
 
+			if (in_array('xdebug', get_loaded_extensions())) {
+				$clockwork->addDataSource($app['clockwork.xdebug']);
+			}
+
 			$clockwork->setAuthenticator($app['clockwork.authenticator']);
 			$clockwork->setLog($app['clockwork.log']);
 			$clockwork->setStorage($support->getStorage());
@@ -130,6 +139,9 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->alias('clockwork.laravel', LaravelDataSource::class);
 		$this->app->alias('clockwork.swift', SwiftDataSource::class);
 		$this->app->alias('clockwork.eloquent', EloquentDataSource::class);
+		$this->app->alias('clockwork.cache', LaravelCacheDataSource::class);
+		$this->app->alias('clockwork.events', LaravelEventsDataSource::class);
+		$this->app->alias('clockwork.xdebug', XdebugDataSource::class);
 		$this->app->alias('clockwork', Clockwork::class);
 
 		$this->registerCommands();
@@ -156,6 +168,8 @@ class ClockworkServiceProvider extends ServiceProvider
 
 	public function registerRoutes()
 	{
+		$this->app['router']->get('/__clockwork/{id}/extended', 'Clockwork\Support\Laravel\ClockworkController@getExtendedData')
+			->where('id', '([0-9-]+|latest)');
 		$this->app['router']->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Laravel\ClockworkController@getData')
 			->where('id', '([0-9-]+|latest)')->where('direction', '(next|previous)')->where('count', '\d+');
 	}
