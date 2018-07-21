@@ -11,4 +11,7 @@ interface DataSourceInterface
 	 * Adds data to the request and returns it
 	 */
 	public function resolve(Request $request);
+
+	// Extends the request with additional data when being shown in the Clockwork app
+	public function extend(Request $request);
 }

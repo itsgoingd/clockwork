@@ -27,7 +27,7 @@ class ClockworkSupport
 		return $this->app['config']->get("clockwork.{$key}", $default);
 	}
 
-	public function getData($id = null, $direction = null, $count = null)
+	public function getData($id = null, $direction = null, $count = null, $extended = false)
 	{
 		$this->app['session.store']->reflash();
 
@@ -50,7 +50,16 @@ class ClockworkSupport
 			$data = $storage->find($id);
 		}
 
-		return (new JsonResponse)->setData($data);
+		if ($extended) {
+			$this->app['clockwork']->extendRequest($data);
+		}
+
+		return new JsonResponse($data);
+	}
+
+	public function getExtendedData($id)
+	{
+		return $this->getData($id, null, null, true);
 	}
 
 	public function getStorage()

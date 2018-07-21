@@ -33,6 +33,11 @@ class Controller extends LumenController
 		return $this->clockworkSupport->getData($id, $direction, $count);
 	}
 
+	public function getExtendedData($id = null)
+	{
+		return $this->clockworkSupport->getExtendedData($id);
+	}
+
 	public function webIndex(Request $request)
 	{
 		if ($this->clockworkSupport->isWebUsingDarkTheme() && ! $request->has('dark')) {

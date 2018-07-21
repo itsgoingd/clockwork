@@ -18,6 +18,12 @@ class DataSource implements DataSourceInterface
 		return $request;
 	}
 
+	// Extends the request with additional data when being shown in the Clockwork app
+	public function extend(Request $request)
+	{
+		return $request;
+	}
+
 	// Enable or disable collecting of stack traces
 	public function collectStackTraces($enable = true)
 	{
