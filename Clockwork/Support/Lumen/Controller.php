@@ -21,6 +21,8 @@ class Controller extends LumenController
 
 	public function authenticate(Request $request)
 	{
+		if (! $this->clockworkSupport->isEnabled()) abort(404);
+
 		$token = $this->clockwork->getAuthenticator()->attempt(
 			$request->only([ 'username', 'password' ])
 		);
@@ -30,16 +32,22 @@ class Controller extends LumenController
 
 	public function getData($id = null, $direction = null, $count = null)
 	{
+		if (! $this->clockworkSupport->isEnabled()) abort(404);
+
 		return $this->clockworkSupport->getData($id, $direction, $count);
 	}
 
 	public function getExtendedData($id = null)
 	{
+		if (! $this->clockworkSupport->isEnabled()) abort(404);
+
 		return $this->clockworkSupport->getExtendedData($id);
 	}
 
 	public function webIndex(Request $request)
 	{
+		if (! $this->clockworkSupport->isEnabled()) abort(404);
+
 		if ($this->clockworkSupport->isWebUsingDarkTheme() && ! $request->has('dark')) {
 			return new RedirectResponse('/__clockwork/app?dark');
 		}
@@ -49,11 +57,15 @@ class Controller extends LumenController
 
 	public function webAsset($path)
 	{
+		if (! $this->clockworkSupport->isEnabled()) abort(404);
+
 		return $this->clockworkSupport->getWebAsset("assets/{$path}");
 	}
 
 	public function webRedirect()
 	{
+		if (! $this->clockworkSupport->isEnabled()) abort(404);
+
 		return new RedirectResponse('/__clockwork/app');
 	}
 }
