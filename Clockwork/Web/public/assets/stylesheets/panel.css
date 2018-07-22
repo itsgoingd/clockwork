@@ -377,6 +377,25 @@ a {
     border-left: 3px solid #ba94e6 !important; }
     body.dark .details-content .performance-chart-legend.style4 {
       border-left: 3px solid #a680d2 !important; }
+  .details-content .performance-tabs {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    padding: 8px 0 4px; }
+    .details-content .performance-tabs .performance-tab {
+      color: #404040;
+      cursor: default;
+      font-size: 12px;
+      line-height: 31px;
+      padding: 0 31px;
+      text-align: center;
+      text-decoration: none; }
+      .details-content .performance-tabs .performance-tab.active {
+        color: #258cdb; }
+        body.dark .details-content .performance-tabs .performance-tab.active {
+          color: #f27e02; }
+      body.dark .details-content .performance-tabs .performance-tab {
+        color: #9e9e9e; }
   .details-content .timeline {
     position: relative; }
     .details-content .timeline .timeline-duration, .details-content .timeline .timeline-description {
@@ -488,6 +507,68 @@ a {
   .details-content .timeline-duration {
     text-align: right;
     width: 100px; }
+  .details-content .profiler .profiler-controls {
+    position: absolute;
+    right: 0;
+    top: 4px; }
+    .details-content .profiler .profiler-controls .profiler-control-group {
+      margin: 0 5px; }
+    .details-content .profiler .profiler-controls .profiler-show-metric {
+      font-size: 105%; }
+      .details-content .profiler .profiler-controls .profiler-show-metric .fa-clock-o {
+        font-size: 110%; }
+    .details-content .profiler .profiler-controls .profiler-shown-fraction {
+      font-size: 85%; }
+    .details-content .profiler .profiler-controls .toggle-filter {
+      position: static;
+      visibility: visible; }
+    .details-content .profiler .profiler-controls a {
+      margin: 0 2px;
+      text-decoration: none; }
+      .details-content .profiler .profiler-controls a.active {
+        color: #258cdb; }
+        body.dark .details-content .profiler .profiler-controls a.active {
+          color: #f27e02; }
+      body.dark .details-content .profiler .profiler-controls a {
+        color: #9e9e9e; }
+  .details-content .profiler .profiler-metric {
+    white-space: nowrap; }
+  .details-content .profiler .profiler-function {
+    display: flex;
+    flex-wrap: wrap; }
+    .details-content .profiler .profiler-function .profiler-function-name {
+      flex: 1 1 auto;
+      word-break: break-all; }
+    .details-content .profiler .profiler-function .profiler-path {
+      color: #aaa;
+      flex: 0;
+      font-size: 90%;
+      margin-top: 3px; }
+  .details-content .profiler-loading, .details-content .profiler-not-available {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    padding: 40px 0;
+    text-align: center;
+    width: 100%; }
+    .details-content .profiler-loading .message, .details-content .profiler-not-available .message {
+      color: #aaa;
+      font-size: 75%;
+      margin: 10px 0 0 0; }
+  .details-content .profiler-not-available {
+    font-size: 15px;
+    line-height: 1.5; }
+    .details-content .profiler-not-available .message {
+      font-size: 90%;
+      margin: 15px 0 0; }
+    .details-content .profiler-not-available a {
+      color: #aaa;
+      cursor: pointer; }
+    .details-content .profiler-not-available .profiler-enable a {
+      color: #258cdb; }
+      body.dark .details-content .profiler-not-available .profiler-enable a {
+        color: #f27e02; }
   .details-content .log-row.error {
     background: #ffebeb;
     color: #c51f24; }
@@ -757,6 +838,11 @@ body.dark .pretty-jason-value-string {
 body.dark .pretty-jason-value-null,
 body.dark .pretty-jason-value-undefined {
   color: #7f7f7f; }
+
+body.dark .pretty-jason-value-boolean,
+body.dark .pretty-jason-value-anonymous-function,
+body.dark .pretty-jason-value-resource {
+  color: #8296ff; }
 
 body.dark .pretty-jason-icon-closed {
   border-color: transparent transparent transparent #919191; }

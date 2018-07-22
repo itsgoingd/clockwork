@@ -1,8 +1,9 @@
 class Extension
 {
-	constructor ($scope, $q, requests, updateNotification) {
+	constructor ($scope, $q, profiler, requests, updateNotification) {
 		this.$scope = $scope
 		this.$q = $q
+		this.profiler = profiler
 		this.requests = requests
 		this.updateNotification = updateNotification
 	}
@@ -31,18 +32,53 @@ class Extension
 	}
 
 	setMetadataUrl () {
-		this.api.devtools.inspectedWindow.eval('window.location.href', url => this.requests.setRemote(url))
+		this.resolveTabUrl().then(url => this.requests.setRemote(url))
 	}
 
 	setMetadataClient () {
 		this.requests.setClient((method, url, data, headers) => {
 			return this.$q((accept, reject) => {
-				this.api.runtime.sendMessage(
-					{ action: 'getJSON', method, url, data, headers }, (message) => {
-						message.error ? reject(message) : accept(message.data)
-					}
-				)
+				let isProfiling = this.profiler.isProfiling
+
+				let makeRequest = () => {
+					this.api.runtime.sendMessage(
+						{ action: 'getJSON', method, url, data, headers }, (message) => {
+							if (isProfiling) this.profiler.enableProfiling()
+
+							message.error ? reject(message) : accept(message.data)
+						}
+					)
+				}
+
+				isProfiling ? this.profiler.disableProfiling().then(makeRequest) : makeRequest()
 			})
+		})
+	}
+
+	setCookie (name, value, expiration) {
+		return this.resolveTabUrl().then(url => {
+			this.api.cookies.set({
+				url, name, value, path: '/', expirationDate: Math.floor(Date.now() / 1000) + expiration
+			})
+		})
+	}
+
+	getCookie (name) {
+		return this.resolveTabUrl().then(url => {
+			return new Promise((accept, reject) => {
+				this.api.cookies.get({ url, name }, cookie => {
+					accept(cookie ? cookie.value : undefined)
+				})
+			})
+		})
+	}
+
+	resolveTabUrl() {
+		return new Promise((accept, reject) => {
+			this.api.runtime.sendMessage(
+				{ action: 'getTabUrl', tabId: this.api.devtools.inspectedWindow.tabId },
+				url => accept(url)
+			)
 		})
 	}
 
@@ -64,14 +100,14 @@ class Extension
 			this.requests.setRemote(message.request.url, options)
 
 			let request = Request.placeholder(options.id, message.request)
-			this.requests.loadId(options.id, request).then(() => {
-				this.$scope.refreshRequests()
+			this.requests.loadId(options.id, request).then(request => {
+				this.$scope.refreshRequests(request)
 			})
 
 			options.subrequests.forEach(subrequest => {
 				this.requests.setRemote(subrequest.url, { path: subrequest.path })
-				this.requests.loadId(subrequest.id, Request.placeholder(subrequest.id, subrequest, request)).then(() => {
-					this.$scope.refreshRequests()
+				this.requests.loadId(subrequest.id, Request.placeholder(subrequest.id, subrequest, request)).then(request => {
+					this.$scope.refreshRequests(request)
 				})
 			})
 
@@ -105,8 +141,8 @@ class Extension
 				this.updateNotification.serverVersion = options.version
 
 				this.requests.setRemote(request.url, options)
-				this.requests.loadId(options.id, Request.placeholder(options.id, request)).then(() => {
-					this.$scope.refreshRequests()
+				this.requests.loadId(options.id, Request.placeholder(options.id, request)).then(request => {
+					this.$scope.refreshRequests(request)
 				})
 
 				this.$scope.refreshRequests()

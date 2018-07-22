@@ -5,6 +5,7 @@ class Request
 
 		this.responseDurationRounded = this.responseDuration ? Math.round(this.responseDuration) : 0
 		this.databaseDurationRounded = this.databaseDuration ? Math.round(this.databaseDuration) : 0
+		this.memoryUsageFormatted = this.memoryUsage ? this.formatBytes(this.memoryUsage) : undefined
 
 		this.processCacheStats()
 		this.cacheQueries = this.processCacheQueries(this.cacheQueries)
@@ -48,6 +49,11 @@ class Request
 
 	resolveWithError (error) {
 		Object.assign(this, { loading: false, error })
+		return this
+	}
+
+	extend (data, fields) {
+		fields.forEach(field => this[field] = data[field])
 		return this
 	}
 
@@ -156,7 +162,7 @@ class Request
 
 		return data.map(message => {
 			message.time = new Date(message.time * 1000)
-			message.context = message.context instanceof Object && Object.keys(message.context).length ? message.context : undefined
+			message.context = message.context instanceof Object && Object.keys(message.context).filter(key => key != '__type__').length ? message.context : undefined
 			message.fullPath = message.file && message.line ? message.file.replace(/^\//, '') + ':' + message.line : undefined
 			message.shortPath = message.fullPath ? message.fullPath.split(/[\/\\]/).pop() : undefined
 			message.trace = this.processStackTrace(message.trace)
@@ -327,5 +333,12 @@ class Request
 		if (seconds) time.push(seconds + 'sec')
 
 		return time.join(' ')
+	}
+
+	formatBytes (bytes) {
+		let units = [ 'B', 'kB', 'MB', 'GB', 'TB', 'PB' ]
+		let pow = Math.floor(Math.log(bytes) / Math.log(1024))
+
+		return `${Math.round(bytes / Math.round(Math.pow(1024, pow)))} ${units[pow]}`
 	}
 }

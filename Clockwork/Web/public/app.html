@@ -17,6 +17,7 @@
 		<script src="assets/vendor/javascripts/angular-chart.min.js"></script>
 		<script src="assets/vendor/javascripts/clipboard.min.js"></script>
 		<script src="assets/vendor/javascripts/ngclipboard.min.js"></script>
+		<script src="assets/vendor/javascripts/callgrind.js"></script>
 
 		<script src="assets/javascripts/app.js"></script>
 		<script src="assets/javascripts/directives/load-more-requests.js"></script>
@@ -29,6 +30,7 @@
 		<script src="assets/javascripts/extension.js"></script>
 		<script src="assets/javascripts/filter.js"></script>
 		<script src="assets/javascripts/panel.js"></script>
+		<script src="assets/javascripts/profiler.js"></script>
 		<script src="assets/javascripts/request.js"></script>
 		<script src="assets/javascripts/requests.js"></script>
 		<script src="assets/javascripts/standalone.js"></script>
@@ -105,7 +107,7 @@
 				</div>
 			</div>
 
-			<div class="split-view-pane split-view-details" tabs>
+			<div class="split-view-pane split-view-details" tabs="app">
 
 				<div class="details-header">
 					<div class="icons">
@@ -118,17 +120,17 @@
 					</div>
 
 					<div class="details-header-tabs">
-						<a tab-name="request" class="details-header-tab active" href="#">Request</a>
-						<a tab-name="performance" class="details-header-tab" href="#">Performance</a>
-						<a tab-name="log" ng-show="request.log.length" class="details-header-tab" href="#">Log</a>
-						<a tab-name="events" ng-show="request.events.length" class="details-header-tab" href="#">Events</a>
-						<a tab-name="db" ng-show="request.databaseQueries.length" class="details-header-tab" href="#">Database</a>
-						<a tab-name="cache" ng-show="showCacheTab()" class="details-header-tab" href="#">Cache</a>
-						<a tab-name="session" ng-show="request.sessionData.length" class="details-header-tab" href="#">Session</a>
-						<a tab-name="views" ng-show="request.views.length" class="details-header-tab" href="#">Views</a>
-						<a tab-name="emails" ng-show="request.emails.length" class="details-header-tab" href="#">Emails</a>
-						<a tab-name="routes" ng-show="request.routes.length" class="details-header-tab" href="#">Routes</a>
-						<a ng-repeat="userTab in request.userData" tab-name="user-{{ userTab.key }}" class="details-header-tab" href="#">{{ userTab.title }}</a>
+						<a tab-name="app.request" class="details-header-tab active" href="#">Request</a>
+						<a tab-name="app.performance" class="details-header-tab" href="#">Performance</a>
+						<a tab-name="app.log" ng-show="request.log.length" class="details-header-tab" href="#">Log</a>
+						<a tab-name="app.events" ng-show="request.events.length" class="details-header-tab" href="#">Events</a>
+						<a tab-name="app.db" ng-show="request.databaseQueries.length" class="details-header-tab" href="#">Database</a>
+						<a tab-name="app.cache" ng-show="showCacheTab()" class="details-header-tab" href="#">Cache</a>
+						<a tab-name="app.session" ng-show="request.sessionData.length" class="details-header-tab" href="#">Session</a>
+						<a tab-name="app.views" ng-show="request.views.length" class="details-header-tab" href="#">Views</a>
+						<a tab-name="app.emails" ng-show="request.emails.length" class="details-header-tab" href="#">Emails</a>
+						<a tab-name="app.routes" ng-show="request.routes.length" class="details-header-tab" href="#">Routes</a>
+						<a ng-repeat="userTab in request.userData" tab-name="app.user-{{ userTab.key }}" class="details-header-tab" href="#">{{ userTab.title }}</a>
 					</div>
 
 					<div class="icons">
@@ -146,7 +148,7 @@
 
 				<div class="details-content">
 
-					<div tab-content="request">
+					<div tab-content="app.request">
 						<div class="update-notification" ng-show="updateNotification">
 							<span>
 								A new Clockwork server-side version is available, {{updateNotification.version}}, you are using {{updateNotification.currentVersion}}.
@@ -309,7 +311,7 @@
 						</table>
 					</div>
 
-					<div tab-content="events">
+					<div tab-content="app.events">
 						<table>
 							<thead>
 								<tr>
@@ -378,7 +380,7 @@
 						</table>
 					</div>
 
-					<div tab-content="db">
+					<div tab-content="app.db">
 
 						<div class="counters-row">
 							<div class="counter">
@@ -462,7 +464,7 @@
 						</table>
 					</div>
 
-					<div tab-content="cache">
+					<div tab-content="app.cache">
 						<div class="counters-row">
 							<div class="counter" ng-show="request.cacheQueries.length">
 								<div class="counter-value">{{request.cacheQueries.length}}</div>
@@ -558,7 +560,7 @@
 						</table>
 					</div>
 
-					<div tab-content="log">
+					<div tab-content="app.log">
 						<table>
 							<thead>
 								<tr>
@@ -608,7 +610,7 @@
 						</table>
 					</div>
 
-					<div tab-content="performance">
+					<div tab-content="app.performance">
 						<div class="counters-row">
 							<div class="performance-chart-container">
 								<div class="performance-chart">
@@ -623,63 +625,202 @@
 								<div class="counter-value">{{request.responseDurationRounded}}&nbsp;ms</div>
 								<div class="counter-title">total</div>
 							</div>
+							<div class="counter" ng-show="request.memoryUsage">
+								<div class="counter-value">{{request.memoryUsageFormatted}}</div>
+								<div class="counter-title">memory</div>
+							</div>
 						</div>
 
-						<div class="timeline" ng-class="{ 'table-view': timelineView == 'table' }">
-							<div class="timeline-controls">
-								<span class="timeline-control-group">
-									<a href="#" class="toggle-filter" ng-click="timelineFilter.toggle($event)">
-										<span class="fa fa-search"></span>
-									</a>
-								</span>
-								<span class="timeline-control-group">
-									<a href="#" ng-click="setTimelineView('chart')" ng-class="{ 'active': timelineView == 'chart' }">
-										<span class="fa fa-bar-chart"></span>
-									</a>
-									<a href="#" ng-click="setTimelineView('table')" ng-class="{ 'active': timelineView == 'table' }">
-										<span class="fa fa-bars"></span>
-									</a>
-								</span>
+						<div tabs="performance">
+							<div class="performance-tabs">
+								<a tab-name="performance.timeline" class="performance-tab active" href="#" ng-click="profilerIsOpen = false">Timeline</a>
+								<a tab-name="performance.profiler" class="performance-tab" href="#" ng-click="profiler.loadRequest(request); profilerIsOpen = true">Profiler</a>
 							</div>
-							<table class="timeline-table">
-								<thead>
-									<tr>
-										<th>Timeline</th>
-										<th class="timeline-duration">Duration</th>
-										<th class="timeline-description">Description</th>
-									</tr>
-									<tr class="filter" ng-show="timelineFilter.shown">
-										<td colspan="3">
-											<label>
+
+							<div tab-content="performance.timeline">
+								<div class="timeline" ng-class="{ 'table-view': timelineView == 'table' }">
+									<div class="timeline-controls">
+										<span class="timeline-control-group">
+											<a href="#" class="toggle-filter" ng-click="timelineFilter.toggle($event)">
 												<span class="fa fa-search"></span>
-												<input type="search" placeholder="Filter..." ng-model="timelineFilter.input">
-												<span class="example" ng-hide="timelineFilter.input">eg. database query duration:>50</span>
-											</div>
-										</td>
-									</tr>
-								</thead>
-								<tbody>
-									<tr ng-repeat="item in request.timeline | filter:timelineFilter.filter()">
-										<td class="timeline-graph">
-											<div ng-if="$first" class="timeline-legend">
-												<span ng-repeat="item in timelineLegend" class="timeline-legend-time" style="left:{{item.left}}%">{{item.time}} ms</span>
-											</div>
-											<div class="timeline-bar {{item.style}}">
-												<div class="label" style="text-align:{{item.labelAlign}};margin-left:{{item.labelLeft}};margin-right:{{item.labelRight}};">
-													{{item.description}} ({{item.durationRounded}} ms)
+											</a>
+										</span>
+										<span class="timeline-control-group">
+											<a href="#" ng-click="setTimelineView('chart')" ng-class="{ 'active': timelineView == 'chart' }" title="Timeline view">
+												<span class="fa fa-bar-chart"></span>
+											</a>
+											<a href="#" ng-click="setTimelineView('table')" ng-class="{ 'active': timelineView == 'table' }" title="Table view">
+												<span class="fa fa-bars"></span>
+											</a>
+										</span>
+									</div>
+									<table class="timeline-table">
+										<thead>
+											<tr>
+												<th>Timeline</th>
+												<th class="timeline-duration">Duration</th>
+												<th class="timeline-description">Description</th>
+											</tr>
+											<tr class="filter" ng-show="timelineFilter.shown">
+												<td colspan="3">
+													<label>
+														<span class="fa fa-search"></span>
+														<input type="search" placeholder="Filter..." ng-model="timelineFilter.input">
+														<span class="example" ng-hide="timelineFilter.input">eg. database query duration:>50</span>
+													</div>
+												</td>
+											</tr>
+										</thead>
+										<tbody>
+											<tr ng-repeat="item in request.timeline | filter:timelineFilter.filter()">
+												<td class="timeline-graph">
+													<div ng-if="$first" class="timeline-legend">
+														<span ng-repeat="item in timelineLegend" class="timeline-legend-time" style="left:{{item.left}}%">{{item.time}} ms</span>
+													</div>
+													<div class="timeline-bar {{item.style}}">
+														<div class="label" style="text-align:{{item.labelAlign}};margin-left:{{item.labelLeft}};margin-right:{{item.labelRight}};">
+															{{item.description}} ({{item.durationRounded}} ms)
+														</div>
+														<div class="bar" style="width:{{item.barWidth}};margin-left:{{item.barLeft}};"></div>
+													</div>
+												</td>
+												<td class="timeline-duration">{{item.durationRounded}} ms</td>
+												<td class="timeline-description">{{item.description}}</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+
+							<div tab-content="performance.profiler">
+
+								<table class="profiler" ng-if="profiler.ready">
+									<thead>
+										<tr>
+											<th ng-click="xdebugFilter.sortBy('self[' + profiler.metric + ']')">
+												Self
+												<span ng-show="xdebugFilter.sortedBy == 'self[' + profiler.metric + ']'" ng-class="xdebugFilter.sortedDesc ? 'fa fa-angle-down' : 'fa fa-angle-up'"></span>
+											</th>
+											<th ng-click="xdebugFilter.sortBy('inclusive[' + profiler.metric + ']')">
+												Inclusive
+												<span ng-show="xdebugFilter.sortedBy == 'inclusive[' + profiler.metric + ']'" ng-class="xdebugFilter.sortedDesc ? 'fa fa-angle-down' : 'fa fa-angle-up'"></span>
+											</th>
+											<th ng-click="xdebugFilter.sortBy('function')">
+												Function
+												<span ng-show="xdebugFilter.sortedBy == 'function'" ng-class="xdebugFilter.sortedDesc ? 'fa fa-angle-down' : 'fa fa-angle-up'"></span>
+												<div class="profiler-controls">
+													<span class="profiler-control-group">
+														<a href="#" class="toggle-filter" ng-click="xdebugFilter.toggle($event)">
+															<span class="fa fa-search"></span>
+														</a>
+													</span>
+													<span class="profiler-control-group profiler-show-metric">
+														<a href="#" ng-click="profiler.showMetric($event, 0)" ng-class="{ 'active': profiler.metric == 0 }" title="Execution time">
+															<span class="fa fa-clock-o"></span>
+														</a>
+														<a href="#" ng-click="profiler.showMetric($event, 1)" ng-class="{ 'active': profiler.metric == 1 }" title="Memory usage">
+															<span class="fa fa-microchip"></span>
+														</a>
+													</span>
+													<span class="profiler-control-group">
+														<a href="#" ng-click="profiler.showPercentual($event, false)" ng-class="{ 'active': ! profiler.percentual }" title="Exact">
+															<span ng-if="profiler.metric == 0">ms</span>
+															<span ng-if="profiler.metric == 1">kB</span>
+														</a>
+														<a href="#" ng-click="profiler.showPercentual($event)" ng-class="{ 'active': profiler.percentual }" title="Percentual">
+															<span class="fa fa-percent"></span>
+														</a>
+													</span>
+													<span class="profiler-control-group profiler-shown-fraction">
+														<a href="#" ng-click="profiler.setShownFraction($event, 1)" ng-class="{ 'active': profiler.shownFraction == 1 }">
+															100%
+														</a>
+														<a href="#" ng-click="profiler.setShownFraction($event, 0.9)" ng-class="{ 'active': profiler.shownFraction == 0.9 }">
+															90%
+														</a>
+														<a href="#" ng-click="profiler.setShownFraction($event, 0.5)" ng-class="{ 'active': profiler.shownFraction == 0.5 }">
+															50%
+														</a>
+													</span>
+													<span class="profiler-control-group">
+														<a href="#" ng-click="profiler.disableProfiling($event)" title="Disable profiler">
+															<span class="fa fa-times-circle"></span>
+														</a>
+													</span>
 												</div>
-												<div class="bar" style="width:{{item.barWidth}};margin-left:{{item.barLeft}};"></div>
-											</div>
-										</td>
-										<td class="timeline-duration">{{item.durationRounded}} ms</td>
-										<td class="timeline-description">{{item.description}}</td>
-									</tr>
-								</tbody>
-							</table>
+											</th>
+										</tr>
+										<tr class="filter" ng-show="xdebugFilter.shown">
+											<td colspan="3">
+												<label>
+													<span class="fa fa-search"></span>
+													<input type="search" placeholder="Filter..." ng-model="xdebugFilter.input">
+													<span class="example" ng-hide="xdebugFilter.input">eg. "preg_match" self:>500</span>
+												</div>
+											</td>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="item in profiler.functions | filter:xdebugFilter.filter() | orderBy:xdebugFilter.sortedBy:xdebugFilter.sortedDesc">
+											<td class="profiler-metric">{{item.self | profilerMetric}}</td>
+											<td class="profiler-metric">{{item.inclusive | profilerMetric}}</td>
+											<td class="profiler-function">
+												<div class="profiler-function-name">
+													{{item.name}}
+												</div>
+												<div class="profiler-path">
+													<div shortened-text="{{item.fullPath}}">{{item.shortPath}}</div>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+
+								<div class="profiler-loading" ng-show="profiler.loading || profiler.parsing">
+									<div class="sk-fading-circle">
+										<div class="sk-circle1 sk-circle"></div>
+										<div class="sk-circle2 sk-circle"></div>
+										<div class="sk-circle3 sk-circle"></div>
+										<div class="sk-circle4 sk-circle"></div>
+										<div class="sk-circle5 sk-circle"></div>
+										<div class="sk-circle6 sk-circle"></div>
+										<div class="sk-circle7 sk-circle"></div>
+										<div class="sk-circle8 sk-circle"></div>
+										<div class="sk-circle9 sk-circle"></div>
+										<div class="sk-circle10 sk-circle"></div>
+										<div class="sk-circle11 sk-circle"></div>
+										<div class="sk-circle12 sk-circle"></div>
+									</div>
+									<p class="message" ng-show="profiler.loading">
+										Loading profile...
+									</p>
+									<p class="message" ng-show="profiler.parsing">
+										Processing profile...
+									</p>
+								</div>
+
+								<div class="profiler-not-available" ng-show="! profiler.available">
+									<p>
+										Profile is not present for current request.
+									</p>
+									<p class="message">
+										Profiling requires the Xdebug php extension.<br>
+										<a href="#">Read more about how to set up Xdebug</a>
+									</p>
+									<p class="message profiler-enable">
+										<a href="#" ng-click="profiler.enableProfiling()" ng-show="! profiler.isProfiling">
+											Enable profiler
+										</a>
+										<a href="#" ng-click="profiler.disableProfiling()" ng-show="profiler.isProfiling">
+											Disable profiler
+										</a>
+									</p>
+								</div>
+							</div>
 						</div>
 					</div>
 
-					<div tab-content="session">
+					<div tab-content="app.session">
 						<table>
 							<thead>
 								<tr>
@@ -709,7 +850,7 @@
 						</table>
 					</div>
 
-					<div tab-content="views">
+					<div tab-content="app.views">
 						<table>
 							<thead>
 								<tr>
@@ -744,7 +885,7 @@
 						</table>
 					</div>
 
-					<div tab-content="emails">
+					<div tab-content="app.emails">
 						<table>
 							<thead>
 								<tr>
@@ -785,7 +926,7 @@
 						</table>
 					</div>
 
-					<div tab-content="routes">
+					<div tab-content="app.routes">
 						<table>
 							<thead>
 								<tr>

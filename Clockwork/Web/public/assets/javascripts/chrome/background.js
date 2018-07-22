@@ -41,6 +41,8 @@ api.runtime.onMessage.addListener((message, sender, callback) => {
 		Object.keys(message.data).forEach(key => formData.append(key, message.data[key]))
 
 		xhr.send(formData)
+	} else if (message.action == 'getTabUrl') {
+		api.tabs.get(message.tabId, tab => callback(tab.url))
 	} else if (message.action == 'getLastClockworkRequestInTab') {
 		callback(lastClockworkRequestPerTab[message.tabId])
 	}

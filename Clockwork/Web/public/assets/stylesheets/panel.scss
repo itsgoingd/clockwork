@@ -630,6 +630,35 @@ a {
 		}
 	}
 
+	.performance-tabs {
+		display: flex;
+		flex: 1;
+		justify-content: center;
+		padding: 8px 0 4px;
+
+		.performance-tab {
+			color: rgb(64, 64, 64);
+			cursor: default;
+			font-size: 12px;
+			line-height: 31px;
+			padding: 0 31px;
+			text-align: center;
+			text-decoration: none;
+
+			&.active {
+				color: rgb(37, 140, 219);
+
+				body.dark & {
+					color: hsl(31, 98%, 48%);
+				}
+			}
+
+			body.dark & {
+				color: rgb(158, 158, 158);
+			}
+		}
+	}
+
 	.timeline {
 		position: relative;
 
@@ -833,6 +862,114 @@ a {
 	.timeline-duration {
 		text-align: right;
 		width: 100px;
+	}
+
+	.profiler {
+		.profiler-controls {
+			position: absolute;
+			right: 0;
+			top: 4px;
+
+			.profiler-control-group {
+				margin: 0 5px;
+			}
+
+			.profiler-show-metric {
+				font-size: 105%;
+
+				.fa-clock-o {
+					font-size: 110%;
+				}
+			}
+
+			.profiler-shown-fraction {
+				font-size: 85%;
+			}
+
+			.toggle-filter {
+				position: static;
+				visibility: visible;
+			}
+
+			a {
+				margin: 0 2px;
+				text-decoration: none;
+
+				&.active {
+					color: rgb(37, 140, 219);
+
+					body.dark & {
+						color: hsl(31, 98%, 48%);
+					}
+				}
+
+				body.dark & {
+					color: rgb(158, 158, 158);
+				}
+			}
+		}
+
+		.profiler-metric {
+			white-space: nowrap;
+		}
+
+		.profiler-function {
+			display: flex;
+		    flex-wrap: wrap;
+
+			.profiler-function-name {
+				flex: 1 1 auto;
+				word-break: break-all;
+			}
+
+			.profiler-path {
+				color: #aaa;
+			    flex: 0;
+			    font-size: 90%;
+			    margin-top: 3px;
+			}
+		}
+	}
+
+	.profiler-loading, .profiler-not-available {
+		align-items: center;
+		display: flex;
+		flex-direction: column;
+		font-size: 16px;
+		padding: 40px 0;
+		text-align: center;
+		width: 100%;
+
+		.message {
+			color: #aaa;
+			font-size: 75%;
+			margin: 10px 0 0 0;
+		}
+	}
+
+	.profiler-not-available {
+		font-size: 15px;
+		line-height: 1.5;
+
+		.message {
+			font-size: 90%;
+			margin: 15px 0 0;
+		}
+
+		a {
+			color: #aaa;
+			cursor: pointer;
+		}
+
+		.profiler-enable {
+			a {
+				color: rgb(37, 140, 219);
+
+				body.dark & {
+					color: hsl(31, 98%, 48%);
+				}
+			}
+		}
 	}
 
 	// Log tab
@@ -1266,6 +1403,12 @@ body.dark {
 	.pretty-jason-value-null,
 	.pretty-jason-value-undefined {
 		color: rgb(127, 127, 127);
+	}
+
+	.pretty-jason-value-boolean,
+	.pretty-jason-value-anonymous-function,
+	.pretty-jason-value-resource {
+		color: rgb(130, 150, 255);
 	}
 
 	.pretty-jason-icon-closed {

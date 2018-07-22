@@ -1,4 +1,4 @@
-Clockwork.controller('PanelController', function ($scope, $q, $http, filter, requests, updateNotification)
+Clockwork.controller('PanelController', function ($scope, $q, $http, filter, profiler, requests, updateNotification)
 {
 	$scope.requests = []
 	$scope.request = null
@@ -17,16 +17,18 @@ Clockwork.controller('PanelController', function ($scope, $q, $http, filter, req
 		key('⌘+k, ctrl+l', () => $scope.$apply(() => $scope.clear()))
 
 		if (Extension.runningAsExtension()) {
-			$scope.$integration = new Extension($scope, $q, requests, updateNotification)
+			$scope.$integration = new Extension($scope, $q, profiler, requests, updateNotification)
 		} else {
-			$scope.$integration = new Standalone($scope, $http, requests)
+			$scope.$integration = new Standalone($scope, $http, profiler, requests)
 		}
 
 		$scope.$integration.init()
 
 		this.initFilters()
+		this.fixRequestsScrollbar()
 
 		this.authentication = new Authentication($scope, $q, requests)
+		this.profiler = profiler.setScope($scope)
 	}
 
 	$scope.initFilters = function () {
@@ -105,6 +107,15 @@ Clockwork.controller('PanelController', function ($scope, $q, $http, filter, req
 		$scope.timelineFilter = filter.create([
 			{ tag: 'duration', type: 'number' }
 		], item => item.description)
+
+		$scope.xdebugFilter = filter.create([
+			{ tag: 'model' },
+			{ tag: 'file', map: item => item.shortPath },
+			{ tag: 'self', type: 'number' },
+			{ tag: 'inclusive', type: 'number' }
+		], item => item.name)
+		$scope.xdebugFilter.sortedBy = 'self[0]'
+		$scope.xdebugFilter.sortedDesc = true
 	}
 
 	$scope.initUserDataFilters = function () {
@@ -132,17 +143,30 @@ Clockwork.controller('PanelController', function ($scope, $q, $http, filter, req
 		$scope.expandedEvents = []
 	}
 
-	$scope.refreshRequests = function (activeRequest) {
+	// refresh the requests list and decide if we want to set new active request, if this function is called because a
+	// new request was loaded or updated it will be passed as an argument
+	$scope.refreshRequests = function (incomingRequest) {
 		$scope.requests = requests.all()
 
+		// currently selected request was updated, "show" it again so all data is correctly updated
+		if (incomingRequest && $scope.request && $scope.request.id == incomingRequest.id) {
+			$scope.showRequest(incomingRequest.id)
+		}
+
+		// preserve log is disabled, show first request after each refresh
 		if (! $scope.preserveLog) {
 			$scope.showRequest($scope.requests[0].id)
-		} else if ($scope.showIncomingRequests && $scope.requests.length) {
-			$scope.showRequest(activeRequest ? activeRequest.id : $scope.requests[$scope.requests.length - 1].id)
+		}
+
+		// if we are showing incoming requests, show the last aviailable request if not already shown
+		let lastRequest = $scope.requests[$scope.requests.length - 1]
+		if ($scope.showIncomingRequests && lastRequest && (! $scope.request || lastRequest.id != $scope.request.id)) {
+			$scope.showRequest(lastRequest.id)
 			$scope.showIncomingRequests = true
 		}
 	}
 
+	// show details of a request specified by id, alo prepares bunch of stuff like performance chart or timeline legend
 	$scope.showRequest = function (id) {
 		$scope.request = requests.findId(id)
 
@@ -157,6 +181,10 @@ Clockwork.controller('PanelController', function ($scope, $q, $http, filter, req
 
 		if ($scope.request && $scope.request.error && $scope.request.error.error == 'requires-authentication') {
 			$scope.authentication.request($scope.request.error.message, $scope.request.error.requires)
+		}
+
+		if ($scope.profilerIsOpen) {
+			$scope.profiler.loadRequest($scope.request)
 		}
 
 		$scope.showIncomingRequests = (id == $scope.requests[$scope.requests.length - 1].id)
@@ -259,15 +287,7 @@ Clockwork.controller('PanelController', function ($scope, $q, $http, filter, req
 	}
 
 	$scope.getTimelineWidth = function () {
-		let timelineShown = document.querySelector('[tab-content="performance"]').style.display !== 'none'
-
-		if (! timelineShown) document.querySelector('[tab-content="performance"]').style.display = 'block'
-
-		let width = document.querySelector('.timeline-table').offsetWidth
-
-		if (! timelineShown) document.querySelector('[tab-content="performance"]').style.display = 'none'
-
-		return width - 8
+		return document.querySelector('.details-content').offsetWidth - 28
 	}
 
 	$scope.loadMoreRequests = function () {
@@ -303,6 +323,14 @@ Clockwork.controller('PanelController', function ($scope, $q, $http, filter, req
 		$scope.updateNotification = null
 
 		updateNotification.ignoreUpdate(requests.remoteUrl)
+	}
+
+	$scope.fixRequestsScrollbar = function () {
+		let requiredPadding = document.querySelector('.requests-container').offsetWidth
+			- document.querySelector('#requests').offsetWidth
+
+		document.querySelector('.requests-header .duration').style.paddingRight = `${requiredPadding + 4}px`
+		document.querySelector('.requests-header .duration').style.width = `${80 + requiredPadding}px`
 	}
 
 	angular.element(window).bind('resize', () => {

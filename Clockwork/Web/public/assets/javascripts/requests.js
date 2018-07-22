@@ -34,13 +34,22 @@ class Requests
 		return this.callRemote(this.remoteUrl + id).then(data => {
 			return placeholder.resolve(data[0])
 		}).catch(message => {
-			placeholder.resolveWithError(message)
+			return placeholder.resolveWithError(message)
 		})
+	}
+
+	loadExtended (id, fields) {
+		let request = this.findId(id)
+
+		return this.callRemote(this.remoteUrl + id + '/extended').then(data => {
+			return request.extend(data[0], fields)
+		}).catch(error => {})
 	}
 
 	loadLatest () {
 		return this.callRemote(this.remoteUrl + 'latest').then(data => {
-			this.items.push(...data)
+			this.items.push(data[0])
+			return data[0]
 		})
 	}
 
@@ -110,6 +119,7 @@ class Requests
 		let headers = Object.assign({}, this.remoteHeaders, { 'X-Clockwork-Auth': this.tokens[this.remoteUrl] })
 
 		return this.client('GET', url, {}, headers).then(data => {
+			if (! data) return []
 			return ((data instanceof Array) ? data : [ data ]).map(data => new Request(data))
 		})
 	}

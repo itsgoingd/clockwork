@@ -25,6 +25,8 @@ class PrettyJason
 	}
 
 	generateHtml () {
+		let [ value, valueType ] = this.resolveValueAndType(this.data)
+
 		return this.createElement('ul', { class: 'pretty-jason' }, [
 			this.createElement('li', {}, [
 				this.createElement('span', {
@@ -32,7 +34,7 @@ class PrettyJason
 					click: ev => this.objectNodeClickedCallback(ev.currentTarget)
 				}, [
 					this.createElement('span', { class: 'pretty-jason-icon', html: '<i class="pretty-jason-icon-closed"></i>' }),
-					this.createElement('span', { text: this.data.__class__ || 'Object ' })
+					this.createElement('span', { text: `${value} ` })
 				]),
 				this.generateHtmlPreview(this.data),
 				this.generateHtmlNode(this.data)
@@ -42,33 +44,19 @@ class PrettyJason
 
 	generateHtmlNode (data) {
 		return this.createElement('ul', { style: { display: 'none' } }, Object.keys(data)
-			.filter(key => key != '__class__')
+			.filter(key => ! [ '__class__', '__type__', '__hash__' ].includes(key))
 			.map(key => {
-				let value = data[key]
-				let valueType = this.getValueType(value)
+				let [ value, valueType ] = this.resolveValueAndType(data[key])
 
-				if (valueType == 'object') {
-					return this.createElement('li', { data: { key } }, [
-						this.createElement('span', {
-							click: ev => this.objectNodeClickedCallback(ev.currentTarget)
-						}, [
-							this.createElement('span', { class: 'pretty-jason-icon', html: '<i class="pretty-jason-icon-closed"></i>' }),
-							this.createElement('span', { class: 'pretty-jason-key', text: `${key}: ` }),
-							this.createElement('span', {
-								class: 'pretty-jason-value',
-								text: value.__class__ || 'Object'
-							})
-						])
-					])
-				}
-
-				return this.createElement('li', { key }, [
-					this.createElement('span', {}, [
-						this.createElement('span', { class: 'pretty-jason-icon' }),
+				return this.createElement('li', { data: { key } }, [
+					this.createElement('span', {
+						click: valueType == 'object' ? (ev => this.objectNodeClickedCallback(ev.currentTarget)) : undefined
+					}, [
+						this.createElement('span', { class: 'pretty-jason-icon', html: valueType == 'object' ? '<i class="pretty-jason-icon-closed"></i>' : undefined }),
 						this.createElement('span', { class: 'pretty-jason-key', text: `${key}: ` }),
 						this.createElement('span', {
 							class: `pretty-jason-value-${valueType}`,
-							text: valueType == 'string' ? `"${value}"` : value
+							text: value
 						})
 					])
 				])
@@ -78,27 +66,16 @@ class PrettyJason
 
 	generateHtmlPreview (data) {
 		return this.createElement('span', { class: 'pretty-jason-preview' }, Object.keys(data)
-			.filter(key => key != '__class__')
+			.filter(key => ! [ '__class__', '__type__', '__hash__' ].includes(key))
 			.slice(0, 3)
 			.map(key => {
-				let value = data[key]
-				let valueType = this.getValueType(value)
-
-				if (valueType == 'object') {
-					return this.createElement('span', { class: 'pretty-jason-preview-item' }, [
-						this.createElement('span', { class: 'pretty-jason-key', text: `${key}: ` }),
-						this.createElement('span', {
-							class: 'pretty-jason-value',
-							text: value.__class__ || 'Object'
-						})
-					])
-				}
+				let [ value, valueType ] = this.resolveValueAndType(data[key])
 
 				return this.createElement('span', { class: 'pretty-jason-preview-item' }, [
 					this.createElement('span', { class: 'pretty-jason-key', text: `${key}: ` }),
 					this.createElement('span', {
 						class: `pretty-jason-value-${valueType}`,
-						text: valueType == 'string' ? `"${value}"` : value
+						text: value
 					})
 				])
 			})
@@ -108,14 +85,26 @@ class PrettyJason
 		)
 	}
 
-	getValueType (value) {
+	resolveValueAndType (value) {
 		if (value === null) {
-			return 'null'
+			return [ 'null',  'null' ]
 		} else if (value === undefined) {
-			return 'undefined'
+			return [ 'undefined', 'undefined' ]
+		} else if (typeof value == 'boolean') {
+			return [ value ? 'true' : 'false', 'boolean' ]
+		} else if (typeof value == 'string') {
+			return [ `"${value}"`, 'string' ]
+		} else if (typeof value == 'object') {
+			if (value.__type__ == 'array') {
+				return [ `Array(${Object.values(value).length - 1})`, 'object' ]
+			} else if (value.__type__ && value.__type__ != 'object') {
+				return [ value.__type__, value.__type__.replace(' ', '-') ]
+			} else {
+				return [ value.__class__ || 'Object', 'object' ]
+			}
 		}
 
-		return typeof value
+		return [ value, typeof value ]
 	}
 
 	objectNodeClickedCallback (node) {
