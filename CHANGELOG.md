@@ -1,3 +1,78 @@
+3.0
+
+- updated web UI to match latest Chrome version
+- added new api for user-data (custom tabs in Clockwork app)
+- added support for authentication (thanks xiaohuilam)
+- added support for collecting stack traces for log messages, queries, etc. (thanks sisve)
+- added new api for recording subrequests (thanks L3o-pold)
+- added Symfony integration beta
+- added Xdebug profiler support
+- added collecting of full URLs for requests
+- added collecting of peak memory usage
+- added ability to use dark theme for the web UI
+- added new extend-api to data soruces for extending data when it's being sent to the application
+- improved data serialization implementation - handles recursion, unlimited depth, type metadata, clear marking for protected and private properties
+- improved handling of binary bindings in EloquentDataSource (thanks sergio91pt and coderNeos)
+- improved stack traces collection to resolve original view names
+- BREAKING improved Laravel integration to type-hint contracts instead of concrete implementations (thanks robclancy)
+- changed Laravel integration to register middleware in the boot method instead of register (thanks dionysiosarvanitis)
+- changed Laravel and Lumen integrations to use a single shared Log instance
+- fixed Clockwork HTTP API returning empty object instead of null if request was not found
+- fixed Clockwork routes not returning 404 when disabled on runtime with route cache enabled (thanks joskfg)
+- BREAKING dropped Laravel 4 support
+- BREAKING dropped PHP 5.4 support, requires PHP 5.5
+
+2.2.5
+
+- changed SQL storage schema URI column type from VARCHAR to TEXT (thanks sumidatx)
+- fixed possible crash in file storage cleanup if the file was already deleted (thanks bcalik)
+- fixed event handling in Eloquent data source compatibility with some 3rd party packages (thanks erikgaal)
+
+2.2.4
+
+- drop support for collecting Laravel controller middleware (as this can have unexpected side-effects) (thanks phh)
+
+2.2.3
+
+- improved Server-Timing now uses the new header format (thanks kohenkatz)
+- fixed Laravel crash when gathering middleware if the controller class doesn't exist
+
+2.2.2
+
+- fixed compatibility with Laravel 5.2 (thanks peppeocchi)
+
+2.2.1
+
+- fixed Laravel 4.x support once again (thanks bcalik)
+
+2.2
+
+- added support for collecting route middleware (thanks Vercoutere)
+- added support for collecting routes and middleware in newer Lumen versions
+- updated Web UI to match Clockwork Chrome 2.2
+- improved Laravel support to register most event handlers only when collecting data
+- fixed Lumen middleware not being registered automatically (thanks lucian-dragomir)
+- fixed published Lumen config not being loaded
+
+2.1.1
+
+- fixed Laravel 4.x support (added legacy version of the config file) (thanks bcalik)
+
+2.1
+
+- updated Web UI to match Clockwork Chrome 2.1
+- improved Laravel support to load the default config and use env variables in the default config
+- improved Lumen support to use the standard config subsystem instead of directly accessing env variables (thanks davoaust, SunMar)
+- improved reliability of storing metadata in some cases (by using JSON_PARTIAL_OUTPUT_ON_ERROR when supported)
+- fixed wrong mime-type for javascript assets in Web UI causing it to not work in some browsers (thanks sleavitt)
+- fixed path checking in Web UI causing it to not work on Windows (thanks Malezha)
+- fixed parameters conversion in DBALDataSource (thanks andrzejenne)
+
+2.0.4
+
+- improved mkdir error handling in FileStorage (thanks FBnil)
+- fixed crash in LaravelEventsDataSource when firing events with associative array as payload
+
 2.0.3
 
 - fixed Clockwork now working when used with Laravel route cache
