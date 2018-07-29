@@ -116,13 +116,15 @@ class LaravelDataSource extends DataSource
 			}
 
 			$time = microtime(true);
+			$data = $view->getData();
+			unset($data['__env']);
 
 			$this->views->addEvent(
 				'view ' . $view->getName(),
 				'Rendering a view',
 				$time,
 				$time,
-				[ 'name' => $view->getName(), 'data' => (new Serializer)->normalize($view->getData()) ]
+				[ 'name' => $view->getName(), 'data' => (new Serializer)->normalize($data) ]
 			);
 		});
 	}
