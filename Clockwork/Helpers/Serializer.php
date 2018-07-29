@@ -3,7 +3,14 @@
 class Serializer
 {
 	protected $cache = [];
-	protected $options = [ 'toString' => false ];
+	protected $options = [
+		'blackbox' => [
+			\Illuminate\Container\Container::class,
+			\Illuminate\Foundation\Application::class,
+			\Laravel\Lumen\Application::class
+		],
+		'toString' => false
+	];
 
 	public function __construct(array $options = [])
 	{
@@ -41,6 +48,10 @@ class Serializer
 
 			if (isset($this->cache[$objectHash])) {
 				return $this->cache[$objectHash];
+			}
+
+			if ($this->options['blackbox'] && in_array($className, $this->options['blackbox'])) {
+				return $this->cache[$objectHash] = [ '__class__' => $className ];
 			}
 
 			$data = (array) $data;
