@@ -3,24 +3,35 @@
 class Serializer
 {
 	protected $cache = [];
-	protected $options = [
+	protected $options = [];
+
+	protected static $defaults = [
 		'blackbox' => [
 			\Illuminate\Container\Container::class,
 			\Illuminate\Foundation\Application::class,
 			\Laravel\Lumen\Application::class
 		],
+		'limit' => 50,
 		'toString' => false
 	];
 
 	public function __construct(array $options = [])
 	{
-		$this->options += $options;
+		$this->options = static::$defaults + $options;
+	}
+
+	// set default options for all new serializers
+	public static function defaults($defaults)
+	{
+		$this->defaults += $defaults;
 	}
 
 	// prepares the passed data to be ready for serialization
-	public function normalize($data, $context = null, $limit = 500)
+	public function normalize($data, $context = null, $limit = null)
 	{
-		if (! $context) $context = [ 'references' => [] ];
+		if ($context === null) $context = [ 'references' => [] ];
+		if ($limit === null) $limit = $this->options['limit'];
+
 		if ($limit < 1) return $data;
 
 		if ($data instanceof \Closure) {
