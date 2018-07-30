@@ -1,3 +1,7 @@
+2.3
+
+- updated Web UI to match Clockwork Chrome 3.0
+
 2.2.5
 
 - changed SQL storage schema URI column type from VARCHAR to TEXT (thanks sumidatx)
