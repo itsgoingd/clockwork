@@ -12,9 +12,12 @@
 - added ability to use dark theme for the web UI
 - added new extend-api to data soruces for extending data when it's being sent to the application
 - improved data serialization implementation - handles recursion, unlimited depth, type metadata, clear marking for protected and private properties
+- improved data serialization with configurable defaults, limit and blackboxing of classes
 - improved handling of binary bindings in EloquentDataSource (thanks sergio91pt and coderNeos)
 - improved stack traces collection to resolve original view names
 - BREAKING improved Laravel integration to type-hint contracts instead of concrete implementations (thanks robclancy)
+- improved default configuration to not collect data for Laravel Horizon requests (thanks fgilio)
+- improved LaravelDataSource view data collecting to remove Laravel Twigbridge metadata
 - changed Laravel integration to register middleware in the boot method instead of register (thanks dionysiosarvanitis)
 - changed Laravel and Lumen integrations to use a single shared Log instance
 - fixed Clockwork HTTP API returning empty object instead of null if request was not found
