@@ -986,7 +986,7 @@
 						</table>
 					</div>
 
-					<div ng-repeat="userTab in request.userData" tab-content="user-{{userTab.key}}">
+					<div ng-repeat="userTab in request.userData" tab-content="app.user-{{userTab.key}}">
 						<div ng-repeat="(sectionIndex, section) in userTab.sections">
 							<div ng-if="section.showAs == 'counters'" class="counters-row">
 								<div ng-repeat="item in section.data" class="counter">

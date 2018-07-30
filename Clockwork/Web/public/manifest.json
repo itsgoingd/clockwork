@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Clockwork",
-	"version": "2.2",
+	"version": "3.0",
 
 	"description": "php dev tools integrated to your browser",
 	"homepage_url": "https://github.com/itsgoingd/clockwork-chrome",
