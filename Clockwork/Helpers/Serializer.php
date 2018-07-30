@@ -17,13 +17,13 @@ class Serializer
 
 	public function __construct(array $options = [])
 	{
-		$this->options = static::$defaults + $options;
+		$this->options = $options + static::$defaults;
 	}
 
 	// set default options for all new serializers
-	public static function defaults($defaults)
+	public static function defaults(array $defaults)
 	{
-		$this->defaults += $defaults;
+		static::$defaults = $defaults + static::$defaults;
 	}
 
 	// prepares the passed data to be ready for serialization
