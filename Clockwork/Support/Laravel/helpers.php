@@ -15,5 +15,7 @@ if (! function_exists('clock')) {
 		foreach ($arguments as $argument) {
 			app('clockwork')->debug($argument);
 		}
+
+		return reset($arguments);
 	}
 }
