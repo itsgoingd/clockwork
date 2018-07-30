@@ -1,0 +1,13 @@
+<div class="stack-trace popover-container">
+	<div shortened-text="{{trace ? shortPath : fullPath}}" ng-click="togglePopover()">{{shortPath}}</div>
+	<div class="popover" ng-show="showPopover" ng-if="trace">
+		<div class="popover-content">
+			<div ng-repeat="frame in trace" class="stack-frame" ng-class={'is-vendor':frame.isVendor}>
+				<div class="stack-frame-call">{{ frame.call }}</div>
+				<div class="stack-frame-file">
+					<div shortened-text="{{frame.fullPath}}">{{frame.shortPath}}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -33,6 +33,12 @@
 	color: rgb(128, 128, 128);
 }
 
+.pretty-jason-value-boolean,
+.pretty-jason-value-anonymous-function,
+.pretty-jason-value-resource {
+	color: rgb(19, 43, 162);
+}
+
 .pretty-jason-icon,
 .pretty-jason-icon-closed,
 .pretty-jason-icon-open {

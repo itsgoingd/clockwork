@@ -1,10 +1,10 @@
 Clockwork.directive('scrollToNew', function ($parse) {
 	return function(scope, element, attrs) {
 		if (scope.showIncomingRequests && scope.$last) {
-			var $container = $(element).parents('.requests-container').first()
-			var $parent = $(element).parent()
+			let container = document.querySelector('.requests-container')
+			let parent = element[0].parentNode
 
-			$container.scrollTop($parent.height())
+			container.scrollTop = parent.offsetHeight
 		}
 	}
 })

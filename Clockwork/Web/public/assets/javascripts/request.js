@@ -5,6 +5,7 @@ class Request
 
 		this.responseDurationRounded = this.responseDuration ? Math.round(this.responseDuration) : 0
 		this.databaseDurationRounded = this.databaseDuration ? Math.round(this.databaseDuration) : 0
+		this.memoryUsageFormatted = this.memoryUsage ? this.formatBytes(this.memoryUsage) : undefined
 
 		this.processCacheStats()
 		this.cacheQueries = this.processCacheQueries(this.cacheQueries)
@@ -17,21 +18,24 @@ class Request
 		this.log = this.processLog(this.log)
 		this.postData = this.createKeypairs(this.postData)
 		this.sessionData = this.createKeypairs(this.sessionData)
+		this.performanceMetrics = this.processPerformanceMetrics(this.performanceMetrics)
 		this.timeline = this.processTimeline(this.timelineData)
 		this.views = this.processViews(this.viewsData)
+		this.userData = this.processUserData(this.userData)
 
 		this.errorsCount = this.getErrorsCount()
 		this.warningsCount = this.getWarningsCount()
 	}
 
-	static placeholder (id, request) {
+	static placeholder (id, request, parent) {
 		return Object.assign(new Request({
 			loading: true,
 			id: id,
-			uri: (new URI(request.url)).pathname(),
+			uri: request ? (new URI(request.url)).pathname() : '/',
 			controller: 'Waiting...',
-			method: request.method,
-			responseStatus: '?'
+			method: request ? request.method : 'GET',
+			responseStatus: '?',
+			parent
 		}), {
 			responseDurationRounded: '?',
 			databaseDurationRounded: '?'
@@ -39,12 +43,17 @@ class Request
 	}
 
 	resolve (request) {
-		Object.assign(this, request, { loading: false })
+		Object.assign(this, request, { loading: false, error: undefined })
 		return this
 	}
 
 	resolveWithError (error) {
 		Object.assign(this, { loading: false, error })
+		return this
+	}
+
+	extend (data, fields) {
+		fields.forEach(field => this[field] = data[field])
 		return this
 	}
 
@@ -73,6 +82,7 @@ class Request
 			query.value = query.type == 'hit' || query.type == 'write' ? query.value : ''
 			query.fullPath = query.file && query.line ? query.file.replace(/^\//, '') + ':' + query.line : undefined
 			query.shortPath = query.fullPath ? query.fullPath.split(/[\/\\]/).pop() : undefined
+			query.trace = this.processStackTrace(query.trace)
 
 			return query
 		})
@@ -86,6 +96,7 @@ class Request
 			query.shortModel = query.model ? query.model.split('\\').pop() : '-'
 			query.fullPath = query.file && query.line ? query.file.replace(/^\//, '') + ':' + query.line : undefined
 			query.shortPath = query.fullPath ? query.fullPath.split(/[\/\\]/).pop() : undefined
+			query.trace = this.processStackTrace(query.trace)
 
 			return query
 		})
@@ -101,10 +112,11 @@ class Request
 		if (! (data instanceof Array)) return []
 
 		return data.map(event => {
-			event.objectEvent = (event.event == event.data.__class__)
-			event.time = new Date(event.time * 1000)
+			event.objectEvent = (event.data instanceof Object && event.event == event.data.__class__)
+			event.time = event.time ? new Date(event.time * 1000) : undefined
 			event.fullPath = event.file && event.line ? event.file.replace(/^\//, '') + ':' + event.line : undefined
 			event.shortPath = event.fullPath ? event.fullPath.split(/[\/\\]/).pop() : undefined
+			event.trace = this.processStackTrace(event.trace)
 
 			event.listeners = event.listeners instanceof Array ? event.listeners : []
 			event.listeners = event.listeners.map(listener => {
@@ -150,12 +162,35 @@ class Request
 
 		return data.map(message => {
 			message.time = new Date(message.time * 1000)
-			message.context = message.context instanceof Object && Object.keys(message.context).length ? message.context : undefined
+			message.context = message.context instanceof Object && Object.keys(message.context).filter(key => key != '__type__').length ? message.context : undefined
 			message.fullPath = message.file && message.line ? message.file.replace(/^\//, '') + ':' + message.line : undefined
 			message.shortPath = message.fullPath ? message.fullPath.split(/[\/\\]/).pop() : undefined
+			message.trace = this.processStackTrace(message.trace)
 
 			return message
 		})
+	}
+
+	processPerformanceMetrics (data) {
+		if (! data) {
+			return [
+				{ name: 'Database', value: this.databaseDurationRounded, style: 'style2' },
+				{ name: 'Cache', value: this.cacheTime, style: 'style3' },
+				{ name: 'Other', value: this.responseDurationRounded - this.databaseDurationRounded - this.cacheTime, style: 'style1' }
+			].filter(metric => metric.value !== null && metric.value !== undefined)
+		}
+
+		data = data.filter(metric => metric instanceof Object)
+			.map((metric, index) => {
+				metric.style = 'style' + (index + 2)
+				return metric
+			})
+
+		let metricsSum = data.reduce((sum, metric) => { return sum + metric.value }, 0)
+
+		data.push({ name: 'Other', value: this.responseDurationRounded - metricsSum, style: 'style1' })
+
+		return data
 	}
 
 	processTimeline (data) {
@@ -163,8 +198,23 @@ class Request
 
 		return Object.values(data).map((entry, i) => {
 			entry.style = 'style' + (i % 4 + 1)
-			entry.left = (entry.start - this.time) * 1000 / this.responseDuration * 100
-			entry.width = entry.duration / this.responseDuration * 100
+			entry.startPercentual = (entry.start - this.time) * 1000 / this.responseDuration * 100
+			entry.durationPercentual = entry.duration / this.responseDuration * 100
+
+			entry.barLeft = `${entry.startPercentual}%`
+			entry.barWidth = entry.startPercentual + entry.durationPercentual < 100
+				? `${entry.durationPercentual}%` : `${100 - entry.startPercentual}%`
+
+			entry.labelAlign = 'left'
+			entry.labelLeft = entry.barLeft
+			entry.labelRight = 'auto'
+
+			if (entry.startPercentual > 50) {
+				entry.labelAlign = 'right'
+				entry.labelLeft = 'auto'
+				entry.labelRight = entry.durationPercentual < 1
+					? `calc(100% - ${entry.barLeft} - 8px)` : `calc(100% - ${entry.barLeft} - ${entry.barWidth})`
+			}
 
 			entry.durationRounded = Math.round(entry.duration)
 			if (entry.durationRounded === 0) entry.durationRounded = '< 1'
@@ -177,6 +227,84 @@ class Request
 		if (! (data instanceof Object)) return []
 
 		return Object.values(data).filter(view => view.data instanceof Object).map(view => view.data)
+	}
+
+	processUserData (tabs) {
+		if (! (tabs instanceof Object)) return []
+
+		let stripMeta = ([ key, section ]) => key != '__meta'
+		let labeledValues = (labels) => ([ key, value ]) => ({ key: labels[key] || key, value })
+
+		return Object.entries(tabs).filter(([ key, tab ]) => {
+			return (tab instanceof Object) || tab.__meta || tab.__meta.title
+		}).map(([ key, tab ]) => {
+			return {
+				key,
+				title: tab.__meta.title,
+				sections: Object.entries(tab).filter(stripMeta).map(([ key, section ]) => {
+					let labels = section.__meta.labels || {}
+					let data = section.__meta.showAs == 'counters'
+						? Object.entries(section).filter(stripMeta).map(labeledValues(labels))
+						: Object.entries(section).filter(stripMeta).map(([ key, value ]) => {
+							return Object.entries(value).map(labeledValues(labels))
+						})
+
+					return {
+						data,
+						showAs: section.__meta.showAs,
+						title: section.__meta.title
+					}
+				})
+			}
+		})
+	}
+
+	// processUserData (data) {
+	// 	if (! (data instanceof Object)) return []
+	//
+	// 	return Object.entries(data).map(([ key, data ]) => {
+	// 		if (! (data instanceof Object) || ! data.__meta || ! data.__meta.title) return
+	//
+	// 		return {
+	// 			key,
+	// 			data: Object.entries(data).map(([ key, item ]) => {
+	// 				if (key == '__meta' || ! (item instanceof Object)) return
+	//
+	// 				let labels = item.__meta.labels || {}
+	// 				let data
+	//
+	// 				if (item.__meta.showAs == 'counters') {
+	// 					data = Object.entries(item).filter(([ key, value ]) => key != '__meta').map(([ key, value ]) => {
+	// 						return [ labels[key] || key, value ]
+	// 					})
+	// 				} else {
+	// 					data = Object.entries(item).filter(([ key, value ]) => key != '__meta').map(([ key, value ]) => {
+	// 						return Object.entries(value).map(([ key, value ]) => {
+	// 							return [ labels[key] || key, value ]
+	// 						})
+	// 					})
+	// 				}
+	//
+	// 				return {
+	// 					data,
+	// 					showAs: item.__meta.showAs,
+	// 					title: item.__meta.title
+	// 				}
+	// 			}).filter(Boolean),
+	// 			title: data.__meta.title
+	// 		}
+	// 	}).filter(Boolean)
+	// }
+
+	processStackTrace (trace) {
+		if (! trace) return undefined
+
+		return trace.map(frame => {
+			frame.fullPath = frame.file && frame.line ? frame.file.replace(/^\//, '') + ':' + frame.line : undefined
+			frame.shortPath = frame.fullPath ? frame.fullPath.split(/[\/\\]/).pop() : undefined
+
+			return frame
+		})
 	}
 
 	getErrorsCount () {
@@ -205,5 +333,12 @@ class Request
 		if (seconds) time.push(seconds + 'sec')
 
 		return time.join(' ')
+	}
+
+	formatBytes (bytes) {
+		let units = [ 'B', 'kB', 'MB', 'GB', 'TB', 'PB' ]
+		let pow = Math.floor(Math.log(bytes) / Math.log(1024))
+
+		return `${Math.round(bytes / Math.round(Math.pow(1024, pow)))} ${units[pow]}`
 	}
 }
