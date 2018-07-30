@@ -11,7 +11,7 @@ class Serializer
 			\Illuminate\Foundation\Application::class,
 			\Laravel\Lumen\Application::class
 		],
-		'limit' => 50,
+		'limit' => 10,
 		'toString' => false
 	];
 
