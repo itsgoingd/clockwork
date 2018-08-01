@@ -39,6 +39,9 @@ class LumenDataSource extends DataSource
 	 */
 	protected $views;
 
+	// Whether we should collect views
+	protected $collectViews = true;
+
 	/**
 	 * Create a new data source, takes Laravel application instance as an argument
 	 */
@@ -85,6 +88,13 @@ class LumenDataSource extends DataSource
 		return $this;
 	}
 
+	// Enable or disable collecting views
+	public function collectViews($collectViews = true)
+	{
+		$this->collectViews = $collectViews;
+		return $this;
+	}
+
 	/**
 	 * Hook up callbacks for various Laravel events, providing information for timeline and log entries
 	 */
@@ -104,6 +114,8 @@ class LumenDataSource extends DataSource
 		});
 
 		$this->app['events']->listen('composing:*', function ($view, $data = null) {
+			if (! $this->collectViews) return;
+
 			if (is_string($view) && is_array($data)) { // Laravel 5.4 wildcard event
 				$view = $data[0];
 			}

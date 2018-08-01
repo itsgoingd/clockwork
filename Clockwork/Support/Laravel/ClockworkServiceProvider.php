@@ -71,6 +71,7 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		$this->app->singleton('clockwork.laravel', function ($app) {
 			return (new LaravelDataSource($app))
+				->collectViews($app['clockwork.support']->isCollectingViews())
 				->setLog($app['clockwork.log']);
 		});
 

@@ -208,6 +208,11 @@ class ClockworkSupport
 		return ! in_array('events', $this->getFilter());
 	}
 
+	public function isCollectingViews()
+	{
+		return ! in_array('viewsData', $this->getFilter());
+	}
+
 	public function isWebEnabled()
 	{
 		return $this->getConfig('web', true);

@@ -80,7 +80,8 @@ class ClockworkServiceProvider extends ServiceProvider
 		});
 
 		$this->app->singleton('clockwork.lumen', function ($app) {
-			return new LumenDataSource($app);
+			return (new LumenDataSource($app))
+				->collectViews($app['clockwork.support']->isCollectingViews());
 		});
 
 		$this->app->singleton('clockwork.swift', function ($app) {
