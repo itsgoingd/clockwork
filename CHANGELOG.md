@@ -1,3 +1,7 @@
+3.0.1
+
+- improved LaravelDataSource to not collect views data if it is filtered (by default)
+
 3.0
 
 - updated web UI to match latest Chrome version
