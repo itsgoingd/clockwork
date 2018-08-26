@@ -43,7 +43,7 @@ class ClockworkController extends Controller
 	{
 		if (! $this->app['clockwork.support']->isEnabled()) abort(404);
 
-		if ($this->app['clockwork.support']->isWebUsingDarkTheme() && ! $this->app['request']->has('dark')) {
+		if ($this->app['clockwork.support']->isWebUsingDarkTheme() && ! $this->app['request']->exists('dark')) {
 			return new RedirectResponse('/__clockwork/app?dark');
 		}
 
