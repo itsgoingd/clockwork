@@ -1,3 +1,7 @@
+3.0.2
+
+- fixed infinite redirect if dark web theme is enabled on Laravel or Lumen <5.5 (thanks pixelskribe)
+
 3.0.1
 
 - improved LaravelDataSource to not collect views data if it is filtered (by default)
