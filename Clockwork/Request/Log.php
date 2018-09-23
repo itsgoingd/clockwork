@@ -33,9 +33,9 @@ class Log extends AbstractLogger
 			'context' => (new Serializer)->normalize($context),
 			'level'   => $level,
 			'time'    => microtime(true),
-			'file'    => $caller->shortPath,
-			'line'    => $caller->line,
-			'trace'   => $this->collectStackTraces || ! empty($context['trace'])
+			'file'    => $caller ? $caller->shortPath : null,
+			'line'    => $caller ? $caller->line : null,
+			'trace'   => $caller && ($this->collectStackTraces || ! empty($context['trace']))
 				? (new Serializer)->trace($trace->framesBefore($caller)) : null
 		];
 	}
