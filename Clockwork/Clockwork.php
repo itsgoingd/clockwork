@@ -275,9 +275,54 @@ class Clockwork implements LoggerInterface
 		return $this->getTimeline()->endEvent($name);
 	}
 
-	/**
-	 * Shortcut methods for recording subrequests
-	 */
+	// Shortcut methods for the Request object
+
+	// Add database query, takes query, bindings, duration and additional data - connection (connection name), file
+	// (caller file name), line (caller line number), trace (serialized trace), model (associated ORM model)
+	public function addDatabaseQuery($query, $bindings = [], $duration = null, $data = [])
+	{
+		return $this->getRequest()->addDatabaseQuery($query, $bindings, $duration, $data);
+	}
+
+	// Add cache query, takes type, key, value and additional data - connection (connection name), file
+	// (caller file name), line (caller line number), trace (serialized trace), expiration
+	public function addCacheQuery($type, $key, $value = null, $duration = null, $data = [])
+	{
+		return $this->getRequest()->addCacheQuery($type, $key, $value, $duration, $data);
+	}
+
+	// Add event, takes event name, data, time and additional data - listeners, file (caller file name), line (caller
+	// line number), trace (serialized trace)
+	public function addEvent($event, $eventData = null, $time = null, $data = [])
+	{
+		return $this->getRequest()->addEvent($event, $eventData, $time, $data);
+	}
+
+	// Add route, takes method, uri, action and additional data - name, middleware, before (before filters), after
+	// (after filters)
+	public function addRoute($method, $uri, $action, $data = [])
+	{
+		return $this->getRequest()->addRoute($method, $uri, $action, $data);
+	}
+
+	// Add route, takes method, uri, action and additional data - name, middleware, before (before filters), after
+	// (after filters)
+	public function addEmail($subject, $to, $from = null, $headers = [])
+	{
+		return $this->getRequest()->addEmail($subject, $to, $from, $headers);
+	}
+
+	// Add view, takes view name and data
+	public function addView($name, $data = [])
+	{
+		return $this->getRequest()->addView($name, $data);
+	}
+
+	// Record executed subrequest, takes the requested url, returned Clockwork ID and optional path if non-default
+	public function addSubrequest($url, $id, $path = null)
+	{
+		return $this->getRequest()->addSubrequest($url, $id, $path);
+	}
 
 	public function subrequest($url, $id, $path = null)
 	{
