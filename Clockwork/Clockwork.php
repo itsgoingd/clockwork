@@ -324,6 +324,7 @@ class Clockwork implements LoggerInterface
 		return $this->getRequest()->addSubrequest($url, $id, $path);
 	}
 
+	// DEPRECATED Use addSubrequest method
 	public function subrequest($url, $id, $path = null)
 	{
 		return $this->getRequest()->addSubrequest($url, $id, $path);
