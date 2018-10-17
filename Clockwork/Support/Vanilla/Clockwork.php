@@ -2,13 +2,20 @@
 
 use Clockwork\Clockwork as BaseClockwork;
 use Clockwork\DataSource\PhpDataSource;
+use Clockwork\DataSource\PsrMessageDataSource;
 use Clockwork\Helpers\ServerTiming;
 use Clockwork\Storage\FileStorage;
+
+use Psr\Http\Message\ServerRequestInterface as PsrRequest;
+use Psr\Http\Message\ResponseInterface as PsrResponse;
 
 class Clockwork
 {
 	protected $config;
 	protected $clockwork;
+
+	protected $psrRequest;
+	protected $psrResponse;
 
 	protected static $defaultInstance;
 
@@ -48,23 +55,34 @@ class Clockwork
 
 		if (! $this->config['enable']) return;
 
-		header('X-Clockwork-Id: ' . $this->getRequest()->id);
-		header('X-Clockwork-Version: ' . BaseClockwork::VERSION);
+		$this->setHeader('X-Clockwork-Id', $this->getRequest()->id);
+		$this->setHeader('X-Clockwork-Version', BaseClockwork::VERSION);
 
-		if ($this->config['api_uri'] != '/__clockwork/') {
-			header('X-Clockwork-Path: ' . $this->config['api_uri']);
+		if ($this->config['api'] != '/__clockwork/') {
+			$this->setHeader('X-Clockwork-Path', $this->config['api']);
 		}
 
 		foreach ($this->config['headers'] as $headerName => $headerValue) {
-			header("X-Clockwork-Header-{$headerName}: {$headerValue}");
+			$this->setHeader("X-Clockwork-Header-{$headerName}", $headerValue);
 		}
 
 		if (($eventsCount = $this->config['server_timing']) !== false) {
-			header('Server-Timing: ' . ServerTiming::fromRequest($this->clockwork->getRequest(), $eventsCount)->value());
+			$this->setHeader('Server-Timing', ServerTiming::fromRequest($this->clockwork->getRequest(), $eventsCount)->value());
 		}
+
+		return $this->psrResponse;
 	}
 
 	public function returnMetadata($request = null)
+	{
+		if (! $this->config['enable']) return;
+
+		$this->setHeader('Content-Type', 'application/json');
+
+		echo json_encode($this->getMetadata($request), \JSON_PARTIAL_OUTPUT_ON_ERROR);
+	}
+
+	public function getMetadata($request = null)
 	{
 		if (! $this->config['enable']) return;
 
@@ -90,16 +108,24 @@ class Clockwork
 			$this->clockwork->extendRequest($data);
 		}
 
-		header('Content-Type: application/json');
-
 		if ($data) {
 			$data = is_array($data) ? array_map(function ($item) { return $item->toArray(); }, $data) : $data->toArray();
 		}
 
-		echo json_encode($data, \JSON_PARTIAL_OUTPUT_ON_ERROR);
+		return $data;
 	}
 
-	public function resolveStorage()
+	public function usePsrMessage(PsrRequest $request, PsrResponse $response = null)
+	{
+		$this->psrRequest = $request;
+		$this->psrResponse = $response;
+
+		$this->clockwork->addDataSource(new PsrMessageDataSource($request, $response));
+
+		return $this;
+	}
+
+	protected function resolveStorage()
 	{
 		if ($this->config['storage'] == 'sql') {
 			$database = $this->config['storage_sql_database'];
@@ -121,6 +147,15 @@ class Clockwork
 		$storage->filter = $this->config['filter'];
 
 		return $storage;
+	}
+
+	protected function setHeader($header, $value)
+	{
+		if ($this->psrResponse) {
+			$this->psrResponse = $this->psrResponse->withHeader($header, $value);
+		} else {
+			header("{$header}: {$value}");
+		}
 	}
 
 	public function getClockwork()
