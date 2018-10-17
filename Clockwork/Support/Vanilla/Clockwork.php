@@ -68,9 +68,35 @@ class Clockwork
 	{
 		if (! $this->config['enable']) return;
 
+		if (! $request) $request = isset($_GET['request']) ? $_GET['request'] : '';
+
+		preg_match('#(?<id>[0-9-]+|latest)(?=/(?<direction>next|previous))?(?=/(?<count>\d+))?#', $request, $matches);
+
+		$id = isset($matches['id']) ? $matches['id'] : null;
+		$direction = isset($matches['direction']) ? $matches['direction'] : null;
+		$count = isset($matches['count']) ? $matches['count'] : null;
+
+		if ($direction == 'previous') {
+			$data = $this->clockwork->getStorage()->previous($id, $count);
+		} elseif ($direction == 'next') {
+			$data = $this->clockwork->getStorage()->next($id, $count);
+		} elseif ($id == 'latest') {
+			$data = $this->clockwork->getStorage()->latest();
+		} else {
+			$data = $this->clockwork->getStorage()->find($id);
+		}
+
+		if (preg_match('#(?<id>[0-9-]+|latest)/extended#', $request)) {
+			$this->clockwork->extendRequest($data);
+		}
+
 		header('Content-Type: application/json');
 
-		echo $this->getStorage()->find($request ?: $_GET['request'])->toJson();
+		if ($data) {
+			$data = is_array($data) ? array_map(function ($item) { return $item->toArray(); }, $data) : $data->toArray();
+		}
+
+		echo json_encode($data, \JSON_PARTIAL_OUTPUT_ON_ERROR);
 	}
 
 	public function resolveStorage()
