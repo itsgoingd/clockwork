@@ -107,7 +107,7 @@ class Clockwork implements LoggerInterface
 
 		// merge global log and timeline data with data collected from data sources
 		$this->request->log = array_merge($this->request->log, $this->log->toArray());
-		$this->request->timelineData = array_merge($this->request->timelineData, $this->timeline->finalize());
+		$this->request->timelineData = array_merge($this->request->timelineData, $this->timeline->finalize($this->request->time));
 
 		// sort log and timeline data by time
 		uasort($this->request->log, function($a, $b) {
