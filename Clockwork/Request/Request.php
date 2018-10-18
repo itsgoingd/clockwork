@@ -1,5 +1,7 @@
 <?php namespace Clockwork\Request;
 
+use Clockwork\Helpers\Serializer;
+
 /**
  * Data structure representing a single application request
  */
@@ -235,6 +237,94 @@ class Request
 	public function toJson()
 	{
 		return json_encode($this->toArray(), \JSON_PARTIAL_OUTPUT_ON_ERROR);
+	}
+
+	// Add database query, takes query, bindings, duration and additional data - connection (connection name), file
+	// (caller file name), line (caller line number), trace (serialized trace), model (associated ORM model)
+	public function addDatabaseQuery($query, $bindings = [], $duration = null, $data = [])
+	{
+		$this->databaseQueries[] = [
+			'query'      => $query,
+			'bindings'   => $bindings,
+			'duration'   => $duration,
+			'connection' => isset($data['connection']) ? $data['connection'] : null,
+			'file'       => isset($data['file']) ? $data['file'] : null,
+			'line'       => isset($data['line']) ? $data['line'] : null,
+			'trace'      => isset($data['trace']) ? $data['trace'] : null,
+			'model'      => isset($data['model']) ? $data['model'] : null
+		];
+	}
+
+	// Add cache query, takes type, key, value and additional data - connection (connection name), file
+	// (caller file name), line (caller line number), trace (serialized trace), expiration
+	public function addCacheQuery($type, $key, $value = null, $duration = null, $data = [])
+	{
+		$this->cacheQueries[] = [
+			'type'       => $type,
+			'key'        => $key,
+			'value'      => (new Serializer)->normalize($value),
+			'duration'   => $duration,
+			'connection' => isset($data['connection']) ? $data['connection'] : null,
+			'file'       => isset($data['file']) ? $data['file'] : null,
+			'line'       => isset($data['line']) ? $data['line'] : null,
+			'trace'      => isset($data['trace']) ? $data['trace'] : null,
+			'expiration' => isset($data['expiration']) ? $data['expiration'] : null
+		];
+	}
+
+	// Add event, takes event name, data, time and additional data - listeners, file (caller file name), line (caller
+	// line number), trace (serialized trace)
+	public function addEvent($event, $eventData = null, $time = null, $data = [])
+	{
+		$this->events[] = [
+			'event'     => $event,
+			'data'      => (new Serializer)->normalize($eventData),
+			'time'      => $time,
+			'listeners' => isset($data['listeners']) ? $data['listeners'] : null,
+			'file'      => isset($data['file']) ? $data['file'] : null,
+			'line'      => isset($data['line']) ? $data['line'] : null,
+			'trace'     => isset($data['trace']) ? $data['trace'] : null
+		];
+	}
+
+	// Add route, takes method, uri, action and additional data - name, middleware, before (before filters), after
+	// (after filters)
+	public function addRoute($method, $uri, $action, $data = [])
+	{
+		$this->routes[] = [
+			'method'     => $method,
+			'uri'        => $uri,
+			'action'     => $action,
+			'name'       => isset($data['name']) ? $data['name'] : null,
+			'middleware' => isset($data['middleware']) ? $data['middleware'] : null,
+			'before'     => isset($data['before']) ? $data['before'] : null,
+			'after'      => isset($data['after']) ? $data['after'] : null
+		];
+	}
+
+	// Add route, takes method, uri, action and additional data - name, middleware, before (before filters), after
+	// (after filters)
+	public function addEmail($subject, $to, $from = null, $headers = [])
+	{
+		$this->emailsData[] = [
+			'data' => [
+				'subject' => $subject,
+				'to'      => $to,
+				'from'    => $from,
+				'headers' => (new Serializer)->normalize($headers)
+			]
+		];
+	}
+
+	// Add view, takes view name and data
+	public function addView($name, $data = [])
+	{
+		$this->viewsData[] = [
+			'data' => [
+				'name' => $name,
+				'data' => (new Serializer)->normalize($data)
+			]
+		];
 	}
 
 	/**
