@@ -126,19 +126,6 @@ class ClockworkSupport
 			return $response; // Collecting data is disabled, return immediately
 		}
 
-		// don't collect data for configured URIs
-		$requestUri = $request->getRequestUri();
-		$filterUris = $this->getConfig('filter_uris', []);
-		$filterUris[] = '/__clockwork(?:/.*)?'; // don't collect data for Clockwork requests
-
-		foreach ($filterUris as $uri) {
-			$regexp = '#' . str_replace('#', '\#', $uri) . '#';
-
-			if (preg_match($regexp, $requestUri)) {
-				return $response;
-			}
-		}
-
 		if (! $response instanceof Response) {
 			$response = new Response((string) $response);
 		}
@@ -185,7 +172,9 @@ class ClockworkSupport
 
 	public function isCollectingData()
 	{
-		return ($this->isEnabled() || $this->getConfig('collect_data_always', false)) && ! $this->app->runningInConsole();
+		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
+			&& ! $this->app->runningInConsole()
+			&& ! $this->isUriFiltered($this->app['request']->getRequestUri());
 	}
 
 	public function isCollectingDatabaseQueries()
@@ -221,6 +210,20 @@ class ClockworkSupport
 	public function isWebUsingDarkTheme()
 	{
 		return $this->getConfig('web_dark_theme', false);
+	}
+
+	public function isUriFiltered($uri)
+	{
+		$filterUris = $this->getConfig('filter_uris', []);
+		$filterUris[] = '/__clockwork(?:/.*)?'; // don't collect data for Clockwork requests
+
+		foreach ($filterUris as $filterUri) {
+			$regexp = '#' . str_replace('#', '\#', $filterUri) . '#';
+
+			if (preg_match($regexp, $uri)) return true;
+		}
+
+		return false;
 	}
 
 	protected function appendServerTimingHeader($response, $request)
