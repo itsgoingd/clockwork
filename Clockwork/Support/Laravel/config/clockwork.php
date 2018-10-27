@@ -129,8 +129,8 @@ return [
 	*/
 
 	'filter_uris' => [
-		'/__clockwork/.*', // disable collecting data for clockwork-web assets
-		'/horizon/.*', // disable collecting data for Laravel Horizon requests
+		'/horizon/.*', // Laravel Horizon requests
+		'/telescope/.*' // Laravel Telescope requests
 	],
 
 	/*
