@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as LumenController;
+use Laravel\Telescope\Telescope;
 
 class Controller extends LumenController
 {
@@ -21,7 +22,7 @@ class Controller extends LumenController
 
 	public function authenticate(Request $request)
 	{
-		if (! $this->clockworkSupport->isEnabled()) abort(404);
+		$this->ensureClockworkIsEnabled();
 
 		$token = $this->clockwork->getAuthenticator()->attempt(
 			$request->only([ 'username', 'password' ])
@@ -32,21 +33,21 @@ class Controller extends LumenController
 
 	public function getData($id = null, $direction = null, $count = null)
 	{
-		if (! $this->clockworkSupport->isEnabled()) abort(404);
+		$this->ensureClockworkIsEnabled();
 
 		return $this->clockworkSupport->getData($id, $direction, $count);
 	}
 
 	public function getExtendedData($id = null)
 	{
-		if (! $this->clockworkSupport->isEnabled()) abort(404);
+		$this->ensureClockworkIsEnabled();
 
 		return $this->clockworkSupport->getExtendedData($id);
 	}
 
 	public function webIndex(Request $request)
 	{
-		if (! $this->clockworkSupport->isEnabled()) abort(404);
+		$this->ensureClockworkIsEnabled();
 
 		if ($this->clockworkSupport->isWebUsingDarkTheme() && ! $request->exists('dark')) {
 			return new RedirectResponse('/__clockwork/app?dark');
@@ -57,15 +58,22 @@ class Controller extends LumenController
 
 	public function webAsset($path)
 	{
-		if (! $this->clockworkSupport->isEnabled()) abort(404);
+		$this->ensureClockworkIsEnabled();
 
 		return $this->clockworkSupport->getWebAsset("assets/{$path}");
 	}
 
 	public function webRedirect()
 	{
-		if (! $this->clockworkSupport->isEnabled()) abort(404);
+		$this->ensureClockworkIsEnabled();
 
 		return new RedirectResponse('/__clockwork/app');
+	}
+
+	protected function ensureClockworkIsEnabled()
+	{
+		if (class_exists(Telescope::class)) Telescope::stopRecording();
+
+		if (! $this->clockworkSupport->isEnabled()) abort(404);
 	}
 }
