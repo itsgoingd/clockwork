@@ -3,6 +3,7 @@
 use Clockwork\Clockwork;
 use Clockwork\Authentication\NullAuthenticator;
 use Clockwork\Authentication\SimpleAuthenticator;
+use Clockwork\Helpers\Serializer;
 use Clockwork\Helpers\ServerTiming;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\SqlStorage;
@@ -157,6 +158,14 @@ class ClockworkSupport
 		$this->appendServerTimingHeader($response, $this->app['clockwork']->getRequest());
 
 		return $response;
+	}
+
+	public function configureSerializer()
+	{
+		Serializer::defaults([
+			'limit'    => $this->getConfig('serialization_depth'),
+			'blackbox' => $this->getConfig('serialization_blackbox')
+		]);
 	}
 
 	public function isEnabled()

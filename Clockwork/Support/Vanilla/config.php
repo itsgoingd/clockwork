@@ -115,6 +115,27 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Serialization
+	|--------------------------------------------------------------------------
+	|
+	| Configure how Clockwork serializes the collected data.
+	| Depth limits how many levels of multi-level arrays and objects have
+	| extended serialization (rest uses simple serialization).
+	| Blackbox allows you to specify classes which contents should be never
+	| serialized (eg. a service container class).
+	| Lowering depth limit and adding classes to blackbox lowers the memory
+	| usage and processing time.
+	|
+	*/
+
+	'serialization_depth' => isset($_ENV['CLOCKWORK_SERIALIZATION_DEPTH']) ? $_ENV['CLOCKWORK_SERIALIZATION_DEPTH'] : 10,
+
+	'serialization_blackbox' => [
+		// \App\ServiceContainer::class
+	],
+
+	/*
+	|--------------------------------------------------------------------------
 	| Register helpers
 	|--------------------------------------------------------------------------
 	|

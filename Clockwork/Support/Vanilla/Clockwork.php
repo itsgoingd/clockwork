@@ -3,6 +3,7 @@
 use Clockwork\Clockwork as BaseClockwork;
 use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\PsrMessageDataSource;
+use Clockwork\Helpers\Serializer;
 use Clockwork\Helpers\ServerTiming;
 use Clockwork\Storage\FileStorage;
 
@@ -29,6 +30,8 @@ class Clockwork
 		$this->clockwork->setStorage($this->resolveStorage());
 
 		$this->clockwork->getLog()->collectStackTraces($this->config['collect_stack_traces']);
+
+		$this->configureSerializer();
 
 		if ($this->config['register_helpers']) include __DIR__ . '/helpers.php';
 
@@ -147,6 +150,14 @@ class Clockwork
 		$storage->filter = $this->config['filter'];
 
 		return $storage;
+	}
+
+	protected function configureSerializer()
+	{
+		Serializer::defaults([
+			'limit'    => $this->config['serialization_depth'],
+			'blackbox' => $this->config['serialization_blackbox']
+		]);
 	}
 
 	protected function setHeader($header, $value)

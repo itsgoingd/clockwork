@@ -128,6 +128,8 @@ class ClockworkServiceProvider extends ServiceProvider
 			$clockwork->setLog($app['clockwork.log']);
 			$clockwork->setStorage($support->getStorage());
 
+			$support->configureSerializer();
+
 			return $clockwork;
 		});
 
