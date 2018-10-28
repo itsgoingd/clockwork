@@ -68,7 +68,9 @@ class Serializer
 			$data = (array) $data;
 			$data = array_column(array_map(function ($key, $item) use ($className, $context, $limit) {
 				return [
-					str_replace([ "\0*\0", "\0{$className}\0" ], [ '*', '~' ], $key),
+					// replace null-byte prefixes of protected and private properties used by php with * (protected)
+					// and ~ (private)
+					preg_replace('/^\0.+?\0/', '~', str_replace("\0*\0", '*', $key)),
 					$this->normalize($item, $context, $limit - 1)
 				];
 			}, array_keys($data), $data), 1, 0);
