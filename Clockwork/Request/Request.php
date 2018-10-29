@@ -62,6 +62,9 @@ class Request
 	 */
 	public $sessionData = [];
 
+	// Authenticated user
+	public $authenticatedUser;
+
 	/**
 	 * Cookies array
 	 */
@@ -193,41 +196,42 @@ class Request
 	public function toArray()
 	{
 		return [
-			'id'               => $this->id,
-			'version'          => $this->version,
-			'time'             => $this->time,
-			'method'           => $this->method,
-			'url'              => $this->url,
-			'uri'              => $this->uri,
-			'headers'          => $this->headers,
-			'controller'       => $this->controller,
-			'getData'          => $this->getData,
-			'postData'         => $this->postData,
-			'sessionData'      => $this->sessionData,
-			'cookies'          => $this->cookies,
-			'responseTime'     => $this->responseTime,
-			'responseStatus'   => $this->responseStatus,
-			'responseDuration' => $this->getResponseDuration(),
-			'memoryUsage'      => $this->memoryUsage,
-			'databaseQueries'  => $this->databaseQueries,
-			'databaseDuration' => $this->getDatabaseDuration(),
-			'cacheQueries'     => $this->cacheQueries,
-			'cacheReads'       => $this->cacheReads,
-			'cacheHits'        => $this->cacheHits,
-			'cacheWrites'      => $this->cacheWrites,
-			'cacheDeletes'     => $this->cacheDeletes,
-			'cacheTime'        => $this->cacheTime,
-			'timelineData'     => $this->timelineData,
-			'log'              => array_values($this->log),
-			'events'           => $this->events,
-			'routes'           => $this->routes,
-			'emailsData'       => $this->emailsData,
-			'viewsData'        => $this->viewsData,
-			'userData'         => array_map(function ($data) {
+			'id'                => $this->id,
+			'version'           => $this->version,
+			'time'              => $this->time,
+			'method'            => $this->method,
+			'url'               => $this->url,
+			'uri'               => $this->uri,
+			'headers'           => $this->headers,
+			'controller'        => $this->controller,
+			'getData'           => $this->getData,
+			'postData'          => $this->postData,
+			'sessionData'       => $this->sessionData,
+			'authenticatedUser' => $this->authenticatedUser,
+			'cookies'           => $this->cookies,
+			'responseTime'      => $this->responseTime,
+			'responseStatus'    => $this->responseStatus,
+			'responseDuration'  => $this->getResponseDuration(),
+			'memoryUsage'       => $this->memoryUsage,
+			'databaseQueries'   => $this->databaseQueries,
+			'databaseDuration'  => $this->getDatabaseDuration(),
+			'cacheQueries'      => $this->cacheQueries,
+			'cacheReads'        => $this->cacheReads,
+			'cacheHits'         => $this->cacheHits,
+			'cacheWrites'       => $this->cacheWrites,
+			'cacheDeletes'      => $this->cacheDeletes,
+			'cacheTime'         => $this->cacheTime,
+			'timelineData'      => $this->timelineData,
+			'log'               => array_values($this->log),
+			'events'            => $this->events,
+			'routes'            => $this->routes,
+			'emailsData'        => $this->emailsData,
+			'viewsData'         => $this->viewsData,
+			'userData'          => array_map(function ($data) {
 				return $data instanceof UserData ? $data->toArray() : $data;
 			}, $this->userData),
-			'subrequests'      => $this->subrequests,
-			'xdebug'           => $this->xdebug
+			'subrequests'       => $this->subrequests,
+			'xdebug'            => $this->xdebug
 		];
 	}
 
@@ -336,6 +340,16 @@ class Request
 			'url'  => urlencode($url),
 			'id'   => $id,
 			'path' => $path
+		];
+	}
+
+	public function setAuthenticatedUser($username, $id = null, $data = [])
+	{
+		$this->authenticatedUser = [
+			'id'       => $id,
+			'username' => $username,
+			'email'    => isset($data['email']) ? $data['email'] : null,
+			'name'     => isset($data['name']) ? $data['name'] : null
 		];
 	}
 

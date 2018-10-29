@@ -22,15 +22,17 @@ class SqlStorage extends Storage
 	// List of all fields in the Clockwork requests table
 	protected $fields = [
 		'id', 'version', 'time', 'method', 'url', 'uri', 'headers', 'controller', 'getData', 'postData', 'sessionData',
-		'cookies', 'responseTime', 'responseStatus', 'responseDuration', 'memoryUsage', 'databaseQueries',
-		'databaseDuration', 'cacheQueries', 'cacheReads', 'cacheHits', 'cacheWrites', 'cacheDeletes', 'cacheTime',
-		'timelineData', 'log', 'events', 'routes', 'emailsData', 'viewsData', 'userData', 'subrequests', 'xdebug'
+		'authenticatedUser', 'cookies', 'responseTime', 'responseStatus', 'responseDuration', 'memoryUsage',
+		'databaseQueries', 'databaseDuration', 'cacheQueries', 'cacheReads', 'cacheHits', 'cacheWrites', 'cacheDeletes',
+		'cacheTime', 'timelineData', 'log', 'events', 'routes', 'emailsData', 'viewsData', 'userData', 'subrequests',
+		'xdebug'
 	];
 
 	// List of Request keys that need to be serialized before they can be stored in database
 	protected $needsSerialization = [
-		'headers', 'getData', 'postData', 'sessionData', 'cookies', 'databaseQueries', 'cacheQueries', 'timelineData',
-		'log', 'events', 'routes', 'emailsData', 'viewsData', 'userData', 'subrequests', 'xdebug'
+		'headers', 'getData', 'postData', 'sessionData', 'authenticatedUser', 'cookies', 'databaseQueries',
+		'cacheQueries', 'timelineData', 'log', 'events', 'routes', 'emailsData', 'viewsData', 'userData', 'subrequests',
+		'xdebug'
 	];
 
 	// Return a new storage, takes PDO object or DSN and optionally a table name and database credentials as arguments
@@ -151,6 +153,7 @@ class SqlStorage extends Storage
 				$this->quote('getData') . " {$textType} NULL, " .
 				$this->quote('postData') . " {$textType} NULL, " .
 				$this->quote('sessionData') . " {$textType} NULL, " .
+				$this->quote('authenticatedUser') . " {$textType} NULL, " .
 				$this->quote('cookies') . " {$textType} NULL, " .
 				$this->quote('responseTime') . ' DOUBLE PRECISION NULL, ' .
 				$this->quote('responseStatus') . ' INTEGER NULL, ' .

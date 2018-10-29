@@ -67,6 +67,8 @@ class LaravelDataSource extends DataSource
 		$request->routes         = $this->getRoutes();
 		$request->sessionData    = $this->getSessionData();
 
+		$this->resolveAuthenticatedUser($request);
+
 		$request->timelineData = $this->timeline->finalize($request->time);
 		$request->viewsData    = $this->views->finalize();
 
@@ -251,5 +253,16 @@ class LaravelDataSource extends DataSource
 	protected function getSessionData()
 	{
 		return $this->removePasswords((new Serializer)->normalizeEach($this->app['session']->all()));
+	}
+
+	// Add authenticated user data to the request
+	protected function resolveAuthenticatedUser(Request $request)
+	{
+		if (! ($user = $this->app['auth']->user())) return;
+
+		$request->setAuthenticatedUser($user->email, $user->id, [
+			'email' => $user->email,
+			'name'  => $user->name
+		]);
 	}
 }
