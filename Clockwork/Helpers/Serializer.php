@@ -99,4 +99,17 @@ class Serializer
 			];
 		}, $trace->frames());
 	}
+
+	public function exception(\Exception $exception)
+	{
+		return [
+			'type'     => get_class($exception),
+			'message'  => $exception->getMessage(),
+			'code'     => $exception->getCode(),
+			'file'     => $exception->getFile(),
+			'line'     => $exception->getLine(),
+			'trace'    => $this->trace(StackTrace::from($exception->getTrace())),
+			'previous' => $exception->getPrevious() ? $this->exception($exception->getPrevious()) : null
+		];
+	}
 }
