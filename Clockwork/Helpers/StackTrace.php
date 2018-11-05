@@ -11,14 +11,19 @@ class StackTrace
 
 	public static function get()
 	{
+		return static::from(
+			debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS)
+		);
+	}
+
+	public static function from(array $trace)
+	{
 		$basePath = static::resolveBasePath();
 		$vendorPath = static::resolveVendorPath();
 
-		$backbacktrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS);
-
 		return new static(array_map(function ($frame) use ($basePath, $vendorPath) {
 			return new StackFrame($frame, $basePath, $vendorPath);
-		}, $backbacktrace), $basePath, $vendorPath);
+		}, $trace), $basePath, $vendorPath);
 	}
 
 	public function __construct(array $frames, $basePath, $vendorPath)

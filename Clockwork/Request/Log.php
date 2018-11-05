@@ -29,13 +29,14 @@ class Log extends AbstractLogger
 		$caller = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'slim', 'monolog' ]);
 
 		$this->data[] = [
-			'message' => (new Serializer([ 'toString' => true ]))->normalize($message),
-			'context' => (new Serializer)->normalize($context),
-			'level'   => $level,
-			'time'    => microtime(true),
-			'file'    => $caller ? $caller->shortPath : null,
-			'line'    => $caller ? $caller->line : null,
-			'trace'   => $caller && ($this->collectStackTraces || ! empty($context['trace']))
+			'message'   => (new Serializer([ 'toString' => true ]))->normalize($message),
+			'exception' => $this->formatException($context),
+			'context'   => $this->formatContext($context),
+			'level'     => $level,
+			'time'      => microtime(true),
+			'file'      => $caller ? $caller->shortPath : null,
+			'line'      => $caller ? $caller->line : null,
+			'trace'     => $caller && ($this->collectStackTraces || ! empty($context['trace']))
 				? (new Serializer)->trace($trace->framesBefore($caller)) : null
 		];
 	}
@@ -53,5 +54,29 @@ class Log extends AbstractLogger
 	{
 		$this->collectStackTraces = $enable;
 		return $this;
+	}
+
+	// format message context, removes exception if we are serializing it
+	protected function formatContext($context)
+	{
+		if ($this->hasException($context)) {
+			unset($context['exception']);
+		}
+
+		return (new Serializer)->normalize($context);
+	}
+
+	// format exception if present in the context
+	protected function formatException($context)
+	{
+		if ($this->hasException($context)) {
+			return (new Serializer)->exception($context['exception']);
+		}
+	}
+
+	// check if context has serializable exception
+	protected function hasException($context)
+	{
+		return ! empty($context['exception']) && $context['exception'] instanceof \Exception && empty($context['raw']);
 	}
 }
