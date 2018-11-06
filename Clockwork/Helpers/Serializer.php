@@ -37,12 +37,9 @@ class Serializer
 		if ($data instanceof \Closure) {
 			return [ '__type__' => 'anonymous function' ];
 		} elseif (is_array($data)) {
-			return array_merge(
-				[ '__type__' => 'array' ],
-				array_map(function ($item) use ($context, $limit) {
-					return $this->normalize($item, $context, $limit - 1);
-				}, $data)
-			);
+			return [ '__type__' => 'array' ] + array_map(function ($item) use ($context, $limit) {
+				return $this->normalize($item, $context, $limit - 1);
+			}, $data);
 		} elseif (is_object($data)) {
 			if ($this->options['toString'] && method_exists($data, '__toString')) {
 				return (string) $data;
@@ -75,7 +72,7 @@ class Serializer
 				];
 			}, array_keys($data), $data), 1, 0);
 
-			return $this->cache[$objectHash] = array_merge([ '__class__' => $className ], $data);
+			return $this->cache[$objectHash] = [ '__class__' => $className ] + $data;
 		} elseif (is_resource($data)) {
 			return [ '__type__' => 'resource' ];
 		}
