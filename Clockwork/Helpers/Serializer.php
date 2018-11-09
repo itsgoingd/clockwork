@@ -97,7 +97,7 @@ class Serializer
 		}, $trace->frames());
 	}
 
-	public function exception(\Exception $exception)
+	public function exception(/* Throwable */ $exception)
 	{
 		return [
 			'type'     => get_class($exception),
