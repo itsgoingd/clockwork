@@ -318,10 +318,22 @@ class Clockwork implements LoggerInterface
 		return $this->getRequest()->addView($name, $data);
 	}
 
-	// Record executed subrequest, takes the requested url, returned Clockwork ID and optional path if non-default
-	public function addSubrequest($url, $id, $path = null)
+	// Add executed subrequest, takes the requested url, suvrequest Clockwork ID and additional data - path if non-default,
+	// start and end time or duration in seconds to add the subrequest to the timeline
+	public function addSubrequest($url, $id, $data = [])
 	{
-		return $this->getRequest()->addSubrequest($url, $id, $path);
+		if (isset($data['duration'])) {
+			$data['end'] = microtime(true);
+			$data['start'] = $data['end'] - $data['duration'];
+		}
+
+		if (isset($data['start'])) {
+			$this->timeline->addEvent(
+				"subrequest-{$id}", "Subrequest - {$url}", $data['start'], isset($data['end']) ? $data['end'] : null
+			);
+		}
+
+		return $this->getRequest()->addSubrequest($url, $id, $data);
 	}
 
 	// DEPRECATED Use addSubrequest method

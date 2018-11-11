@@ -331,15 +331,13 @@ class Request
 		];
 	}
 
-	/**
-	 * Record executed subrequest, takes the requested url, returned Clockwork ID and optional path if non-default
-	 */
-	public function addSubrequest($url, $id, $path = null)
+	// Add executed subrequest, takes the requested url, suvrequest Clockwork ID and additional data - path if non-default
+	public function addSubrequest($url, $id, $data = [])
 	{
 		$this->subrequests[] = [
-			'url'  => urlencode($url),
+			'url'  => $url,
 			'id'   => $id,
-			'path' => $path
+			'path' => isset($data['path']) ? $data['path'] : null
 		];
 	}
 
