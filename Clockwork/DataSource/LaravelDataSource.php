@@ -252,6 +252,10 @@ class LaravelDataSource extends DataSource
 	 */
 	protected function getSessionData()
 	{
+		if (! isset($this->app['session'])) {
+			return [];
+		}
+		
 		return $this->removePasswords((new Serializer)->normalizeEach($this->app['session']->all()));
 	}
 
