@@ -104,7 +104,7 @@ class PrettyJason
 			}
 		}
 
-		return [ value, typeof value ]
+		return [ value.toString(), typeof value ]
 	}
 
 	objectNodeClickedCallback (node) {

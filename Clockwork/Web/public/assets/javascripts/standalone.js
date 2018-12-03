@@ -41,11 +41,21 @@ class Standalone
 	}
 
 	setMetadataClient () {
-		this.requests.setClient((method, url, data, headers) => {
+		this.requests.setClient((method, url, data, headers = {}) => {
 			let isProfiling = this.profiler.isProfiling
 
+			if (data) headers['Content-Type'] = undefined // let angular figure out correct form-data header
+
+            let transformRequest = (data) => {
+                let formData = new FormData()
+
+                angular.forEach(data, (value, key) => formData.append(key, value))
+
+                return formData
+            }
+
 			let makeRequest = () => {
-				return this.$http({ method: method.toLowerCase(), url, data, headers })
+				return this.$http({ method: method.toLowerCase(), url, data, headers, transformRequest })
 					.then(data => {
 						if (isProfiling) this.profiler.enableProfiling()
 

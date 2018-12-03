@@ -1,4 +1,4 @@
-Clockwork.controller('PanelController', function ($scope, $q, $http, filter, profiler, requests, updateNotification)
+Clockwork.controller('PanelController', function ($scope, $q, $http, filter, profiler, requests, settings, updateNotification)
 {
 	$scope.requests = []
 	$scope.request = null
@@ -10,6 +10,7 @@ Clockwork.controller('PanelController', function ($scope, $q, $http, filter, pro
 	$scope.preserveLog = true
 	$scope.requestsListCollapsed = false
 	$scope.showIncomingRequests = true
+	$scope.showSettings = false
 
 	$scope.expandedEvents = []
 
@@ -29,6 +30,7 @@ Clockwork.controller('PanelController', function ($scope, $q, $http, filter, pro
 
 		this.authentication = new Authentication($scope, $q, requests)
 		this.profiler = profiler.setScope($scope)
+		this.settings = settings
 	}
 
 	$scope.initFilters = function () {
@@ -307,6 +309,30 @@ Clockwork.controller('PanelController', function ($scope, $q, $http, filter, pro
 		$scope.preserveLog = ! $scope.preserveLog
 	}
 
+	$scope.showPreviousRequestException = function (event, exception) {
+		event.preventDefault()
+
+		$scope.request.exceptions.push(exception.previous)
+
+		exception.previous = undefined
+	}
+
+	$scope.showPreviousLogException = function (event, message) {
+		event.preventDefault()
+
+		let messageIndex = $scope.request.log.indexOf(message)
+
+		$scope.request.log.splice(messageIndex + 1, 0, {
+			message:   message.exception.previous.message,
+			exception: message.exception.previous,
+			level:     'error',
+			shortPath: `${message.exception.previous.file.split(/[\/\\]/).pop()}:${message.exception.previous.line}`,
+			trace:     message.exception.previous.trace
+		})
+
+		message.exception.previous = undefined
+	}
+
 	$scope.isEventExpanded = function (event) {
 		return $scope.expandedEvents.indexOf(event) !== -1
 	}
@@ -323,6 +349,25 @@ Clockwork.controller('PanelController', function ($scope, $q, $http, filter, pro
 		$scope.updateNotification = null
 
 		updateNotification.ignoreUpdate(requests.remoteUrl)
+	}
+
+	$scope.toggleSettings = function (ev) {
+		if (ev) {
+			ev.preventDefault()
+			ev.stopPropagation()
+		}
+
+		if (! $scope.showSettings) {
+			settings.reload()
+		}
+
+		$scope.showSettings = ! $scope.showSettings
+	}
+
+	$scope.saveSettings = function () {
+		settings.save()
+
+		$scope.showSettings = false
 	}
 
 	$scope.fixRequestsScrollbar = function () {

@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Clockwork",
-	"version": "3.0",
+	"version": "3.1",
 
 	"description": "php dev tools integrated to your browser",
 	"homepage_url": "https://github.com/itsgoingd/clockwork-chrome",
@@ -16,6 +16,8 @@
 	"background": {
 		"scripts": [ "assets/javascripts/chrome/background.js" ]
 	},
+
+	"incognito": "split",
 
 	"permissions": [
 		"cookies",

@@ -144,6 +144,8 @@ a {
     float: right;
     letter-spacing: -0.5px;
     line-height: 29px;
+    margin-right: -6px;
+    padding: 0 6px;
     position: relative; }
     .split-view-requests .notifications-count .errors-count i {
       color: #b3492e;
@@ -354,6 +356,46 @@ a {
       .details-content .request-tab-info .field.link {
         font-size: 90%;
         padding: 0; }
+  .details-content .request-tab-exception {
+    margin: 12px -10px; }
+    .details-content .request-tab-exception .exception-info {
+      align-items: center;
+      background: #ffebeb;
+      color: #c51f24;
+      display: flex;
+      padding: 10px 30px; }
+      .details-content .request-tab-exception .exception-info:nth-child(even) {
+        background: #ffe0e0; }
+      .details-content .request-tab-exception .exception-info:first-child {
+        padding-top: 15px; }
+      .details-content .request-tab-exception .exception-info:last-child {
+        padding-bottom: 15px; }
+      body.dark .details-content .request-tab-exception .exception-info {
+        background: #380000;
+        color: #ed797a; }
+        body.dark .details-content .request-tab-exception .exception-info:nth-child(even) {
+          background: #2e0000; }
+      .details-content .request-tab-exception .exception-info h3 {
+        border-bottom: 0;
+        padding: 6px 0; }
+      .details-content .request-tab-exception .exception-info .exception-message {
+        flex: 1;
+        font-size: 15px;
+        line-height: 1.5; }
+      .details-content .request-tab-exception .exception-info .exception-previous, .details-content .request-tab-exception .exception-info .exception-trace .stack-trace > a {
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        font-size: 11px;
+        font-variant: small-caps;
+        padding: 3px 12px;
+        text-transform: uppercase; }
+        body.dark .details-content .request-tab-exception .exception-info .exception-previous, body.dark .details-content .request-tab-exception .exception-info .exception-trace .stack-trace > a {
+          border-color: gray; }
+      .details-content .request-tab-exception .exception-info .exception-previous {
+        margin-right: 4px;
+        text-decoration: none; }
+      .details-content .request-tab-exception .exception-info .exception-trace {
+        display: inline-block; }
   .details-content .performance-chart-container {
     flex: 0 1 100px; }
   .details-content .performance-chart {
@@ -605,6 +647,19 @@ a {
     .details-content .log-message .log-message-content {
       flex: 1 0 auto;
       max-width: 100%; }
+    .details-content .log-message .log-message-exception {
+      flex: 0;
+      font-size: 90%;
+      margin: 3px 5px 0 0;
+      white-space: nowrap; }
+      .details-content .log-message .log-message-exception .exception-previous {
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        text-decoration: none;
+        padding: 2px 4px;
+        margin-right: 5px; }
+        body.dark .details-content .log-message .log-message-exception .exception-previous {
+          border-color: gray; }
     .details-content .log-message .log-message-path {
       color: #aaa;
       flex: 0;
@@ -648,6 +703,35 @@ a {
   .details-content .cache-query-type {
     font-size: 125%;
     font-variant: small-caps; }
+  .details-content .session-user {
+    align-items: center;
+    border: 1px solid #d1d1d1;
+    border-radius: 3px;
+    box-shadow: 0 2px 3px #e5e5e5;
+    display: flex;
+    font-size: 130%;
+    margin: 0 5px 10px;
+    padding: 12px 20px 14px; }
+    body.dark .details-content .session-user {
+      border: 1px solid #404040;
+      box-shadow: 0 2px 3px #292929; }
+    .details-content .session-user .fa {
+      color: gray;
+      font-size: 28px;
+      margin-right: 16px; }
+    .details-content .session-user .name {
+      margin-right: 4px; }
+    .details-content .session-user .title {
+      font-size: 13px;
+      font-variant: small-caps;
+      text-transform: lowercase; }
+    .details-content .session-user .dimmed {
+      color: gray;
+      font-size: 90%; }
+      body.dark .details-content .session-user .dimmed {
+        color: #767676; }
+    .details-content .session-user .session-user-details {
+      margin-left: auto; }
 
 .details-loading-overlay, .details-error-overlay, .details-authentication-overlay {
   align-items: center;
@@ -733,10 +817,74 @@ a {
   .update-notification .updateNotification-close, .update-notification .parentRequest-close, .parent-request .updateNotification-close, .parent-request .parentRequest-close {
     margin-left: auto; }
 
+.settings-container .popover {
+  right: -11px !important;
+  top: 14px; }
+  .settings-container .popover .popover-content {
+    padding: 6px 18px;
+    text-align: left; }
+    .settings-container .popover .popover-content a {
+      padding: 0; }
+
+.settings-container .controls-group {
+  margin: 8px 0 14px; }
+
+.settings-container .controls-input-vgroup {
+  font-size: 90%; }
+  .settings-container .controls-input-vgroup input {
+    border: 1px solid #ccc;
+    padding: 1px 4px; }
+  .settings-container .controls-input-vgroup input:first-child {
+    border-radius: 4px 4px 0 0; }
+  .settings-container .controls-input-vgroup input:last-child {
+    border-radius: 0 0 4px 4px;
+    margin-top: -2px; }
+
+.settings-container .help-text {
+  font-size: 80%;
+  margin-top: 8px; }
+
+.settings-container label {
+  display: block;
+  font-size: 90%;
+  margin-bottom: 6px; }
+
+.settings-container input, .settings-container select {
+  font-size: 90%;
+  margin: 0 -6px;
+  width: calc(100% + 12px); }
+  body.dark .settings-container input, body.dark .settings-container select {
+    color: #e9e9e9; }
+
+body.dark .settings-container input {
+  background: #71706f;
+  border-color: #7c7a78; }
+  body.dark .settings-container input::placeholder {
+    color: #939291;
+    opacity: 1; }
+
+body.dark .settings-container select {
+  background: #6a6866;
+  border: 1px solid #7c7a78;
+  border-radius: 5px; }
+
+.settings-container .settings-save {
+  text-align: center; }
+
+.settings-container button {
+  background: transparent;
+  border: none;
+  color: #258cdb;
+  font-size: 90%; }
+  body.dark .settings-container button {
+    color: #f27e02; }
+
 .stack-trace {
   cursor: pointer; }
   .stack-trace .popover {
     cursor: default; }
+  .stack-trace a {
+    text-decoration: none; }
   .stack-trace .stack-frame {
     color: #000;
     padding: 6px 10px;

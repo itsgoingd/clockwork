@@ -4,8 +4,10 @@ class Requests
 		this.items = []
 
 		try {
-			this.tokens = JSON.parse(localStorage.getItem('requests.tokens') || '{}')
+			this.tokens = JSON.parse(localStorage.getItem('requests.tokens'))
 		} catch (e) {}
+
+		if (! (this.tokens instanceof Object)) this.tokens = {}
 	}
 
 	// returns all requests up to the first placeholder, or everything if there are no placeholders

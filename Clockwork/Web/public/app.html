@@ -18,6 +18,7 @@
 		<script src="assets/vendor/javascripts/clipboard.min.js"></script>
 		<script src="assets/vendor/javascripts/ngclipboard.min.js"></script>
 		<script src="assets/vendor/javascripts/callgrind.js"></script>
+		<script src="assets/vendor/javascripts/clickoutside.directive.js"></script>
 
 		<script src="assets/javascripts/app.js"></script>
 		<script src="assets/javascripts/directives/load-more-requests.js"></script>
@@ -26,6 +27,7 @@
 		<script src="assets/javascripts/directives/shortened-text.js"></script>
 		<script src="assets/javascripts/directives/stack-trace.js"></script>
 		<script src="assets/javascripts/directives/tabs.js"></script>
+		<script src="assets/javascripts/filters/editor-link.js"></script>
 		<script src="assets/javascripts/authentication.js"></script>
 		<script src="assets/javascripts/extension.js"></script>
 		<script src="assets/javascripts/filter.js"></script>
@@ -33,6 +35,7 @@
 		<script src="assets/javascripts/profiler.js"></script>
 		<script src="assets/javascripts/request.js"></script>
 		<script src="assets/javascripts/requests.js"></script>
+		<script src="assets/javascripts/settings.js"></script>
 		<script src="assets/javascripts/standalone.js"></script>
 		<script src="assets/javascripts/update-notification.js"></script>
 	</head>
@@ -126,7 +129,7 @@
 						<a tab-name="app.events" ng-show="request.events.length" class="details-header-tab" href="#">Events</a>
 						<a tab-name="app.db" ng-show="request.databaseQueries.length" class="details-header-tab" href="#">Database</a>
 						<a tab-name="app.cache" ng-show="showCacheTab()" class="details-header-tab" href="#">Cache</a>
-						<a tab-name="app.session" ng-show="request.sessionData.length" class="details-header-tab" href="#">Session</a>
+						<a tab-name="app.session" ng-show="request.sessionData.length || request.authenticatedUser" class="details-header-tab" href="#">Session</a>
 						<a tab-name="app.views" ng-show="request.views.length" class="details-header-tab" href="#">Views</a>
 						<a tab-name="app.emails" ng-show="request.emails.length" class="details-header-tab" href="#">Emails</a>
 						<a tab-name="app.routes" ng-show="request.routes.length" class="details-header-tab" href="#">Routes</a>
@@ -134,12 +137,60 @@
 					</div>
 
 					<div class="icons">
+						<div class="popover-container settings-container">
+							<a href="#" title="Settings" ng-click="toggleSettings($event)">
+								<span class="fa fa-cog"></span>
+							</a>
+							<div class="popover right-aligned" ng-show="showSettings" click-outside="toggleSettings()">
+								<div class="popover-content">
+									<div class="controls-group">
+										<label for="settings-editor">Code editor</label>
+
+										<select id="settings-editor" ng-model="settings.editor">
+											<option value="atom">Atom</option>
+											<option value="phpstorm">PhpStorm</option>
+											<option value="sublime">Sublime Text</option>
+											<option value="textmate">Textmate</option>
+											<option value="vs-code">Visual Studio Code</option>
+										</select>
+
+										<div class="help-text" ng-show="settings.editor == 'atom'">
+											Requires <a href="https://atom.io/packages/open" target="_blank">Atom Open</a> package.
+										</div>
+										<div class="help-text" ng-show="settings.editor == 'sublime'">
+											Requires <a href="https://github.com/asuth/subl-handler" target="_blank">subl-handler</a>.
+										</div>
+									</div>
+
+									<div class="controls-group">
+										<label for="settings-local-path-map">Local path map</label>
+
+										<div class="controls-input-vgroup">
+											<input type="text" name="settings-local-path-map-real" ng-model="settings.localPathMapReal" placeholder="/real/path">
+											<input type="text" name="settings-local-path-map-local" ng-model="settings.localPathMapLocal" placeholder="/local/path">
+										</div>
+
+										<div class="help-text">
+											Map real to local path for the code editor links.
+										</div>
+									</div>
+
+									<div class="controls-group settings-save">
+										<button ng-click="saveSettings()">
+											Save
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
 						<a href="#" title="Preserve log" ng-show="! preserveLog" ng-click="togglePreserveLog()">
 							<span class="fa fa-circle-o"></span>
 						</a>
 						<a href="#" title="Preserve log" ng-show="preserveLog" ng-click="togglePreserveLog()">
 							<span class="fa fa-circle"></span>
 						</a>
+
 						<a href="#" title="Clear" ng-click="clear()">
 							<span class="fa fa-ban"></span>
 						</a>
@@ -194,6 +245,20 @@
 								<div class="field-title">Status</div>
 								<div class="field-value">
 									<div>{{request.responseStatus}}</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="request-tab-exception" ng-if="request.exceptions.length">
+							<div class="exception-info" ng-repeat="exception in request.exceptions">
+								<div class="exception-message">
+									<h3>{{exception.type}} <small ng-if="exception.code">#{{exception.code}}</small></h3>
+
+									{{exception.message}}
+								</div>
+								<div>
+									<a href="#" class="exception-previous" ng-click="showPreviousRequestException($event, exception)" ng-if="exception.previous">Previous</a>
+									<stack-trace class="exception-trace" trace="exception.trace" short-path="'Trace'"></stack-trace>
 								</div>
 							</div>
 						</div>
@@ -602,6 +667,11 @@
 													<pretty-print data="message.context"></pretty-print>
 												</div>
 											</div>
+											<div class="log-message-exception" ng-if="message.exception">
+												<a href="#" class="exception-previous" ng-if="message.exception.previous" ng-click="showPreviousLogException($event, message)">Show previous</a>
+												<span class="exception-type">{{message.exception.type}}</span>
+												<span class="exception-code" ng-if="message.exception.code">#{{message.exception.code}}</span>
+											</div>
 											<stack-trace class="log-message-path" trace="message.trace" short-path="message.shortPath" full-path="message.fullPath"></stack-trace>
 										</div>
 									</td>
@@ -805,7 +875,7 @@
 									</p>
 									<p class="message">
 										Profiling requires the Xdebug php extension.<br>
-										<a href="#">Read more about how to set up Xdebug</a>
+										<a href="https://underground.works/clockwork/xdebug-profiler?#content" target="_blank">Read more about how to set up Xdebug</a>
 									</p>
 									<p class="message profiler-enable">
 										<a href="#" ng-click="profiler.enableProfiling()" ng-show="! profiler.isProfiling">
@@ -821,6 +891,19 @@
 					</div>
 
 					<div tab-content="app.session">
+						<div class="session-user" ng-if="request.authenticatedUser">
+							<span class="fa fa-user"></span>
+							<div>
+								<span class="name" ng-if="request.authenticatedUser.name && request.authenticatedUser.name.trim()">{{ request.authenticatedUser.name }}</span>
+								<span ng-class="request.authenticatedUser.name && request.authenticatedUser.name.trim() ? 'dimmed' : ''">{{ request.authenticatedUser.username }}</span>
+								<br>
+								<span class="title">authenticated user</span>
+							</div>
+							<span class="session-user-details" ng-if="request.authenticatedUser.email || request.authenticatedUser.id">
+								<span class="dimmed" ng-if="request.authenticatedUser.id">#{{ request.authenticatedUser.id }}</span>
+							</span>
+						</div>
+
 						<table>
 							<thead>
 								<tr>

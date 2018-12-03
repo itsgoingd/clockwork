@@ -174,7 +174,7 @@ class Extension
 				return subrequests.concat(
 					header.value.split(',').map(value => {
 						let data = value.trim().split(';')
-						return { id: data[0], url: data[1], path: data[2] }
+						return { id: data[0], url: decodeURIComponent(data[1]), path: decodeURIComponent(data[2]) }
 					})
 				)
 			}, [])

@@ -234,6 +234,8 @@ a {
 		float: right;
 		letter-spacing: -0.5px;
 		line-height: 29px;
+	    margin-right: -6px;
+	    padding: 0 6px;
 		position: relative;
 
 		.errors-count i {
@@ -579,6 +581,72 @@ a {
 			&.link {
 				font-size: 90%;
 				padding: 0;
+			}
+		}
+	}
+
+	.request-tab-exception {
+	    margin: 12px -10px;
+
+		.exception-info {
+			align-items: center;
+			background: rgb(255, 235, 235);
+			color: rgb(197, 31, 36);
+		    display: flex;
+		    padding: 10px 30px;
+
+			&:nth-child(even) {
+				background: hsl(0, 100%, 94%);
+			}
+
+			&:first-child {
+				padding-top: 15px;
+			}
+
+			&:last-child {
+				padding-bottom: 15px;
+			}
+
+			body.dark & {
+				background: hsl(0, 100%, 11%);
+				color: rgb(237, 121, 122);
+
+				&:nth-child(even) {
+					background: hsl(0, 100%, 9%);
+				}
+			}
+
+			h3 {
+			    border-bottom: 0;
+		        padding: 6px 0;
+			}
+
+		    .exception-message {
+			    flex: 1;
+	    	    font-size: 15px;
+			    line-height: 1.5;
+		    }
+
+    		.exception-previous, .exception-trace .stack-trace > a {
+	    	    border: 1px solid #aaa;
+			    border-radius: 4px;
+			    font-size: 11px;
+			    font-variant: small-caps;
+				padding: 3px 12px;
+			    text-transform: uppercase;
+
+			    body.dark & {
+					border-color: gray;
+			    }
+			}
+
+			.exception-previous {
+				margin-right: 4px;
+				text-decoration: none;
+			}
+
+			.exception-trace {
+				display: inline-block;
 			}
 		}
 	}
@@ -1041,6 +1109,25 @@ a {
 			max-width: 100%;
 		}
 
+		.log-message-exception {
+			flex: 0;
+			font-size: 90%;
+			margin: 3px 5px 0 0;
+		    white-space: nowrap;
+
+		    .exception-previous {
+	    	    border: 1px solid #aaa;
+			    border-radius: 4px;
+			    text-decoration: none;
+			    padding: 2px 4px;
+			    margin-right: 5px;
+
+			    body.dark & {
+					border-color: gray;
+			    }
+		    }
+		}
+
 		.log-message-path {
 			color: #aaa;
 			flex: 0;
@@ -1119,6 +1206,53 @@ a {
 	.cache-query-type {
 		font-size: 125%;
 		font-variant: small-caps;
+	}
+
+	// Session tab
+
+	.session-user {
+		align-items: center;
+		border: 1px solid rgb(209, 209, 209);
+		border-radius: 3px;
+		box-shadow: 0 2px 3px #e5e5e5;
+		display: flex;
+		font-size: 130%;
+		margin: 0 5px 10px;
+		padding: 12px 20px 14px;
+
+		body.dark & {
+			border: 1px solid rgb(64, 64, 64);
+			box-shadow: 0 2px 3px #292929;
+		}
+
+		.fa {
+			color: rgb(128, 128, 128);
+			font-size: 28px;
+			margin-right: 16px;
+		}
+
+		.name {
+			margin-right: 4px;
+		}
+
+		.title {
+			font-size: 13px;
+			font-variant: small-caps;
+			text-transform: lowercase;
+		}
+
+		.dimmed {
+			color: rgb(128, 128, 128);
+			font-size: 90%;
+
+			body.dark & {
+				color: rgb(118, 118, 118);
+			}
+		}
+
+		.session-user-details {
+			margin-left: auto;
+		}
 	}
 }
 
@@ -1244,11 +1378,107 @@ a {
 	}
 }
 
+.settings-container {
+	.popover {
+	    right: -11px !important;
+	    top: 14px;
+
+    	.popover-content {
+		    padding: 6px 18px;
+		    text-align: left;
+
+	    	a {
+				padding: 0;
+			}
+		}
+	}
+
+	.controls-group {
+		margin: 8px 0 14px;
+	}
+
+	.controls-input-vgroup {
+		font-size: 90%;
+
+		input {
+			border: 1px solid #ccc;
+			padding: 1px 4px;
+		}
+
+		input:first-child {
+			border-radius: 4px 4px 0 0;
+		}
+
+		input:last-child {
+			border-radius: 0 0 4px 4px;
+		    margin-top: -2px;
+		}
+	}
+
+	.help-text {
+	    font-size: 80%;
+		margin-top: 8px;
+	}
+
+	label {
+		display: block;
+		font-size: 90%;
+		margin-bottom: 6px;
+	}
+
+	input, select {
+		font-size: 90%;
+		margin: 0 -6px;
+		width: calc(100% + 12px);
+
+		body.dark & { color: rgb(233, 233, 233); }
+	}
+
+	input {
+		body.dark & {
+			background: rgb(113, 112, 111);
+			border-color: rgb(124, 122, 120);
+
+			&::placeholder {
+				color: rgb(147, 146, 145);
+				opacity: 1;
+			}
+		}
+	}
+
+	select {
+		body.dark & {
+			background: rgb(106, 104, 102);
+			border: 1px solid rgb(124, 122, 120);
+			border-radius: 5px;
+		}
+	}
+
+	.settings-save {
+		text-align: center;
+	}
+
+	button {
+		background: transparent;
+		border: none;
+		color: #258cdb;
+		font-size: 90%;
+
+		body.dark & {
+		    color: #f27e02;
+		}
+	}
+}
+
 .stack-trace {
 	cursor: pointer;
 
 	.popover {
 		cursor: default;
+	}
+
+	a {
+		text-decoration: none;
 	}
 
 	.stack-frame {
@@ -1268,7 +1498,6 @@ a {
 				background: rgb(27, 27, 27);
 			}
 		}
-
 
 		.stack-frame-call {
 			font-size: 12px;

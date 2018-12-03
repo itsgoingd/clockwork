@@ -25,6 +25,7 @@ class Request
 
 		this.errorsCount = this.getErrorsCount()
 		this.warningsCount = this.getWarningsCount()
+		this.exceptions = this.processExceptions()
 	}
 
 	static placeholder (id, request, parent) {
@@ -135,6 +136,27 @@ class Request
 		})
 	}
 
+	processExceptions () {
+		let exception = this.log.length ? this.log[this.log.length - 1].exception : null
+
+		if (this.responseStatus != 500 || ! exception) return []
+
+		exception = angular.copy(exception)
+
+		let current = exception;
+
+		do {
+			current.trace = this.processStackTrace([ {
+				call:     `${current.type}()`,
+				file:     current.file,
+				line:     current.line,
+				isVendor: false
+			}, ...current.trace ])
+		} while (current = current.previous)
+
+		return [ exception ]
+	}
+
 	processHeaders (data) {
 		if (! (data instanceof Object)) return []
 
@@ -161,6 +183,12 @@ class Request
 		if (! (data instanceof Array)) return []
 
 		return data.map(message => {
+			if (message.exception) {
+				message.file = message.exception.file
+				message.line = message.exception.line
+				message.trace = message.exception.trace
+			}
+
 			message.time = new Date(message.time * 1000)
 			message.context = message.context instanceof Object && Object.keys(message.context).filter(key => key != '__type__').length ? message.context : undefined
 			message.fullPath = message.file && message.line ? message.file.replace(/^\//, '') + ':' + message.line : undefined
