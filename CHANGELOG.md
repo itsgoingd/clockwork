@@ -1,3 +1,18 @@
+3.1
+
+- added new integration for vanilla PHP (thanks martbean)
+- added support for collecting authenticated user info
+- added bunch of helper methods for adding data like databse queries or events to Clockwork
+- added serializer options to the config files
+- updated web UI to match latest Chrome version
+- improved collecting of exceptions
+- improved filtered uris implementation in Laravel to no longer have any performance overhead (thanks marcusbetts)
+- improved compatibility with Laravel Telescope
+- fixed numeric keys being lost on serialization of arrays (thanks ametad)
+- fixed serialization of parent class private properties
+- fixed a possible crash when resolving stack traces (thanks mbardelmeijer)
+- deprecated Clockwork::subrequest method in favor of Clockwork::addSubrequest
+
 3.0.2
 
 - fixed infinite redirect if dark web theme is enabled on Laravel or Lumen <5.5 (thanks pixelskribe)
