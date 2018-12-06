@@ -1,3 +1,8 @@
+3.1.1
+
+- exposed the Request::setAuthenticatedUser method on the main Clockwork class
+- fixed possible crash in LaravelDataSource when resolving authenticated user in non-standard auth implementations (thanks freshleafmedia, motia)
+
 3.1
 
 - added new integration for vanilla PHP (thanks martbean)
