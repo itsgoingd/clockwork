@@ -342,6 +342,12 @@ class Clockwork implements LoggerInterface
 		return $this->getRequest()->addSubrequest($url, $id, $path);
 	}
 
+	// Set the authenticated user, takes the username, id and additional data - email and full name of the user
+	public function setAuthenticatedUser($username, $id = null, $data = [])
+	{
+		return $this->getRequest()->setAuthenticatedUser($username, $id, $data);
+	}
+
 	// Add custom user data (presented as additional tabs in the official app)
 	public function userData($key = null)
 	{

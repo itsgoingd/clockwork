@@ -341,6 +341,7 @@ class Request
 		];
 	}
 
+	// Set the authenticated user, takes the username, id and additional data - email and full name of the user
 	public function setAuthenticatedUser($username, $id = null, $data = [])
 	{
 		$this->authenticatedUser = [
