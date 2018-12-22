@@ -6,6 +6,7 @@ use Clockwork\DataSource\PsrMessageDataSource;
 use Clockwork\Helpers\Serializer;
 use Clockwork\Helpers\ServerTiming;
 use Clockwork\Storage\FileStorage;
+use Clockwork\Storage\SqlStorage;
 
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Message\ResponseInterface as PsrResponse;
