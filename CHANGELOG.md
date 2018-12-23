@@ -1,3 +1,7 @@
+3.1.2
+
+- fixed missing use statement in vanilla integration (thanks micc83)
+
 3.1.1
 
 - exposed the Request::setAuthenticatedUser method on the main Clockwork class
