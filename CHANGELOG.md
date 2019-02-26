@@ -1,3 +1,7 @@
+3.1.3
+
+- updated LaravelCacheDataSource to support Laravel 5.8
+
 3.1.2
 
 - fixed missing use statement in vanilla integration (thanks micc83)
