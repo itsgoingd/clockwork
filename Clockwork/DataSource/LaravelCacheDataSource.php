@@ -62,7 +62,8 @@ class LaravelCacheDataSource extends DataSource
 		});
 		$this->eventDispatcher->listen(\Illuminate\Cache\Events\KeyWritten::class, function ($event) {
 			$this->registerQuery([
-				'type' => 'write', 'key' => $event->key, 'value' => $event->value, 'expiration' => $event->minutes * 60
+				'type' => 'write', 'key' => $event->key, 'value' => $event->value,
+				'expiration' => property_exists($event, 'seconds') ? $event->seconds : $event->minutes * 60
 			]);
 		});
 		$this->eventDispatcher->listen(\Illuminate\Cache\Events\KeyForgotten::class, function ($event) {
