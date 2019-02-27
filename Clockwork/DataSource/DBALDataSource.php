@@ -5,7 +5,7 @@ use Clockwork\Request\Timeline;
 
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\DBAL\Logging\LoggerChain;
-use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Connection;
 
 class DBALDataSource extends DataSource implements SQLLogger
@@ -68,7 +68,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 	{
 		$this->start = microtime(true);
 
-		$sql = $this->replaceParams($sql, $params);
+		$sql = $this->replaceParams($sql, $params, $types);
 		$sql = $this->formatQuery($sql);
 
 		$this->query = [ 'sql' => $sql, 'params' => $params, 'types' => $types ];
@@ -91,41 +91,52 @@ class DBALDataSource extends DataSource implements SQLLogger
 		}, $sql);
 	}
 
-	protected function replaceParams($sql, $params)
+	protected function replaceParams($sql, $params, $types)
 	{
 		if (is_array($params)) {
-			foreach ($params as $param) {
-				$param = $this->convertParam($param);
-				$sql   = preg_replace('/\?/', "$param", $sql, 1);
+			foreach ($params as $key => $param) {
+				$type = isset($types[$key]) ? $types[$key] : null;
+				$param = $this->convertParam($param, $type);
+
+				if (is_string($key)) {
+					$sql = preg_replace("/:$key/", "$param", $sql);
+				} else {
+					$sql = preg_replace('/\?/', "$param", $sql, 1);
+				}
 			}
 		}
 
 		return $sql;
 	}
 
-	protected function convertParam($param)
+	protected function convertParam($param, $type)
 	{
-		if (is_object($param)) {
-			if (! method_exists($param, '__toString')) {
-				if ($param instanceof \DateTime || $param instanceof \DateTimeImmutable) {
-					$param = $param->format('Y-m-d H:i:s');
-				} else {
-					throw new \Exception('Given query param is an instance of ' . get_class($param) . ' and could not be converted to a string');
-				}
+		if (is_array($param)) {
+			$convertedArray = [];
+			foreach ($param as $item) {
+				$convertedArray[] = $this->convertParam($item, $type);
 			}
-		} elseif (is_array($param)) {
-			if (count($param) !== count($param, COUNT_RECURSIVE)) {
-				$param = json_encode($param, JSON_UNESCAPED_UNICODE);
-			} else {
-				$param = implode(', ', array_map(function ($part) {
-					return '"' . (string) $part . '"';
-				}, $param));
-
-				return '(' . $param . ')';
-			}
+			return implode(', ', $convertedArray);
 		}
 
-		return '"' . (string) $param . '"';
+		// Convert param using the same strategy the connection uses
+		if ($type && Type::hasType($type)) {
+			$type = Type::getType($type);
+			$param = $type->convertToDatabaseValue($param, $this->connection->getDatabasePlatform());
+
+			if ($param === null) {
+				return 'NULL';
+			}
+
+			return '"' . $param . '"';
+		}
+
+		// Fall back to converting the param to string ourselves
+		if (!is_object($param) || method_exists($param, '__toString')) {
+			return '"' . (string)$param . '"';
+		}
+
+		return get_class($param);
 	}
 
 	/**
