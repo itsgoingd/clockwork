@@ -22,6 +22,7 @@ class PhpDataSource extends DataSource
 		$request->headers        = $this->getRequestHeaders();
 		$request->getData        = $this->getGetData();
 		$request->postData       = $this->getPostData();
+		$request->requestData    = $this->getRequestData();
 		$request->sessionData    = $this->getSessionData();
 		$request->cookies        = $this->getCookies();
 		$request->responseStatus = $this->getResponseStatus();
@@ -53,6 +54,17 @@ class PhpDataSource extends DataSource
 	protected function getPostData()
 	{
 		return $this->removePasswords((new Serializer)->normalizeEach($_POST));
+	}
+
+	// Return request body data (attempt to parse as json, replace unserializable items, attempt to remove passwords)
+	protected function getRequestData()
+	{
+		$requestData = file_get_contents('php://input');
+		$requestJsonData = json_decode($requestData, true);
+
+		return $requestJsonData
+			? $this->removePasswords((new Serializer)->normalizeEach($requestJsonData))
+			: $requestData;
 	}
 
 	/**

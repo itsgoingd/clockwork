@@ -57,6 +57,9 @@ class Request
 	 */
 	public $postData = [];
 
+	// Request data array
+	public $requestData = [];
+
 	/**
 	 * Session data array
 	 */
@@ -206,6 +209,7 @@ class Request
 			'controller'        => $this->controller,
 			'getData'           => $this->getData,
 			'postData'          => $this->postData,
+			'requestData'       => $this->requestData,
 			'sessionData'       => $this->sessionData,
 			'authenticatedUser' => $this->authenticatedUser,
 			'cookies'           => $this->cookies,
