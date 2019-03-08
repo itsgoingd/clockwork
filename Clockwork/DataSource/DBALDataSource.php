@@ -5,6 +5,7 @@ use Clockwork\Request\Timeline;
 
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\DBAL\Logging\LoggerChain;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Connection;
 
@@ -68,7 +69,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 	{
 		$this->start = microtime(true);
 
-		$sql = $this->replaceParams($sql, $params, $types);
+		$sql = $this->replaceParams($this->connection->getDatabasePlatform(), $sql, $params, $types);
 		$sql = $this->formatQuery($sql);
 
 		$this->query = [ 'sql' => $sql, 'params' => $params, 'types' => $types ];
@@ -91,52 +92,85 @@ class DBALDataSource extends DataSource implements SQLLogger
 		}, $sql);
 	}
 
-	protected function replaceParams($sql, $params, $types)
+	/**
+	 * Source at laravel-doctrine/orm LaravelDoctrine\ORM\Loggers\Formatters\ReplaceQueryParams::format().
+	 *
+	 * @param AbstractPlatform $platform
+	 * @param string           $sql
+	 * @param array|null       $params
+	 * @param array|null       $types
+	 *
+	 *
+	 * @return string
+	 */
+	public function replaceParams($platform, $sql, array $params = null, array $types = null)
 	{
 		if (is_array($params)) {
 			foreach ($params as $key => $param) {
-				$type = isset($types[$key]) ? $types[$key] : null;
-				$param = $this->convertParam($param, $type);
-
-				if (is_string($key)) {
-					$sql = preg_replace("/:$key/", "$param", $sql);
-				} else {
-					$sql = preg_replace('/\?/', "$param", $sql, 1);
-				}
+				$type  = isset($types[$key]) ? $types[$key] : null; // Originally used null coalescing
+				$param = $this->convertParam($platform, $param, $type);
+				$sql   = preg_replace('/\?/', "$param", $sql, 1);
 			}
 		}
-
 		return $sql;
 	}
 
-	protected function convertParam($param, $type)
+	/**
+	 * Source at laravel-doctrine/orm LaravelDoctrine\ORM\Loggers\Formatters\ReplaceQueryParams::convertParam().
+	 *
+	 * @param mixed $param
+	 *
+	 * @throws \Exception
+	 * @return string
+	 */
+	protected function convertParam($platform, $param, $type = null)
 	{
-		if (is_array($param)) {
-			$convertedArray = [];
-			foreach ($param as $item) {
-				$convertedArray[] = $this->convertParam($item, $type);
+		if (is_object($param)) {
+			if (!method_exists($param, '__toString')) {
+				if ($param instanceof \DateTimeInterface) {
+					$param = $param->format('Y-m-d H:i:s');
+				} elseif (Type::hasType($type)) {
+					$type  = Type::getType($type);
+					$param = $type->convertToDatabaseValue($param, $platform);
+				} else {
+					throw new \Exception('Given query param is an instance of ' . get_class($param) . ' and could not be converted to a string');
+				}
 			}
-			return implode(', ', $convertedArray);
-		}
-
-		// Convert param using the same strategy the connection uses
-		if ($type && Type::hasType($type)) {
-			$type = Type::getType($type);
-			$param = $type->convertToDatabaseValue($param, $this->connection->getDatabasePlatform());
-
-			if ($param === null) {
-				return 'NULL';
+		} elseif (is_array($param)) {
+			if ($this->isNestedArray($param)) {
+				$param = json_encode($param, JSON_UNESCAPED_UNICODE);
+			} else {
+				$param = implode(
+					', ',
+					array_map(
+						function ($part) {
+							return '"' . (string) $part . '"';
+						},
+						$param
+					)
+				);
+				return '(' . $param . ')';
 			}
-
-			return '"' . $param . '"';
+		} else {
+			$param = htmlspecialchars($param); // Originally used the e() Laravel helper
 		}
+		return '"' . (string) $param . '"';
+	}
 
-		// Fall back to converting the param to string ourselves
-		if (!is_object($param) || method_exists($param, '__toString')) {
-			return '"' . (string)$param . '"';
+	/**
+	 * Source at laravel-doctrine/orm LaravelDoctrine\ORM\Loggers\Formatters\ReplaceQueryParams::isNestedArray().
+	 *
+	 * @param  array $array
+	 * @return bool
+	 */
+	private function isNestedArray(array $array)
+	{
+		foreach ($array as $key => $value) {
+			if (is_array($value)) {
+				return true;
+			}
 		}
-
-		return get_class($param);
+		return false;
 	}
 
 	/**
