@@ -29,5 +29,8 @@
                 "Clockwork": "Clockwork\\Support\\Laravel\\Facade"
             }
         }
+    },
+    "require-dev": {
+        "doctrine/dbal": "^2.5.13"
     }
 }
