@@ -121,6 +121,9 @@ class Request
 	 */
 	public $cacheTime;
 
+	// Redis commands
+	public $redisCommands = [];
+
 	/**
 	 * Timeline data array
 	 */
@@ -225,6 +228,7 @@ class Request
 			'cacheWrites'       => $this->cacheWrites,
 			'cacheDeletes'      => $this->cacheDeletes,
 			'cacheTime'         => $this->cacheTime,
+			'redisCommands'     => $this->redisCommands,
 			'timelineData'      => $this->timelineData,
 			'log'               => array_values($this->log),
 			'events'            => $this->events,
