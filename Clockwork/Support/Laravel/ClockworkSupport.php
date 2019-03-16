@@ -192,6 +192,11 @@ class ClockworkSupport
 		return ! in_array('cache', $this->getFilter());
 	}
 
+	public function isCollectingRedisCommands()
+	{
+		return ! in_array('redis', $this->getFilter()) && method_exists(\Illuminate\Redis\RedisManager::class, 'enableEvents');
+	}
+
 	public function isCollectingEvents()
 	{
 		return ! in_array('events', $this->getFilter());
