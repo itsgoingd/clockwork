@@ -5,6 +5,7 @@ use Clockwork\Authentication\AuthenticatorInterface;
 use Clockwork\DataSource\EloquentDataSource;
 use Clockwork\DataSource\LaravelCacheDataSource;
 use Clockwork\DataSource\LaravelEventsDataSource;
+use Clockwork\DataSource\LaravelQueueDataSource;
 use Clockwork\DataSource\LaravelRedisDataSource;
 use Clockwork\DataSource\LumenDataSource;
 use Clockwork\DataSource\PhpDataSource;
@@ -63,6 +64,10 @@ class ClockworkServiceProvider extends ServiceProvider
 			$this->app['clockwork.redis']->listenToEvents();
 		}
 
+		if ($this->app['clockwork.support']->isCollectingQueueJobs()) {
+			$this->app['clockwork.queue']->listenToEvents();
+		}
+
 		if ($this->app['clockwork.support']->isCollectingEvents()) {
 			$this->app['clockwork.events']->listenToEvents();
 		}
@@ -107,6 +112,10 @@ class ClockworkServiceProvider extends ServiceProvider
 			return new LaravelRedisDataSource($app['events']);
 		});
 
+		$this->app->singleton('clockwork.queue', function ($app) {
+			return new LaravelQueueDataSource($app['queue']->connection());
+		});
+
 		$this->app->singleton('clockwork.events', function ($app) {
 			return new LaravelEventsDataSource(
 				$app['events'], $app['clockwork.support']->getConfig('ignored_events', [])
@@ -137,8 +146,12 @@ class ClockworkServiceProvider extends ServiceProvider
 				$clockwork->addDataSource($app['clockwork.cache']);
 			}
 
-			if ($support->isCollectingRedisStats()) {
+			if ($support->isCollectingRedisCommands()) {
 				$clockwork->addDataSource($app['clockwork.redis']);
+			}
+
+			if ($support->isCollectingQueueJobs()) {
+				$clockwork->addDataSource($app['clockwork.queue']);
 			}
 
 			if ($support->isCollectingEvents()) {
@@ -164,6 +177,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->alias('clockwork.eloquent', EloquentDataSource::class);
 		$this->app->alias('clockwork.cache', LaravelCacheDataSource::class);
 		$this->app->alias('clockwork.redis', LaravelRedisDataSource::class);
+		$this->app->alias('clockwork.queue', LaravelQueueDataSource::class);
 		$this->app->alias('clockwork.events', LaravelEventsDataSource::class);
 		$this->app->alias('clockwork.xdebug', XdebugDataSource::class);
 		$this->app->alias('clockwork', Clockwork::class);

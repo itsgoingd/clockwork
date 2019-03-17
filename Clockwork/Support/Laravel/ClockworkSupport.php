@@ -194,7 +194,14 @@ class ClockworkSupport
 
 	public function isCollectingRedisCommands()
 	{
-		return ! in_array('redis', $this->getFilter()) && method_exists(\Illuminate\Redis\RedisManager::class, 'enableEvents');
+		return ! in_array('redis', $this->getFilter())
+			&& method_exists(\Illuminate\Redis\RedisManager::class, 'enableEvents');
+	}
+
+	public function isCollectingQueueJobs()
+	{
+		return ! in_array('queueJob', $this->getFilter())
+			&& method_exists(\Illuminate\Queue\Queue::class, 'createPayloadUsing');
 	}
 
 	public function isCollectingEvents()

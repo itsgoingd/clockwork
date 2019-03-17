@@ -124,6 +124,9 @@ class Request
 	// Redis commands
 	public $redisCommands = [];
 
+	// Dispatched queue jobs
+	public $queueJobs = [];
+
 	/**
 	 * Timeline data array
 	 */
@@ -229,6 +232,7 @@ class Request
 			'cacheDeletes'      => $this->cacheDeletes,
 			'cacheTime'         => $this->cacheTime,
 			'redisCommands'     => $this->redisCommands,
+			'queueJobs'         => $this->queueJobs,
 			'timelineData'      => $this->timelineData,
 			'log'               => array_values($this->log),
 			'events'            => $this->events,
