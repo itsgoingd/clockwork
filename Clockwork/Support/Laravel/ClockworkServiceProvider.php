@@ -93,7 +93,10 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		$this->app->singleton('clockwork.eloquent', function ($app) {
 			return (new EloquentDataSource(
-				$app['db'], $app['events'], $app['clockwork.support']->getConfig('database_slow_query'))
+				$app['db'],
+				$app['events'],
+				$app['clockwork.support']->getConfig('database_slow_query'),
+				$app['clockwork.support']->getConfig('database_slow_only'))
 			)
 				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
 		});

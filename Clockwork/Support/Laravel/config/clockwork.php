@@ -183,7 +183,18 @@ return [
 	|
 	*/
 
-	'database_slow_query' => env('CLOCKWORK_DATABASE_SLOW_QUERY_THRESHOLD'),
+	'database_slow_query' => env('CLOCKWORK_DATABASE_SLOW_QUERY'),
+
+	/*
+	|--------------------------------------------------------------------------
+	| Database slow queries only
+	|--------------------------------------------------------------------------
+	|
+	| Collect only slow queries, with execution time over threshold configured above.
+	|
+	*/
+
+	'database_slow_only' => env('CLOCKWORK_DATABASE_SLOW_ONLY', false),
 
 	/*
 	|--------------------------------------------------------------------------
