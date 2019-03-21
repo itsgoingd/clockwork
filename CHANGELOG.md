@@ -1,3 +1,7 @@
+3.1.4
+
+- improved DBALDataSource to work with custom types (thanks villermen)
+
 3.1.3
 
 - updated LaravelCacheDataSource to support Laravel 5.8
