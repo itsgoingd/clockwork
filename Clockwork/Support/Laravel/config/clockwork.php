@@ -175,6 +175,18 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Database slow query threshold (ms)
+	|--------------------------------------------------------------------------
+	|
+	| Query execution time threshold after which the query will be marked as slow.
+	| Marked in the "database" tab, performance log and counted as a warning.
+	|
+	*/
+
+	'database_slow_query' => env('CLOCKWORK_DATABASE_SLOW_QUERY_THRESHOLD'),
+
+	/*
+	|--------------------------------------------------------------------------
 	| Ignored events
 	|--------------------------------------------------------------------------
 	|

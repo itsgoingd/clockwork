@@ -267,7 +267,10 @@ class Request
 			'file'       => isset($data['file']) ? $data['file'] : null,
 			'line'       => isset($data['line']) ? $data['line'] : null,
 			'trace'      => isset($data['trace']) ? $data['trace'] : null,
-			'model'      => isset($data['model']) ? $data['model'] : null
+			'model'      => isset($data['model']) ? $data['model'] : null,
+			'tags'       => array_merge(
+				isset($data['tags']) ? $data['tags'] : [], isset($data['slow']) ? [ 'slow' ] : []
+			)
 		];
 	}
 

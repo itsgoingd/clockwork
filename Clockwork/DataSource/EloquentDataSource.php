@@ -24,6 +24,9 @@ class EloquentDataSource extends DataSource
 	 */
 	protected $queries = [];
 
+	// Query execution time threshold in ms after which the query is marked as slow
+	protected $slowThreshold;
+
 	/**
 	 * Model name to associate with the next executed query, used to map queries to models
 	 */
@@ -32,10 +35,11 @@ class EloquentDataSource extends DataSource
 	/**
 	 * Create a new data source instance, takes a database manager and an event dispatcher as arguments
 	 */
-	public function __construct(ConnectionResolverInterface $databaseManager, EventDispatcher $eventDispatcher)
+	public function __construct(ConnectionResolverInterface $databaseManager, EventDispatcher $eventDispatcher, $slowThreshold = null)
 	{
 		$this->databaseManager = $databaseManager;
 		$this->eventDispatcher = $eventDispatcher;
+		$this->slowThreshold   = $slowThreshold;
 	}
 
 	/**
@@ -167,7 +171,8 @@ class EloquentDataSource extends DataSource
 				'file'       => $query['file'],
 				'line'       => $query['line'],
 				'trace'      => $query['trace'],
-				'model'      => $query['model']
+				'model'      => $query['model'],
+				'tags'       => $this->slowThreshold !== null && $query['time'] > $this->slowThreshold ? [ 'slow' ] : []
 			];
 		}, $this->queries);
 	}
