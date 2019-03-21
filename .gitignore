@@ -1,5 +1,2 @@
 # osx noise
 .DS_Store
-composer.lock
-vendor/
-.idea/
