@@ -24,6 +24,17 @@ class EloquentDataSource extends DataSource
 	 */
 	protected $queries = [];
 
+	// Query counts by type
+	protected $count = [
+		'total'  => 0,
+		'slow'   => 0,
+		'select' => 0,
+		'insert' => 0,
+		'update' => 0,
+		'delete' => 0,
+		'other'  => 0
+	];
+
 	// Array of filter functions for collected queries
 	protected $filters = [];
 
@@ -98,6 +109,8 @@ class EloquentDataSource extends DataSource
 			'tags'       => $this->slowThreshold !== null && $event->time > $this->slowThreshold ? [ 'slow' ] : []
 		];
 
+		$this->incrementQueryCount($query);
+
 		foreach ($this->filters as $filter) {
 			if (! $filter($query)) return $this->nextQueryModel = null;
 		}
@@ -126,6 +139,14 @@ class EloquentDataSource extends DataSource
 	public function resolve(Request $request)
 	{
 		$request->databaseQueries = array_merge($request->databaseQueries, $this->queries);
+
+		$request->databaseQueriesCount += $this->count['total'];
+		$request->databaseSlowQueries  += $this->count['slow'];
+		$request->databaseSelects      += $this->count['select'];
+		$request->databaseInserts      += $this->count['insert'];
+		$request->databaseUpdates      += $this->count['update'];
+		$request->databaseDeletes      += $this->count['delete'];
+		$request->databaseOthers       += $this->count['other'];
 
 		return $request;
 	}
@@ -175,6 +196,28 @@ class EloquentDataSource extends DataSource
 		}
 
 		return $connection->getPdo()->quote($binding);
+	}
+
+	// Increase query counts for collected query
+	protected function incrementQueryCount($query)
+	{
+		$this->count['total']++;
+
+		if (preg_match('/^select /i', $query['query'])) {
+			$this->count['select']++;
+		} elseif (preg_match('/^insert /i', $query['query'])) {
+			$this->count['insert']++;
+		} elseif (preg_match('/^update /i', $query['query'])) {
+			$this->count['update']++;
+		} elseif (preg_match('/^delete /i', $query['query'])) {
+			$this->count['delete']++;
+		} else {
+			$this->count['other']++;
+		}
+
+		if (in_array('slow', $query['tags'])) {
+			$this->count['slow']++;
+		}
 	}
 
 	/**
