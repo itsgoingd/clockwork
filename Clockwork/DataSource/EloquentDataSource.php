@@ -24,6 +24,23 @@ class EloquentDataSource extends DataSource
 	 */
 	protected $queries = [];
 
+	// Query counts by type
+	protected $count = [
+		'total'  => 0,
+		'slow'   => 0,
+		'select' => 0,
+		'insert' => 0,
+		'update' => 0,
+		'delete' => 0,
+		'other'  => 0
+	];
+
+	// Array of filter functions for collected queries
+	protected $filters = [];
+
+	// Query execution time threshold in ms after which the query is marked as slow
+	protected $slowThreshold;
+
 	/**
 	 * Model name to associate with the next executed query, used to map queries to models
 	 */
@@ -32,10 +49,21 @@ class EloquentDataSource extends DataSource
 	/**
 	 * Create a new data source instance, takes a database manager and an event dispatcher as arguments
 	 */
-	public function __construct(ConnectionResolverInterface $databaseManager, EventDispatcher $eventDispatcher)
+	public function __construct(ConnectionResolverInterface $databaseManager, EventDispatcher $eventDispatcher, $slowThreshold = null, $slowOnly = false)
 	{
 		$this->databaseManager = $databaseManager;
 		$this->eventDispatcher = $eventDispatcher;
+		$this->slowThreshold   = $slowThreshold;
+
+		if ($slowOnly) $this->addFilter(function ($query) { return $query['duration'] > $this->slowThreshold; });
+	}
+
+	// Register a new filter for collected queries
+	public function addFilter(\Closure $filter)
+	{
+		$this->filters[] = $filter;
+
+		return $this;
 	}
 
 	/**
@@ -70,16 +98,24 @@ class EloquentDataSource extends DataSource
 		$trace = StackTrace::get()->resolveViewName();
 		$caller = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
 
-		$this->queries[] = [
-			'query'      => $event->sql,
-			'bindings'   => $event->bindings,
-			'time'       => $event->time,
+		$query = [
+			'query'      => $this->createRunnableQuery($event->sql, $event->bindings, $event->connectionName),
+			'duration'   => $event->time,
 			'connection' => $event->connectionName,
 			'file'       => $caller->shortPath,
 			'line'       => $caller->line,
 			'trace'      => $this->collectStackTraces ? (new Serializer)->trace($trace->framesBefore($caller)) : null,
-			'model'      => $this->nextQueryModel
+			'model'      => $this->nextQueryModel,
+			'tags'       => $this->slowThreshold !== null && $event->time > $this->slowThreshold ? [ 'slow' ] : []
 		];
+
+		$this->incrementQueryCount($query);
+
+		foreach ($this->filters as $filter) {
+			if (! $filter($query)) return $this->nextQueryModel = null;
+		}
+
+		$this->queries[] = $query;
 
 		$this->nextQueryModel = null;
 	}
@@ -102,7 +138,15 @@ class EloquentDataSource extends DataSource
 	 */
 	public function resolve(Request $request)
 	{
-		$request->databaseQueries = array_merge($request->databaseQueries, $this->getDatabaseQueries());
+		$request->databaseQueries = array_merge($request->databaseQueries, $this->queries);
+
+		$request->databaseQueriesCount += $this->count['total'];
+		$request->databaseSlowQueries  += $this->count['slow'];
+		$request->databaseSelects      += $this->count['select'];
+		$request->databaseInserts      += $this->count['insert'];
+		$request->databaseUpdates      += $this->count['update'];
+		$request->databaseDeletes      += $this->count['delete'];
+		$request->databaseOthers       += $this->count['other'];
 
 		return $request;
 	}
@@ -154,22 +198,26 @@ class EloquentDataSource extends DataSource
 		return $connection->getPdo()->quote($binding);
 	}
 
-	/**
-	 * Returns an array of runnable queries and their durations from the internal array
-	 */
-	protected function getDatabaseQueries()
+	// Increase query counts for collected query
+	protected function incrementQueryCount($query)
 	{
-		return array_map(function ($query) {
-			return [
-				'query'      => $this->createRunnableQuery($query['query'], $query['bindings'], $query['connection']),
-				'duration'   => $query['time'],
-				'connection' => $query['connection'],
-				'file'       => $query['file'],
-				'line'       => $query['line'],
-				'trace'      => $query['trace'],
-				'model'      => $query['model']
-			];
-		}, $this->queries);
+		$this->count['total']++;
+
+		if (preg_match('/^select /i', $query['query'])) {
+			$this->count['select']++;
+		} elseif (preg_match('/^insert /i', $query['query'])) {
+			$this->count['insert']++;
+		} elseif (preg_match('/^update /i', $query['query'])) {
+			$this->count['update']++;
+		} elseif (preg_match('/^delete /i', $query['query'])) {
+			$this->count['delete']++;
+		} else {
+			$this->count['other']++;
+		}
+
+		if (in_array('slow', $query['tags'])) {
+			$this->count['slow']++;
+		}
 	}
 
 	/**

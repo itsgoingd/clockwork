@@ -23,9 +23,10 @@ class SqlStorage extends Storage
 	protected $fields = [
 		'id', 'version', 'time', 'method', 'url', 'uri', 'headers', 'controller', 'getData', 'postData', 'requestData',
 		'sessionData', 'authenticatedUser', 'cookies', 'responseTime', 'responseStatus', 'responseDuration',
-		'memoryUsage', 'databaseQueries', 'databaseDuration', 'cacheQueries', 'cacheReads', 'cacheHits', 'cacheWrites',
-		'cacheDeletes', 'cacheTime', 'redisCommands', 'queueJobs', 'timelineData', 'log', 'events', 'routes',
-		'emailsData', 'viewsData', 'userData', 'subrequests', 'xdebug'
+		'memoryUsage', 'databaseQueries', 'databaseQueriesCount', 'databaseSlowQueries', 'databaseSelects',
+		'databaseInserts', 'databaseUpdates', 'databaseDeletes', 'databaseOthers', 'databaseDuration', 'cacheQueries',
+		'cacheReads', 'cacheHits', 'cacheWrites', 'cacheDeletes', 'cacheTime', 'redisCommands', 'queueJobs',
+		'timelineData', 'log', 'events', 'routes', 'emailsData', 'viewsData', 'userData', 'subrequests', 'xdebug'
 	];
 
 	// List of Request keys that need to be serialized before they can be stored in database
@@ -161,6 +162,13 @@ class SqlStorage extends Storage
 				$this->quote('responseDuration') . ' DOUBLE PRECISION NULL, ' .
 				$this->quote('memoryUsage') . ' DOUBLE PRECISION NULL, ' .
 				$this->quote('databaseQueries') . " {$textType} NULL, " .
+				$this->quote('databaseQueriesCount') . ' INTEGER NULL, ' .
+				$this->quote('databaseSlowQueries') . ' INTEGER NULL, ' .
+				$this->quote('databaseSelects') . ' INTEGER NULL, ' .
+				$this->quote('databaseInserts') . ' INTEGER NULL, ' .
+				$this->quote('databaseUpdates') . ' INTEGER NULL, ' .
+				$this->quote('databaseDeletes') . ' INTEGER NULL, ' .
+				$this->quote('databaseOthers') . ' INTEGER NULL, ' .
 				$this->quote('databaseDuration') . ' DOUBLE PRECISION NULL, ' .
 				$this->quote('cacheQueries') . " {$textType} NULL, " .
 				$this->quote('cacheReads') . ' INTEGER NULL, ' .
