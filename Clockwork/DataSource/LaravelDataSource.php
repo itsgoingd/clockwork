@@ -54,9 +54,9 @@ class LaravelDataSource extends DataSource
 	public function __construct(Application $app, $collectLog = true, $collectViews = false, $collectRoutes = false)
 	{
 		$this->app = $app;
-		$this->collectLog = true;
-		$this->collectViews = false;
-		$this->collectRoutes = false;
+		$this->collectLog = $collectLog;
+		$this->collectViews = $collectViews;
+		$this->collectRoutes = $collectRoutes;
 
 		$this->timeline = new Timeline();
 		$this->views    = new Timeline();

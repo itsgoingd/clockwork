@@ -84,8 +84,6 @@ class ClockworkSupport
 			);
 		}
 
-		$storage->filter = $this->getFilter();
-
 		return $storage;
 	}
 
@@ -100,11 +98,6 @@ class ClockworkSupport
 		} else {
 			return new NullAuthenticator;
 		}
-	}
-
-	public function getFilter()
-	{
-		return $this->getConfig('filter', []);
 	}
 
 	public function getWebAsset($path)
@@ -184,7 +177,7 @@ class ClockworkSupport
 
 	public function isFeatureEnabled($feature)
 	{
-		return $this->getConfig("features.{$feature}") && $this->isFeatureAvailable($feature);
+		return $this->getConfig("features.{$feature}.enabled") && $this->isFeatureAvailable($feature);
 	}
 
 	public function isFeatureAvailable($feature)
