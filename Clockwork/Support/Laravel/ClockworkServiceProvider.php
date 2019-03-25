@@ -41,24 +41,24 @@ class ClockworkServiceProvider extends ServiceProvider
 	{
 		$this->app['clockwork.laravel']->listenToEvents();
 
-		if ($this->app['clockwork.support']->isCollectingDatabaseQueries()) {
+		if ($this->app['clockwork.support']->isFeatureEnabled('database')) {
 			$this->app['clockwork.eloquent']->listenToEvents();
 		}
 
-		if ($this->app['clockwork.support']->isCollectingCacheStats()) {
+		if ($this->app['clockwork.support']->isFeatureEnabled('cache')) {
 			$this->app['clockwork.cache']->listenToEvents();
 		}
 
-		if ($this->app['clockwork.support']->isCollectingRedisCommands()) {
+		if ($this->app['clockwork.support']->isFeatureEnabled('redis')) {
 			$this->app[RedisManager::class]->enableEvents();
 			$this->app['clockwork.redis']->listenToEvents();
 		}
 
-		if ($this->app['clockwork.support']->isCollectingQueueJobs()) {
+		if ($this->app['clockwork.support']->isFeatureEnabled('queue')) {
 			$this->app['clockwork.queue']->listenToEvents();
 		}
 
-		if ($this->app['clockwork.support']->isCollectingEvents()) {
+		if ($this->app['clockwork.support']->isFeatureEnabled('events')) {
 			$this->app['clockwork.events']->listenToEvents();
 		}
 	}
@@ -82,8 +82,12 @@ class ClockworkServiceProvider extends ServiceProvider
 		});
 
 		$this->app->singleton('clockwork.laravel', function ($app) {
-			return (new LaravelDataSource($app))
-				->collectViews($app['clockwork.support']->isCollectingViews())
+			return (new LaravelDataSource(
+				$app,
+				$app['clockwork.support']->isFeatureEnabled('log'),
+				$app['clockwork.support']->isFeatureEnabled('views'),
+				$app['clockwork.support']->isFeatureEnabled('routes')
+			))
 				->setLog($app['clockwork.log']);
 		});
 
@@ -95,14 +99,18 @@ class ClockworkServiceProvider extends ServiceProvider
 			return (new EloquentDataSource(
 				$app['db'],
 				$app['events'],
-				$app['clockwork.support']->getConfig('database_slow_query'),
-				$app['clockwork.support']->getConfig('database_slow_only'))
+				$app['clockwork.support']->getConfig('features.database.collect_queries'),
+				$app['clockwork.support']->getConfig('features.database.slow_threshold'),
+				$app['clockwork.support']->getConfig('features.database.slow_only'))
 			)
 				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
 		});
 
 		$this->app->singleton('clockwork.cache', function ($app) {
-			return (new LaravelCacheDataSource($app['events']))
+			return (new LaravelCacheDataSource(
+				$app['events'],
+				$app['clockwork.support']->getConfig('features.cache.collect_queries'))
+			)
 				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
 		});
 
@@ -132,27 +140,30 @@ class ClockworkServiceProvider extends ServiceProvider
 
 			$clockwork
 				->addDataSource(new PhpDataSource())
-				->addDataSource($app['clockwork.laravel'])
-				->addDataSource($app['clockwork.swift']);
+				->addDataSource($app['clockwork.laravel']);
 
-			if ($support->isCollectingDatabaseQueries()) {
+			if ($support->isFeatureEnabled('database')) {
 				$clockwork->addDataSource($app['clockwork.eloquent']);
 			}
 
-			if ($support->isCollectingCacheStats()) {
+			if ($support->isFeatureEnabled('cache')) {
 				$clockwork->addDataSource($app['clockwork.cache']);
 			}
 
-			if ($support->isCollectingRedisCommands()) {
+			if ($support->isFeatureEnabled('redis')) {
 				$clockwork->addDataSource($app['clockwork.redis']);
 			}
 
-			if ($support->isCollectingQueueJobs()) {
+			if ($support->isFeatureEnabled('queue')) {
 				$clockwork->addDataSource($app['clockwork.queue']);
 			}
 
-			if ($support->isCollectingEvents()) {
+			if ($support->isFeatureEnabled('events')) {
 				$clockwork->addDataSource($app['clockwork.events']);
+			}
+
+			if ($support->isFeatureEnabled('emails')) {
+				$clockwork->addDataSource($app['clockwork.swift']);
 			}
 
 			if (in_array('xdebug', get_loaded_extensions())) {

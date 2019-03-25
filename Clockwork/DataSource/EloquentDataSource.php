@@ -38,6 +38,9 @@ class EloquentDataSource extends DataSource
 	// Array of filter functions for collected queries
 	protected $filters = [];
 
+	// Whether we are collecting cache queries or stats only
+	protected $collectQueries = true;
+
 	// Query execution time threshold in ms after which the query is marked as slow
 	protected $slowThreshold;
 
@@ -49,10 +52,11 @@ class EloquentDataSource extends DataSource
 	/**
 	 * Create a new data source instance, takes a database manager and an event dispatcher as arguments
 	 */
-	public function __construct(ConnectionResolverInterface $databaseManager, EventDispatcher $eventDispatcher, $slowThreshold = null, $slowOnly = false)
+	public function __construct(ConnectionResolverInterface $databaseManager, EventDispatcher $eventDispatcher, $collectQueries = true, $slowThreshold = null, $slowOnly = false)
 	{
 		$this->databaseManager = $databaseManager;
 		$this->eventDispatcher = $eventDispatcher;
+		$this->collectQueries  = $collectQueries;
 		$this->slowThreshold   = $slowThreshold;
 
 		if ($slowOnly) $this->addFilter(function ($query) { return $query['duration'] > $this->slowThreshold; });
@@ -115,7 +119,9 @@ class EloquentDataSource extends DataSource
 			if (! $filter($query)) return $this->nextQueryModel = null;
 		}
 
-		$this->queries[] = $query;
+		if ($this->collectQueries) {
+			$this->queries[] = $query;
+		}
 
 		$this->nextQueryModel = null;
 	}

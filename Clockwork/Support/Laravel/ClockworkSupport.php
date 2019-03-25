@@ -182,36 +182,22 @@ class ClockworkSupport
 			&& ! $this->isUriFiltered($this->app['request']->getRequestUri());
 	}
 
-	public function isCollectingDatabaseQueries()
+	public function isFeatureEnabled($feature)
 	{
-		return $this->app['config']->get('database.default') && ! in_array('databaseQueries', $this->getFilter());
+		return $this->getConfig("features.{$feature}") && $this->isFeatureAvailable($feature);
 	}
 
-	public function isCollectingCacheStats()
+	public function isFeatureAvailable($feature)
 	{
-		return ! in_array('cache', $this->getFilter());
-	}
+		if ($feature == 'database') {
+			return $this->app['config']->get('database.default');
+		} elseif ($feature == 'redis') {
+			return method_exists(\Illuminate\Redis\RedisManager::class, 'enableEvents');
+		} elseif ($feature == 'queue') {
+			return method_exists(\Illuminate\Queue\Queue::class, 'createPayloadUsing');
+		}
 
-	public function isCollectingRedisCommands()
-	{
-		return ! in_array('redis', $this->getFilter())
-			&& method_exists(\Illuminate\Redis\RedisManager::class, 'enableEvents');
-	}
-
-	public function isCollectingQueueJobs()
-	{
-		return ! in_array('queueJob', $this->getFilter())
-			&& method_exists(\Illuminate\Queue\Queue::class, 'createPayloadUsing');
-	}
-
-	public function isCollectingEvents()
-	{
-		return ! in_array('events', $this->getFilter());
-	}
-
-	public function isCollectingViews()
-	{
-		return ! in_array('viewsData', $this->getFilter());
+		return true;
 	}
 
 	public function isWebEnabled()
