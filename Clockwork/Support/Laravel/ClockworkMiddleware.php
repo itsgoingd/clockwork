@@ -23,8 +23,6 @@ class ClockworkMiddleware
 	 */
 	public function handle($request, \Closure $next)
 	{
-		$this->app['config']->set('clockwork::config.middleware', true);
-
 		try {
 			$response = $next($request);
 		} catch (\Exception $e) {

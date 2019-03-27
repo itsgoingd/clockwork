@@ -39,7 +39,7 @@ class ClockworkServiceProvider extends ServiceProvider
 	{
 		$support = $this->app['clockwork.support'];
 
-		$this->app['clockwork.laravel']->listenToEvents();
+		$this->listenToFrameworkEvents();
 
 		if ($support->isFeatureEnabled('cache')) $this->app['clockwork.cache']->listenToEvents();
 		if ($support->isFeatureEnabled('database')) $this->app['clockwork.eloquent']->listenToEvents();
@@ -49,6 +49,11 @@ class ClockworkServiceProvider extends ServiceProvider
 			$this->app[RedisManager::class]->enableEvents();
 			$this->app['clockwork.redis']->listenToEvents();
 		}
+	}
+
+	protected function listenToFrameworkEvents()
+	{
+		$this->app['clockwork.laravel']->listenToEvents();
 	}
 
 	public function register()
@@ -192,7 +197,6 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->alias('clockwork.redis', LaravelRedisDataSource::class);
 		$this->app->alias('clockwork.swift', SwiftDataSource::class);
 		$this->app->alias('clockwork.xdebug', XdebugDataSource::class);
-
 	}
 
 	// Register middleware

@@ -30,7 +30,7 @@ class ClockworkSupport
 
 	public function getData($id = null, $direction = null, $count = null, $extended = false)
 	{
-		$this->app['session.store']->reflash();
+		if (isset($this->app['session'])) $this->app['session.store']->reflash();
 
 		$authenticator = $this->app['clockwork']->getAuthenticator();
 		$storage = $this->app['clockwork']->getStorage();
@@ -117,7 +117,7 @@ class ClockworkSupport
 			return $response; // Collecting data is disabled, return immediately
 		}
 
-		$this->app['clockwork.laravel']->setResponse($response);
+		$this->setResponse($response);
 
 		$this->app['clockwork']->resolveRequest();
 		$this->app['clockwork']->storeRequest();
@@ -147,6 +147,11 @@ class ClockworkSupport
 		$this->appendServerTimingHeader($response, $this->app['clockwork']->getRequest());
 
 		return $response;
+	}
+
+	protected function setResponse($response)
+	{
+		$this->app['clockwork.laravel']->setResponse($response);
 	}
 
 	public function configureSerializer()
