@@ -159,13 +159,8 @@ class ClockworkSupport
 
 	public function isEnabled()
 	{
-		$isEnabled = $this->getConfig('enable', null);
-
-		if ($isEnabled === null) {
-			$isEnabled = $this->app['config']->get('app.debug');
-		}
-
-		return $isEnabled;
+		return $this->getConfig('enable')
+			|| $this->getConfig('enable') === null && $this->app['config']->get('app.debug');
 	}
 
 	public function isCollectingData()
@@ -188,6 +183,8 @@ class ClockworkSupport
 			return method_exists(\Illuminate\Redis\RedisManager::class, 'enableEvents');
 		} elseif ($feature == 'queue') {
 			return method_exists(\Illuminate\Queue\Queue::class, 'createPayloadUsing');
+		} elseif ($feature == 'xdebug') {
+			return in_array('xdebug', get_loaded_extensions());
 		}
 
 		return true;
