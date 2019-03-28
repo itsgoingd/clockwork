@@ -39,15 +39,24 @@ class LumenDataSource extends DataSource
 	 */
 	protected $views;
 
+	// Whether we should collect log messages
+	protected $collectLog = true;
+
 	// Whether we should collect views
-	protected $collectViews = true;
+	protected $collectViews = false;
+
+	// Whether we should collect routes
+	protected $collectRoutes = false;
 
 	/**
 	 * Create a new data source, takes Laravel application instance as an argument
 	 */
-	public function __construct(Application $app)
+	public function __construct(Application $app, $collectLog = true, $collectViews = false, $collectRoutes = false)
 	{
 		$this->app = $app;
+		$this->collectLog = $collectLog;
+		$this->collectViews = $collectViews;
+		$this->collectRoutes = $collectRoutes;
 
 		$this->timeline = new Timeline();
 		$this->views    = new Timeline();
@@ -111,27 +120,29 @@ class LumenDataSource extends DataSource
 			$this->timeline->endEvent('controller');
 		});
 
-		$this->app['events']->listen('illuminate.log', function ($level, $message, $context) {
-			$this->log->log($level, $message, $context);
-		});
+		if ($this->collectLog) {
+			$this->app['events']->listen('illuminate.log', function ($level, $message, $context) {
+				$this->log->log($level, $message, $context);
+			});
+		}
 
-		$this->app['events']->listen('composing:*', function ($view, $data = null) {
-			if (! $this->collectViews) return;
+		if ($this->collectViews) {
+			$this->app['events']->listen('composing:*', function ($view, $data = null) {
+				if (is_string($view) && is_array($data)) { // Laravel 5.4 wildcard event
+					$view = $data[0];
+				}
 
-			if (is_string($view) && is_array($data)) { // Laravel 5.4 wildcard event
-				$view = $data[0];
-			}
+				$time = microtime(true);
 
-			$time = microtime(true);
-
-			$this->views->addEvent(
-				'view ' . $view->getName(),
-				'Rendering a view',
-				$time,
-				$time,
-				[ 'name' => $view->getName(), 'data' => (new Serializer)->normalize($view->getData()) ]
-			);
-		});
+				$this->views->addEvent(
+					'view ' . $view->getName(),
+					'Rendering a view',
+					$time,
+					$time,
+					[ 'name' => $view->getName(), 'data' => (new Serializer)->normalize($view->getData()) ]
+				);
+			});
+		}
 	}
 
 	/**
@@ -200,6 +211,8 @@ class LumenDataSource extends DataSource
 	 */
 	protected function getRoutes()
 	{
+		if (! $this->collectRoutes) return [];
+
 		if (isset($this->app->router)) {
 			$routes = array_values($this->app->router->getRoutes());
 		} elseif (method_exists($this->app, 'getRoutes')) {

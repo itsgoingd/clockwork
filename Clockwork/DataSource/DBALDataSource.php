@@ -192,12 +192,16 @@ class DBALDataSource extends DataSource implements SQLLogger
 	 */
 	public function registerQuery($query, $bindings, $duration, $connection)
 	{
-		$this->queries[] = [
+		$query = [
 			'query'      => $query,
 			'bindings'   => $bindings,
 			'duration'   => $duration,
 			'connection' => $connection
 		];
+
+		if ($this->passesFilters($query)) {
+			$this->queries[] = $query;
+		}
 	}
 
 	/**
@@ -205,17 +209,9 @@ class DBALDataSource extends DataSource implements SQLLogger
 	 */
 	public function resolve(Request $request)
 	{
-		$request->databaseQueries = array_merge($request->databaseQueries, $this->getDatabaseQueries());
+		$request->databaseQueries = array_merge($request->databaseQueries, $this->queries);
 
 		return $request;
-	}
-
-	/**
-	 * Returns an array of runnable queries and their durations from the internal array
-	 */
-	protected function getDatabaseQueries()
-	{
-		return $this->queries;
 	}
 
 	/**

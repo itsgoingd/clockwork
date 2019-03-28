@@ -39,15 +39,24 @@ class LaravelDataSource extends DataSource
 	 */
 	protected $views;
 
+	// Whether we should collect log messages
+	protected $collectLog = true;
+
 	// Whether we should collect views
-	protected $collectViews = true;
+	protected $collectViews = false;
+
+	// Whether we should collect routes
+	protected $collectRoutes = false;
 
 	/**
 	 * Create a new data source, takes Laravel application instance as an argument
 	 */
-	public function __construct(Application $app)
+	public function __construct(Application $app, $collectLog = true, $collectViews = false, $collectRoutes = false)
 	{
 		$this->app = $app;
+		$this->collectLog = $collectLog;
+		$this->collectViews = $collectViews;
+		$this->collectRoutes = $collectRoutes;
 
 		$this->timeline = new Timeline();
 		$this->views    = new Timeline();
@@ -91,13 +100,6 @@ class LaravelDataSource extends DataSource
 		return $this;
 	}
 
-	// Enable or disable collecting views
-	public function collectViews($collectViews = true)
-	{
-		$this->collectViews = $collectViews;
-		return $this;
-	}
-
 	/**
 	 * Hook up callbacks for various Laravel events, providing information for timeline and log entries
 	 */
@@ -110,37 +112,39 @@ class LaravelDataSource extends DataSource
 			$this->timeline->endEvent('controller');
 		});
 
-		if (class_exists(\Illuminate\Log\Events\MessageLogged::class)) {
-			// Laravel 5.4
-			$this->app['events']->listen(\Illuminate\Log\Events\MessageLogged::class, function ($event) {
-				$this->log->log($event->level, $event->message, $event->context);
-			});
-		} else {
-			// Laravel 5.0 to 5.3
-			$this->app['events']->listen('illuminate.log', function ($level, $message, $context) {
-				$this->log->log($level, $message, $context);
-			});
+		if ($this->collectLog) {
+			if (class_exists(\Illuminate\Log\Events\MessageLogged::class)) {
+				// Laravel 5.4
+				$this->app['events']->listen(\Illuminate\Log\Events\MessageLogged::class, function ($event) {
+					$this->log->log($event->level, $event->message, $event->context);
+				});
+			} else {
+				// Laravel 5.0 to 5.3
+				$this->app['events']->listen('illuminate.log', function ($level, $message, $context) {
+					$this->log->log($level, $message, $context);
+				});
+			}
 		}
 
-		$this->app['events']->listen('composing:*', function ($view, $data = null) {
-			if (! $this->collectViews) return;
+		if ($this->collectViews) {
+			$this->app['events']->listen('composing:*', function ($view, $data = null) {
+				if (is_string($view) && is_array($data)) { // Laravel 5.4 wildcard event
+					$view = $data[0];
+				}
 
-			if (is_string($view) && is_array($data)) { // Laravel 5.4 wildcard event
-				$view = $data[0];
-			}
+				$time = microtime(true);
+				$data = $view->getData();
+				unset($data['__env']);
 
-			$time = microtime(true);
-			$data = $view->getData();
-			unset($data['__env']);
-
-			$this->views->addEvent(
-				'view ' . $view->getName(),
-				'Rendering a view',
-				$time,
-				$time,
-				[ 'name' => $view->getName(), 'data' => (new Serializer)->normalize($data) ]
-			);
-		});
+				$this->views->addEvent(
+					'view ' . $view->getName(),
+					'Rendering a view',
+					$time,
+					$time,
+					[ 'name' => $view->getName(), 'data' => (new Serializer)->normalize($data) ]
+				);
+			});
+		}
 	}
 
 	/**
@@ -234,6 +238,8 @@ class LaravelDataSource extends DataSource
 	 */
 	protected function getRoutes()
 	{
+		if (! $this->collectRoutes) return [];
+
 		return array_map(function ($route) {
 			return [
 				'method' => implode(', ', $route->methods()),
@@ -255,7 +261,7 @@ class LaravelDataSource extends DataSource
 		if (! isset($this->app['session'])) {
 			return [];
 		}
-		
+
 		return $this->removePasswords((new Serializer)->normalizeEach($this->app['session']->all()));
 	}
 

@@ -10,6 +10,9 @@ class DataSource implements DataSourceInterface
 	// Whether the data source should collect stack traces (when applicable)
 	protected $collectStackTraces;
 
+	// Array of filter functions
+	protected $filters = [];
+
 	/**
 	 * Adds data to the request and returns it, custom implementation should be provided in child classes
 	 */
@@ -30,6 +33,32 @@ class DataSource implements DataSourceInterface
 		$this->collectStackTraces = $enable;
 
 		return $this;
+	}
+
+	// Register a new filter
+	public function addFilter(\Closure $filter)
+	{
+		$this->filters[] = $filter;
+
+		return $this;
+	}
+
+	// Clear all registered filters
+	public function clearFilters()
+	{
+		$this->filters = [];
+
+		return $this;
+	}
+
+	// Returns boolean whether the filterable passes all registered filters
+	protected function passesFilters($filterable)
+	{
+		foreach ($this->filters as $filter) {
+			if (! $filter($filterable)) return false;
+		}
+
+		return true;
 	}
 
 	/**

@@ -30,7 +30,7 @@ class ClockworkSupport
 
 	public function getData($id = null, $direction = null, $count = null, $extended = false)
 	{
-		$this->app['session.store']->reflash();
+		if (isset($this->app['session'])) $this->app['session.store']->reflash();
 
 		$authenticator = $this->app['clockwork']->getAuthenticator();
 		$storage = $this->app['clockwork']->getStorage();
@@ -84,8 +84,6 @@ class ClockworkSupport
 			);
 		}
 
-		$storage->filter = $this->getFilter();
-
 		return $storage;
 	}
 
@@ -100,11 +98,6 @@ class ClockworkSupport
 		} else {
 			return new NullAuthenticator;
 		}
-	}
-
-	public function getFilter()
-	{
-		return $this->getConfig('filter', []);
 	}
 
 	public function getWebAsset($path)
@@ -124,7 +117,7 @@ class ClockworkSupport
 			return $response; // Collecting data is disabled, return immediately
 		}
 
-		$this->app['clockwork.laravel']->setResponse($response);
+		$this->setResponse($response);
 
 		$this->app['clockwork']->resolveRequest();
 		$this->app['clockwork']->storeRequest();
@@ -156,6 +149,11 @@ class ClockworkSupport
 		return $response;
 	}
 
+	protected function setResponse($response)
+	{
+		$this->app['clockwork.laravel']->setResponse($response);
+	}
+
 	public function configureSerializer()
 	{
 		Serializer::defaults([
@@ -166,13 +164,8 @@ class ClockworkSupport
 
 	public function isEnabled()
 	{
-		$isEnabled = $this->getConfig('enable', null);
-
-		if ($isEnabled === null) {
-			$isEnabled = $this->app['config']->get('app.debug');
-		}
-
-		return $isEnabled;
+		return $this->getConfig('enable')
+			|| $this->getConfig('enable') === null && $this->app['config']->get('app.debug');
 	}
 
 	public function isCollectingData()
@@ -182,36 +175,24 @@ class ClockworkSupport
 			&& ! $this->isUriFiltered($this->app['request']->getRequestUri());
 	}
 
-	public function isCollectingDatabaseQueries()
+	public function isFeatureEnabled($feature)
 	{
-		return $this->app['config']->get('database.default') && ! in_array('databaseQueries', $this->getFilter());
+		return $this->getConfig("features.{$feature}.enabled") && $this->isFeatureAvailable($feature);
 	}
 
-	public function isCollectingCacheStats()
+	public function isFeatureAvailable($feature)
 	{
-		return ! in_array('cache', $this->getFilter());
-	}
+		if ($feature == 'database') {
+			return $this->app['config']->get('database.default');
+		} elseif ($feature == 'redis') {
+			return method_exists(\Illuminate\Redis\RedisManager::class, 'enableEvents');
+		} elseif ($feature == 'queue') {
+			return method_exists(\Illuminate\Queue\Queue::class, 'createPayloadUsing');
+		} elseif ($feature == 'xdebug') {
+			return in_array('xdebug', get_loaded_extensions());
+		}
 
-	public function isCollectingRedisCommands()
-	{
-		return ! in_array('redis', $this->getFilter())
-			&& method_exists(\Illuminate\Redis\RedisManager::class, 'enableEvents');
-	}
-
-	public function isCollectingQueueJobs()
-	{
-		return ! in_array('queueJob', $this->getFilter())
-			&& method_exists(\Illuminate\Queue\Queue::class, 'createPayloadUsing');
-	}
-
-	public function isCollectingEvents()
-	{
-		return ! in_array('events', $this->getFilter());
-	}
-
-	public function isCollectingViews()
-	{
-		return ! in_array('viewsData', $this->getFilter());
+		return true;
 	}
 
 	public function isWebEnabled()

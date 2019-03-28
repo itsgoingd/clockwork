@@ -1,76 +1,19 @@
 <?php namespace Clockwork\Support\Lumen;
 
 use Clockwork\Clockwork;
-use Clockwork\Authentication\AuthenticatorInterface;
-use Clockwork\DataSource\EloquentDataSource;
-use Clockwork\DataSource\LaravelCacheDataSource;
-use Clockwork\DataSource\LaravelEventsDataSource;
-use Clockwork\DataSource\LaravelQueueDataSource;
-use Clockwork\DataSource\LaravelRedisDataSource;
 use Clockwork\DataSource\LumenDataSource;
 use Clockwork\DataSource\PhpDataSource;
-use Clockwork\DataSource\SwiftDataSource;
-use Clockwork\DataSource\XdebugDataSource;
 use Clockwork\Request\Log;
-use Clockwork\Support\Laravel\ClockworkCleanCommand;
+use Clockwork\Support\Laravel\ClockworkMiddleware;
+use Clockwork\Support\Laravel\ClockworkServiceProvider as LaravelServiceProvider;
 
-use Illuminate\Redis\RedisManager;
 use Illuminate\Support\Facades\Facade;
-use Illuminate\Support\ServiceProvider;
 
-class ClockworkServiceProvider extends ServiceProvider
+class ClockworkServiceProvider extends LaravelServiceProvider
 {
-	public function boot()
-	{
-		if ($this->isRunningWithFacades() && ! class_exists('Clockwork')) {
-			class_alias(\Clockwork\Support\Lumen\Facade::class, 'Clockwork');
-		}
-
-		if ($this->app['clockwork.support']->isCollectingData()) {
-			$this->listenToEvents();
-		}
-
-		if (! $this->app['clockwork.support']->isEnabled()) {
-			return; // Clockwork is disabled, don't register the middleware and routes
-		}
-
-		$this->registerMiddleware();
-		$this->registerRoutes();
-
-		// register the Clockwork Web UI routes
-		if ($this->app['clockwork.support']->isWebEnabled()) {
-			$this->registerWebRoutes();
-		}
-	}
-
-	protected function listenToEvents()
+	protected function listenToFrameworkEvents()
 	{
 		$this->app['clockwork.lumen']->listenToEvents();
-
-		if ($this->app['clockwork.support']->isCollectingDatabaseQueries()) {
-			$this->app['clockwork.eloquent']->listenToEvents();
-		}
-
-		if ($this->app['clockwork.support']->isCollectingEmails()) {
-			$this->app->make('clockwork.swift');
-		}
-
-		if ($this->app['clockwork.support']->isCollectingCacheStats()) {
-			$this->app['clockwork.cache']->listenToEvents();
-		}
-
-		if ($this->app['clockwork.support']->isCollectingRedisCommands()) {
-			$this->app[RedisManager::class]->enableEvents();
-			$this->app['clockwork.redis']->listenToEvents();
-		}
-
-		if ($this->app['clockwork.support']->isCollectingQueueJobs()) {
-			$this->app['clockwork.queue']->listenToEvents();
-		}
-
-		if ($this->app['clockwork.support']->isCollectingEvents()) {
-			$this->app['clockwork.events']->listenToEvents();
-		}
 	}
 
 	public function register()
@@ -78,8 +21,31 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->configure('clockwork');
 		$this->mergeConfigFrom(__DIR__ . '/../Laravel/config/clockwork.php', 'clockwork');
 
-		$this->app->singleton('clockwork.support', function ($app) {
-			return new ClockworkSupport($app);
+		$this->app->singleton('clockwork', function ($app) {
+			$support = $app['clockwork.support'];
+
+			$clockwork = (new Clockwork)
+				->setAuthenticator($app['clockwork.authenticator'])
+				->setLog($app['clockwork.log'])
+				->setStorage($app['clockwork.storage'])
+				->addDataSource(new PhpDataSource())
+				->addDataSource($app['clockwork.lumen']);
+
+			if ($support->isFeatureEnabled('database')) $clockwork->addDataSource($app['clockwork.eloquent']);
+			if ($support->isFeatureEnabled('cache')) $clockwork->addDataSource($app['clockwork.cache']);
+			if ($support->isFeatureEnabled('redis')) $clockwork->addDataSource($app['clockwork.redis']);
+			if ($support->isFeatureEnabled('queue')) $clockwork->addDataSource($app['clockwork.queue']);
+			if ($support->isFeatureEnabled('events')) $clockwork->addDataSource($app['clockwork.events']);
+			if ($support->isFeatureEnabled('emails')) $clockwork->addDataSource($app['clockwork.swift']);
+			if ($support->isFeatureAvailable('xdebug')) $clockwork->addDataSource($app['clockwork.xdebug']);
+
+			$support->configureSerializer();
+
+			return $clockwork;
+		});
+
+		$this->app->singleton('clockwork.authenticator', function ($app) {
+			return $app['clockwork.support']->getAuthenticator();
 		});
 
 		$this->app->singleton('clockwork.log', function ($app) {
@@ -87,122 +53,42 @@ class ClockworkServiceProvider extends ServiceProvider
 				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
 		});
 
-		$this->app->singleton('clockwork.authenticator', function ($app) {
-			return $app['clockwork.support']->getAuthenticator();
+		$this->app->singleton('clockwork.storage', function ($app) {
+			return $app['clockwork.support']->getStorage();
 		});
 
-		$this->app->singleton('clockwork.lumen', function ($app) {
-			return (new LumenDataSource($app))
-				->collectViews($app['clockwork.support']->isCollectingViews());
+		$this->app->singleton('clockwork.support', function ($app) {
+			return new ClockworkSupport($app);
 		});
-
-		$this->app->singleton('clockwork.swift', function ($app) {
-			return new SwiftDataSource($app['mailer']->getSwiftMailer());
-		});
-
-		$this->app->singleton('clockwork.eloquent', function ($app) {
-			return (new EloquentDataSource(
-				$app['db'],
-				$app['events'],
-				$app['clockwork.support']->getConfig('database_slow_query'),
-				$app['clockwork.support']->getConfig('database_slow_only'))
-			)
-				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
-		});
-
-		$this->app->singleton('clockwork.cache', function ($app) {
-			return new LaravelCacheDataSource($app['events']);
-		});
-
-		$this->app->singleton('clockwork.redis', function ($app) {
-			return new LaravelRedisDataSource($app['events']);
-		});
-
-		$this->app->singleton('clockwork.queue', function ($app) {
-			return new LaravelQueueDataSource($app['queue']->connection());
-		});
-
-		$this->app->singleton('clockwork.events', function ($app) {
-			return new LaravelEventsDataSource(
-				$app['events'], $app['clockwork.support']->getConfig('ignored_events', [])
-			);
-		});
-
-		$this->app->singleton('clockwork.xdebug', function ($app) {
-			return new XdebugDataSource;
-		});
-
-		$this->app->singleton('clockwork', function ($app) {
-			$clockwork = new Clockwork();
-			$support = $app['clockwork.support'];
-
-			$clockwork
-				->addDataSource(new PhpDataSource())
-				->addDataSource($app['clockwork.lumen']);
-
-			if ($support->isCollectingDatabaseQueries()) {
-				$clockwork->addDataSource($app['clockwork.eloquent']);
-			}
-
-			if ($support->isCollectingEmails()) {
-				$clockwork->addDataSource($app['clockwork.swift']);
-			}
-
-			if ($support->isCollectingCacheStats()) {
-				$clockwork->addDataSource($app['clockwork.cache']);
-			}
-
-			if ($support->isCollectingRedisCommands()) {
-				$clockwork->addDataSource($app['clockwork.redis']);
-			}
-
-			if ($support->isCollectingQueueJobs()) {
-				$clockwork->addDataSource($app['clockwork.queue']);
-			}
-
-			if ($support->isCollectingEvents()) {
-				$clockwork->addDataSource($app['clockwork.events']);
-			}
-
-			if (in_array('xdebug', get_loaded_extensions())) {
-				$clockwork->addDataSource($app['clockwork.xdebug']);
-			}
-
-			$clockwork->setAuthenticator($app['clockwork.authenticator']);
-			$clockwork->setLog($app['clockwork.log']);
-			$clockwork->setStorage($support->getStorage());
-
-			return $clockwork;
-		});
-
-		// set up aliases for all Clockwork parts so they can be resolved by the IoC container
-		$this->app->alias('clockwork.support', ClockworkSupport::class);
-		$this->app->alias('clockwork.authenticator', AuthenticatorInterface::class);
-		$this->app->alias('clockwork.lumen', LumenDataSource::class);
-		$this->app->alias('clockwork.swift', SwiftDataSource::class);
-		$this->app->alias('clockwork.eloquent', EloquentDataSource::class);
-		$this->app->alias('clockwork.cache', LaravelCacheDataSource::class);
-		$this->app->alias('clockwork.redis', LaravelRedisDataSource::class);
-		$this->app->alias('clockwork.queue', LaravelQueueDataSource::class);
-		$this->app->alias('clockwork.events', LaravelEventsDataSource::class);
-		$this->app->alias('clockwork.xdebug', XdebugDataSource::class);
-		$this->app->alias('clockwork', Clockwork::class);
 
 		$this->registerCommands();
+		$this->registerDataSources();
+		$this->registerAliases();
+
+		$this->app['clockwork.laravel']->listenToEarlyEvents();
+
+		if ($this->isRunningWithFacades() && ! class_exists('Clockwork')) {
+			class_alias(\Clockwork\Support\Laravel\Facade::class, 'Clockwork');
+		}
 
 		if ($this->app['clockwork.support']->getConfig('register_helpers', true)) {
-			require __DIR__ . '/helpers.php';
+			require __DIR__ . '/../Laravel/helpers.php';
 		}
 	}
 
-	/**
-	 * Register the artisan commands.
-	 */
-	public function registerCommands()
+	protected function registerDataSources()
 	{
-		$this->commands([
-			ClockworkCleanCommand::class
-		]);
+		parent::registerDataSources();
+
+		$this->app->singleton('clockwork.lumen', function ($app) {
+			return (new LumenDataSource(
+				$app,
+				$app['clockwork.support']->isFeatureEnabled('log'),
+				$app['clockwork.support']->isFeatureEnabled('views'),
+				$app['clockwork.support']->isFeatureEnabled('routes')
+			))
+				->collectViews($app['clockwork.support']->isCollectingViews());
+		});
 	}
 
 	public function registerMiddleware()
@@ -228,13 +114,13 @@ class ClockworkServiceProvider extends ServiceProvider
 		$router->get('/__clockwork/assets/{path:.+}', 'Clockwork\Support\Lumen\Controller@webAsset');
 	}
 
-	public function provides()
-	{
-		return [ 'clockwork' ];
-	}
-
 	protected function isRunningWithFacades()
 	{
 		return Facade::getFacadeApplication() !== null;
+	}
+
+	public function provides()
+	{
+		return [ 'clockwork' ];
 	}
 }

@@ -21,12 +21,24 @@ class LaravelCacheDataSource extends DataSource
 	 */
 	protected $queries = [];
 
+	// Query counts by type
+	protected $count = [
+		'read'   => 0,
+		'hit'    => 0,
+		'write'  => 0,
+		'delete' => 0
+	];
+
+	// Whether we are collecting cache queries or stats only
+	protected $collectQueries = true;
+
 	/**
 	 * Create a new data source instance, takes an event dispatcher as argument
 	 */
-	public function __construct(EventDispatcher $eventDispatcher)
+	public function __construct(EventDispatcher $eventDispatcher, $collectQueries = true)
 	{
 		$this->eventDispatcher = $eventDispatcher;
+		$this->collectQueries = $collectQueries;
 	}
 
 	/**
@@ -76,11 +88,11 @@ class LaravelCacheDataSource extends DataSource
 	 */
 	public function resolve(Request $request)
 	{
-		$request->cacheQueries = array_merge($request->cacheQueries, $this->getQueries());
-		$request->cacheReads = $request->cacheReads + $this->getCacheReads();
-		$request->cacheHits = $request->cacheHits + $this->getCacheHits();
-		$request->cacheWrites = $request->cacheWrites + $this->getCacheWrites();
-		$request->cacheDeletes = $request->cacheDeletes + $this->getCacheDeletes();
+		$request->cacheQueries = array_merge($request->cacheQueries, $this->queries);
+		$request->cacheReads = $request->cacheReads + $this->count['read'];
+		$request->cacheHits = $request->cacheHits + $this->count['hit'];
+		$request->cacheWrites = $request->cacheWrites + $this->count['write'];
+		$request->cacheDeletes = $request->cacheDeletes + $this->count['delete'];
 
 		return $request;
 	}
@@ -93,64 +105,37 @@ class LaravelCacheDataSource extends DataSource
 		$trace = StackTrace::get()->resolveViewName();
 		$caller = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
 
-		$this->queries[] = array_merge($query, [
-			'file'  => $caller->shortPath,
-			'line'  => $caller->line,
-			'trace' => $this->collectStackTraces ? (new Serializer)->trace($trace->framesBefore($caller)) : null
-		]);
+		$query = [
+			'type'       => $query['type'],
+			'key'        => $query['key'],
+			'value'      => isset($query['value']) ? (new Serializer)->normalize($query['value']) : null,
+			'time'       => null,
+			'connection' => null,
+			'file'       => $caller->shortPath,
+			'line'       => $caller->line,
+			'trace'      => $this->collectStackTraces ? (new Serializer)->trace($trace->framesBefore($caller)) : null
+		];
+
+		$this->incrementQueryCount($query);
+
+		if ($this->collectQueries && $this->passesFilters($query)) {
+			$this->queries[] = $query;
+		}
 	}
 
-	/**
-	 * Returns an array of cache queries in Clockwork metadata format
-	 */
-	protected function getQueries()
+	// Increase query counts for collected query
+	protected function incrementQueryCount($query)
 	{
-		return array_map(function ($query) {
-			return array_merge($query, [
-				'connection' => null,
-				'time' => null,
-				'value' => isset($query['value']) ? (new Serializer)->normalize($query['value']) : null
-			]);
-		}, $this->queries);
-	}
+		if ($query['type'] == 'write') {
+			$this->count['write']++;
+		} elseif ($query['type'] == 'delete') {
+			$this->count['delete']++;
+		} else {
+			$this->count['read']++;
 
-	/**
-	 * Returns a number of cache reads (hits + misses)
-	 */
-	protected function getCacheReads()
-	{
-		return count(array_filter($this->queries, function ($query) {
-			return $query['type'] == 'hit' || $query['type'] == 'miss';
-		}));
-	}
-
-	/**
-	 * Returns a number of cache hits
-	 */
-	protected function getCacheHits()
-	{
-		return count(array_filter($this->queries, function ($query) {
-			return $query['type'] == 'hit';
-		}));
-	}
-
-	/**
-	 * Returns a number of cache writes
-	 */
-	protected function getCacheWrites()
-	{
-		return count(array_filter($this->queries, function ($query) {
-			return $query['type'] == 'write';
-		}));
-	}
-
-	/**
-	 * Returns a number of cache deletes
-	 */
-	protected function getCacheDeletes()
-	{
-		return count(array_filter($this->queries, function ($query) {
-			return $query['type'] == 'delete';
-		}));
+			if ($query['type'] == 'hit') {
+				$this->count['hit']++;
+			}
+		}
 	}
 }

@@ -104,7 +104,7 @@ class SqlStorage extends Storage
 	// Store the request in the database
 	public function store(Request $request)
 	{
-		$data = $this->applyFilter($request->toArray());
+		$data = $request->toArray();
 
 		foreach ($this->needsSerialization as $key) {
 			$data[$key] = @json_encode($data[$key], \JSON_PARTIAL_OUTPUT_ON_ERROR);

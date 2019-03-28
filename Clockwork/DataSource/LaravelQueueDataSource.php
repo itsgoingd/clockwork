@@ -66,11 +66,15 @@ class LaravelQueueDataSource extends DataSource
 		$trace = StackTrace::get()->resolveViewName();
 		$caller = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
 
-		$this->jobs[] = array_merge($job, [
+		$job = array_merge($job, [
 			'file'  => $caller->shortPath,
 			'line'  => $caller->line,
 			'trace' => $this->collectStackTraces ? (new Serializer)->trace($trace->framesBefore($caller)) : null
 		]);
+
+		if ($this->passesFilters($job)) {
+			$this->jobs[] = $job;
+		}
 	}
 
 	/**

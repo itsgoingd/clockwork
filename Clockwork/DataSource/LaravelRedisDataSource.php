@@ -31,6 +31,12 @@ class LaravelRedisDataSource extends DataSource
 	{
 		$this->eventDispatcher = $eventDispatcher;
 		$this->skipCacheCommands = $skipCacheCommands;
+
+		if ($this->skipCacheCommands) {
+			$this->addFilter(function ($command, $trace) {
+				return ! $trace->first(function ($frame) { return $frame->class == 'Illuminate\Cache\RedisStore'; });
+			});
+		}
 	}
 
 	/**
@@ -66,20 +72,15 @@ class LaravelRedisDataSource extends DataSource
 		$trace = StackTrace::get()->resolveViewName();
 		$caller = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
 
-		if ($this->shouldSkipCommand($command, $trace)) return;
-
-		$this->commands[] = array_merge($command, [
+		$command = array_merge($command, [
 			'file'  => $caller->shortPath,
 			'line'  => $caller->line,
 			'trace' => $this->collectStackTraces ? (new Serializer)->trace($trace->framesBefore($caller)) : null
 		]);
-	}
 
-	// Returns whether a command should be skipped, if we are skipping cache commands
-	protected function shouldSkipCommand(array $command, StackTrace $trace)
-	{
-		return $this->skipCacheCommands
-			&& $trace->first(function ($frame) { return $frame->class == 'Illuminate\Cache\RedisStore'; });
+		if ($this->passesFilters($command, $trace)) {
+			$this->commands[] = $command;
+		}
 	}
 
 	/**

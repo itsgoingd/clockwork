@@ -57,7 +57,7 @@ class LaravelEventsDataSource extends DataSource
 		$trace = StackTrace::get()->resolveViewName();
 		$firedAt = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
 
-		$this->events[] = [
+		$event = [
 			'event'     => $event,
 			'data'      => (new Serializer)->normalize(count($data) == 1 && isset($data[0]) ? $data[0] : $data),
 			'time'      => microtime(true),
@@ -66,6 +66,10 @@ class LaravelEventsDataSource extends DataSource
 			'line'      => $firedAt->line,
 			'trace'     => $this->collectStackTraces ? (new Serializer)->trace($trace->framesBefore($firedAt)) : null,
 		];
+
+		if ($this->passesFilters($event)) {
+			$this->events[] = $event;
+		}
 	}
 
 	// Returns registered listeners for the specified event
