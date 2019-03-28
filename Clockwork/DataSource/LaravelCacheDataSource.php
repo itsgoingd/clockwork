@@ -118,7 +118,7 @@ class LaravelCacheDataSource extends DataSource
 
 		$this->incrementQueryCount($query);
 
-		if ($this->collectQueries) {
+		if ($this->collectQueries && $this->passesFilters($query)) {
 			$this->queries[] = $query;
 		}
 	}

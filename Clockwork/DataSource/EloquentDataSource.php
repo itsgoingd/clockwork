@@ -62,14 +62,6 @@ class EloquentDataSource extends DataSource
 		if ($slowOnly) $this->addFilter(function ($query) { return $query['duration'] > $this->slowThreshold; });
 	}
 
-	// Register a new filter for collected queries
-	public function addFilter(\Closure $filter)
-	{
-		$this->filters[] = $filter;
-
-		return $this;
-	}
-
 	/**
 	 * Start listening to eloquent queries
 	 */
@@ -115,11 +107,7 @@ class EloquentDataSource extends DataSource
 
 		$this->incrementQueryCount($query);
 
-		foreach ($this->filters as $filter) {
-			if (! $filter($query)) return $this->nextQueryModel = null;
-		}
-
-		if ($this->collectQueries) {
+		if ($this->collectQueries && $this->passesFilters($query)) {
 			$this->queries[] = $query;
 		}
 
