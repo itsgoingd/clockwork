@@ -19,14 +19,52 @@ class SqlStorage extends Storage
 	// Metadata expiration time in minutes
 	protected $expiration;
 
-	// List of all fields in the Clockwork requests table
+	// Schema for the Clockwork requests table
 	protected $fields = [
-		'id', 'version', 'time', 'method', 'url', 'uri', 'headers', 'controller', 'getData', 'postData', 'requestData',
-		'sessionData', 'authenticatedUser', 'cookies', 'responseTime', 'responseStatus', 'responseDuration',
-		'memoryUsage', 'databaseQueries', 'databaseQueriesCount', 'databaseSlowQueries', 'databaseSelects',
-		'databaseInserts', 'databaseUpdates', 'databaseDeletes', 'databaseOthers', 'databaseDuration', 'cacheQueries',
-		'cacheReads', 'cacheHits', 'cacheWrites', 'cacheDeletes', 'cacheTime', 'redisCommands', 'queueJobs',
-		'timelineData', 'log', 'events', 'routes', 'emailsData', 'viewsData', 'userData', 'subrequests', 'xdebug'
+		'id'                   => 'VARCHAR(100) PRIMARY KEY',
+		'version'              => 'INTEGER',
+		'time'                 => 'DOUBLE PRECISION NULL',
+		'method'               => 'VARCHAR(10) NULL',
+		'url'                  => 'TEXT NULL',
+		'uri'                  => 'TEXT NULL',
+		'headers'              => 'TEXT NULL',
+		'controller'           => 'VARCHAR(250) NULL',
+		'getData'              => 'TEXT NULL',
+		'postData'             => 'TEXT NULL',
+		'requestData'          => 'TEXT NULL',
+		'sessionData'          => 'TEXT NULL',
+		'authenticatedUser'    => 'TEXT NULL',
+		'cookies'              => 'TEXT NULL',
+		'responseTime'         => 'DOUBLE PRECISION NULL',
+		'responseStatus'       => 'INTEGER NULL',
+		'responseDuration'     => 'DOUBLE PRECISION NULL',
+		'memoryUsage'          => 'DOUBLE PRECISION NULL',
+		'databaseQueries'      => 'TEXT NULL',
+		'databaseQueriesCount' => 'INTEGER NULL',
+		'databaseSlowQueries'  => 'INTEGER NULL',
+		'databaseSelects'      => 'INTEGER NULL',
+		'databaseInserts'      => 'INTEGER NULL',
+		'databaseUpdates'      => 'INTEGER NULL',
+		'databaseDeletes'      => 'INTEGER NULL',
+		'databaseOthers'       => 'INTEGER NULL',
+		'databaseDuration'     => 'DOUBLE PRECISION NULL',
+		'cacheQueries'         => 'TEXT NULL',
+		'cacheReads'           => 'INTEGER NULL',
+		'cacheHits'            => 'INTEGER NULL',
+		'cacheWrites'          => 'INTEGER NULL',
+		'cacheDeletes'         => 'INTEGER NULL',
+		'cacheTime'            => 'DOUBLE PRECISION NULL',
+		'redisCommands'        => 'TEXT NULL',
+		'queueJobs'            => 'TEXT NULL',
+		'timelineData'         => 'TEXT NULL',
+		'log'                  => 'TEXT NULL',
+		'events'               => 'TEXT NULL',
+		'routes'               => 'TEXT NULL',
+		'emailsData'           => 'TEXT NULL',
+		'viewsData'            => 'TEXT NULL',
+		'userData'             => 'TEXT NULL',
+		'subrequests'          => 'TEXT NULL',
+		'xdebug'               => 'TEXT NULL'
 	];
 
 	// List of Request keys that need to be serialized before they can be stored in database
@@ -47,7 +85,7 @@ class SqlStorage extends Storage
 	// Returns all requests
 	public function all()
 	{
-		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, $this->fields));
+		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, array_keys($this->fields)));
 		$result = $this->query("SELECT {$fields} FROM {$this->table}");
 
 		return $this->resultsToRequests($result);
@@ -56,7 +94,7 @@ class SqlStorage extends Storage
 	// Return a single request by id
 	public function find($id)
 	{
-		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, $this->fields));
+		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, array_keys($this->fields)));
 		$result = $this->query("SELECT {$fields} FROM {$this->table} WHERE id = :id", [ 'id' => $id ]);
 
 		$requests = $this->resultsToRequests($result);
@@ -66,7 +104,7 @@ class SqlStorage extends Storage
 	// Return the latest request
 	public function latest()
 	{
-		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, $this->fields));
+		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, array_keys($this->fields)));
 		$result = $this->query("SELECT {$fields} FROM {$this->table} ORDER BY id DESC LIMIT 1");
 
 		$requests = $this->resultsToRequests($result);
@@ -78,7 +116,7 @@ class SqlStorage extends Storage
 	{
 		$count = (int) $count;
 
-		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, $this->fields));
+		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, array_keys($this->fields)));
 		$result = $this->query(
 			"SELECT {$fields} FROM {$this->table} WHERE id < :id ORDER BY id DESC " . ($count ? "LIMIT {$count}" : ''),
 			[ 'id' => $id ]
@@ -92,7 +130,7 @@ class SqlStorage extends Storage
 	{
 		$count = (int) $count;
 
-		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, $this->fields));
+		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, array_keys($this->fields)));
 		$result = $this->query(
 			"SELECT {$fields} FROM {$this->table} WHERE id > :id ORDER BY id ASC " . ($count ? "LIMIT {$count}" : ''),
 			[ 'id' => $id ]
@@ -110,8 +148,8 @@ class SqlStorage extends Storage
 			$data[$key] = @json_encode($data[$key], \JSON_PARTIAL_OUTPUT_ON_ERROR);
 		}
 
-		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, $this->fields));
-		$bindings = implode(', ', array_map(function ($field) { return ":{$field}"; }, $this->fields));
+		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, array_keys($this->fields)));
+		$bindings = implode(', ', array_map(function ($field) { return ":{$field}"; }, array_keys($this->fields)));
 
 		$this->query("INSERT INTO {$this->table} ($fields) VALUES ($bindings)", $data);
 
@@ -139,59 +177,22 @@ class SqlStorage extends Storage
 		}
 
 		// create the metadata table
-		$textType = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql' ? 'MEDIUMTEXT' : 'TEXT';
-
-		$this->pdo->exec(
-			"CREATE TABLE {$table} (" .
-				$this->quote('id') . ' VARCHAR(100) PRIMARY KEY, ' .
-				$this->quote('version') . ' INTEGER, ' .
-				$this->quote('time') . ' DOUBLE PRECISION NULL, ' .
-				$this->quote('method') . ' VARCHAR(10) NULL, ' .
-				$this->quote('url') . " {$textType} NULL, " .
-				$this->quote('uri') . " {$textType} NULL, " .
-				$this->quote('headers') . " {$textType} NULL, " .
-				$this->quote('controller') . ' VARCHAR(250) NULL, ' .
-				$this->quote('getData') . " {$textType} NULL, " .
-				$this->quote('postData') . " {$textType} NULL, " .
-				$this->quote('requestData') . " {$textType} NULL, " .
-				$this->quote('sessionData') . " {$textType} NULL, " .
-				$this->quote('authenticatedUser') . " {$textType} NULL, " .
-				$this->quote('cookies') . " {$textType} NULL, " .
-				$this->quote('responseTime') . ' DOUBLE PRECISION NULL, ' .
-				$this->quote('responseStatus') . ' INTEGER NULL, ' .
-				$this->quote('responseDuration') . ' DOUBLE PRECISION NULL, ' .
-				$this->quote('memoryUsage') . ' DOUBLE PRECISION NULL, ' .
-				$this->quote('databaseQueries') . " {$textType} NULL, " .
-				$this->quote('databaseQueriesCount') . ' INTEGER NULL, ' .
-				$this->quote('databaseSlowQueries') . ' INTEGER NULL, ' .
-				$this->quote('databaseSelects') . ' INTEGER NULL, ' .
-				$this->quote('databaseInserts') . ' INTEGER NULL, ' .
-				$this->quote('databaseUpdates') . ' INTEGER NULL, ' .
-				$this->quote('databaseDeletes') . ' INTEGER NULL, ' .
-				$this->quote('databaseOthers') . ' INTEGER NULL, ' .
-				$this->quote('databaseDuration') . ' DOUBLE PRECISION NULL, ' .
-				$this->quote('cacheQueries') . " {$textType} NULL, " .
-				$this->quote('cacheReads') . ' INTEGER NULL, ' .
-				$this->quote('cacheHits') . ' INTEGER NULL, ' .
-				$this->quote('cacheWrites') . ' INTEGER NULL, ' .
-				$this->quote('cacheDeletes') . ' INTEGER NULL, ' .
-				$this->quote('cacheTime') . ' DOUBLE PRECISION NULL, ' .
-				$this->quote('redisCommands') . " {$textType} NULL, " .
-				$this->quote('queueJobs') . " {$textType} NULL, " .
-				$this->quote('timelineData') . " {$textType} NULL, " .
-				$this->quote('log') . " {$textType} NULL, " .
-				$this->quote('events') . " {$textType} NULL, " .
-				$this->quote('routes') . " {$textType} NULL, " .
-				$this->quote('emailsData') . " {$textType} NULL, " .
-				$this->quote('viewsData') . " {$textType} NULL, " .
-				$this->quote('userData') . " {$textType} NULL, " .
-				$this->quote('subrequests') . " {$textType} NULL," .
-				$this->quote('xdebug') . " {$textType} NULL" .
-			');'
-		);
+		$this->pdo->exec($this->buildSchema($table));
 
 		$indexName = $this->quote("{$this->table}_time_index");
 		$this->pdo->exec("CREATE INDEX {$indexName} ON {$table} (". $this->quote('time') .')');
+	}
+
+	// Builds the query to create Clockwork database table
+	protected function buildSchema($table)
+	{
+		$textType = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql' ? 'MEDIUMTEXT' : 'TEXT';
+
+		$columns = implode(', ', array_map(function ($field, $type) use ($textType) {
+			return $this->quote($field) . ' ' . str_replace('TEXT', $textType, $type);
+		}, array_keys($this->fields), array_values($this->fields)));
+
+		return "CREATE TABLE {$table} ({$columns});";
 	}
 
 	// Executes an sql query, lazily initiates the clockwork database schema if it's old or doesn't exist yet, returns
