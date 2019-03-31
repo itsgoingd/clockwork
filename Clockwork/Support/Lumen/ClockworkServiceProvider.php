@@ -39,8 +39,6 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 			if ($support->isFeatureEnabled('emails')) $clockwork->addDataSource($app['clockwork.swift']);
 			if ($support->isFeatureAvailable('xdebug')) $clockwork->addDataSource($app['clockwork.xdebug']);
 
-			$support->configureSerializer();
-
 			return $clockwork;
 		});
 
@@ -49,8 +47,7 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 		});
 
 		$this->app->singleton('clockwork.log', function ($app) {
-			return (new Log)
-				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
+			return new Log;
 		});
 
 		$this->app->singleton('clockwork.storage', function ($app) {
@@ -64,6 +61,9 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 		$this->registerCommands();
 		$this->registerDataSources();
 		$this->registerAliases();
+
+		$this->app['clockwork.support']->configureSerializer();
+		$this->app['clockwork.support']->configureStackTraces();
 
 		$this->app['clockwork.laravel']->listenToEarlyEvents();
 

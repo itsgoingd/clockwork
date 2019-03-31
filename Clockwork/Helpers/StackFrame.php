@@ -11,7 +11,7 @@ class StackFrame
 	public $type;
 	public $args = [];
 	public $shortPath;
-	public $isVendor;
+	public $vendor;
 
 	public function __construct(array $data = [], $basePath = '', $vendorPath = '')
 	{
@@ -21,7 +21,8 @@ class StackFrame
 
 		$this->call = $this->formatCall();
 		$this->shortPath = str_replace($basePath, '', $this->file);
-		$this->isVendor = strpos($this->file, $vendorPath) === 0;
+		$this->vendor = strpos($this->file, $vendorPath) === 0
+			? explode('/', str_replace($vendorPath, '', $this->file))[0] : null;
 	}
 
 	protected function formatCall()

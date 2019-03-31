@@ -9,21 +9,48 @@ class StackTrace
 	protected $basePath;
 	protected $vendorPath;
 
-	public static function get()
+	protected static $defaults = [
+		'raw'    => false,
+		'filter' => null,
+		'skip'   => null,
+		'limit'  => null
+	];
+
+	public static function get($options = [])
 	{
 		return static::from(
 			debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS)
 		);
 	}
 
-	public static function from(array $trace)
+	public static function raw()
+	{
+		return static::get([ 'raw' => true ]);
+	}
+
+	public static function from(array $trace, $options = [])
 	{
 		$basePath = static::resolveBasePath();
 		$vendorPath = static::resolveVendorPath();
+		$options = $options + static::$defaults;
 
-		return new static(array_map(function ($frame) use ($basePath, $vendorPath) {
+		$trace = new static(array_map(function ($frame) use ($basePath, $vendorPath) {
 			return new StackFrame($frame, $basePath, $vendorPath);
 		}, $trace), $basePath, $vendorPath);
+
+		if (! $options['raw']) {
+			if ($options['filter']) $trace = $trace->filter($options['filter']);
+			if ($options['skip']) $trace = $trace->skip($options['skip']);
+			if ($options['limit']) $trace = $trace->limit($options['limit']);
+		}
+
+		return $trace;
+	}
+
+	// set default options for all captured stack traces
+	public static function defaults(array $defaults)
+	{
+		static::$defaults = $defaults + static::$defaults;
 	}
 
 	public function __construct(array $frames, $basePath, $vendorPath)
@@ -38,51 +65,40 @@ class StackTrace
 		return $this->frames;
 	}
 
-	public function framesBefore(StackFrame $frame)
+	public function first($filter = null)
 	{
-		return new static(
-			array_slice($this->frames, array_search($frame, $this->frames) + 1),
-			$this->basePath,
-			$this->vendorPath
-		);
-	}
+		if (! $filter) return reset($this->frames);
 
-	public function first(callable $callback)
-	{
+		if ($filter instanceof StackFilter) $filter = $filter->closure();
+
 		foreach ($this->frames as $frame) {
-			if ($callback($frame)) return $frame;
+			if ($filter($frame)) return $frame;
 		}
 	}
 
-	public function firstNonVendor(array $ignoredPackages = null)
+	public function filter($filter)
 	{
-		$ignoredPaths = $this->getIgnoredNonVendorCallerPaths($ignoredPackages);
+		if ($filter instanceof StackFilter) $filter = $filter->closure();
 
-		return $this->first(function ($frame) use ($ignoredPaths) {
-			return $frame->file && ! $this->isSubdir($frame->file, $ignoredPaths);
-		});
+		return $this->copy(array_filter($filter, $this->frames));
 	}
 
-	protected function getIgnoredNonVendorCallerPaths(array $ignoredPackages = null)
+	public function skip($count)
 	{
-		if (! $ignoredPackages) {
-			return [ $this->vendorPath ];
-		}
+		if ($count instanceof StackFilter) $count = $count->closure();
+		if ($count instanceof \Closure) $count = array_search($this->first($count), $this->frames);
 
-		return array_map(function ($ignoredPackage) {
-			return "{$this->vendorPath}{$ignoredPackage}";
-		}, $ignoredPackages);
+		return $this->copy(array_slice($this->frames, $count));
 	}
 
-	protected function isSubdir($subdir, array $paths)
+	public function limit($count)
 	{
-		foreach ($paths as $path) {
-			if (strpos($subdir, $path) === 0) {
-				return true;
-			}
-		}
+		return $this->copy(array_slice($this->frames, 0, $count));
+	}
 
-		return false;
+	public function copy($frames = null)
+	{
+		return new static($frames ?: $this->frames, $this->basePath, $this->vendorPath);
 	}
 
 	protected static function resolveBasePath()

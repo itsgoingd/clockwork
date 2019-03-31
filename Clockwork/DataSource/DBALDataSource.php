@@ -199,7 +199,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 			'connection' => $connection
 		];
 
-		if ($this->passesFilters($query)) {
+		if ($this->passesFilters([ $query ])) {
 			$this->queries[] = $query;
 		}
 	}

@@ -12,7 +12,8 @@ class Serializer
 			\Laravel\Lumen\Application::class
 		],
 		'limit' => 10,
-		'toString' => false
+		'toString' => false,
+		'traces' => true
 	];
 
 	public function __construct(array $options = [])
@@ -87,12 +88,14 @@ class Serializer
 
 	public function trace(StackTrace $trace)
 	{
+		if (! $this->options['traces']) return null;
+
 		return array_map(function ($frame) {
 			return [
 				'call' => $frame->call,
 				'file' => $frame->file,
 				'line' => $frame->line,
-				'isVendor' => $frame->isVendor
+				'isVendor' => (bool) $frame->vendor
 			];
 		}, $trace->frames());
 	}
@@ -105,7 +108,7 @@ class Serializer
 			'code'     => $exception->getCode(),
 			'file'     => $exception->getFile(),
 			'line'     => $exception->getLine(),
-			'trace'    => $this->trace(StackTrace::from($exception->getTrace())),
+			'trace'    => $this->trace(StackTrace::from($exception->getTrace(), [ 'limit' => false ])),
 			'previous' => $exception->getPrevious() ? $this->exception($exception->getPrevious()) : null
 		];
 	}

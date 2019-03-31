@@ -5,6 +5,8 @@ use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\PsrMessageDataSource;
 use Clockwork\Helpers\Serializer;
 use Clockwork\Helpers\ServerTiming;
+use Clockwork\Helpers\StackFilter;
+use Clockwork\Helpers\StackTrace;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\SqlStorage;
 
@@ -30,9 +32,8 @@ class Clockwork
 		$this->clockwork->addDataSource(new PhpDataSource);
 		$this->clockwork->setStorage($this->resolveStorage());
 
-		$this->clockwork->getLog()->collectStackTraces($this->config['collect_stack_traces']);
-
 		$this->configureSerializer();
+		$this->configureStackTraces();
 
 		if ($this->config['register_helpers']) include __DIR__ . '/helpers.php';
 
@@ -157,7 +158,21 @@ class Clockwork
 	{
 		Serializer::defaults([
 			'limit'    => $this->config['serialization_depth'],
-			'blackbox' => $this->config['serialization_blackbox']
+			'blackbox' => $this->config['serialization_blackbox'],
+			'traces'   => $this->config['stack_traces.enabled']
+		]);
+	}
+
+	protected function configureStackTraces()
+	{
+		StackTrace::defaults([
+			'skip'  => StackFilter::make()
+				->isNotVendor(array_merge(
+					$this->config['stack_traces.skip_vendors'],
+					[ 'itsgoingd', 'laravel', 'illuminate' ]
+				))
+				->isNotClass($this->config['stack_traces.skip_classes'],
+			'limit' => $this->config['stack_traces.limit']
 		]);
 	}
 

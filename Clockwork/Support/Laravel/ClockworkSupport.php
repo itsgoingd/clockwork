@@ -5,6 +5,8 @@ use Clockwork\Authentication\NullAuthenticator;
 use Clockwork\Authentication\SimpleAuthenticator;
 use Clockwork\Helpers\Serializer;
 use Clockwork\Helpers\ServerTiming;
+use Clockwork\Helpers\StackFilter;
+use Clockwork\Helpers\StackTrace;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\SqlStorage;
 use Clockwork\Web\Web;
@@ -158,7 +160,21 @@ class ClockworkSupport
 	{
 		Serializer::defaults([
 			'limit'    => $this->getConfig('serialization_depth'),
-			'blackbox' => $this->getConfig('serialization_blackbox')
+			'blackbox' => $this->getConfig('serialization_blackbox'),
+			'traces'   => $this->getConfig('stack_traces.enabled', true)
+		]);
+	}
+
+	public function configureStackTraces()
+	{
+		StackTrace::defaults([
+			'skip'  => StackFilter::make()
+				->isNotVendor(array_merge(
+					$this->getConfig('stack_traces.skip_vendors', []),
+					[ 'itsgoingd', 'laravel', 'illuminate' ]
+				))
+				->isNotClass($this->getConfig('stack_traces.skip_classes', [])),
+			'limit' => $this->getConfig('stack_traces.limit', 10)
 		]);
 	}
 

@@ -55,19 +55,18 @@ class LaravelEventsDataSource extends DataSource
 		if (! $this->shouldCollect($event)) return;
 
 		$trace = StackTrace::get()->resolveViewName();
-		$firedAt = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
 
 		$event = [
 			'event'     => $event,
 			'data'      => (new Serializer)->normalize(count($data) == 1 && isset($data[0]) ? $data[0] : $data),
 			'time'      => microtime(true),
 			'listeners' => $this->findListenersFor($event),
-			'file'      => $firedAt->shortPath,
-			'line'      => $firedAt->line,
-			'trace'     => $this->collectStackTraces ? (new Serializer)->trace($trace->framesBefore($firedAt)) : null,
+			'file'      => $trace->first() ? $trace->first()->shortPath : null,
+			'line'      => $trace->first() ? $trace->first()->line : null,
+			'trace'     => (new Serializer)->trace($trace)
 		];
 
-		if ($this->passesFilters($event)) {
+		if ($this->passesFilters([ $event ])) {
 			$this->events[] = $event;
 		}
 	}
