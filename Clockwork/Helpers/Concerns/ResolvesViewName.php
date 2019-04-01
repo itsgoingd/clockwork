@@ -25,8 +25,10 @@ trait ResolvesViewName
 			$this->vendorPath
 		);
 
-		array_splice($this->frames, array_search($viewFrame, $this->frames), 0, [ $resolvedViewFrame ]);
-
-		return $this;
+		return $this->copy(array_merge(
+			array_slice($this->frames, 0, array_search($viewFrame, $this->frames)),
+			[ $resolvedViewFrame ],
+			array_slice($this->frames, array_search($viewFrame, $this->frames) + 2)
+		));
 	}
 }

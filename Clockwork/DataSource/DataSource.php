@@ -7,9 +7,6 @@ use Clockwork\Request\Request;
  */
 class DataSource implements DataSourceInterface
 {
-	// Whether the data source should collect stack traces (when applicable)
-	protected $collectStackTraces;
-
 	// Array of filter functions
 	protected $filters = [];
 
@@ -25,14 +22,6 @@ class DataSource implements DataSourceInterface
 	public function extend(Request $request)
 	{
 		return $request;
-	}
-
-	// Enable or disable collecting of stack traces
-	public function collectStackTraces($enable = true)
-	{
-		$this->collectStackTraces = $enable;
-
-		return $this;
 	}
 
 	// Register a new filter
@@ -52,10 +41,10 @@ class DataSource implements DataSourceInterface
 	}
 
 	// Returns boolean whether the filterable passes all registered filters
-	protected function passesFilters($filterable)
+	protected function passesFilters($args)
 	{
 		foreach ($this->filters as $filter) {
-			if (! $filter($filterable)) return false;
+			if (! call_user_func_array($filter, $args)) return false;
 		}
 
 		return true;

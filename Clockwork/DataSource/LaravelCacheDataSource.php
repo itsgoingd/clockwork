@@ -103,7 +103,6 @@ class LaravelCacheDataSource extends DataSource
 	public function registerQuery(array $query)
 	{
 		$trace = StackTrace::get()->resolveViewName();
-		$caller = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
 
 		$query = [
 			'type'       => $query['type'],
@@ -111,14 +110,14 @@ class LaravelCacheDataSource extends DataSource
 			'value'      => isset($query['value']) ? (new Serializer)->normalize($query['value']) : null,
 			'time'       => null,
 			'connection' => null,
-			'file'       => $caller->shortPath,
-			'line'       => $caller->line,
-			'trace'      => $this->collectStackTraces ? (new Serializer)->trace($trace->framesBefore($caller)) : null
+			'file'       => $trace->first() ? $trace->first()->shortPath : null,
+			'line'       => $trace->first() ? $trace->first()->line : null,
+			'trace'      => (new Serializer)->trace($trace)
 		];
 
 		$this->incrementQueryCount($query);
 
-		if ($this->collectQueries && $this->passesFilters($query)) {
+		if ($this->collectQueries && $this->passesFilters([ $query ])) {
 			$this->queries[] = $query;
 		}
 	}

@@ -92,22 +92,21 @@ class EloquentDataSource extends DataSource
 	public function registerQuery($event)
 	{
 		$trace = StackTrace::get()->resolveViewName();
-		$caller = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
 
 		$query = [
 			'query'      => $this->createRunnableQuery($event->sql, $event->bindings, $event->connectionName),
 			'duration'   => $event->time,
 			'connection' => $event->connectionName,
-			'file'       => $caller->shortPath,
-			'line'       => $caller->line,
-			'trace'      => $this->collectStackTraces ? (new Serializer)->trace($trace->framesBefore($caller)) : null,
+			'file'       => $trace->first() ? $trace->first()->shortPath : null,
+			'line'       => $trace->first() ? $trace->first()->line : null,
+			'trace'      => (new Serializer)->trace($trace),
 			'model'      => $this->nextQueryModel,
 			'tags'       => $this->slowThreshold !== null && $event->time > $this->slowThreshold ? [ 'slow' ] : []
 		];
 
 		$this->incrementQueryCount($query);
 
-		if ($this->collectQueries && $this->passesFilters($query)) {
+		if ($this->collectQueries && $this->passesFilters([ $query ])) {
 			$this->queries[] = $query;
 		}
 

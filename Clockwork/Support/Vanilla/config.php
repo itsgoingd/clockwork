@@ -111,6 +111,24 @@ return [
 	|
 	*/
 
+	'stack_traces' => [
+		// Enable or disable collecting of stack traces, when disabled only caller file and line number is collected
+		'enabled' => isset($_ENV['CLOCKWORK_STACK_TRACES_ENABLED']) ? $_ENV['CLOCKWORK_STACK_TRACES_ENABLED'] : true,
+
+		// List of vendor names to skip when determining caller, common vendor are automatically added
+		'skip_vendors' => [
+			// 'phpunit'
+		],
+
+		// List of class names to skip when determining caller
+		'skip_classes' => [
+			// App\CustomLog::class
+		],
+
+		// Limit of frames to be collected
+		'limit' => isset($_ENV['CLOCKWORK_STACK_TRACES_LIMIT']) ? $_ENV['CLOCKWORK_STACK_TRACES_LIMIT'] : 10
+	],
+
 	'collect_stack_traces' => isset($_ENV['CLOCKWORK_COLLECT_STACK_TRACES']) ? $_ENV['CLOCKWORK_COLLECT_STACK_TRACES'] : true,
 
 	/*

@@ -70,15 +70,14 @@ class LaravelRedisDataSource extends DataSource
 	public function registerCommand(array $command)
 	{
 		$trace = StackTrace::get()->resolveViewName();
-		$caller = $trace->firstNonVendor([ 'itsgoingd', 'laravel', 'illuminate' ]);
 
 		$command = array_merge($command, [
-			'file'  => $caller->shortPath,
-			'line'  => $caller->line,
-			'trace' => $this->collectStackTraces ? (new Serializer)->trace($trace->framesBefore($caller)) : null
+			'file'  => $trace->first() ? $trace->first()->shortPath : null,
+			'line'  => $trace->first() ? $trace->first()->line : null,
+			'trace' => (new Serializer)->trace($trace)
 		]);
 
-		if ($this->passesFilters($command, $trace)) {
+		if ($this->passesFilters([ $command, $trace ])) {
 			$this->commands[] = $command;
 		}
 	}

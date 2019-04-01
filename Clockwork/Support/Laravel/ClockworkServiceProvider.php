@@ -79,8 +79,6 @@ class ClockworkServiceProvider extends ServiceProvider
 			if ($support->isFeatureEnabled('emails')) $clockwork->addDataSource($app['clockwork.swift']);
 			if ($support->isFeatureAvailable('xdebug')) $clockwork->addDataSource($app['clockwork.xdebug']);
 
-			$support->configureSerializer();
-
 			return $clockwork;
 		});
 
@@ -89,8 +87,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		});
 
 		$this->app->singleton('clockwork.log', function ($app) {
-			return (new Log)
-				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
+			return new Log;
 		});
 
 		$this->app->singleton('clockwork.storage', function ($app) {
@@ -104,6 +101,9 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->registerCommands();
 		$this->registerDataSources();
 		$this->registerAliases();
+
+		$this->app['clockwork.support']->configureSerializer();
+		$this->app['clockwork.support']->configureStackTraces();
 
 		$this->app['clockwork.laravel']->listenToEarlyEvents();
 
@@ -127,8 +127,7 @@ class ClockworkServiceProvider extends ServiceProvider
 			return (new LaravelCacheDataSource(
 				$app['events'],
 				$app['clockwork.support']->getConfig('features.cache.collect_queries')
-			))
-				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
+			));
 		});
 
 		$this->app->singleton('clockwork.eloquent', function ($app) {
@@ -138,16 +137,14 @@ class ClockworkServiceProvider extends ServiceProvider
 				$app['clockwork.support']->getConfig('features.database.collect_queries'),
 				$app['clockwork.support']->getConfig('features.database.slow_threshold'),
 				$app['clockwork.support']->getConfig('features.database.slow_only')
-			))
-				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
+			));
 		});
 
 		$this->app->singleton('clockwork.events', function ($app) {
 			return (new LaravelEventsDataSource(
 				$app['events'],
 				$app['clockwork.support']->getConfig('features.events.ignored_events', [])
-			))
-				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
+			));
 		});
 
 		$this->app->singleton('clockwork.laravel', function ($app) {
@@ -161,13 +158,11 @@ class ClockworkServiceProvider extends ServiceProvider
 		});
 
 		$this->app->singleton('clockwork.queue', function ($app) {
-			return (new LaravelQueueDataSource($app['queue']->connection()))
-				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
+			return (new LaravelQueueDataSource($app['queue']->connection()));
 		});
 
 		$this->app->singleton('clockwork.redis', function ($app) {
-			return (new LaravelRedisDataSource($app['events']))
-				->collectStackTraces($app['clockwork.support']->getConfig('collect_stack_traces'));
+			return (new LaravelRedisDataSource($app['events']));
 		});
 
 		$this->app->singleton('clockwork.swift', function ($app) {
