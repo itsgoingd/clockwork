@@ -23,7 +23,8 @@ class Log extends AbstractLogger
 	 */
 	public function log($level = LogLevel::INFO, $message, array $context = [])
 	{
-		$trace = StackTrace::get()->resolveViewName();
+		$trace = isset($context['trace']) && $context['trace'] instanceof StackTrace
+			? $context['trace'] : StackTrace::get()->resolveViewName();
 
 		$this->data[] = [
 			'message'   => (new Serializer([ 'toString' => true ]))->normalize($message),

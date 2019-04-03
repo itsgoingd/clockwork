@@ -14,6 +14,8 @@ use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
  */
 class EloquentDataSource extends DataSource
 {
+	use Concerns\EloquentDetectDuplicateQueries;
+
 	/**
 	 * Database manager
 	 */
@@ -44,6 +46,9 @@ class EloquentDataSource extends DataSource
 	// Query execution time threshold in ms after which the query is marked as slow
 	protected $slowThreshold;
 
+	// Enable duplicate queries detection
+	protected $detectDuplicateQueries = false;
+
 	/**
 	 * Model name to associate with the next executed query, used to map queries to models
 	 */
@@ -52,12 +57,13 @@ class EloquentDataSource extends DataSource
 	/**
 	 * Create a new data source instance, takes a database manager and an event dispatcher as arguments
 	 */
-	public function __construct(ConnectionResolverInterface $databaseManager, EventDispatcher $eventDispatcher, $collectQueries = true, $slowThreshold = null, $slowOnly = false)
+	public function __construct(ConnectionResolverInterface $databaseManager, EventDispatcher $eventDispatcher, $collectQueries = true, $slowThreshold = null, $slowOnly = false, $detectDuplicateQueries = false)
 	{
 		$this->databaseManager = $databaseManager;
 		$this->eventDispatcher = $eventDispatcher;
-		$this->collectQueries  = $collectQueries;
-		$this->slowThreshold   = $slowThreshold;
+		$this->collectQueries = $collectQueries;
+		$this->slowThreshold = $slowThreshold;
+		$this->detectDuplicateQueries = $detectDuplicateQueries;
 
 		if ($slowOnly) $this->addFilter(function ($query) { return $query['duration'] > $this->slowThreshold; });
 	}
@@ -91,7 +97,14 @@ class EloquentDataSource extends DataSource
 	 */
 	public function registerQuery($event)
 	{
-		$trace = StackTrace::get()->resolveViewName();
+		$trace = $this->detectDuplicateQueries
+			? StackTrace::raw([ 'arguments' => true ])->resolveViewName()
+			: StackTrace::get()->resolveViewName();
+
+		if ($this->detectDuplicateQueries) {
+			$this->detectDuplicateQuery($trace);
+			$trace = $trace->skip()->limit();
+		}
 
 		$query = [
 			'query'      => $this->createRunnableQuery($event->sql, $event->bindings, $event->connectionName),
@@ -140,6 +153,8 @@ class EloquentDataSource extends DataSource
 		$request->databaseUpdates      += $this->count['update'];
 		$request->databaseDeletes      += $this->count['delete'];
 		$request->databaseOthers       += $this->count['other'];
+
+		$this->appendDuplicateQueriesWarnings($request);
 
 		return $request;
 	}

@@ -18,14 +18,15 @@ class StackTrace
 
 	public static function get($options = [])
 	{
-		return static::from(
-			debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS)
-		);
+		$backtraceOptions = isset($options['arguments'])
+			? DEBUG_BACKTRACE_PROVIDE_OBJECT : DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS;
+
+		return static::from(debug_backtrace($backtraceOptions), $options);
 	}
 
-	public static function raw()
+	public static function raw($options = [])
 	{
-		return static::get([ 'raw' => true ]);
+		return static::get(array_merge($options, [ 'raw' => true ]));
 	}
 
 	public static function from(array $trace, $options = [])
@@ -76,23 +77,27 @@ class StackTrace
 		}
 	}
 
-	public function filter($filter)
+	public function filter($filter = null)
 	{
+		if (! $filter) $filter = self::$defaults['filter'];
 		if ($filter instanceof StackFilter) $filter = $filter->closure();
 
 		return $this->copy(array_filter($filter, $this->frames));
 	}
 
-	public function skip($count)
+	public function skip($count = null)
 	{
+		if (! $count) $count = self::$defaults['skip'];
 		if ($count instanceof StackFilter) $count = $count->closure();
 		if ($count instanceof \Closure) $count = array_search($this->first($count), $this->frames);
 
 		return $this->copy(array_slice($this->frames, $count));
 	}
 
-	public function limit($count)
+	public function limit($count = null)
 	{
+		if (! $count) $count = self::$defaults['limit'];
+
 		return $this->copy(array_slice($this->frames, 0, $count));
 	}
 
