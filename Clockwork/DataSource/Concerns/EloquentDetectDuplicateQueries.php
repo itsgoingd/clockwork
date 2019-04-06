@@ -6,6 +6,8 @@ use Clockwork\Request\Request;
 
 use Psr\Log\LogLevel;
 
+// Duplicate (N+1) queries detection for EloquentDataSource, inspired by the beyondcode/laravel-query-detector package
+// by Marcel Pociot (https://github.com/beyondcode/laravel-query-detector)
 trait EloquentDetectDuplicateQueries
 {
 	protected $duplicateQueries = [];
