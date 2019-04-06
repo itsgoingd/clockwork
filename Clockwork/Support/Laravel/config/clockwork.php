@@ -50,6 +50,9 @@ return [
 
 			// Collect only slow database queries
 			'slow_only' => env('CLOCKWORK_DATABASE_SLOW_ONLY', false),
+
+			// Detect and report duplicate (N+1) queries
+			'detect_duplicate_queries' => env('CLOCKWORK_DATABASE_DETECT_DUPLICATE_QUERIES', false)
 		],
 
 		// Sent emails
