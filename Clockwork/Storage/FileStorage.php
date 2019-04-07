@@ -39,9 +39,11 @@ class FileStorage extends Storage
 	}
 
 	// Returns all requests
-	public function all()
+	public function all(Search $search = null)
 	{
-		return $this->idsToRequests($this->ids());
+		return $search && $search->notEmpty()
+			? $this->findMatching($search, $this->ids())
+			: $this->idsToRequests($this->ids());
 	}
 
 	// Return a single request by id
@@ -51,32 +53,39 @@ class FileStorage extends Storage
 	}
 
 	// Return the latest request
-	public function latest()
+	public function latest(Search $search = null)
 	{
-		$ids = $this->ids();
-		return $this->find(end($ids));
+		return $search && $search->notEmpty()
+			? array_merge($this->findMatching($search, array_reverse($this->ids())), [ null ])[0]
+			: $this->find(array_reverse($this->ids())[0]);
 	}
 
 	// Return requests received before specified id, optionally limited to specified count
-	public function previous($id, $count = null)
+	public function previous($id, $count = null, Search $search = null)
 	{
 		$ids = $this->ids();
 
 		$lastIndex = array_search($id, $ids) - 1;
 		$firstIndex = $count && $lastIndex - $count > 0 ? $lastIndex - $count : 0;
 
-		return $this->idsToRequests(array_slice($ids, $firstIndex, $lastIndex - $firstIndex));
+		if ($lastIndex < 0) return [];
+
+		return $search && $search->notEmpty()
+			? array_reverse($this->findMatching($search, array_reverse(array_slice($ids, 0, $lastIndex)), $count))
+			: $this->idsToRequests(array_slice($ids, $firstIndex, $lastIndex - $firstIndex));
 	}
 
 	// Return requests received after specified id, optionally limited to specified count
-	public function next($id, $count = null)
+	public function next($id, $count = null, Search $search = null)
 	{
 		$ids = $this->ids();
 
 		$firstIndex = array_search($id, $ids) + 1;
 		$lastIndex = $count && $firstIndex + $count < count($ids) ? $firstIndex + $count : count($ids);
 
-		return $this->idsToRequests(array_slice($ids, $firstIndex, $lastIndex - $firstIndex));
+		return $search && $search->notEmpty()
+			? $this->findMatching($search, array_slice($ids, $firstIndex), $count)
+			: $this->idsToRequests(array_slice($ids, $firstIndex, $lastIndex - $firstIndex));
 	}
 
 	// Store request, requests are stored in JSON representation in files named <request id>.json in storage path
@@ -124,5 +133,17 @@ class FileStorage extends Storage
 				return new Request(json_decode(file_get_contents("{$this->path}/{$id}.json"), true));
 			}
 		}, $ids);
+	}
+
+	protected function findMatching(Search $search, $ids, $count = 1)
+	{
+		$found = [];
+
+		foreach ($ids as $id) {
+			if ($search->matches($request = $this->find($id))) $found[] = $request;
+			if (count($found) == $count) return $found;
+		}
+
+		return $found;
 	}
 }

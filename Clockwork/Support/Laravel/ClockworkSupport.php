@@ -8,6 +8,7 @@ use Clockwork\Helpers\ServerTiming;
 use Clockwork\Helpers\StackFilter;
 use Clockwork\Helpers\StackTrace;
 use Clockwork\Storage\FileStorage;
+use Clockwork\Storage\Search;
 use Clockwork\Storage\SqlStorage;
 use Clockwork\Web\Web;
 
@@ -44,11 +45,11 @@ class ClockworkSupport
 		}
 
 		if ($direction == 'previous') {
-			$data = $storage->previous($id, $count);
+			$data = $storage->previous($id, $count, Search::fromRequest($this->app['request']->all()));
 		} elseif ($direction == 'next') {
-			$data = $storage->next($id, $count);
+			$data = $storage->next($id, $count, Search::fromRequest($this->app['request']->all()));
 		} elseif ($id == 'latest') {
-			$data = $storage->latest();
+			$data = $storage->latest(Search::fromRequest($this->app['request']->all()));
 		} else {
 			$data = $storage->find($id);
 		}
