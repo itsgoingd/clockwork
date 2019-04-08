@@ -83,10 +83,11 @@ class SqlStorage extends Storage
 	}
 
 	// Returns all requests
-	public function all()
+	public function all(Search $search = null)
 	{
 		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, array_keys($this->fields)));
-		$result = $this->query("SELECT {$fields} FROM {$this->table}");
+		$search = SqlSearch::fromBase($search);
+		$result = $this->query("SELECT {$fields} FROM {$this->table} {$search->query}", $search->bindings);
 
 		return $this->resultsToRequests($result);
 	}
@@ -102,38 +103,43 @@ class SqlStorage extends Storage
 	}
 
 	// Return the latest request
-	public function latest()
+	public function latest(Search $search = null)
 	{
 		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, array_keys($this->fields)));
-		$result = $this->query("SELECT {$fields} FROM {$this->table} ORDER BY id DESC LIMIT 1");
+		$search = SqlSearch::fromBase($search);
+		$result = $this->query(
+			"SELECT {$fields} FROM {$this->table} {$search->query} ORDER BY id DESC LIMIT 1", $search->bindings
+		);
 
 		$requests = $this->resultsToRequests($result);
 		return end($requests);
 	}
 
 	// Return requests received before specified id, optionally limited to specified count
-	public function previous($id, $count = null)
+	public function previous($id, $count = null, Search $search = null)
 	{
 		$count = (int) $count;
 
 		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, array_keys($this->fields)));
+		$search = SqlSearch::fromBase($search)->addCondition('id < :id', [ 'id' => $id ]);
+		$limit = $count ? "LIMIT {$count}" : '';
 		$result = $this->query(
-			"SELECT {$fields} FROM {$this->table} WHERE id < :id ORDER BY id DESC " . ($count ? "LIMIT {$count}" : ''),
-			[ 'id' => $id ]
+			"SELECT {$fields} FROM {$this->table} {$search->query} ORDER BY id DESC {$limit}", $search->bindings
 		);
 
 		return array_reverse($this->resultsToRequests($result));
 	}
 
 	// Return requests received after specified id, optionally limited to specified count
-	public function next($id, $count = null)
+	public function next($id, $count = null, Search $search = null)
 	{
 		$count = (int) $count;
 
 		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, array_keys($this->fields)));
+		$search = SqlSearch::fromBase($search)->addCondition('id > :id', [ 'id' => $id ]);
+		$limit = $count ? "LIMIT {$count}" : '';
 		$result = $this->query(
-			"SELECT {$fields} FROM {$this->table} WHERE id > :id ORDER BY id ASC " . ($count ? "LIMIT {$count}" : ''),
-			[ 'id' => $id ]
+			"SELECT {$fields} FROM {$this->table} {$search->query} ORDER BY id ASC {$limit}", $search->bindings
 		);
 
 		return $this->resultsToRequests($result);
