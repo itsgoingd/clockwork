@@ -26,7 +26,9 @@ class ClockworkFactory
 
 	public function clockworkStorage()
 	{
-		return new SymfonyStorage($this->container->get('profiler'));
+		return new SymfonyStorage(
+			$this->container->get('profiler'), substr($this->container->getParameter('profiler.storage.dsn'), 5)
+		);
 	}
 
 	public function clockworkSupport($config)

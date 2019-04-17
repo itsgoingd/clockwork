@@ -132,7 +132,7 @@ class FileStorage extends Storage
 		$found = [];
 
 		while ($request = $this->readIndex($direction)) {
-			if ($search && $search->matches($request)) $found[] = $this->loadRequest($request->id);
+			if (! $search || $search->matches($request)) $found[] = $this->loadRequest($request->id);
 			if (count($found) == $count) return $found;
 		}
 
@@ -187,10 +187,7 @@ class FileStorage extends Storage
 			if ($newline !== false && $line) break;
 		}
 
-		return new Request(array_combine(
-			[ 'id', 'time', 'method', 'uri', 'controller', 'responseStatus', 'responseDuration' ],
-			str_getcsv($line)
-		));
+		return $this->makeRequestFromIndex(str_getcsv($line));
 	}
 
 	// Read next line from index
@@ -208,9 +205,13 @@ class FileStorage extends Storage
 		// Reset the file pointer to the start of the read line
 		fseek($this->indexHandle, ftell($this->indexHandle) - strlen($line));
 
+		return $this->makeRequestFromIndex(str_getcsv($line));
+	}
+
+	protected function makeRequestFromIndex($record)
+	{
 		return new Request(array_combine(
-			[ 'id', 'time', 'method', 'uri', 'controller', 'responseStatus', 'responseDuration' ],
-			str_getcsv($line)
+			[ 'id', 'time', 'method', 'uri', 'controller', 'responseStatus', 'responseDuration' ], $record
 		));
 	}
 
