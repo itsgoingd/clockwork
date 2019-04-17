@@ -83,7 +83,7 @@ class ClockworkSupport
 			$storage = new SqlStorage($database, $table, null, null, $expiration);
 		} else {
 			$storage = new FileStorage(
-				$this->getConfig('storage_files_path', storage_path('clockwork')), 0700, $expiration
+				$this->getConfig('storage_files_path', storage_path('clockwork')), 0700, $expiration, storage_path('clockwork/index')
 			);
 		}
 
