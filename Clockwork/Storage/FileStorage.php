@@ -17,14 +17,11 @@ class FileStorage extends Storage
 	// Metadata cleanup chance
 	protected $cleanupChance = 100;
 
-	// Index file path
-	protected $indexFile;
-
 	// Index file handle
 	protected $indexHandle;
 
 	// Return new storage, takes path where to store files as argument, throws exception if path is not writable
-	public function __construct($path, $dirPermissions = 0700, $expiration = null, $indexFile = null)
+	public function __construct($path, $dirPermissions = 0700, $expiration = null)
 	{
 		if (! file_exists($path)) {
 			// directory doesn't exist, try to create one
@@ -33,30 +30,25 @@ class FileStorage extends Storage
 			}
 
 			// create default .gitignore, to ignore stored json files
-			file_put_contents("{$path}/.gitignore", "*.json\n");
+			file_put_contents("{$path}/.gitignore", "*.json\nindex\n");
 		}
 
 		if (! is_writable($path)) {
 			throw new \Exception("Path \"{$path}\" is not writable.");
 		}
 
-		if (! file_exists($indexFile)) {
+		if (! file_exists($indexFile = "{$path}/index")) {
 			file_put_contents($indexFile, '');
-		}
-
-		if (! is_writable($indexFile)) {
-			throw new \Exception("Index file \"{$indexFile}\" is not writable.");
 		}
 
 		$this->path = $path;
 		$this->expiration = $expiration === null ? 60 * 24 * 7 : $expiration;
-		$this->indexFile = $indexFile;
 	}
 
 	// Returns all requests
 	public function all(Search $search = null)
 	{
-		return $this->findNextIndex($search);
+		return $this->searchIndexForward($search);
 	}
 
 	// Return a single request by id
@@ -68,19 +60,19 @@ class FileStorage extends Storage
 	// Return the latest request
 	public function latest(Search $search = null)
 	{
-		return $this->findPreviousIndex($search, null, 1);
+		return $this->searchIndexBackward($search, null, 1);
 	}
 
 	// Return requests received before specified id, optionally limited to specified count
 	public function previous($id, $count = null, Search $search = null)
 	{
-		return $this->findPreviousIndex($search, $id, $count);
+		return $this->searchIndexBackward($search, $id, $count);
 	}
 
 	// Return requests received after specified id, optionally limited to specified count
 	public function next($id, $count = null, Search $search = null)
 	{
-		return $this->findNextIndex($search, $id, $count);
+		return $this->searchIndexForward($search, $id, $count);
 	}
 
 	// Store request, requests are stored in JSON representation in files named <request id>.json in storage path
@@ -102,7 +94,7 @@ class FileStorage extends Storage
 
 		$expirationTime = time() - ($this->expiration * 60);
 
-		$old = $this->findPreviousIndex(new Search([ 'time' => "<{$expirationTime}" ]));
+		$old = $this->searchIndexBackward(new Search([ 'time' => "<{$expirationTime}" ]));
 
 		foreach ($old as $request) {
 			@unlink("{$this->path}/{$request->id}.json");
@@ -116,19 +108,22 @@ class FileStorage extends Storage
 		}
 	}
 
-	protected function findPreviousIndex(Search $search = null, $id = null, $count = 1)
+	// Search index backward from specified ID or last record, with optional results count limit
+	protected function searchIndexBackward(Search $search = null, $id = null, $count = 1)
 	{
-		return $this->findIndex('previous', $search, $id, $count);
+		return $this->searchIndex('previous', $search, $id, $count);
 	}
 
-	protected function findNextIndex(Search $search = null, $id = null, $count = 1)
+	// Search index forward from specified ID or last record, with optional results count limit
+	protected function searchIndexForward(Search $search = null, $id = null, $count = 1)
 	{
-		return $this->findIndex('next', $search, $id, $count);
+		return $this->searchIndex('next', $search, $id, $count);
 	}
 
-	protected function findIndex($direction, Search $search = null, $id = null, $count = 1)
+	// Search index in specified direction from specified ID or last record, with optional results count limit
+	protected function searchIndex($direction, Search $search = null, $id = null, $count = 1)
 	{
-		$direction == 'next' ? $this->openIndex()->seekIndexStart() : $this->openIndex()->seekIndexEnd();
+		$this->openIndex($direction == 'previous' ? 'end' : 'start');
 
 		if ($id) {
 			while ($request = $this->readIndex($direction)) { if ($request->id == $id) break; }
@@ -146,27 +141,15 @@ class FileStorage extends Storage
 		return $direction == 'next' ? $found : array_reverse($found);
 	}
 
-	// Open index file
-	protected function openIndex()
+	// Open index file, optionally move file pointer to the end
+	protected function openIndex($position = 'start')
 	{
-		$this->indexHandle = fopen($this->indexFile, 'r');
-		return $this;
+		$this->indexHandle = fopen("{$this->path}/index", 'r');
+
+		if ($position == 'end') fseek($this->indexHandle, 0, SEEK_END);
 	}
 
-	// Move the index file pointer to the start
-	protected function seekIndexStart()
-	{
-		fseek($this->indexHandle, 0);
-		return $this;
-	}
-
-	// Move the index file pointer to the end
-	protected function seekIndexEnd()
-	{
-		fseek($this->indexHandle, 0, SEEK_END);
-		return $this;
-	}
-
+	// Read a line from index in the specified direction (next or previous)
 	protected function readIndex($direction)
 	{
 		return $direction == 'next' ? $this->readNextIndex() : $this->readPreviousIndex();
@@ -234,9 +217,7 @@ class FileStorage extends Storage
 	// Update index with a new request
 	protected function updateIndex(Request $request)
 	{
-		if (! $this->indexFile) return;
-
-		fputcsv($handle = fopen($this->indexFile, 'a'), [
+		fputcsv($handle = fopen("{$this->path}/index", 'a'), [
 			$request->id,
 			$request->time,
 			$request->method,
