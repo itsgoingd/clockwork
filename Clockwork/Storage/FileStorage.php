@@ -17,6 +17,9 @@ class FileStorage extends Storage
 	// Metadata cleanup chance
 	protected $cleanupChance = 100;
 
+	// Index file handle
+	protected $indexHandle;
+
 	// Return new storage, takes path where to store files as argument, throws exception if path is not writable
 	public function __construct($path, $dirPermissions = 0700, $expiration = null)
 	{
@@ -27,11 +30,15 @@ class FileStorage extends Storage
 			}
 
 			// create default .gitignore, to ignore stored json files
-			file_put_contents("{$path}/.gitignore", "*.json\n");
+			file_put_contents("{$path}/.gitignore", "*.json\nindex\n");
 		}
 
 		if (! is_writable($path)) {
 			throw new \Exception("Path \"{$path}\" is not writable.");
+		}
+
+		if (! file_exists($indexFile = "{$path}/index")) {
+			file_put_contents($indexFile, '');
 		}
 
 		$this->path = $path;
@@ -39,44 +46,33 @@ class FileStorage extends Storage
 	}
 
 	// Returns all requests
-	public function all()
+	public function all(Search $search = null)
 	{
-		return $this->idsToRequests($this->ids());
+		return $this->searchIndexForward($search);
 	}
 
 	// Return a single request by id
 	public function find($id)
 	{
-		return $this->idsToRequests([ $id ])[0];
+		return $this->loadRequest($id);
 	}
 
 	// Return the latest request
-	public function latest()
+	public function latest(Search $search = null)
 	{
-		$ids = $this->ids();
-		return $this->find(end($ids));
+		return $this->searchIndexBackward($search, null, 1);
 	}
 
 	// Return requests received before specified id, optionally limited to specified count
-	public function previous($id, $count = null)
+	public function previous($id, $count = null, Search $search = null)
 	{
-		$ids = $this->ids();
-
-		$lastIndex = array_search($id, $ids) - 1;
-		$firstIndex = $count && $lastIndex - $count > 0 ? $lastIndex - $count : 0;
-
-		return $this->idsToRequests(array_slice($ids, $firstIndex, $lastIndex - $firstIndex));
+		return $this->searchIndexBackward($search, $id, $count);
 	}
 
 	// Return requests received after specified id, optionally limited to specified count
-	public function next($id, $count = null)
+	public function next($id, $count = null, Search $search = null)
 	{
-		$ids = $this->ids();
-
-		$firstIndex = array_search($id, $ids) + 1;
-		$lastIndex = $count && $firstIndex + $count < count($ids) ? $firstIndex + $count : count($ids);
-
-		return $this->idsToRequests(array_slice($ids, $firstIndex, $lastIndex - $firstIndex));
+		return $this->searchIndexForward($search, $id, $count);
 	}
 
 	// Store request, requests are stored in JSON representation in files named <request id>.json in storage path
@@ -87,6 +83,7 @@ class FileStorage extends Storage
 			@json_encode($request->toArray(), \JSON_PARTIAL_OUTPUT_ON_ERROR)
 		);
 
+		$this->updateIndex($request);
 		$this->cleanup();
 	}
 
@@ -97,32 +94,140 @@ class FileStorage extends Storage
 
 		$expirationTime = time() - ($this->expiration * 60);
 
-		$ids = array_filter($this->ids(), function ($id) use ($expirationTime) {
-			preg_match('#(?<time>\d+\-\d+)\-\d+#', $id, $matches);
-			return ! isset($matches['time']) || str_replace('-', '.', $matches['time']) < $expirationTime;
-		});
+		$old = $this->searchIndexBackward(new Search([ 'time' => "<{$expirationTime}" ]));
 
-		foreach ($ids as $id) {
-			@unlink("{$this->path}/{$id}.json");
+		foreach ($old as $request) {
+			@unlink("{$this->path}/{$request->id}.json");
 		}
 	}
 
-	// Returns all request ids
-	protected function ids()
+	protected function loadRequest($id)
 	{
-		return array_map(function ($path) {
-			preg_match('#/(?<id>[^/]+?)\.json$#', $path, $matches);
-			return $matches['id'];
-		}, glob("{$this->path}/*.json"));
+		if (is_readable("{$this->path}/{$id}.json")) {
+			return new Request(json_decode(file_get_contents("{$this->path}/{$id}.json"), true));
+		}
 	}
 
-	// Returns array of Request instances from passed ids
-	protected function idsToRequests($ids)
+	// Search index backward from specified ID or last record, with optional results count limit
+	protected function searchIndexBackward(Search $search = null, $id = null, $count = 1)
 	{
-		return array_map(function ($id) {
-			if (is_readable("{$this->path}/{$id}.json")) {
-				return new Request(json_decode(file_get_contents("{$this->path}/{$id}.json"), true));
-			}
-		}, $ids);
+		return $this->searchIndex('previous', $search, $id, $count);
+	}
+
+	// Search index forward from specified ID or last record, with optional results count limit
+	protected function searchIndexForward(Search $search = null, $id = null, $count = 1)
+	{
+		return $this->searchIndex('next', $search, $id, $count);
+	}
+
+	// Search index in specified direction from specified ID or last record, with optional results count limit
+	protected function searchIndex($direction, Search $search = null, $id = null, $count = 1)
+	{
+		$this->openIndex($direction == 'previous' ? 'end' : 'start');
+
+		if ($id) {
+			while ($request = $this->readIndex($direction)) { if ($request->id == $id) break; }
+		}
+
+		$found = [];
+
+		while ($request = $this->readIndex($direction)) {
+			if (! $search || $search->matches($request)) $found[] = $this->loadRequest($request->id);
+			if (count($found) == $count) return $found;
+		}
+
+		if ($count == 1) return reset($found);
+
+		return $direction == 'next' ? $found : array_reverse($found);
+	}
+
+	// Open index file, optionally move file pointer to the end
+	protected function openIndex($position = 'start')
+	{
+		$this->indexHandle = fopen("{$this->path}/index", 'r');
+
+		if ($position == 'end') fseek($this->indexHandle, 0, SEEK_END);
+	}
+
+	// Read a line from index in the specified direction (next or previous)
+	protected function readIndex($direction)
+	{
+		return $direction == 'next' ? $this->readNextIndex() : $this->readPreviousIndex();
+	}
+
+	// Read previous line from index
+	protected function readPreviousIndex()
+	{
+		$position = ftell($this->indexHandle) - 1;
+
+		if ($position <= 0) return;
+
+		$line = '';
+
+		// reads 1024B chunks of the file backwards from the current position, until a newline is found or we reach the top
+		while ($position > 0) {
+			// find next position to read from, make sure we don't read beyond file boundary
+			$position -= $chunkSize = min($position, 1024);
+
+			// read the chunk from the position
+			fseek($this->indexHandle, $position);
+			$chunk = fread($this->indexHandle, $chunkSize);
+
+			// if a newline is found, append only the part after the last newline, otherwise we can append the whole chunk
+			$line = ($newline = strrpos($chunk, "\n")) === false
+				? $chunk . $line : substr($chunk, $newline + 1) . $line;
+
+			// if a newline was found, fix the position so we read from that newline next time
+			if ($newline !== false) $position += $newline + 1;
+
+			// move file pointer to the correct position (revert fread, apply newline fix)
+			fseek($this->indexHandle, $position);
+
+			// if we reached a newline and put together a non-empty line we are done
+			if ($newline !== false && $line) break;
+		}
+
+		return $this->makeRequestFromIndex(str_getcsv($line));
+	}
+
+	// Read next line from index
+	protected function readNextIndex()
+	{
+		if (feof($this->indexHandle)) return;
+
+		// File pointer is always at the start of the line, call extra fgets to skip current line
+		fgets($this->indexHandle);
+		$line = fgets($this->indexHandle);
+
+		// Check if we read an empty line or reached the end of file
+		if (! $line) return;
+
+		// Reset the file pointer to the start of the read line
+		fseek($this->indexHandle, ftell($this->indexHandle) - strlen($line));
+
+		return $this->makeRequestFromIndex(str_getcsv($line));
+	}
+
+	protected function makeRequestFromIndex($record)
+	{
+		return new Request(array_combine(
+			[ 'id', 'time', 'method', 'uri', 'controller', 'responseStatus', 'responseDuration' ], $record
+		));
+	}
+
+	// Update index with a new request
+	protected function updateIndex(Request $request)
+	{
+		fputcsv($handle = fopen("{$this->path}/index", 'a'), [
+			$request->id,
+			$request->time,
+			$request->method,
+			$request->uri,
+			$request->controller,
+			$request->responseStatus,
+			$request->getResponseDuration()
+		]);
+
+		fclose($handle);
 	}
 }

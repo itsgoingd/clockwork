@@ -1,7 +1,6 @@
 <?php namespace Clockwork\Storage;
 
 use Clockwork\Request\Request;
-use Clockwork\Storage\Storage;
 use Clockwork\Support\Symfony\ProfileTransformer;
 
 use Symfony\Component\HttpKernel\Profiler\Profiler;
@@ -12,10 +11,14 @@ class SymfonyStorage extends FileStorage
 	// Symfony profiler instance
 	protected $profiler;
 
-	// Create a new instance, takes Symfony profiler instance as argument
-	public function __construct(Profiler $profiler)
+	// Symfony profiler path
+	protected $path;
+
+	// Create a new instance, takes Symfony profiler instance and path as argument
+	public function __construct(Profiler $profiler, $path)
 	{
 		$this->profiler = $profiler;
+		$this->path = $path;
 	}
 
 	// Store request, no-op since this is read-only storage implementation
@@ -30,25 +33,23 @@ class SymfonyStorage extends FileStorage
 		return;
 	}
 
-	// Return all ids (Symfony profiler tokens)
-	protected function ids()
+	protected function loadRequest($token)
 	{
-		return array_reverse(array_map(function ($item) {
-			return $item['token'];
-		}, $this->profiler->find(null, null, PHP_INT_MAX, null, null, null, null)));
+		return ($profile = $this->profiler->loadProfile($token)) ? (new ProfileTransformer)->transform($profile) : null;
 	}
 
-	// Return request instances for passed tokens
-	protected function idsToRequests($tokens)
+	// Open index file, optionally move file pointer to the end
+	protected function openIndex($position = 'start')
 	{
-		return array_filter(array_map(function ($token) {
-			return $this->transformProfile($this->profiler->loadProfile($token));
-		}, $tokens));
+		$this->indexHandle = fopen("{$this->path}/index.csv", 'r');
+
+		if ($position == 'end') fseek($this->indexHandle, 0, SEEK_END);
 	}
 
-	// Transform Symfony profile instance to Clockwork request
-	public function transformProfile($profile)
+	protected function makeRequestFromIndex($record)
 	{
-		return $profile ? (new ProfileTransformer)->transform($profile) : null;
+		return new Request(array_combine(
+			[ 'id', 'ip', 'method', 'uri', 'time', 'parent', 'responseStatus' ], $record
+		));
 	}
 }

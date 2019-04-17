@@ -2,6 +2,7 @@
 
 use Clockwork\Authentication\NullAuthenticator;
 use Clockwork\Authentication\SimpleAuthenticator;
+use Clockwork\Storage\Search;
 use Clockwork\Web\Web;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -38,11 +39,11 @@ class ClockworkSupport
 		}
 
 		if ($direction == 'previous') {
-			$data = $storage->previous($id, $count);
+			$data = $storage->previous($id, $count, Search::fromRequest($request->query->all()));
 		} elseif ($direction == 'next') {
-			$data = $storage->next($id, $count);
+			$data = $storage->next($id, $count, Search::fromRequest($request->query->all()));
 		} elseif ($id == 'latest') {
-			$data = $storage->latest();
+			$data = $storage->latest(Search::fromRequest($request->query->all()));
 		} else {
 			$data = $storage->find($id);
 		}
@@ -51,7 +52,7 @@ class ClockworkSupport
 			? array_map(function ($request) { return $request->toArray(); }, $data)
 			: $data->toArray();
 
-		return (new JsonResponse)->setData($data);
+		return new JsonResponse($data);
 	}
 
 	public function getWebAsset($path)

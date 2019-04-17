@@ -78,6 +78,9 @@ class Request
 	 */
 	public $responseTime;
 
+	// Response processing time
+	public $responseDuration;
+
 	/**
 	 * Response status code
 	 */
@@ -234,7 +237,7 @@ class Request
 			'cookies'              => $this->cookies,
 			'responseTime'         => $this->responseTime,
 			'responseStatus'       => $this->responseStatus,
-			'responseDuration'     => $this->getResponseDuration(),
+			'responseDuration'     => $this->responseDuration ?: $this->getResponseDuration(),
 			'memoryUsage'          => $this->memoryUsage,
 			'databaseQueries'      => $this->databaseQueries,
 			'databaseQueriesCount' => $this->databaseQueriesCount,
