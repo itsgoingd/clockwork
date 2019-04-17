@@ -8,6 +8,7 @@ use Clockwork\Helpers\ServerTiming;
 use Clockwork\Helpers\StackFilter;
 use Clockwork\Helpers\StackTrace;
 use Clockwork\Storage\FileStorage;
+use Clockwork\Storage\Search;
 use Clockwork\Storage\SqlStorage;
 
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
@@ -93,18 +94,18 @@ class Clockwork
 
 		if (! $request) $request = isset($_GET['request']) ? $_GET['request'] : '';
 
-		preg_match('#(?<id>[0-9-]+|latest)(?=/(?<direction>next|previous))?(?=/(?<count>\d+))?#', $request, $matches);
+		preg_match('#(?<id>[0-9-]+|latest)(?:/(?<direction>next|previous))?(?:/(?<count>\d+))?#', $request, $matches);
 
 		$id = isset($matches['id']) ? $matches['id'] : null;
 		$direction = isset($matches['direction']) ? $matches['direction'] : null;
 		$count = isset($matches['count']) ? $matches['count'] : null;
 
 		if ($direction == 'previous') {
-			$data = $this->clockwork->getStorage()->previous($id, $count);
+			$data = $this->clockwork->getStorage()->previous($id, $count, Search::fromRequest($_GET));
 		} elseif ($direction == 'next') {
-			$data = $this->clockwork->getStorage()->next($id, $count);
+			$data = $this->clockwork->getStorage()->next($id, $count, Search::fromRequest($_GET));
 		} elseif ($id == 'latest') {
-			$data = $this->clockwork->getStorage()->latest();
+			$data = $this->clockwork->getStorage()->latest(Search::fromRequest($_GET));
 		} else {
 			$data = $this->clockwork->getStorage()->find($id);
 		}
@@ -159,7 +160,7 @@ class Clockwork
 		Serializer::defaults([
 			'limit'    => $this->config['serialization_depth'],
 			'blackbox' => $this->config['serialization_blackbox'],
-			'traces'   => $this->config['stack_traces.enabled']
+			'traces'   => $this->config['stack_traces']['enabled']
 		]);
 	}
 
@@ -168,11 +169,11 @@ class Clockwork
 		StackTrace::defaults([
 			'skip'  => StackFilter::make()
 				->isNotVendor(array_merge(
-					$this->config['stack_traces.skip_vendors'],
+					$this->config['stack_traces']['skip_vendors'],
 					[ 'itsgoingd', 'laravel', 'illuminate' ]
 				))
-				->isNotClass($this->config['stack_traces.skip_classes'],
-			'limit' => $this->config['stack_traces.limit']
+				->isNotClass($this->config['stack_traces']['skip_classes']),
+			'limit' => $this->config['stack_traces']['limit']
 		]);
 	}
 
