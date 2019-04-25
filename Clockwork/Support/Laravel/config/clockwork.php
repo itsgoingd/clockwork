@@ -221,6 +221,11 @@ return [
 			// 'phpunit'
 		],
 
+		// List of namespaces to skip when determining caller
+		'skip_namespaces' => [
+			// 'Laravel'
+		],
+
 		// List of class names to skip when determining caller
 		'skip_classes' => [
 			// App\CustomLog::class

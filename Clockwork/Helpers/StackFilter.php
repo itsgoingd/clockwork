@@ -8,6 +8,9 @@ class StackFilter
 	protected $files = [];
 	protected $notFiles = [];
 
+	protected $namespaces = [];
+	protected $notNamespaces = [];
+
 	protected $vendors = [];
 	protected $notVendors = [];
 
@@ -40,6 +43,18 @@ class StackFilter
 		return $this;
 	}
 
+	public function isNamespace($namespaces)
+	{
+		$this->namespaces = array_merge($this->namespaces, is_array($namespaces) ? $namespaces : [ $namespaces ]);
+		return $this;
+	}
+
+	public function isNotNamespace($namespaces)
+	{
+		$this->notNamespaces = array_merge($this->notNamespaces, is_array($namespaces) ? $namespaces : [ $namespaces ]);
+		return $this;
+	}
+
 	public function isVendor($vendors)
 	{
 		$this->vendors = array_merge($this->vendors, is_array($vendors) ? $vendors : [ $vendors ]);
@@ -60,6 +75,8 @@ class StackFilter
 		if (count($this->files) && ! in_array($frame->file, $this->files)) return false;
 		if (count($this->notFiles) && in_array($frame->file, $this->notFiles)) return false;
 
+		if (! $this->matchesNamespace($frame)) return false;
+
 		if (count($this->vendors) && ! in_array($frame->vendor, $this->vendors)) return false;
 		if (count($this->notVendors) && in_array($frame->vendor, $this->notVendors)) return false;
 
@@ -69,5 +86,20 @@ class StackFilter
 	public function closure()
 	{
 		return function ($frame) { return $this->filter($frame); };
+	}
+
+	protected function matchesNamespace(StackFrame $frame)
+	{
+		foreach ($this->notNamespaces as $namespace) {
+			if (strpos($frame->class, "{$namespace}\\") !== false) return false;
+		}
+
+		if (! count($this->namespaces)) return true;
+
+		foreach ($this->namespaces as $namespace) {
+			if (strpos($frame->class, "{$namespace}\\") !== false) return true;
+		}
+
+		return false;
 	}
 }
