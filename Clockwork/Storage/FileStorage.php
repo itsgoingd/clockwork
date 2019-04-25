@@ -94,7 +94,7 @@ class FileStorage extends Storage
 
 		$expirationTime = time() - ($this->expiration * 60);
 
-		$old = $this->searchIndexBackward(new Search([ 'time' => "<{$expirationTime}" ]));
+		$old = $this->searchIndexBackward(new Search([ 'time' => [ "<{$expirationTime}" ] ]));
 
 		foreach ($old as $request) {
 			@unlink("{$this->path}/{$request->id}.json");
