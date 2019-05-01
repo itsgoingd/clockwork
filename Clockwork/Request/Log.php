@@ -23,8 +23,7 @@ class Log extends AbstractLogger
 	 */
 	public function log($level = LogLevel::INFO, $message, array $context = [])
 	{
-		$trace = isset($context['trace']) && $context['trace'] instanceof StackTrace
-			? $context['trace'] : StackTrace::get()->resolveViewName();
+		$trace = $this->hasTrace($context) ? $context['trace'] : StackTrace::get()->resolveViewName();
 
 		$this->data[] = [
 			'message'   => (new Serializer([ 'toString' => true ]))->normalize($message),
@@ -46,12 +45,11 @@ class Log extends AbstractLogger
 		return $this->data;
 	}
 
-	// format message context, removes exception if we are serializing it
+	// format message context, removes exception and trace if we are serializing them
 	protected function formatContext($context)
 	{
-		if ($this->hasException($context)) {
-			unset($context['exception']);
-		}
+		if ($this->hasException($context)) unset($context['exception']);
+		if ($this->hasTrace($context)) unset($context['trace']);
 
 		return (new Serializer)->normalize($context);
 	}
@@ -62,6 +60,12 @@ class Log extends AbstractLogger
 		if ($this->hasException($context)) {
 			return (new Serializer)->exception($context['exception']);
 		}
+	}
+
+	// check if context has serializable trace
+	protected function hasTrace($context)
+	{
+		return ! empty($context['trace']) && $context['trace'] instanceof StackTrace  && empty($context['raw']);
 	}
 
 	// check if context has serializable exception
