@@ -146,7 +146,10 @@ class Clockwork
 			);
 		} else {
 			$storage = new FileStorage(
-				$this->config['storage_files_path'], 0700, $this->config['storage_expiration']
+				$this->config['storage_files_path'],
+				0700,
+				$this->config['storage_expiration'],
+				$this->config['storage_files_compress']
 			);
 		}
 

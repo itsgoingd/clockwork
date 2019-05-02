@@ -61,6 +61,9 @@ return [
 
 	'storage_files_path' => isset($_ENV['CLOCKWORK_STORAGE_FILES_PATH']) ? $_ENV['CLOCKWORK_STORAGE_FILES_PATH'] : __DIR__ . '/../../../../../clockwork',
 
+	// Compress the metadata files using gzip, trading a little bit of performance for lower disk usage
+	'storage_files_compress' => isset($_ENV['CLOCKWORK_STORAGE_FILES_COMPRESS']) ? $_ENV['CLOCKWORK_STORAGE_FILES_COMPRESS'] : false,
+
 	'storage_sql_database' => isset($_ENV['CLOCKWORK_STORAGE_SQL_DATABASE']) ? $_ENV['CLOCKWORK_STORAGE_SQL_DATABASE'] : 'sqlite:' . __DIR__ . '/../../../../../clockwork.sqlite',
 	'storage_sql_username' => isset($_ENV['CLOCKWORK_STORAGE_SQL_USERNAME']) ? $_ENV['CLOCKWORK_STORAGE_SQL_USERNAME'] : null,
 	'storage_sql_password' => isset($_ENV['CLOCKWORK_STORAGE_SQL_PASSWORD']) ? $_ENV['CLOCKWORK_STORAGE_SQL_PASSWORD'] : null,

@@ -14,6 +14,9 @@ class FileStorage extends Storage
 	// Metadata expiration time in minutes
 	protected $expiration;
 
+	// Compress the files using gzip
+	protected $compress;
+
 	// Metadata cleanup chance
 	protected $cleanupChance = 100;
 
@@ -21,7 +24,7 @@ class FileStorage extends Storage
 	protected $indexHandle;
 
 	// Return new storage, takes path where to store files as argument, throws exception if path is not writable
-	public function __construct($path, $dirPermissions = 0700, $expiration = null)
+	public function __construct($path, $dirPermissions = 0700, $expiration = null, $compress = false)
 	{
 		if (! file_exists($path)) {
 			// directory doesn't exist, try to create one
@@ -43,6 +46,7 @@ class FileStorage extends Storage
 
 		$this->path = $path;
 		$this->expiration = $expiration === null ? 60 * 24 * 7 : $expiration;
+		$this->compress = $compress;
 	}
 
 	// Returns all requests
@@ -78,10 +82,12 @@ class FileStorage extends Storage
 	// Store request, requests are stored in JSON representation in files named <request id>.json in storage path
 	public function store(Request $request)
 	{
-		file_put_contents(
-			"{$this->path}/{$request->id}.json",
-			@json_encode($request->toArray(), \JSON_PARTIAL_OUTPUT_ON_ERROR)
-		);
+		$path = "{$this->path}/{$request->id}.json";
+		$data = @json_encode($request->toArray(), \JSON_PARTIAL_OUTPUT_ON_ERROR);
+
+		$this->compress
+			? file_put_contents("{$path}.gz", gzcompress($data))
+			: file_put_contents($path, $data);
 
 		$this->updateIndex($request);
 		$this->cleanup();
@@ -97,15 +103,20 @@ class FileStorage extends Storage
 		$old = $this->searchIndexBackward(new Search([ 'time' => [ "<{$expirationTime}" ] ]));
 
 		foreach ($old as $request) {
-			@unlink("{$this->path}/{$request->id}.json");
+			$path = "{$this->path}/{$request->id}.json";
+			@unlink($this->compress ? "{$path}.gz" : $path);
 		}
 	}
 
 	protected function loadRequest($id)
 	{
-		if (is_readable("{$this->path}/{$id}.json")) {
-			return new Request(json_decode(file_get_contents("{$this->path}/{$id}.json"), true));
-		}
+		$path = "{$this->path}/{$id}.json";
+
+		if (! is_readable($this->compress ? "{$path}.gz" : $path)) return;
+
+		$data = file_get_contents($this->compress ? "{$path}.gz" : $path);
+
+		return new Request(json_decode($this->compress ? gzuncompress($data) : $data, true));
 	}
 
 	// Search index backward from specified ID or last record, with optional results count limit

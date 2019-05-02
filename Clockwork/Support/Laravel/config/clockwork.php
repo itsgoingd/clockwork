@@ -146,6 +146,9 @@ return [
 
 	'storage_files_path' => env('CLOCKWORK_STORAGE_FILES_PATH', storage_path('clockwork')),
 
+	// Compress the metadata files using gzip, trading a little bit of performance for lower disk usage
+	'storage_files_compress' => env('CLOCKWORK_STORAGE_FILES_COMPRESS', false),
+
 	'storage_sql_database' => env('CLOCKWORK_STORAGE_SQL_DATABASE', storage_path('clockwork.sqlite')),
 	'storage_sql_table'    => env('CLOCKWORK_STORAGE_SQL_TABLE', 'clockwork'),
 
