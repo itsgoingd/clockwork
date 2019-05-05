@@ -39,6 +39,7 @@ class SqlStorage extends Storage
 		'responseStatus'       => 'INTEGER NULL',
 		'responseDuration'     => 'DOUBLE PRECISION NULL',
 		'memoryUsage'          => 'DOUBLE PRECISION NULL',
+		'middleware'           => 'TEXT NULL',
 		'databaseQueries'      => 'TEXT NULL',
 		'databaseQueriesCount' => 'INTEGER NULL',
 		'databaseSlowQueries'  => 'INTEGER NULL',
