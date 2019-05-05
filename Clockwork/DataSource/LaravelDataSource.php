@@ -73,6 +73,7 @@ class LaravelDataSource extends DataSource
 		$request->controller     = $this->getController();
 		$request->headers        = $this->getRequestHeaders();
 		$request->responseStatus = $this->getResponseStatus();
+		$request->middleware     = $this->getMiddleware();
 		$request->routes         = $this->getRoutes();
 		$request->sessionData    = $this->getSessionData();
 
@@ -231,6 +232,16 @@ class LaravelDataSource extends DataSource
 	protected function getResponseStatus()
 	{
 		return $this->response->getStatusCode();
+	}
+
+	// Return array of middleware for the matched route
+	protected function getMiddleware()
+	{
+		$route = $this->app['router']->current();
+
+		if (! $route) return;
+
+		return method_exists($route, 'gatherMiddleware') ? $route->gatherMiddleware() : $route->middleware();
 	}
 
 	/**

@@ -89,6 +89,9 @@ class Request
 	// Peak memory usage in bytes
 	public $memoryUsage;
 
+	// Executed middleware
+	public $middleware = [];
+
 	/**
 	 * Database queries array
 	 */
@@ -239,6 +242,7 @@ class Request
 			'responseStatus'       => $this->responseStatus,
 			'responseDuration'     => $this->responseDuration ?: $this->getResponseDuration(),
 			'memoryUsage'          => $this->memoryUsage,
+			'middleware'           => $this->middleware,
 			'databaseQueries'      => $this->databaseQueries,
 			'databaseQueriesCount' => $this->databaseQueriesCount,
 			'databaseSlowQueries'  => $this->databaseSlowQueries,
