@@ -1,3 +1,51 @@
+4.0
+
+- added "features" configuration
+- added requests search (extended storage api)
+- added collecting request body data (idea by lkloon123, thanks!)
+- added collecting of dispatched queue jobs
+- added collecting Redis commands (idea by tillkruss, thanks!)
+- added collecting of database query stats separate from queries
+- added collecting of executed middleware
+- added ability to specify slow database query threshold
+- added ability to collect only slow database queries
+- added ability to disable collecting of database queries keeping database stats
+- added ability to disable collecting of cache queries keeping cache stats
+- added duplicate (N+1) database query detection (inspired by beyondcode/laravel-query-detector, thanks!)
+- added configuration to limit number of collected frames for stack traces (defaults to 10)
+- added configuration to specify skipped vendors, namespaces and files for stack traces
+- added index file to file storage
+- added support for compression in file storage
+- added new filters api to data sources
+- improved file and sql storage to support search api
+- improved symfony storage to work with file storage changes
+- improved log api to allow passing custom stack traces in context
+- improved refactored and cleaned up Laravel service provider
+- improved Lumen integration to share more code with Laravel integration
+- improved refactored sql storage a bit
+- updated web UI
+- fixed regexp in vanilla integration Clockwork REST api processing
+- removed storage filter support (replaced by features configuration)
+- BREAKING configuration format changes, please re-deploy if using customized Clockwork config
+- NOTE metadata files from previous versions will need to be manually removed on upgrade
+
+3.1.4
+
+- improved DBALDataSource to work with custom types (thanks villermen)
+
+3.1.3
+
+- updated LaravelCacheDataSource to support Laravel 5.8
+
+3.1.2
+
+- fixed missing use statement in vanilla integration (thanks micc83)
+
+3.1.1
+
+- exposed the Request::setAuthenticatedUser method on the main Clockwork class
+- fixed possible crash in LaravelDataSource when resolving authenticated user in non-standard auth implementations (thanks freshleafmedia, motia)
+
 3.1
 
 - added new integration for vanilla PHP (thanks martbean)
