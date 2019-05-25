@@ -1,5 +1,6 @@
 <?php namespace Clockwork\DataSource\Concerns;
 
+use Clockwork\Helpers\StackFilter;
 use Clockwork\Helpers\StackTrace;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
@@ -46,9 +47,11 @@ trait EloquentDetectDuplicateQueries
 			$relation = $relationFrame->args[0];
 		}
 
-		$trace = $trace->skip()->limit();
+		$shortTrace = $trace->skip(StackFilter::make()
+			->isNotVendor([ 'itsgoingd', 'laravel', 'illuminate' ])
+			->isNotNamespace([ 'Clockwork', 'Illuminate' ]));
 
-		$hash = implode('-', [ $model, $relation, $trace->first()->file, $trace->first()->line ]);
+		$hash = implode('-', [ $model, $relation, $shortTrace->first()->file, $shortTrace->first()->line ]);
 
 		if (! isset($this->duplicateQueries[$hash])) {
 			$this->duplicateQueries[$hash] = [

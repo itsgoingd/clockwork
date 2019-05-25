@@ -9,49 +9,22 @@ class StackTrace
 	protected $basePath;
 	protected $vendorPath;
 
-	protected static $defaults = [
-		'raw'    => false,
-		'filter' => null,
-		'skip'   => null,
-		'limit'  => null
-	];
-
 	public static function get($options = [])
 	{
 		$backtraceOptions = isset($options['arguments'])
 			? DEBUG_BACKTRACE_PROVIDE_OBJECT : DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS;
 
-		return static::from(debug_backtrace($backtraceOptions), $options);
+		return static::from(debug_backtrace($backtraceOptions));
 	}
 
-	public static function raw($options = [])
-	{
-		return static::get(array_merge($options, [ 'raw' => true ]));
-	}
-
-	public static function from(array $trace, $options = [])
+	public static function from(array $trace)
 	{
 		$basePath = static::resolveBasePath();
 		$vendorPath = static::resolveVendorPath();
-		$options = $options + static::$defaults;
 
-		$trace = new static(array_map(function ($frame) use ($basePath, $vendorPath) {
+		return new static(array_map(function ($frame) use ($basePath, $vendorPath) {
 			return new StackFrame($frame, $basePath, $vendorPath);
 		}, $trace), $basePath, $vendorPath);
-
-		if (! $options['raw']) {
-			if ($options['filter']) $trace = $trace->filter($options['filter']);
-			if ($options['skip']) $trace = $trace->skip($options['skip']);
-			if ($options['limit']) $trace = $trace->limit($options['limit']);
-		}
-
-		return $trace;
-	}
-
-	// set default options for all captured stack traces
-	public static function defaults(array $defaults)
-	{
-		static::$defaults = $defaults + static::$defaults;
 	}
 
 	public function __construct(array $frames, $basePath, $vendorPath)
@@ -79,7 +52,6 @@ class StackTrace
 
 	public function filter($filter = null)
 	{
-		if (! $filter) $filter = self::$defaults['filter'];
 		if ($filter instanceof StackFilter) $filter = $filter->closure();
 
 		return $this->copy(array_filter($filter, $this->frames));
@@ -87,7 +59,6 @@ class StackTrace
 
 	public function skip($count = null)
 	{
-		if (! $count) $count = self::$defaults['skip'];
 		if ($count instanceof StackFilter) $count = $count->closure();
 		if ($count instanceof \Closure) $count = array_search($this->first($count), $this->frames);
 
@@ -96,8 +67,6 @@ class StackTrace
 
 	public function limit($count = null)
 	{
-		if (! $count) $count = self::$defaults['limit'];
-
 		return $this->copy(array_slice($this->frames, 0, $count));
 	}
 

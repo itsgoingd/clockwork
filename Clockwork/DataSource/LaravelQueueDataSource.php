@@ -66,9 +66,9 @@ class LaravelQueueDataSource extends DataSource
 		$trace = StackTrace::get()->resolveViewName();
 
 		$job = array_merge($job, [
-			'file'  => $trace->first() ? $trace->first()->shortPath : null,
-			'line'  => $trace->first() ? $trace->first()->line : null,
-			'trace' => (new Serializer)->trace($trace)
+			'trace' => $shortTrace = (new Serializer)->trace($trace),
+			'file'  => isset($shortTrace[0]) ? $shortTrace[0]['file'] : null,
+			'line'  => isset($shortTrace[0]) ? $shortTrace[0]['line'] : null
 		]);
 
 		if ($this->passesFilters([ $job ])) {

@@ -61,9 +61,9 @@ class LaravelEventsDataSource extends DataSource
 			'data'      => (new Serializer)->normalize(count($data) == 1 && isset($data[0]) ? $data[0] : $data),
 			'time'      => microtime(true),
 			'listeners' => $this->findListenersFor($event),
-			'file'      => $trace->first() ? $trace->first()->shortPath : null,
-			'line'      => $trace->first() ? $trace->first()->line : null,
-			'trace'     => (new Serializer)->trace($trace)
+			'trace'     => $shortTrace = (new Serializer)->trace($trace),
+			'file'      => isset($shortTrace[0]) ? $shortTrace[0]['file'] : null,
+			'line'      => isset($shortTrace[0]) ? $shortTrace[0]['line'] : null
 		];
 
 		if ($this->passesFilters([ $event ])) {

@@ -13,7 +13,10 @@ class Serializer
 		],
 		'limit' => 10,
 		'toString' => false,
-		'traces' => true
+		'traces' => true,
+		'tracesFilter' => null,
+		'tracesSkip' => null,
+		'tracesLimit' => null
 	];
 
 	public function __construct(array $options = [])
@@ -90,6 +93,10 @@ class Serializer
 	{
 		if (! $this->options['traces']) return null;
 
+		if ($this->options['tracesFilter']) $trace = $trace->filter($this->options['tracesFilter']);
+		if ($this->options['tracesSkip']) $trace = $trace->skip($this->options['tracesSkip']);
+		if ($this->options['tracesLimit']) $trace = $trace->limit($this->options['tracesLimit']);
+
 		return array_map(function ($frame) {
 			return [
 				'call' => $frame->call,
@@ -108,7 +115,7 @@ class Serializer
 			'code'     => $exception->getCode(),
 			'file'     => $exception->getFile(),
 			'line'     => $exception->getLine(),
-			'trace'    => $this->trace(StackTrace::from($exception->getTrace(), [ 'limit' => false ])),
+			'trace'    => (new Serializer([ 'tracesLimit' => false ]))->trace(StackTrace::from($exception->getTrace())),
 			'previous' => $exception->getPrevious() ? $this->exception($exception->getPrevious()) : null
 		];
 	}

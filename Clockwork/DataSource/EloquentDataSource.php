@@ -97,22 +97,17 @@ class EloquentDataSource extends DataSource
 	 */
 	public function registerQuery($event)
 	{
-		$trace = $this->detectDuplicateQueries
-			? StackTrace::raw([ 'arguments' => true ])->resolveViewName()
-			: StackTrace::get()->resolveViewName();
+		$trace = StackTrace::get([ 'arguments' => $this->detectDuplicateQueries ])->resolveViewName();
 
-		if ($this->detectDuplicateQueries) {
-			$this->detectDuplicateQuery($trace);
-			$trace = $trace->skip()->limit();
-		}
+		if ($this->detectDuplicateQueries) $this->detectDuplicateQuery($trace);
 
 		$query = [
 			'query'      => $this->createRunnableQuery($event->sql, $event->bindings, $event->connectionName),
 			'duration'   => $event->time,
 			'connection' => $event->connectionName,
-			'file'       => $trace->first() ? $trace->first()->shortPath : null,
-			'line'       => $trace->first() ? $trace->first()->line : null,
-			'trace'      => (new Serializer)->trace($trace),
+			'trace'      => $shortTrace = (new Serializer)->trace($trace),
+			'file'       => isset($shortTrace[0]) ? $shortTrace[0]['file'] : null,
+			'line'       => isset($shortTrace[0]) ? $shortTrace[0]['line'] : null,
 			'model'      => $this->nextQueryModel,
 			'tags'       => $this->slowThreshold !== null && $event->time > $this->slowThreshold ? [ 'slow' ] : []
 		];

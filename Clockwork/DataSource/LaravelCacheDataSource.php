@@ -110,9 +110,9 @@ class LaravelCacheDataSource extends DataSource
 			'value'      => isset($query['value']) ? (new Serializer)->normalize($query['value']) : null,
 			'time'       => null,
 			'connection' => null,
-			'file'       => $trace->first() ? $trace->first()->shortPath : null,
-			'line'       => $trace->first() ? $trace->first()->line : null,
-			'trace'      => (new Serializer)->trace($trace)
+			'trace'      => $shortTrace = (new Serializer)->trace($trace),
+			'file'       => isset($shortTrace[0]) ? $shortTrace[0]['file'] : null,
+			'line'       => isset($shortTrace[0]) ? $shortTrace[0]['line'] : null
 		];
 
 		$this->incrementQueryCount($query);

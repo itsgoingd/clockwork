@@ -65,7 +65,7 @@ class Log extends AbstractLogger
 	// check if context has serializable trace
 	protected function hasTrace($context)
 	{
-		return ! empty($context['trace']) && $context['trace'] instanceof StackTrace  && empty($context['raw']);
+		return ! empty($context['trace']) && $context['trace'] instanceof StackTrace && empty($context['raw']);
 	}
 
 	// check if context has serializable exception

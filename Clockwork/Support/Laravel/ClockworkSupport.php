@@ -163,16 +163,10 @@ class ClockworkSupport
 	public function configureSerializer()
 	{
 		Serializer::defaults([
-			'limit'    => $this->getConfig('serialization_depth'),
-			'blackbox' => $this->getConfig('serialization_blackbox'),
-			'traces'   => $this->getConfig('stack_traces.enabled', true)
-		]);
-	}
-
-	public function configureStackTraces()
-	{
-		StackTrace::defaults([
-			'skip'  => StackFilter::make()
+			'limit'       => $this->getConfig('serialization_depth'),
+			'blackbox'    => $this->getConfig('serialization_blackbox'),
+			'traces'      => $this->getConfig('stack_traces.enabled', true),
+			'tracesSkip'  => StackFilter::make()
 				->isNotVendor(array_merge(
 					$this->getConfig('stack_traces.skip_vendors', []),
 					[ 'itsgoingd', 'laravel', 'illuminate' ]
@@ -182,7 +176,7 @@ class ClockworkSupport
 					[ 'Clockwork', 'Illuminate' ]
 				))
 				->isNotClass($this->getConfig('stack_traces.skip_classes', [])),
-			'limit' => $this->getConfig('stack_traces.limit', 10)
+			'tracesLimit' => $this->getConfig('stack_traces.limit', 10)
 		]);
 	}
 

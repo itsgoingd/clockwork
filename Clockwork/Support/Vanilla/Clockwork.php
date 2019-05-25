@@ -34,7 +34,6 @@ class Clockwork
 		$this->clockwork->setStorage($this->resolveStorage());
 
 		$this->configureSerializer();
-		$this->configureStackTraces();
 
 		if ($this->config['register_helpers']) include __DIR__ . '/helpers.php';
 
@@ -161,22 +160,16 @@ class Clockwork
 	protected function configureSerializer()
 	{
 		Serializer::defaults([
-			'limit'    => $this->config['serialization_depth'],
-			'blackbox' => $this->config['serialization_blackbox'],
-			'traces'   => $this->config['stack_traces']['enabled']
-		]);
-	}
-
-	protected function configureStackTraces()
-	{
-		StackTrace::defaults([
-			'skip'  => StackFilter::make()
+			'limit'       => $this->config['serialization_depth'],
+			'blackbox'    => $this->config['serialization_blackbox'],
+			'traces'      => $this->config['stack_traces']['enabled'],
+			'tracesSkip'  => StackFilter::make()
 				->isNotVendor(array_merge(
 					$this->config['stack_traces']['skip_vendors'],
 					[ 'itsgoingd', 'laravel', 'illuminate' ]
 				))
 				->isNotClass($this->config['stack_traces']['skip_classes']),
-			'limit' => $this->config['stack_traces']['limit']
+			'tracesLimit' => $this->config['stack_traces']['limit']
 		]);
 	}
 

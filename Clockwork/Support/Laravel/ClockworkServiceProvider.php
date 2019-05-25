@@ -103,7 +103,6 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->registerAliases();
 
 		$this->app['clockwork.support']->configureSerializer();
-		$this->app['clockwork.support']->configureStackTraces();
 
 		$this->app['clockwork.laravel']->listenToEarlyEvents();
 
