@@ -175,6 +175,7 @@ class ClockworkSupport
 					$this->getConfig('stack_traces.skip_namespaces', []),
 					[ 'Clockwork', 'Illuminate' ]
 				))
+				->isNotFunction([ 'call_user_func', 'call_user_func_array' ])
 				->isNotClass($this->getConfig('stack_traces.skip_classes', [])),
 			'tracesLimit' => $this->getConfig('stack_traces.limit', 10)
 		]);

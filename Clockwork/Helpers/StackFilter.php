@@ -8,6 +8,9 @@ class StackFilter
 	protected $files = [];
 	protected $notFiles = [];
 
+	protected $functions = [];
+	protected $notFunctions = [];
+
 	protected $namespaces = [];
 	protected $notNamespaces = [];
 
@@ -43,6 +46,18 @@ class StackFilter
 		return $this;
 	}
 
+	public function isFunction($functions)
+	{
+		$this->functions = array_merge($this->functions, is_array($functions) ? $functions : [ $functions ]);
+		return $this;
+	}
+
+	public function isNotFunction($functions)
+	{
+		$this->notFunctions = array_merge($this->notFunctions, is_array($functions) ? $functions : [ $functions ]);
+		return $this;
+	}
+
 	public function isNamespace($namespaces)
 	{
 		$this->namespaces = array_merge($this->namespaces, is_array($namespaces) ? $namespaces : [ $namespaces ]);
@@ -74,6 +89,9 @@ class StackFilter
 
 		if (count($this->files) && ! in_array($frame->file, $this->files)) return false;
 		if (count($this->notFiles) && in_array($frame->file, $this->notFiles)) return false;
+
+		if (count($this->functions) && ! in_array($frame->function, $this->functions)) return false;
+		if (count($this->notFunctions) && in_array($frame->function, $this->notFunctions)) return false;
 
 		if (! $this->matchesNamespace($frame)) return false;
 
