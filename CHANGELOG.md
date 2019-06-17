@@ -23,6 +23,7 @@
 - improved refactored and cleaned up Laravel service provider
 - improved Lumen integration to share more code with Laravel integration
 - improved refactored sql storage a bit
+- improved timeline api, description is now optional and defaults to event name when calling startEvent (idea by robclancy, thanks!)
 - updated web UI
 - fixed regexp in vanilla integration Clockwork REST api processing
 - removed storage filter support (replaced by features configuration)

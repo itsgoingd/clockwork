@@ -28,13 +28,13 @@ class Timeline
 	 * Start recording a new event, expects name, description and optional time as arguments, if time is not provided,
 	 * current time will be used, if time equals 'start', request time will be used
 	 */
-	public function startEvent($name, $description, $time = null, array $data = [])
+	public function startEvent($name, $description = null, $time = null, array $data = [])
 	{
 		$this->data[$name] = [
 			'start'       => $time ? $time : microtime(true),
 			'end'         => null,
 			'duration'    => null,
-			'description' => $description,
+			'description' => $description ?: $name,
 			'data'        => $data
 		];
 	}
