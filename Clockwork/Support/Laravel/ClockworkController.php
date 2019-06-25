@@ -48,14 +48,14 @@ class ClockworkController extends Controller
 			return new RedirectResponse('/__clockwork/app?dark');
 		}
 
-		return $this->app['clockwork.support']->getWebAsset('app.html');
+		return $this->app['clockwork.support']->getWebAsset('index.html');
 	}
 
 	public function webAsset($path)
 	{
 		$this->ensureClockworkIsEnabled();
 
-		return $this->app['clockwork.support']->getWebAsset("assets/{$path}");
+		return $this->app['clockwork.support']->getWebAsset($path);
 	}
 
 	public function webRedirect()

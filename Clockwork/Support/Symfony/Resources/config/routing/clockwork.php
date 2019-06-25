@@ -13,7 +13,7 @@ $routes->add('clockwork.webIndex', new Route('/__clockwork/app', [
 	'_controller' => [ Clockwork\Support\Symfony\ClockworkController::class, 'webIndex' ]
 ]));
 
-$routes->add('clockwork.webAsset', new Route('/__clockwork/assets/{path}', [
+$routes->add('clockwork.webAsset', new Route('/__clockwork/{path}', [
 	'_controller' => [ Clockwork\Support\Symfony\ClockworkController::class, 'webAsset' ]
 ], [ 'path' => '.+' ]));
 

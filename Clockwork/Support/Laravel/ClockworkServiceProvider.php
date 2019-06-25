@@ -213,7 +213,7 @@ class ClockworkServiceProvider extends ServiceProvider
 	{
 		$this->app['router']->get('/__clockwork', 'Clockwork\Support\Laravel\ClockworkController@webRedirect');
 		$this->app['router']->get('/__clockwork/app', 'Clockwork\Support\Laravel\ClockworkController@webIndex');
-		$this->app['router']->get('/__clockwork/assets/{path}', 'Clockwork\Support\Laravel\ClockworkController@webAsset')
+		$this->app['router']->get('/__clockwork/{path}', 'Clockwork\Support\Laravel\ClockworkController@webAsset')
 			->where('path', '.+');
 		$this->app['router']->post('/__clockwork/auth', 'Clockwork\Support\Laravel\ClockworkController@authenticate');
 	}

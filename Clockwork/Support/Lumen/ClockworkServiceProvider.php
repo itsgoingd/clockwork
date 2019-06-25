@@ -110,7 +110,7 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 
 		$router->get('/__clockwork', 'Clockwork\Support\Lumen\Controller@webRedirect');
 		$router->get('/__clockwork/app', 'Clockwork\Support\Lumen\Controller@webIndex');
-		$router->get('/__clockwork/assets/{path:.+}', 'Clockwork\Support\Lumen\Controller@webAsset');
+		$router->get('/__clockwork/{path:.+}', 'Clockwork\Support\Lumen\Controller@webAsset');
 	}
 
 	protected function isRunningWithFacades()
