@@ -269,7 +269,7 @@ class LumenDataSource extends DataSource
 	// Add authenticated user data to the request
 	protected function resolveAuthenticatedUser(Request $request)
 	{
-		if (! ($user = $this->app['auth']->user())) return;
+		if (! isset($this->app['auth']) || ! ($user = $this->app['auth']->user())) return;
 
 		$request->setAuthenticatedUser($user->email, $user->id, [
 			'email' => $user->email,

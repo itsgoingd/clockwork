@@ -4,7 +4,6 @@ use Clockwork\Clockwork;
 use Clockwork\DataSource\LumenDataSource;
 use Clockwork\DataSource\PhpDataSource;
 use Clockwork\Request\Log;
-use Clockwork\Support\Laravel\ClockworkMiddleware;
 use Clockwork\Support\Laravel\ClockworkServiceProvider as LaravelServiceProvider;
 
 use Illuminate\Support\Facades\Facade;
@@ -64,8 +63,6 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 
 		$this->app['clockwork.support']->configureSerializer();
 
-		$this->app['clockwork.laravel']->listenToEarlyEvents();
-
 		if ($this->isRunningWithFacades() && ! class_exists('Clockwork')) {
 			class_alias(\Clockwork\Support\Laravel\Facade::class, 'Clockwork');
 		}
@@ -86,7 +83,7 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 				$app['clockwork.support']->isFeatureEnabled('views'),
 				$app['clockwork.support']->isFeatureEnabled('routes')
 			))
-				->collectViews($app['clockwork.support']->isCollectingViews());
+				->setLog($app['clockwork.log']);
 		});
 	}
 
