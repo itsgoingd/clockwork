@@ -1,3 +1,7 @@
+4.0.1
+
+- fixed Lumen support (reported by Owlnofeathers, thanks!)
+
 4.0
 
 - added "features" configuration
