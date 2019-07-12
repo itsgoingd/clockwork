@@ -1,3 +1,7 @@
+4.0.2
+
+- updated web UI (Clockwork App 4.0.1)
+
 4.0.1
 
 - fixed Lumen support (reported by Owlnofeathers, thanks!)
