@@ -70,7 +70,7 @@ class SqlStorage extends Storage
 
 	// List of Request keys that need to be serialized before they can be stored in database
 	protected $needsSerialization = [
-		'headers', 'getData', 'postData', 'requestData', 'sessionData', 'authenticatedUser', 'cookies',
+		'headers', 'getData', 'postData', 'requestData', 'sessionData', 'authenticatedUser', 'cookies', 'middleware',
 		'databaseQueries', 'cacheQueries', 'redisCommands', 'queueJobs', 'timelineData', 'log', 'events', 'routes',
 		'emailsData', 'viewsData', 'userData', 'subrequests', 'xdebug'
 	];
