@@ -1,3 +1,7 @@
+4.0.3
+
+- fixed crash when using SQL storage (reported by sebastiaanluca, thanks!)
+
 4.0.2
 
 - updated web UI (Clockwork App 4.0.1)
