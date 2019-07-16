@@ -1,3 +1,7 @@
+4.0.4
+
+- fixed web UI not working (4.0.2 regression) (reported by williamqian and lachlankrautz, thanks!)
+
 4.0.3
 
 - fixed crash when using SQL storage (reported by sebastiaanluca, thanks!)
