@@ -94,13 +94,13 @@ class FileStorage extends Storage
 	}
 
 	// Cleanup old requests
-	public function cleanup($force = false)
+	public function cleanup($force = false, $count = 1)
 	{
 		if ($this->expiration === false || (! $force && rand(1, $this->cleanupChance) != 1)) return;
 
 		$expirationTime = time() - ($this->expiration * 60);
 
-		$old = $this->searchIndexBackward(new Search([ 'time' => [ "<{$expirationTime}" ] ]));
+		$old = $this->searchIndexBackward(new Search([ 'time' => [ "<{$expirationTime}" ] ]), null, $count);
 
 		foreach ($old as $request) {
 			$path = "{$this->path}/{$request->id}.json";
@@ -144,10 +144,10 @@ class FileStorage extends Storage
 
 		while ($request = $this->readIndex($direction)) {
 			if (! $search || $search->matches($request)) $found[] = $this->loadRequest($request->id);
-			if (count($found) == $count) return $found;
+			if (count($found = array_filter($found)) === $count) return $found;
 		}
 
-		if ($count == 1) return reset($found);
+		if ($count === 1) return reset($found);
 
 		return $direction == 'next' ? $found : array_reverse($found);
 	}

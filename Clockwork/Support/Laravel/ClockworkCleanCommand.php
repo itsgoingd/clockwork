@@ -12,6 +12,8 @@ class ClockworkCleanCommand extends Command
 	// The console command description.
 	protected $description = 'Cleans Clockwork request metadata';
 
+	protected $count = 1;
+
 	public function getOptions()
 	{
 		return [
@@ -25,11 +27,13 @@ class ClockworkCleanCommand extends Command
 	{
 		if ($this->option('all')) {
 			$this->laravel['config']->set('clockwork.storage_expiration', 0);
+            $this->count = null;
 		} elseif ($expiration = $this->option('expiration')) {
 			$this->laravel['config']->set('clockwork.storage_expiration', $expiration);
+            $this->count = null;
 		}
 
-		$this->laravel['clockwork.support']->getStorage()->cleanup($force = true);
+		$this->laravel['clockwork.support']->getStorage()->cleanup($force = true, $this->count);
 
 		$this->info('Metadata cleaned successfully.');
 	}
