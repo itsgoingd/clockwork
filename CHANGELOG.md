@@ -1,3 +1,8 @@
+4.0.5
+
+- fixed multiple issues causing FileStorage cleanup to not delete old metadata or crash (partially implemented by jaumesala, reported by SerafimArts, thanks!)
+- updated web UI (Clockwork App 4.0.2)
+
 4.0.4
 
 - fixed web UI not working (4.0.2 regression) (reported by williamqian and lachlankrautz, thanks!)
