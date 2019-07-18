@@ -100,7 +100,13 @@ class FileStorage extends Storage
 
 		$expirationTime = time() - ($this->expiration * 60);
 
-		$old = $this->searchIndexBackward(new Search([ 'time' => [ "<{$expirationTime}" ] ]));
+		$old = $this->searchIndexBackward(new Search([ 'received' => [ '<' . date('c', $expirationTime) ] ]), null, null);
+
+		if (! count($old)) return;
+
+		$this->searchIndexBackward(null, $old[count($old) - 1]->id);
+		$this->readNextIndex();
+		$this->trimIndex();
 
 		foreach ($old as $request) {
 			$path = "{$this->path}/{$request->id}.json";
@@ -143,8 +149,11 @@ class FileStorage extends Storage
 		$found = [];
 
 		while ($request = $this->readIndex($direction)) {
-			if (! $search || $search->matches($request)) $found[] = $this->loadRequest($request->id);
-			if (count($found) == $count) return $found;
+			if (! $search || $search->matches($request)) {
+				if ($request = $this->loadRequest($request->id)) $found[] = $request;
+			}
+
+			if ($count && count($found) == $count) return $found;
 		}
 
 		if ($count == 1) return reset($found);
@@ -217,6 +226,21 @@ class FileStorage extends Storage
 		fseek($this->indexHandle, ftell($this->indexHandle) - strlen($line));
 
 		return $this->makeRequestFromIndex(str_getcsv($line));
+	}
+
+	// Trim index file from beginning to current position (including)
+	protected function trimIndex()
+	{
+		// File pointer is always at the start of the line, call extra fgets to skip current line
+		fgets($this->indexHandle);
+
+		// Read the rest of the index file
+		$trimmedLength = filesize("{$this->path}/index") - ftell($this->indexHandle);
+		$trimmed = $trimmedLength > 0 ? fread($this->indexHandle, $trimmedLength) : '';
+
+		// Rewrite the index file with a trimmed version
+		fclose($this->indexHandle);
+		file_put_contents("{$this->path}/index", $trimmed);
 	}
 
 	protected function makeRequestFromIndex($record)
