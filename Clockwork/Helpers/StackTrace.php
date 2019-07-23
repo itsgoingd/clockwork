@@ -54,7 +54,7 @@ class StackTrace
 	{
 		if ($filter instanceof StackFilter) $filter = $filter->closure();
 
-		return $this->copy(array_filter($filter, $this->frames));
+		return $this->copy(array_filter($this->frames, $filter));
 	}
 
 	public function skip($count = null)
