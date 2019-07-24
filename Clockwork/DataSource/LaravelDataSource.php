@@ -280,10 +280,11 @@ class LaravelDataSource extends DataSource
 	protected function resolveAuthenticatedUser(Request $request)
 	{
 		if (! ($user = $this->app['auth']->user())) return;
+		if (! isset($user->email) || ! isset($user->id)) return;
 
 		$request->setAuthenticatedUser($user->email, $user->id, [
-			'email' => $user->email,
-			'name'  => $user->name
+			'email' => isset($user->email) ? $user->email : null,
+			'name'  => isset($user->name) ? $user->name : null
 		]);
 	}
 }
