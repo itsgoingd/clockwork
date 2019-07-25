@@ -1,3 +1,10 @@
+4.0.6
+
+- fixed possible crash in LaravelDataSource when resolving authenticated user in non-standard auth implementations (4.0 regression) (implemented by zarunet, thanks!)
+- fixed StackTrace::filter calling array_filter with swapped arguments (implemented by villermen, thanks!)
+- fixed PHP 5.x incompatibility tenaming the Storage\Search empty and notEmpty methods to isEmpty and isNotEmpty (reported by eduardodgarciac, thanks!)
+- updated web UI (Clockwork App 4.0.3)
+
 4.0.5
 
 - fixed multiple issues causing FileStorage cleanup to not delete old metadata or crash (partially implemented by jaumesala, reported by SerafimArts, thanks!)
