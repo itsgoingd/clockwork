@@ -35,15 +35,15 @@ class Search
 			&& $this->matchesDate($this->received, $request->time);
 	}
 
-	public function empty()
+	public function isEmpty()
 	{
 		return ! count($this->uri) && ! count($this->controller) && ! count($this->method) && ! count($this->status)
 			&& ! count($this->time) && ! count($this->received);
 	}
 
-	public function notEmpty()
+	public function isNotEmpty()
 	{
-		return ! $this->empty();
+		return ! $this->isEmpty();
 	}
 
 	protected function matchesDate($inputs, $value)

@@ -34,7 +34,7 @@ class SqlSearch extends Search
 
 	protected function resolveConditions()
 	{
-		if ($this->empty()) return [ [], [] ];
+		if ($this->isEmpty()) return [ [], [] ];
 
 		$conditions = array_filter([
 			$this->resolveStringCondition('uri', $this->uri),
