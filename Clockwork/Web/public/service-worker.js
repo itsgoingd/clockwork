@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "precache-manifest.e1ba2bbdaedd6381b7a95dbee33e144b.js"
+  "precache-manifest.00b99cdc46aeee2da9189ad7ff668d6e.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "Clockwork"});
