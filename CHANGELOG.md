@@ -1,3 +1,7 @@
+4.0.7
+
+- updated web UI (Clockwork App 4.0.4)
+
 4.0.6
 
 - fixed possible crash in LaravelDataSource when resolving authenticated user in non-standard auth implementations (4.0 regression) (implemented by zarunet, thanks!)
