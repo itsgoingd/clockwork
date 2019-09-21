@@ -1,3 +1,8 @@
+4.0.9
+
+- fixed duplicate queries detection reporting all relationship queries instead of only duplicates (reported by robclancy, thanks!)
+- improved the default .gitignore for metadata storage to ignore compressed metadata as well (implemented by clugg, thanks!)
+
 4.0.8
 
 - updated web UI (Clockwork App 4.0.5)
