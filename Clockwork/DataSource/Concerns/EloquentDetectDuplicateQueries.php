@@ -18,7 +18,7 @@ trait EloquentDetectDuplicateQueries
 		$log = new Log;
 
 		foreach ($this->duplicateQueries as $query) {
-			if ($query['count'] < 1) continue;
+			if ($query['count'] <= 1) continue;
 
 			$log->log(
 				LogLevel::WARNING,
