@@ -33,7 +33,7 @@ class FileStorage extends Storage
 			}
 
 			// create default .gitignore, to ignore stored json files
-			file_put_contents("{$path}/.gitignore", "*.json\nindex\n");
+			file_put_contents("{$path}/.gitignore", "*.json\n*.json.gz\nindex\n");
 		}
 
 		if (! is_writable($path)) {
