@@ -1,3 +1,7 @@
+4.0.10
+
+- fixed wrong file:line for log messages (requires enabled stack traces atm)
+
 4.0.9
 
 - fixed duplicate queries detection reporting all relationship queries instead of only duplicates (reported by robclancy, thanks!)
