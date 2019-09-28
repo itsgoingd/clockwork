@@ -1,3 +1,7 @@
+4.0.11
+
+- updated web UI (Clockwork App 4.0.6)
+
 4.0.10
 
 - fixed wrong file:line for log messages (requires enabled stack traces atm)
