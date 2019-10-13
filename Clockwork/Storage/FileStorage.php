@@ -204,7 +204,7 @@ class FileStorage extends Storage
 			fseek($this->indexHandle, $position);
 
 			// if we reached a newline and put together a non-empty line we are done
-			if ($newline !== false && $line) break;
+			if ($newline !== false) break;
 		}
 
 		return $this->makeRequestFromIndex(str_getcsv($line));
@@ -220,7 +220,7 @@ class FileStorage extends Storage
 		$line = fgets($this->indexHandle);
 
 		// Check if we read an empty line or reached the end of file
-		if (! $line) return;
+		if ($line === false) return;
 
 		// Reset the file pointer to the start of the read line
 		fseek($this->indexHandle, ftell($this->indexHandle) - strlen($line));
@@ -245,6 +245,8 @@ class FileStorage extends Storage
 
 	protected function makeRequestFromIndex($record)
 	{
+		if (count($record) != 7) return new Request; // invalid index data, return a null request
+
 		return new Request(array_combine(
 			[ 'id', 'time', 'method', 'uri', 'controller', 'responseStatus', 'responseDuration' ], $record
 		));
