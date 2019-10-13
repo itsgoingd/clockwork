@@ -98,6 +98,8 @@ class FileStorage extends Storage
 	{
 		if ($this->expiration === false || (! $force && rand(1, $this->cleanupChance) != 1)) return;
 
+		$this->openIndex('start', true, true); // reopan index with lock
+
 		$expirationTime = time() - ($this->expiration * 60);
 
 		$old = $this->searchIndexBackward(new Search([ 'received' => [ '<' . date('c', $expirationTime) ] ]), null, null);
@@ -107,6 +109,8 @@ class FileStorage extends Storage
 		$this->searchIndexBackward(null, $old[count($old) - 1]->id);
 		$this->readNextIndex();
 		$this->trimIndex();
+
+		$this->closeIndex(true); // explicitly close index to unlock asap
 
 		foreach ($old as $request) {
 			$path = "{$this->path}/{$request->id}.json";
@@ -161,12 +165,25 @@ class FileStorage extends Storage
 		return $direction == 'next' ? $found : array_reverse($found);
 	}
 
-	// Open index file, optionally move file pointer to the end
-	protected function openIndex($position = 'start')
+	// Open index file, optionally lock or move file pointer to the end, existing handle will be returned by default
+	protected function openIndex($position = 'start', $lock = false, $force = false)
 	{
+		if ($this->indexHandle) {
+			if (! $force) return;
+			$this->closeIndex();
+		}
+
 		$this->indexHandle = fopen("{$this->path}/index", 'r');
 
+		if ($lock) flock($this->indexHandle, LOCK_EX);
 		if ($position == 'end') fseek($this->indexHandle, 0, SEEK_END);
+	}
+
+	// Close index file, optionally unlock
+	protected function closeIndex($lock = false)
+	{
+		if ($lock) flock($this->indexHandle, LOCK_UN);
+		fclose($this->indexHandle);
 	}
 
 	// Read a line from index in the specified direction (next or previous)
@@ -255,7 +272,10 @@ class FileStorage extends Storage
 	// Update index with a new request
 	protected function updateIndex(Request $request)
 	{
-		fputcsv($handle = fopen("{$this->path}/index", 'a'), [
+		$handle = fopen("{$this->path}/index", 'a');
+		flock($handle, LOCK_EX);
+
+		fputcsv($handle, [
 			$request->id,
 			$request->time,
 			$request->method,
@@ -265,6 +285,7 @@ class FileStorage extends Storage
 			$request->getResponseDuration()
 		]);
 
+		flock($handle, LOCK_UN);
 		fclose($handle);
 	}
 }
