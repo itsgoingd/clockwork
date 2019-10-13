@@ -1,7 +1,7 @@
 4.0.12
 
 - added a simple index file locking to the file storage
-- improved handling of invalid index data in the file storage
+- improved handling of invalid index data in the file storage (reported by nsbucky and tkaven, thanks!)
 - fixed Laravel data source crash when running without auth service (implemented by DrBenton, thanks!)
 
 4.0.11
