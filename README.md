@@ -104,11 +104,11 @@ By default, Clockwork will only be available in debug mode, you can change this 
 
 You can publish the configuration file using the `vendor:publish` artisan command to
 
-- set when Clockwork should be enabled
-- enable or disable the web UI
-- configure how the request metadata is stored
-- set what data should be collected
-- how long Clockwork stores log files
+- set when Clockwork should be enabled.
+- enable or disable the web UI.
+- configure how the request metadata is stored.
+- set what data should be collected.
+- how long Clockwork stores log files.
 
 ### Licence
 
