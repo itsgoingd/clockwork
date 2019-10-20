@@ -22,9 +22,11 @@ class StackTrace
 		$basePath = static::resolveBasePath();
 		$vendorPath = static::resolveVendorPath();
 
-		return new static(array_map(function ($frame) use ($basePath, $vendorPath) {
-			return new StackFrame($frame, $basePath, $vendorPath);
-		}, $trace), $basePath, $vendorPath);
+		return new static(array_map(function ($frame, $index) use ($basePath, $vendorPath, $trace) {
+			return new StackFrame(
+				static::fixCallUserFuncFrame($frame, $trace, $index), $basePath, $vendorPath
+			);
+		}, $trace, array_keys($trace)), $basePath, $vendorPath);
 	}
 
 	public function __construct(array $frames, $basePath, $vendorPath)
@@ -83,5 +85,19 @@ class StackTrace
 	protected static function resolveVendorPath()
 	{
 		return static::resolveBasePath() . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR;
+	}
+
+	protected static function fixCallUserFuncFrame($frame, array $trace, $index)
+	{
+		if (isset($frame['file'])) return $frame;
+
+		$nextFrame = isset($trace[$index + 1]) ? $trace[$index + 1] : null;
+
+		if (! $nextFrame || ! in_array($nextFrame['function'], [ 'call_user_func', 'call_user_func_array' ])) return $frame;
+
+		$frame['file'] = $nextFrame['file'];
+		$frame['line'] = $nextFrame['line'];
+
+		return $frame;
 	}
 }
