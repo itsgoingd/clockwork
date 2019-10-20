@@ -171,10 +171,7 @@ class ClockworkSupport
 					$this->getConfig('stack_traces.skip_vendors', []),
 					[ 'itsgoingd', 'laravel', 'illuminate' ]
 				))
-				->isNotNamespace(array_merge(
-					$this->getConfig('stack_traces.skip_namespaces', []),
-					[ 'Clockwork', 'Illuminate' ]
-				))
+				->isNotNamespace($this->getConfig('stack_traces.skip_namespaces', []))
 				->isNotFunction([ 'call_user_func', 'call_user_func_array' ])
 				->isNotClass($this->getConfig('stack_traces.skip_classes', [])),
 			'tracesLimit' => $this->getConfig('stack_traces.limit', 10)
