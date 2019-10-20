@@ -1,3 +1,10 @@
+4.0.13
+
+- fixed stack traces processing not handling call_user_func frames properly leading to wrong traces (reported by marcus-at-localhost, thanks!)
+- fixed wrong stack traces skip namespaces defaults leading to wrong traces
+- fixed vanilla integration config file missing and no longer used settings
+
+
 4.0.12
 
 - added a simple index file locking to the file storage
