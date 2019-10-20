@@ -85,22 +85,6 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Filter collected data
-	|--------------------------------------------------------------------------
-	|
-	| You can filter collected data by specifying what you don't want to collect
-	| here.
-	|
-	*/
-
-	'filter' => [
-		'cacheQueries', // collecting cache queries in cache-heavy might have a negative performance impact and use a lot of disk space
-		'routes', // collecting routes data on every request might use a lot of disk space
-		'viewsData', // collecting views data, including all variables passed to the view on every request might use a lot of disk space
-	],
-
-	/*
-	|--------------------------------------------------------------------------
 	| Enable collecting of stack traces
 	|--------------------------------------------------------------------------
 	|
@@ -123,6 +107,11 @@ return [
 			// 'phpunit'
 		],
 
+		// List of namespaces to skip when determining caller
+		'skip_namespaces' => [
+			// 'Vendor'
+		],
+
 		// List of class names to skip when determining caller
 		'skip_classes' => [
 			// App\CustomLog::class
@@ -131,8 +120,6 @@ return [
 		// Limit of frames to be collected
 		'limit' => isset($_ENV['CLOCKWORK_STACK_TRACES_LIMIT']) ? $_ENV['CLOCKWORK_STACK_TRACES_LIMIT'] : 10
 	],
-
-	'collect_stack_traces' => isset($_ENV['CLOCKWORK_COLLECT_STACK_TRACES']) ? $_ENV['CLOCKWORK_COLLECT_STACK_TRACES'] : true,
 
 	/*
 	|--------------------------------------------------------------------------
