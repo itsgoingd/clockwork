@@ -153,6 +153,15 @@ class ClockworkServiceProvider extends ServiceProvider
 				}, 'early');
 			}
 
+			if ($app->runningUnitTests()) {
+				$dataSource->addFilter(function ($query, $trace) {
+					return ! $trace->first(StackFilter::make()->isClass([
+						\Illuminate\Database\Migrations\Migrator::class,
+						\Illuminate\Database\Console\Migrations\MigrateCommand::class
+					]));
+				});
+			}
+
 			return $dataSource;
 		});
 
