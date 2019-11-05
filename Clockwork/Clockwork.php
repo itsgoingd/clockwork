@@ -158,6 +158,21 @@ class Clockwork implements LoggerInterface
 		return $this;
 	}
 
+	// Resolve current request as "test" type request, with test-specific metadata, accepts test name, status,
+	// status message in case of failure and array of ran asserts
+	public function resolveTest($name, $status = 'passed', $statusMessage = null, $asserts = [])
+	{
+		$this->resolveRequest();
+
+		$this->request->type = 'test';
+		$this->request->testName = $name;
+		$this->request->testStatus = $status;
+		$this->request->testStatusMessage = $statusMessage;
+		$this->request->testAsserts = $asserts;
+
+		return $this;
+	}
+
 	// Extends the request with additional data form all data sources when being shown in the Clockwork app
 	public function extendRequest(Request $request = null)
 	{
