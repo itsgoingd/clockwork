@@ -48,6 +48,9 @@ class LaravelDataSource extends DataSource
 	// Whether we should collect routes
 	protected $collectRoutes = false;
 
+	// Timestamp w/ ms precision when the class was instantiated, used as request time when testing
+	protected $creationTime;
+
 	/**
 	 * Create a new data source, takes Laravel application instance as an argument
 	 */
@@ -60,6 +63,8 @@ class LaravelDataSource extends DataSource
 
 		$this->timeline = new Timeline();
 		$this->views    = new Timeline();
+
+		$this->creationTime = microtime(true);
 	}
 
 	/**
@@ -67,6 +72,7 @@ class LaravelDataSource extends DataSource
 	 */
 	public function resolve(Request $request)
 	{
+		$request->time           = $this->getRequestTime();
 		$request->method         = $this->getRequestMethod();
 		$request->url            = $this->getRequestUrl();
 		$request->uri            = $this->getRequestUri();
@@ -199,6 +205,18 @@ class LaravelDataSource extends DataSource
 		}
 
 		return $controller;
+	}
+
+	/**
+	 * Return response time in most precise form
+	 */
+	protected function getRequestTime()
+	{
+		if ($this->app->runningUnitTests()) {
+			return $this->creationTime;
+		} elseif (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
+			return $_SERVER['REQUEST_TIME_FLOAT'];
+		}
 	}
 
 	/**
