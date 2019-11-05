@@ -13,8 +13,9 @@ class StackTrace
 	{
 		$backtraceOptions = isset($options['arguments'])
 			? DEBUG_BACKTRACE_PROVIDE_OBJECT : DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS;
+		$limit = isset($options['limit']) ? $options['limit'] : 0;
 
-		return static::from(debug_backtrace($backtraceOptions));
+		return static::from(debug_backtrace($backtraceOptions, $limit));
 	}
 
 	public static function from(array $trace)
@@ -52,11 +53,22 @@ class StackTrace
 		}
 	}
 
+	public function last($filter = null)
+	{
+		if (! $filter) return $this->frames[count($this->frames) - 1];
+
+		if ($filter instanceof StackFilter) $filter = $filter->closure();
+
+		foreach (array_reverse($this->frames) as $frame) {
+			if ($filter($frame)) return $frame;
+		}
+	}
+
 	public function filter($filter = null)
 	{
 		if ($filter instanceof StackFilter) $filter = $filter->closure();
 
-		return $this->copy(array_filter($this->frames, $filter));
+		return $this->copy(array_values(array_filter($this->frames, $filter)));
 	}
 
 	public function skip($count = null)
