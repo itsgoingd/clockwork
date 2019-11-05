@@ -230,6 +230,18 @@ class Request
 	// Queue job additional options
 	public $jobOptions = [];
 
+	// Test name
+	public $testName;
+
+	// Test status
+	public $testStatus;
+
+	// Test status message (eg. in case of failure)
+	public $testStatusMessage;
+
+	// Ran test asserts
+	public $testAsserts = [];
+
 	// Parent request
 	public $parent;
 
@@ -333,6 +345,10 @@ class Request
 			'jobQueue'                 => $this->jobQueue,
 			'jobConnection'            => $this->jobConnection,
 			'jobOptions'               => $this->jobOptions,
+			'testName'                 => $this->testName,
+			'testStatus'               => $this->testStatus,
+			'testStatusMessage'        => $this->testStatusMessage,
+			'testAsserts'              => $this->testAsserts,
 			'parent'                   => $this->parent
 		];
 	}
@@ -476,6 +492,17 @@ class Request
 		$userData = (new UserData)->title($key);
 
 		return $key ? $this->userData[$key] = $userData : $this->userData[] = $userData;
+	}
+
+	// Add a ran test assert, takes the asset name, arguments, whether it passed and trace as arguments
+	public function addTestAssert($name, $arguments = null, $passed = true, $trace = null)
+	{
+		$this->testAsserts[] = [
+			'name'      => $name,
+			'arguments' => $arguments,
+			'trace'     => $trace,
+			'passed'    => $passed
+		];
 	}
 
 	/**
