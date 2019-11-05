@@ -300,7 +300,7 @@ class ClockworkSupport
 	public function isCollectingRequests()
 	{
 		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
-			&& ! $this->app->runningInConsole()
+			// && ! $this->app->runningInConsole()
 			&& ! $this->isUriFiltered($this->app['request']->getRequestUri());
 	}
 
