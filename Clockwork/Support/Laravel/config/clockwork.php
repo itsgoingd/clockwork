@@ -115,6 +115,19 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Enable data collection for Artisan commands
+	|--------------------------------------------------------------------------
+	|
+	| This setting controls, whether data about executed artisan commands will
+	| be recorded.
+	| Default: false
+	|
+	*/
+
+	'collect_commands' => env('CLOCKWORK_COLLECT_COMMANDS', false),
+
+	/*
+	|--------------------------------------------------------------------------
 	| Enable data collection, when Clockwork is disabled
 	|--------------------------------------------------------------------------
 	|

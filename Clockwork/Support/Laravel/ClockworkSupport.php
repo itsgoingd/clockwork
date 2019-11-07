@@ -13,6 +13,7 @@ use Clockwork\Storage\SqlStorage;
 use Clockwork\Web\Web;
 
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -117,6 +118,30 @@ class ClockworkSupport
 		}
 	}
 
+	// Set up collecting of executed artisan commands
+	public function collectCommands()
+	{
+		$this->app['events']->listen(\Illuminate\Console\Events\CommandFinished::class, function ($event) {
+			if (! $event->command) return;
+
+			$command = $this->app->make(ConsoleKernel::class)->all()[$event->command];
+
+			$argumentsDefaults = $command->getDefinition()->getArgumentDefaults();
+			$optionsDefaults = $command->getDefinition()->getOptionDefaults();
+
+			$this->app->make('clockwork')
+				->resolveAsCommand(
+					$event->command,
+					$event->exitCode,
+					array_diff($event->input->getArguments(), $argumentsDefaults),
+					array_diff($event->input->getOptions(), $optionsDefaults),
+					$argumentsDefaults,
+					$optionsDefaults
+				)
+				->storeRequest();
+		});
+	}
+
 	public function process($request, $response)
 	{
 		if (! $this->isCollectingData()) {
@@ -186,8 +211,20 @@ class ClockworkSupport
 
 	public function isCollectingData()
 	{
+		return $this->isCollectingCommands()
+			|| $this->isCollectingRequests();
+	}
+
+	public function isCollectingCommands()
+	{
 		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
-			&& ! $this->app->runningInConsole()
+			&& $this->app->runningInConsole()
+			&& $this->getConfig('collect_commands', false);
+	}
+
+	public function isCollectingRequests()
+	{
+		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
 			&& ! $this->isUriFiltered($this->app['request']->getRequestUri());
 	}
 
