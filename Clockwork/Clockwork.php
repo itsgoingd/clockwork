@@ -124,7 +124,7 @@ class Clockwork implements LoggerInterface
 	}
 
 	// Resolve the current request as a "command" type request with command-specific data
-	public function resolveAsCommand($name, $exitCode = null, $arguments = [], $options = [], $argumentsDefaults = [], $optionsDefaults = [])
+	public function resolveAsCommand($name, $exitCode = null, $arguments = [], $options = [], $argumentsDefaults = [], $optionsDefaults = [], $output = null)
 	{
 		$this->resolveRequest();
 
@@ -135,6 +135,7 @@ class Clockwork implements LoggerInterface
 		$this->request->commandOptions = $options;
 		$this->request->commandOptionsDefaults = $optionsDefaults;
 		$this->request->commandExitCode = $exitCode;
+		$this->request->commandOutput = $output;
 
 		return $this;
 	}

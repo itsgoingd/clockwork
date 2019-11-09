@@ -137,6 +137,9 @@ return [
 			// 'inspire'
 		],
 
+		// Enable or disable collection of command output
+		'collect_output' => env('CLOCKWORK_ARTISAN_COLLECT_OUTPUT', false),
+
 		// Enable or disable collection of built-in Laravel commands
 		'except_laravel_commands' => env('CLOCKWORK_ARTISAN_EXCEPT_LARAVEL_COMMANDS', true)
 	],

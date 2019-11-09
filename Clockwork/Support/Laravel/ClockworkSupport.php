@@ -121,6 +121,15 @@ class ClockworkSupport
 	// Set up collecting of executed artisan commands
 	public function collectCommands()
 	{
+		$this->app['events']->listen(\Illuminate\Console\Events\CommandStarting::class, function ($event) {
+			if (! $this->getConfig('artisan.collect_output')) return;
+			if (! $event->command || $this->isCommandFiltered($event->command)) return;
+
+			$event->output->setFormatter(
+				new Console\CapturingFormatter($event->output->getFormatter())
+			);
+		});
+
 		$this->app['events']->listen(\Illuminate\Console\Events\CommandFinished::class, function ($event) {
 			if (! $event->command || $this->isCommandFiltered($event->command)) return;
 
@@ -136,7 +145,8 @@ class ClockworkSupport
 					array_diff($event->input->getArguments(), $argumentsDefaults),
 					array_diff($event->input->getOptions(), $optionsDefaults),
 					$argumentsDefaults,
-					$optionsDefaults
+					$optionsDefaults,
+					$this->getConfig('artisan.collect_output') ? $event->output->getFormatter()->capturedOutput() : null
 				)
 				->storeRequest();
 		});
