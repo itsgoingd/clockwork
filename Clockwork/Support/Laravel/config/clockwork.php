@@ -115,16 +115,31 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Enable data collection for Artisan commands
+	| Artisan commands collection
 	|--------------------------------------------------------------------------
 	|
-	| This setting controls, whether data about executed artisan commands will
-	| be recorded.
-	| Default: false
+	| You can enable or disable and configure collection of executed Artisan
+	| commands here.
 	|
 	*/
 
-	'collect_commands' => env('CLOCKWORK_COLLECT_COMMANDS', false),
+	'artisan' => [
+		// Enable or disable collection of executed Artisan commands
+		'collect' => env('CLOCKWORK_ARTISAN_COLLECT', false),
+
+		// List of commands that should not be collected (built-in commands are not collected by default)
+		'except' => [
+			// 'inspire'
+		],
+
+		// List of commands that should be collected, any other command will not be collected if not empty
+		'only' => [
+			// 'inspire'
+		],
+
+		// Enable or disable collection of built-in Laravel commands
+		'except_laravel_commands' => env('CLOCKWORK_ARTISAN_EXCEPT_LARAVEL_COMMANDS', true)
+	],
 
 	/*
 	|--------------------------------------------------------------------------
