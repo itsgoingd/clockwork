@@ -78,6 +78,17 @@ class Clockwork
 		return $this->psrResponse;
 	}
 
+	public function commandExecuted($name, $exitCode = null, $arguments = [], $options = [], $argumentsDefaults = [], $optionsDefaults = [])
+	{
+		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
+
+		$this->clockwork->getTimeline()->endEvent('total');
+
+		$this->clockwork
+			->resolveAsCommand($name, $exitCode, $arguments, $options, $argumentsDefaults, $optionsDefaults)
+			->storeRequest();
+	}
+
 	public function returnMetadata($request = null)
 	{
 		if (! $this->config['enable']) return;
