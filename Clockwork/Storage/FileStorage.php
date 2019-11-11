@@ -262,10 +262,12 @@ class FileStorage extends Storage
 
 	protected function makeRequestFromIndex($record)
 	{
-		if (count($record) != 7) return new Request; // invalid index data, return a null request
+		$type = isset($record[7]) ? $record[7] : 'response';
+		$nameField = $type == 'command' ? 'commandName' : 'uri';
 
 		return new Request(array_combine(
-			[ 'id', 'time', 'method', 'uri', 'controller', 'responseStatus', 'responseDuration' ], $record
+			[ 'id', 'time', 'method', $nameField, 'controller', 'responseStatus', 'responseDuration', 'type' ],
+			$record + [ null, null, null, null, null, null, null, 'response' ]
 		));
 	}
 
@@ -279,10 +281,11 @@ class FileStorage extends Storage
 			$request->id,
 			$request->time,
 			$request->method,
-			$request->uri,
+			$request->type == 'command' ? $request->commandName : $request->uri,
 			$request->controller,
 			$request->responseStatus,
-			$request->getResponseDuration()
+			$request->getResponseDuration(),
+			$request->type
 		]);
 
 		flock($handle, LOCK_UN);
