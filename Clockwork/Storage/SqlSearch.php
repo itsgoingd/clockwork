@@ -37,12 +37,13 @@ class SqlSearch extends Search
 		if ($this->isEmpty()) return [ [], [] ];
 
 		$conditions = array_filter([
-			$this->resolveStringCondition('uri', $this->uri),
-			$this->resolveStringCondition('controller', $this->controller),
-			$this->resolveExactCondition('method', $this->method),
-			$this->resolveNumberCondition('responseStatus', $this->status),
-			$this->resolveNumberCondition('responseDuration', $this->time),
-			$this->resolveDateCondition('time', $this->received)
+			$this->resolveStringCondition([ 'type' ], $this->type),
+			$this->resolveStringCondition([ 'uri', 'commandName' ], array_merge($this->uri, $this->name)),
+			$this->resolveStringCondition([ 'controller' ], $this->controller),
+			$this->resolveExactCondition([ 'method' ], $this->method),
+			$this->resolveNumberCondition([ 'responseStatus', 'commandExitCode' ], $this->status),
+			$this->resolveNumberCondition([ 'responseDuration' ], $this->time),
+			$this->resolveDateCondition([ 'time' ], $this->received)
 		]);
 
 		$sql = array_map(function ($condition) { return $condition[0]; }, $conditions);
@@ -53,71 +54,79 @@ class SqlSearch extends Search
 		return [ $sql, $bindings ];
 	}
 
-	protected function resolveDateCondition($field, $inputs)
+	protected function resolveDateCondition($fields, $inputs)
 	{
 		if (! count($inputs)) return null;
 
 		$bindings = [];
-		$conditions = implode(' OR ', array_map(function ($input, $index) use ($field, &$bindings) {
-			if (preg_match('/^<(.+)$/', $input, $match)) {
-				$bindings["{$field}{$index}"] = $match[1];
-				return "{$field} < :{$field}{$index}";
-			} elseif (preg_match('/^>(.+)$/', $input, $match)) {
-				$bindings["{$field}{$index}"] = $match[1];
-				return "{$field} > :{$field}{$index}";
-			}
-		}, $inputs, array_keys($inputs)));
+		$conditions = implode(' OR ', array_map(function ($field) use ($inputs, &$bindings) {
+			return implode(' OR ', array_map(function ($input, $index) use ($field, &$bindings) {
+				if (preg_match('/^<(.+)$/', $input, $match)) {
+					$bindings["{$field}{$index}"] = $match[1];
+					return "{$field} < :{$field}{$index}";
+				} elseif (preg_match('/^>(.+)$/', $input, $match)) {
+					$bindings["{$field}{$index}"] = $match[1];
+					return "{$field} > :{$field}{$index}";
+				}
+			}, $inputs, array_keys($inputs)));
+		}, $fields));
 
 		return [ "({$conditions})", $bindings ];
 	}
 
-	protected function resolveExactCondition($field, $inputs)
+	protected function resolveExactCondition($fields, $inputs)
 	{
 		if (! count($inputs)) return null;
 
 		$bindings = [];
-		$values = implode(', ', array_map(function ($input, $index) use ($field, &$bindings) {
-			$bindings["{$field}{$index}"] = $input;
-			return ":{$field}{$index}";
-		}, $inputs, array_keys($inputs)));
+		$values = implode(' OR ', array_map(function ($field) use ($inputs, &$bindings) {
+			return implode(', ', array_map(function ($input, $index) use ($field, &$bindings) {
+				$bindings["{$field}{$index}"] = $input;
+				return ":{$field}{$index}";
+			}, $inputs, array_keys($inputs)));
+		}, $fields));
 
 		return [ "{$field} IN ({$values})", $bindings ];
 	}
 
-	protected function resolveNumberCondition($field, $inputs)
+	protected function resolveNumberCondition($fields, $inputs)
 	{
 		if (! count($inputs)) return null;
 
 		$bindings = [];
-		$conditions = implode(' OR ', array_map(function ($input, $index) use ($field, &$bindings) {
-			if (preg_match('/^<(\d+(?:\.\d+)?)$/', $input, $match)) {
-				$bindings["{$field}{$index}"] = $match[1];
-				return "{$field} < :{$field}{$index}";
-			} elseif (preg_match('/^>(\d+(?:\.\d+)?)$/', $input, $match)) {
-				$bindings["{$field}{$index}"] = $match[1];
-				return "{$field} > :{$field}{$index}";
-			} elseif (preg_match('/^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/', $input, $match)) {
-				$bindings["{$field}{$index}from"] = $match[1];
-				$bindings["{$field}{$index}to"] = $match[2];
-				return "({$field} > :{$field}{$index}from AND {$field} < :{$field}{$index}to)";
-			} else {
-				$bindings["{$field}{$index}"] = $input;
-				return "{$field} = :{$field}{$index}";
-			}
-		}, $inputs, array_keys($inputs)));
+		$conditions = implode(' OR ', array_map(function ($field) use ($inputs, &$bindings) {
+			return implode(' OR ', array_map(function ($input, $index) use ($field, &$bindings) {
+				if (preg_match('/^<(\d+(?:\.\d+)?)$/', $input, $match)) {
+					$bindings["{$field}{$index}"] = $match[1];
+					return "{$field} < :{$field}{$index}";
+				} elseif (preg_match('/^>(\d+(?:\.\d+)?)$/', $input, $match)) {
+					$bindings["{$field}{$index}"] = $match[1];
+					return "{$field} > :{$field}{$index}";
+				} elseif (preg_match('/^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/', $input, $match)) {
+					$bindings["{$field}{$index}from"] = $match[1];
+					$bindings["{$field}{$index}to"] = $match[2];
+					return "({$field} > :{$field}{$index}from AND {$field} < :{$field}{$index}to)";
+				} else {
+					$bindings["{$field}{$index}"] = $input;
+					return "{$field} = :{$field}{$index}";
+				}
+			}, $inputs, array_keys($inputs)));
+		}, $fields));
 
 		return [ "({$conditions})", $bindings ];
 	}
 
-	protected function resolveStringCondition($field, $inputs)
+	protected function resolveStringCondition($fields, $inputs)
 	{
 		if (! count($inputs)) return null;
 
 		$bindings = [];
-		$conditions = implode(' OR ', array_map(function ($input, $index) use ($field, &$bindings) {
-			$bindings["{$field}{$index}"] = $input;
-			return "{$field} LIKE :{$field}{$index}";
-		}, $inputs, array_keys($inputs)));
+		$conditions = implode(' OR ', array_map(function ($field) use ($inputs, &$bindings) {
+			return implode(' OR ', array_map(function ($input, $index) use ($field, &$bindings) {
+				$bindings["{$field}{$index}"] = $input;
+				return "{$field} LIKE :{$field}{$index}";
+			}, $inputs, array_keys($inputs)));
+		}, $fields));
 
 		return [ "({$conditions})", $bindings ];
 	}
