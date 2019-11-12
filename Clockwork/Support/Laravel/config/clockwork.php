@@ -115,6 +115,37 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Artisan commands collection
+	|--------------------------------------------------------------------------
+	|
+	| You can enable or disable and configure collection of executed Artisan
+	| commands here.
+	|
+	*/
+
+	'artisan' => [
+		// Enable or disable collection of executed Artisan commands
+		'collect' => env('CLOCKWORK_ARTISAN_COLLECT', false),
+
+		// List of commands that should not be collected (built-in commands are not collected by default)
+		'except' => [
+			// 'inspire'
+		],
+
+		// List of commands that should be collected, any other command will not be collected if not empty
+		'only' => [
+			// 'inspire'
+		],
+
+		// Enable or disable collection of command output
+		'collect_output' => env('CLOCKWORK_ARTISAN_COLLECT_OUTPUT', false),
+
+		// Enable or disable collection of built-in Laravel commands
+		'except_laravel_commands' => env('CLOCKWORK_ARTISAN_EXCEPT_LARAVEL_COMMANDS', true)
+	],
+
+	/*
+	|--------------------------------------------------------------------------
 	| Enable data collection, when Clockwork is disabled
 	|--------------------------------------------------------------------------
 	|

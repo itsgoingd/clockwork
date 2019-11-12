@@ -231,7 +231,7 @@ class LaravelDataSource extends DataSource
 	 */
 	protected function getResponseStatus()
 	{
-		return $this->response->getStatusCode();
+		return $this->response ? $this->response->getStatusCode() : null;
 	}
 
 	// Return array of middleware for the matched route

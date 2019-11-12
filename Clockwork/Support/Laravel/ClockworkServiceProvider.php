@@ -49,6 +49,8 @@ class ClockworkServiceProvider extends ServiceProvider
 			$this->app[RedisManager::class]->enableEvents();
 			$this->app['clockwork.redis']->listenToEvents();
 		}
+
+		if ($support->isCollectingCommands()) $support->collectCommands();
 	}
 
 	protected function listenToFrameworkEvents()

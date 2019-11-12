@@ -13,6 +13,7 @@ use Clockwork\Storage\SqlStorage;
 use Clockwork\Web\Web;
 
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -117,6 +118,40 @@ class ClockworkSupport
 		}
 	}
 
+	// Set up collecting of executed artisan commands
+	public function collectCommands()
+	{
+		$this->app['events']->listen(\Illuminate\Console\Events\CommandStarting::class, function ($event) {
+			if (! $this->getConfig('artisan.collect_output')) return;
+			if (! $event->command || $this->isCommandFiltered($event->command)) return;
+
+			$event->output->setFormatter(
+				new Console\CapturingFormatter($event->output->getFormatter())
+			);
+		});
+
+		$this->app['events']->listen(\Illuminate\Console\Events\CommandFinished::class, function ($event) {
+			if (! $event->command || $this->isCommandFiltered($event->command)) return;
+
+			$command = $this->app->make(ConsoleKernel::class)->all()[$event->command];
+
+			$argumentsDefaults = $command->getDefinition()->getArgumentDefaults();
+			$optionsDefaults = $command->getDefinition()->getOptionDefaults();
+
+			$this->app->make('clockwork')
+				->resolveAsCommand(
+					$event->command,
+					$event->exitCode,
+					array_diff($event->input->getArguments(), $argumentsDefaults),
+					array_diff($event->input->getOptions(), $optionsDefaults),
+					$argumentsDefaults,
+					$optionsDefaults,
+					$this->getConfig('artisan.collect_output') ? $event->output->getFormatter()->capturedOutput() : null
+				)
+				->storeRequest();
+		});
+	}
+
 	public function process($request, $response)
 	{
 		if (! $this->isCollectingData()) {
@@ -186,8 +221,20 @@ class ClockworkSupport
 
 	public function isCollectingData()
 	{
+		return $this->isCollectingCommands()
+			|| $this->isCollectingRequests();
+	}
+
+	public function isCollectingCommands()
+	{
 		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
-			&& ! $this->app->runningInConsole()
+			&& $this->app->runningInConsole()
+			&& $this->getConfig('artisan.collect', false);
+	}
+
+	public function isCollectingRequests()
+	{
+		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
 			&& ! $this->isUriFiltered($this->app['request']->getRequestUri());
 	}
 
@@ -235,10 +282,66 @@ class ClockworkSupport
 		return false;
 	}
 
+	protected function isCommandFiltered($command)
+	{
+		$whitelist = $this->getConfig('artisan.only', []);
+
+		if (count($whitelist)) return ! in_array($command, $whitelist);
+
+		$blacklist = $this->getConfig('artisan.except', []);
+
+		if ($this->getConfig('artisan.except_laravel_commands', true)) {
+			$blacklist = array_merge($blacklist, $this->builtinLaravelCommands());
+		}
+
+		$blacklist = array_merge($blacklist, $this->builtinClockworkCommands());
+
+		return in_array($command, $blacklist);
+	}
+
 	protected function appendServerTimingHeader($response, $request)
 	{
 		if (($eventsCount = $this->getConfig('server_timing', 10)) !== false) {
 			$response->headers->set('Server-Timing', ServerTiming::fromRequest($request, $eventsCount)->value());
 		}
+	}
+
+	protected function builtinLaravelCommands()
+	{
+		return [
+			'clear-compiled', 'down', 'dump-server', 'env', 'help', 'list', 'migrate', 'optimize', 'preset', 'serve',
+			'tinker', 'up',
+			'app:name',
+			'auth:clear-resets',
+			'cache:clear', 'cache:forget', 'cache:table',
+			'config:cache', 'config:clear',
+			'db:seed',
+			'event:cache', 'event:clear', 'event:generate', 'event:list',
+			'key:generate',
+			'make:auth', 'make:channel', 'make:command', 'make:controller', 'make:event', 'make:exception',
+			'make:factory', 'make:job', 'make:listener', 'make:mail', 'make:middleware', 'make:migration', 'make:model',
+			'make:notification', 'make:observer', 'make:policy', 'make:provider', 'make:request', 'make:resource',
+			'make:rule', 'make:seeder', 'make:test',
+			'migrate:fresh', 'migrate:install', 'migrate:refresh', 'migrate:reset', 'migrate:rollback',
+			'migrate:status',
+			'notifications:table',
+			'optimize:clear',
+			'package:discover',
+			'queue:failed', 'queue:failed-table', 'queue:flush', 'queue:forget', 'queue:listen', 'queue:restart',
+			'queue:retry', 'queue:table', 'queue:work',
+			'route:cache', 'route:clear', 'route:list',
+			'schedule:run',
+			'session:table',
+			'storage:link',
+			'vendor:publish',
+			'view:cache', 'view:clear'
+		];
+	}
+
+	protected function builtinClockworkCommands()
+	{
+		return [
+			'clockwork:clean'
+		];
 	}
 }

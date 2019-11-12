@@ -5,6 +5,7 @@ use Clockwork\Authentication\NullAuthenticator;
 use Clockwork\DataSource\DataSourceInterface;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
+use Clockwork\Request\RequestType;
 use Clockwork\Request\Timeline;
 use Clockwork\Storage\StorageInterface;
 
@@ -118,6 +119,23 @@ class Clockwork implements LoggerInterface
 			if ($a['start'] == $b['start']) return 0;
 			return $a['start'] < $b['start'] ? -1 : 1;
 		});
+
+		return $this;
+	}
+
+	// Resolve the current request as a "command" type request with command-specific data
+	public function resolveAsCommand($name, $exitCode = null, $arguments = [], $options = [], $argumentsDefaults = [], $optionsDefaults = [], $output = null)
+	{
+		$this->resolveRequest();
+
+		$this->request->type = RequestType::COMMAND;
+		$this->request->commandName = $name;
+		$this->request->commandArguments = $arguments;
+		$this->request->commandArgumentsDefaults = $argumentsDefaults;
+		$this->request->commandOptions = $options;
+		$this->request->commandOptionsDefaults = $optionsDefaults;
+		$this->request->commandExitCode = $exitCode;
+		$this->request->commandOutput = $output;
 
 		return $this;
 	}
