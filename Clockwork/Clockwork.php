@@ -158,6 +158,19 @@ class Clockwork implements LoggerInterface
 		return $this->storage->store($this->request);
 	}
 
+	// Reset the log, timeline and all data sources to an empty state, clearing any collected data
+	public function reset()
+	{
+		foreach ($this->dataSources as $dataSource) {
+			$dataSource->reset();
+		}
+
+		$this->log = new Log;
+		$this->timeline = new Timeline;
+
+		return $this;
+	}
+
 	/**
 	 * Return the storage object
 	 */

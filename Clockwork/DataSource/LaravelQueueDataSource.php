@@ -58,6 +58,12 @@ class LaravelQueueDataSource extends DataSource
 		return $request;
 	}
 
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
+	{
+		$this->jobs = [];
+	}
+
 	/**
 	 * Registers a new queue job, resolves caller file and line no
 	 */

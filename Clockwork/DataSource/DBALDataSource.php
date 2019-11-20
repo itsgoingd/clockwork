@@ -214,6 +214,15 @@ class DBALDataSource extends DataSource implements SQLLogger
 		return $request;
 	}
 
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
+	{
+		$this->queries = [];
+
+		$this->start = null;
+		$this->query = null;
+	}
+
 	/**
 	 * Timeline Getter/Setter
 	 */

@@ -49,6 +49,12 @@ class LaravelEventsDataSource extends DataSource
 		return $request;
 	}
 
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
+	{
+		$this->events = [];
+	}
+
 	// Registers a new event, prepares data for serialization and resolves registered listeners
 	protected function registerEvent($event, array $data)
 	{

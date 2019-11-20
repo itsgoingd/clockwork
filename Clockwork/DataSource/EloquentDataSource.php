@@ -28,17 +28,8 @@ class EloquentDataSource extends DataSource
 
 	// Query counts by type
 	protected $count = [
-		'total'  => 0,
-		'slow'   => 0,
-		'select' => 0,
-		'insert' => 0,
-		'update' => 0,
-		'delete' => 0,
-		'other'  => 0
+		'total' => 0, 'slow' => 0, 'select' => 0, 'insert' => 0, 'update' => 0, 'delete' => 0, 'other' => 0
 	];
-
-	// Array of filter functions for collected queries
-	protected $filters = [];
 
 	// Whether we are collecting cache queries or stats only
 	protected $collectQueries = true;
@@ -152,6 +143,18 @@ class EloquentDataSource extends DataSource
 		$this->appendDuplicateQueriesWarnings($request);
 
 		return $request;
+	}
+
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
+	{
+		$this->queries = [];
+
+		$this->count = [
+			'total' => 0, 'slow' => 0, 'select' => 0, 'insert' => 0, 'update' => 0, 'delete' => 0, 'other' => 0
+		];
+
+		$this->nextQueryModel = null;
 	}
 
 	/**

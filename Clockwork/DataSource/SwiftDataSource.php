@@ -35,4 +35,10 @@ class SwiftDataSource extends DataSource
 
 		return $request;
 	}
+
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
+	{
+		$this->timeline = new Timeline;
+	}
 }

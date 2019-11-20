@@ -24,6 +24,11 @@ class DataSource implements DataSourceInterface
 		return $request;
 	}
 
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
+	{
+	}
+
 	// Register a new filter
 	public function addFilter(\Closure $filter)
 	{
