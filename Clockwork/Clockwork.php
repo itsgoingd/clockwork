@@ -3,6 +3,7 @@
 use Clockwork\Authentication\AuthenticatorInterface;
 use Clockwork\Authentication\NullAuthenticator;
 use Clockwork\DataSource\DataSourceInterface;
+use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
 use Clockwork\Request\RequestType;
@@ -136,6 +137,23 @@ class Clockwork implements LoggerInterface
 		$this->request->commandOptionsDefaults = $optionsDefaults;
 		$this->request->commandExitCode = $exitCode;
 		$this->request->commandOutput = $output;
+
+		return $this;
+	}
+
+	// Resolve the current request as a "queue-job" type request with queue-job-specific data
+	public function resolveAsQueueJob($name, $description = null, $status = 'processed', $payload = [], $queue = null, $connection = null, $options = [])
+	{
+		$this->resolveRequest();
+
+		$this->request->type = RequestType::QUEUE_JOB;
+		$this->request->jobName = $name;
+		$this->request->jobDescription = $description;
+		$this->request->jobStatus = $status;
+		$this->request->jobPayload = (new Serializer)->normalize($payload);
+		$this->request->jobQueue = $queue;
+		$this->request->jobConnection = $connection;
+		$this->request->jobOptions = (new Serializer)->normalizeEach($options);
 
 		return $this;
 	}
