@@ -15,7 +15,7 @@ class PhpDataSource extends DataSource
 	 */
 	public function resolve(Request $request)
 	{
-		$request->time           = $this->getRequestTime();
+		$request->time           = PHP_SAPI !== 'cli' ? $this->getRequestTime() : $request->time;
 		$request->method         = $this->getRequestMethod();
 		$request->url            = $this->getRequestUrl();
 		$request->uri            = $this->getRequestUri();
