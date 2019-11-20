@@ -105,7 +105,7 @@ class EloquentDataSource extends DataSource
 
 		$this->incrementQueryCount($query);
 
-		if ($this->collectQueries && $this->passesFilters([ $query ])) {
+		if ($this->collectQueries && $this->passesFilters([ $query, $trace ])) {
 			$this->queries[] = $query;
 		}
 
