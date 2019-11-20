@@ -146,6 +146,31 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Queue jobs collection
+	|--------------------------------------------------------------------------
+	|
+	| You can enable or disable and configure collection of executed queue jobs
+	| here.
+	|
+	*/
+
+	'queue' => [
+		// Enable or disable collection of executed queue jobs
+		'collect' => env('CLOCKWORK_QUEUE_COLLECT', false),
+
+		// List of queue jobs that should not be collected
+		'except' => [
+			// App\Jobs\ExpensiveJob::class
+		],
+
+		// List of queue jobs that should be collected, any other queue job will not be collected if not empty
+		'only' => [
+			// App\Jobs\BuggyJob::class
+		]
+	],
+
+	/*
+	|--------------------------------------------------------------------------
 	| Enable data collection, when Clockwork is disabled
 	|--------------------------------------------------------------------------
 	|

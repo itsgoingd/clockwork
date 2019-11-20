@@ -36,6 +36,7 @@ class LaravelQueueDataSource extends DataSource
 	{
 		$this->queue->createPayloadUsing(function ($connection, $queue, $payload) {
 			$this->registerJob([
+				'id'         => $id = (new Request)->id,
 				'connection' => $connection,
 				'queue'      => $queue,
 				'name'       => $payload['displayName'],
@@ -44,7 +45,7 @@ class LaravelQueueDataSource extends DataSource
 				'timeout'    => $payload['timeout']
 			]);
 
-			return [];
+			return [ 'clockwork_id' => $id ];
 		});
 	}
 

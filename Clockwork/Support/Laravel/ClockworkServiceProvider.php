@@ -11,6 +11,7 @@ use Clockwork\DataSource\LaravelQueueDataSource;
 use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\SwiftDataSource;
 use Clockwork\DataSource\XdebugDataSource;
+use Clockwork\Helpers\StackFilter;
 use Clockwork\Request\Log;
 use Clockwork\Storage\StorageInterface;
 
@@ -51,6 +52,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		}
 
 		if ($support->isCollectingCommands()) $support->collectCommands();
+		if ($support->isCollectingQueueJobs()) $support->collectQueueJobs();
 	}
 
 	protected function listenToFrameworkEvents()
@@ -132,7 +134,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		});
 
 		$this->app->singleton('clockwork.eloquent', function ($app) {
-			return (new EloquentDataSource(
+			$dataSource = (new EloquentDataSource(
 				$app['db'],
 				$app['events'],
 				$app['clockwork.support']->getConfig('features.database.collect_queries'),
@@ -140,6 +142,15 @@ class ClockworkServiceProvider extends ServiceProvider
 				$app['clockwork.support']->getConfig('features.database.slow_only'),
 				$app['clockwork.support']->getConfig('features.database.detect_duplicate_queries')
 			));
+
+			// if we are collecting queue jobs, filter out queries caused by the database queue implementation
+			if ($app['clockwork.support']->isCollectingQueueJobs()) {
+				$dataSource->addFilter(function ($query, $trace) {
+					return ! $trace->first(StackFilter::make()->isClass(\Illuminate\Queue\Worker::class));
+				});
+			}
+
+			return $dataSource;
 		});
 
 		$this->app->singleton('clockwork.events', function ($app) {
