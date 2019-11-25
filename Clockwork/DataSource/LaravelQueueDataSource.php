@@ -21,6 +21,9 @@ class LaravelQueueDataSource extends DataSource
 	 */
 	protected $jobs = [];
 
+	// Clockwork ID of the current request
+	protected $currentRequestId;
+
 	/**
 	 * Create a new data source instance, takes an event dispatcher as argument
 	 */
@@ -45,7 +48,7 @@ class LaravelQueueDataSource extends DataSource
 				'timeout'    => $payload['timeout']
 			]);
 
-			return [ 'clockwork_id' => $id ];
+			return [ 'clockwork_id' => $id, 'clockwork_parent_id' => $this->currentRequestId ];
 		});
 	}
 
@@ -63,6 +66,13 @@ class LaravelQueueDataSource extends DataSource
 	public function reset()
 	{
 		$this->jobs = [];
+	}
+
+	// Set Clockwork ID of the current request
+	public function setCurrentRequestId($requestId)
+	{
+		$this->currentRequestId = $requestId;
+		return $this;
 	}
 
 	/**

@@ -161,11 +161,10 @@ class ClockworkSupport
 
 			if (! isset($payload['clockwork_id']) || $this->isQueueJobFiltered($payload['displayName'])) return;
 
-			$this->app->make('clockwork')
-				->reset()
-				->setRequest(
-					new Request([ 'id' => $payload['clockwork_id'] ])
-				);
+			$request = new Request([ 'id' => $payload['clockwork_id'] ]);
+			if (isset($payload['clockwork_parent_id'])) $request->setParent($payload['clockwork_parent_id']);
+
+			$this->app->make('clockwork')->reset()->setRequest($request);
 		});
 
 		$this->app['events']->listen(\Illuminate\Queue\Events\JobProcessed::class, function ($event) {

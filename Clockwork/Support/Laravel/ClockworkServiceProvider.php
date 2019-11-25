@@ -45,7 +45,10 @@ class ClockworkServiceProvider extends ServiceProvider
 		if ($support->isFeatureEnabled('cache')) $this->app['clockwork.cache']->listenToEvents();
 		if ($support->isFeatureEnabled('database')) $this->app['clockwork.eloquent']->listenToEvents();
 		if ($support->isFeatureEnabled('events')) $this->app['clockwork.events']->listenToEvents();
-		if ($support->isFeatureEnabled('queue')) $this->app['clockwork.queue']->listenToEvents();
+		if ($support->isFeatureEnabled('queue')) {
+			$this->app['clockwork.queue']->listenToEvents();
+			$this->app['clockwork.queue']->setCurrentRequestId($this->app['clockwork']->getRequest()->id);
+		}
 		if ($support->isFeatureEnabled('redis')) {
 			$this->app[RedisManager::class]->enableEvents();
 			$this->app['clockwork.redis']->listenToEvents();
