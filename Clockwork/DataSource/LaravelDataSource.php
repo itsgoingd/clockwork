@@ -279,7 +279,7 @@ class LaravelDataSource extends DataSource
 	// Add authenticated user data to the request
 	protected function resolveAuthenticatedUser(Request $request)
 	{
-		if (! $this->app->has('auth')) return;
+		if (! $this->app->bound('auth')) return;
 		if (! ($user = $this->app['auth']->user())) return;
 		if (! isset($user->email) || ! isset($user->id)) return;
 
