@@ -1,3 +1,7 @@
+4.0.14
+
+- fixed compatibility with Laravel 5.4 and earlier when resolving authenticated user
+
 4.0.13
 
 - fixed stack traces processing not handling call_user_func frames properly leading to wrong traces (reported by marcus-at-localhost, thanks!)
