@@ -89,6 +89,17 @@ class Clockwork
 			->storeRequest();
 	}
 
+	public function queueJobExecuted($name, $description = null, $status = 'processed', $payload = [], $queue = null, $connection = null, $options = [])
+	{
+		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
+
+		$this->clockwork->getTimeline()->endEvent('total');
+
+		$this->clockwork
+			->resolveAsQueueJob($name, $description, $status, $payload, $queue, $connection, $options)
+			->storeRequest();
+	}
+
 	public function returnMetadata($request = null)
 	{
 		if (! $this->config['enable']) return;
