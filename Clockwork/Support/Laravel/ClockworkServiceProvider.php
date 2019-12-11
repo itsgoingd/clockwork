@@ -178,7 +178,21 @@ class ClockworkServiceProvider extends ServiceProvider
 		});
 
 		$this->app->singleton('clockwork.redis', function ($app) {
-			return (new LaravelRedisDataSource($app['events']));
+			$dataSource = new LaravelRedisDataSource($app['events']);
+
+			// if we are collecting queue jobs, filter out commands executed by the redis queue implementation
+			if ($app['clockwork.support']->isCollectingQueueJobs()) {
+				$dataSource->addFilter(function ($query, $trace) {
+					return ! $trace->first(StackFilter::make()->isClass([
+						\Illuminate\Queue\RedisQueue::class,
+						\Laravel\Horizon\Repositories\RedisJobRepository::class,
+						\Laravel\Horizon\Repositories\RedisTagRepository::class,
+						\Laravel\Horizon\Repositories\RedisMetricsRepository::class
+					]));
+				});
+			}
+
+			return $dataSource;
 		});
 
 		$this->app->singleton('clockwork.swift', function ($app) {
