@@ -125,6 +125,7 @@ class LaravelEventsDataSource extends DataSource
 	{
 		return [
 			'Illuminate\\\\.+',
+			'Laravel\\\\.+',
 			'auth\.(?:attempt|login|logout)',
 			'artisan\.start',
 			'bootstrapped:.+',
