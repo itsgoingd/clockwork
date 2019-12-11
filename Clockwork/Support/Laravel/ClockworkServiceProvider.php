@@ -150,7 +150,7 @@ class ClockworkServiceProvider extends ServiceProvider
 			if ($app['clockwork.support']->isCollectingQueueJobs()) {
 				$dataSource->addFilter(function ($query, $trace) {
 					return ! $trace->first(StackFilter::make()->isClass(\Illuminate\Queue\Worker::class));
-				});
+				}, 'early');
 			}
 
 			return $dataSource;

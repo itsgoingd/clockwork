@@ -103,13 +103,15 @@ class EloquentDataSource extends DataSource
 			'tags'       => $this->slowThreshold !== null && $event->time > $this->slowThreshold ? [ 'slow' ] : []
 		];
 
+		$this->nextQueryModel = null;
+
+		if (! $this->passesFilters([ $query, $trace ], 'early')) return;
+
 		$this->incrementQueryCount($query);
 
-		if ($this->collectQueries && $this->passesFilters([ $query, $trace ])) {
-			$this->queries[] = $query;
-		}
+		if (! $this->collectQueries || ! $this->passesFilters([ $query, $trace ])) return;
 
-		$this->nextQueryModel = null;
+		$this->queries[] = $query;
 	}
 
 	/**
