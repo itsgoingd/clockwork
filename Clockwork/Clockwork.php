@@ -3,6 +3,7 @@
 use Clockwork\Authentication\AuthenticatorInterface;
 use Clockwork\Authentication\NullAuthenticator;
 use Clockwork\DataSource\DataSourceInterface;
+use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
 use Clockwork\Request\RequestType;
@@ -140,6 +141,23 @@ class Clockwork implements LoggerInterface
 		return $this;
 	}
 
+	// Resolve the current request as a "queue-job" type request with queue-job-specific data
+	public function resolveAsQueueJob($name, $description = null, $status = 'processed', $payload = [], $queue = null, $connection = null, $options = [])
+	{
+		$this->resolveRequest();
+
+		$this->request->type = RequestType::QUEUE_JOB;
+		$this->request->jobName = $name;
+		$this->request->jobDescription = $description;
+		$this->request->jobStatus = $status;
+		$this->request->jobPayload = (new Serializer)->normalize($payload);
+		$this->request->jobQueue = $queue;
+		$this->request->jobConnection = $connection;
+		$this->request->jobOptions = (new Serializer)->normalizeEach($options);
+
+		return $this;
+	}
+
 	// Extends the request with additional data form all data sources when being shown in the Clockwork app
 	public function extendRequest(Request $request = null)
 	{
@@ -156,6 +174,19 @@ class Clockwork implements LoggerInterface
 	public function storeRequest()
 	{
 		return $this->storage->store($this->request);
+	}
+
+	// Reset the log, timeline and all data sources to an empty state, clearing any collected data
+	public function reset()
+	{
+		foreach ($this->dataSources as $dataSource) {
+			$dataSource->reset();
+		}
+
+		$this->log = new Log;
+		$this->timeline = new Timeline;
+
+		return $this;
 	}
 
 	/**

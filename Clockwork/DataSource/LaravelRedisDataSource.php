@@ -64,6 +64,12 @@ class LaravelRedisDataSource extends DataSource
 		return $request;
 	}
 
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
+	{
+		$this->commands = [];
+	}
+
 	/**
 	 * Registers a new command, resolves caller file and line no
 	 */

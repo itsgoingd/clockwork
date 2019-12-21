@@ -73,7 +73,15 @@ class SqlStorage extends Storage
 		'commandOptions'           => 'TEXT NULL',
 		'commandOptionsDefaults'   => 'TEXT NULL',
 		'commandExitCode'          => 'INTEGER NULL',
-		'commandOutput'            => 'TEXT NULL'
+		'commandOutput'            => 'TEXT NULL',
+		'jobName'                  => 'TEXT NULL',
+		'jobDescription'           => 'TEXT NULL',
+		'jobStatus'                => 'TEXT NULL',
+		'jobPayload'               => 'TEXT NULL',
+		'jobQueue'                 => 'TEXT NULL',
+		'jobConnection'            => 'TEXT NULL',
+		'jobOptions'               => 'TEXT NULL',
+		'parent'                   => 'TEXT NULL'
 	];
 
 	// List of Request keys that need to be serialized before they can be stored in database
@@ -81,7 +89,7 @@ class SqlStorage extends Storage
 		'headers', 'getData', 'postData', 'requestData', 'sessionData', 'authenticatedUser', 'cookies', 'middleware',
 		'databaseQueries', 'cacheQueries', 'redisCommands', 'queueJobs', 'timelineData', 'log', 'events', 'routes',
 		'emailsData', 'viewsData', 'userData', 'subrequests', 'xdebug', 'commandArguments', 'commandArgumentsDefaults',
-		'commandOptions', 'commandOptionsDefaults'
+		'commandOptions', 'commandOptionsDefaults', 'jobPayload', 'jobOptions', 'parent'
 	];
 
 	// Return a new storage, takes PDO object or DSN and optionally a table name and database credentials as arguments

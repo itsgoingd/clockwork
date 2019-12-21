@@ -263,7 +263,14 @@ class FileStorage extends Storage
 	protected function makeRequestFromIndex($record)
 	{
 		$type = isset($record[7]) ? $record[7] : 'response';
-		$nameField = $type == 'command' ? 'commandName' : 'uri';
+
+		if ($type == 'command') {
+			$nameField = 'commandName';
+		} elseif ($type == 'queue-job') {
+			$nameField = 'jobName';
+		} else {
+			$nameField = 'uri';
+		}
 
 		return new Request(array_combine(
 			[ 'id', 'time', 'method', $nameField, 'controller', 'responseStatus', 'responseDuration', 'type' ],
@@ -277,11 +284,19 @@ class FileStorage extends Storage
 		$handle = fopen("{$this->path}/index", 'a');
 		flock($handle, LOCK_EX);
 
+		if ($request->type == 'command') {
+			$nameField = 'commandName';
+		} elseif ($request->type == 'queue-job') {
+			$nameField = 'jobName';
+		} else {
+			$nameField = 'uri';
+		}
+
 		fputcsv($handle, [
 			$request->id,
 			$request->time,
 			$request->method,
-			$request->type == 'command' ? $request->commandName : $request->uri,
+			$request->$nameField,
 			$request->controller,
 			$request->responseStatus,
 			$request->getResponseDuration(),

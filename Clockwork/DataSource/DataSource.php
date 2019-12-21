@@ -24,10 +24,16 @@ class DataSource implements DataSourceInterface
 		return $request;
 	}
 
-	// Register a new filter
-	public function addFilter(\Closure $filter)
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
 	{
-		$this->filters[] = $filter;
+	}
+
+	// Register a new filter
+	public function addFilter(\Closure $filter, $type = 'default')
+	{
+		$this->filters[$type] = isset($this->filters[$type])
+			? array_merge($this->filters[$type], [ $filter ]) : [ $filter ];
 
 		return $this;
 	}
@@ -41,9 +47,11 @@ class DataSource implements DataSourceInterface
 	}
 
 	// Returns boolean whether the filterable passes all registered filters
-	protected function passesFilters($args)
+	protected function passesFilters($args, $type = 'default')
 	{
-		foreach ($this->filters as $filter) {
+		$filters = isset($this->filters[$type]) ? $this->filters[$type] : [];
+
+		foreach ($filters as $filter) {
 			if (! call_user_func_array($filter, $args)) return false;
 		}
 

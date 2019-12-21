@@ -11,6 +11,7 @@ use Clockwork\DataSource\LaravelQueueDataSource;
 use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\SwiftDataSource;
 use Clockwork\DataSource\XdebugDataSource;
+use Clockwork\Helpers\StackFilter;
 use Clockwork\Request\Log;
 use Clockwork\Storage\StorageInterface;
 
@@ -44,13 +45,17 @@ class ClockworkServiceProvider extends ServiceProvider
 		if ($support->isFeatureEnabled('cache')) $this->app['clockwork.cache']->listenToEvents();
 		if ($support->isFeatureEnabled('database')) $this->app['clockwork.eloquent']->listenToEvents();
 		if ($support->isFeatureEnabled('events')) $this->app['clockwork.events']->listenToEvents();
-		if ($support->isFeatureEnabled('queue')) $this->app['clockwork.queue']->listenToEvents();
+		if ($support->isFeatureEnabled('queue')) {
+			$this->app['clockwork.queue']->listenToEvents();
+			$this->app['clockwork.queue']->setCurrentRequestId($this->app['clockwork']->getRequest()->id);
+		}
 		if ($support->isFeatureEnabled('redis')) {
 			$this->app[RedisManager::class]->enableEvents();
 			$this->app['clockwork.redis']->listenToEvents();
 		}
 
 		if ($support->isCollectingCommands()) $support->collectCommands();
+		if ($support->isCollectingQueueJobs()) $support->collectQueueJobs();
 	}
 
 	protected function listenToFrameworkEvents()
@@ -132,7 +137,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		});
 
 		$this->app->singleton('clockwork.eloquent', function ($app) {
-			return (new EloquentDataSource(
+			$dataSource = (new EloquentDataSource(
 				$app['db'],
 				$app['events'],
 				$app['clockwork.support']->getConfig('features.database.collect_queries'),
@@ -140,6 +145,15 @@ class ClockworkServiceProvider extends ServiceProvider
 				$app['clockwork.support']->getConfig('features.database.slow_only'),
 				$app['clockwork.support']->getConfig('features.database.detect_duplicate_queries')
 			));
+
+			// if we are collecting queue jobs, filter out queries caused by the database queue implementation
+			if ($app['clockwork.support']->isCollectingQueueJobs()) {
+				$dataSource->addFilter(function ($query, $trace) {
+					return ! $trace->first(StackFilter::make()->isClass(\Illuminate\Queue\Worker::class));
+				}, 'early');
+			}
+
+			return $dataSource;
 		});
 
 		$this->app->singleton('clockwork.events', function ($app) {
@@ -164,7 +178,21 @@ class ClockworkServiceProvider extends ServiceProvider
 		});
 
 		$this->app->singleton('clockwork.redis', function ($app) {
-			return (new LaravelRedisDataSource($app['events']));
+			$dataSource = new LaravelRedisDataSource($app['events']);
+
+			// if we are collecting queue jobs, filter out commands executed by the redis queue implementation
+			if ($app['clockwork.support']->isCollectingQueueJobs()) {
+				$dataSource->addFilter(function ($query, $trace) {
+					return ! $trace->first(StackFilter::make()->isClass([
+						\Illuminate\Queue\RedisQueue::class,
+						\Laravel\Horizon\Repositories\RedisJobRepository::class,
+						\Laravel\Horizon\Repositories\RedisTagRepository::class,
+						\Laravel\Horizon\Repositories\RedisMetricsRepository::class
+					]));
+				});
+			}
+
+			return $dataSource;
 		});
 
 		$this->app->singleton('clockwork.swift', function ($app) {

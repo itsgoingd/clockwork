@@ -23,10 +23,7 @@ class LaravelCacheDataSource extends DataSource
 
 	// Query counts by type
 	protected $count = [
-		'read'   => 0,
-		'hit'    => 0,
-		'write'  => 0,
-		'delete' => 0
+		'read' => 0, 'hit' => 0, 'write' => 0, 'delete' => 0
 	];
 
 	// Whether we are collecting cache queries or stats only
@@ -95,6 +92,16 @@ class LaravelCacheDataSource extends DataSource
 		$request->cacheDeletes = $request->cacheDeletes + $this->count['delete'];
 
 		return $request;
+	}
+
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
+	{
+		$this->queries = [];
+
+		$this->count = [
+			'read' => 0, 'hit' => 0, 'write' => 0, 'delete' => 0
+		];
 	}
 
 	/**

@@ -14,4 +14,7 @@ interface DataSourceInterface
 
 	// Extends the request with additional data when being shown in the Clockwork app
 	public function extend(Request $request);
+
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset();
 }
