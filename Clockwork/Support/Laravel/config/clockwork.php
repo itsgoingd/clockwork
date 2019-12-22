@@ -171,6 +171,20 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Tests collection
+	|--------------------------------------------------------------------------
+	|
+	| You can enable or disable and configure collection of ran tests here.
+	|
+	*/
+
+	'tests' => [
+		// Enable or disable collection of ran tests
+		'collect' => env('CLOCKWORK_TESTS_COLLECT', false)
+	],
+
+	/*
+	|--------------------------------------------------------------------------
 	| Enable data collection, when Clockwork is disabled
 	|--------------------------------------------------------------------------
 	|

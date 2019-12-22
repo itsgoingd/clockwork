@@ -494,7 +494,7 @@ class Request
 		return $key ? $this->userData[$key] = $userData : $this->userData[] = $userData;
 	}
 
-	// Add a ran test assert, takes the asset name, arguments, whether it passed and trace as arguments
+	// Add a ran test assert, takes the assert name, arguments, whether it passed and trace as arguments
 	public function addTestAssert($name, $arguments = null, $passed = true, $trace = null)
 	{
 		$this->testAsserts[] = [

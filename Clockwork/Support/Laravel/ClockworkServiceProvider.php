@@ -13,6 +13,7 @@ use Clockwork\DataSource\SwiftDataSource;
 use Clockwork\DataSource\XdebugDataSource;
 use Clockwork\Helpers\StackFilter;
 use Clockwork\Request\Log;
+use Clockwork\Request\Request;
 use Clockwork\Storage\StorageInterface;
 
 use Illuminate\Redis\RedisManager;
@@ -74,6 +75,7 @@ class ClockworkServiceProvider extends ServiceProvider
 			$clockwork = (new Clockwork)
 				->setAuthenticator($app['clockwork.authenticator'])
 				->setLog($app['clockwork.log'])
+				->setRequest($app['clockwork.request'])
 				->setStorage($app['clockwork.storage'])
 				->addDataSource(new PhpDataSource())
 				->addDataSource($app['clockwork.laravel']);
@@ -97,6 +99,10 @@ class ClockworkServiceProvider extends ServiceProvider
 			return new Log;
 		});
 
+		$this->app->singleton('clockwork.request', function ($app) {
+			return new Request;
+		});
+
 		$this->app->singleton('clockwork.storage', function ($app) {
 			return $app['clockwork.support']->getStorage();
 		});
@@ -109,8 +115,8 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->registerDataSources();
 		$this->registerAliases();
 
+		$this->app->make('clockwork.request'); // instantiate the request to have id and time available as early as possible
 		$this->app['clockwork.support']->configureSerializer();
-
 		$this->app['clockwork.laravel']->listenToEarlyEvents();
 
 		if ($this->app['clockwork.support']->getConfig('register_helpers', true)) {

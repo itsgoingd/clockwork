@@ -1,34 +1,26 @@
 <?php namespace Clockwork\Support\Laravel\Tests;
 
 use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\StackFilter;
 use Clockwork\Helpers\StackTrace;
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Runner\BaseTestRunner;
 
 trait UsesClockwork
 {
 	protected static $clockwork = [
-		'assertsRan' => [],
-		'testStart'  => null
+		'asserts' => []
 	];
-
-	protected function setUp()
-	{
-		parent::setUp();
-		$this->setUpClockwork();
-	}
 
 	protected function setUpClockwork()
 	{
 		$this->beforeApplicationDestroyed(function () {
 			$this->app->make('clockwork')
-				->resolveTest(
+				->resolveAsTest(
 					$this->toString(),
 					$this->resolveClockworkStatus(),
 					$this->getStatusMessage(),
-					$this->resolveClockworkAssertsRan()
+					$this->resolveClockworkAsserts()
 				)
 				->storeRequest();
 		});
@@ -52,21 +44,17 @@ trait UsesClockwork
 		return isset($statuses[$status]) ? $statuses[$status] : null;
 	}
 
-	protected function resolveClockworkAssertsRan()
+	protected function resolveClockworkAsserts()
 	{
-		$assertsRan = static::$clockwork['assertsRan'];
+		$asserts = static::$clockwork['asserts'];
 
 		if ($this->getStatus() == BaseTestRunner::STATUS_FAILURE) {
-			$assertsRan[count($assertsRan) - 1]['passed'] = false;
+			$asserts[count($asserts) - 1]['passed'] = false;
 		}
 
-		static::$clockwork['assertsRan'] = [];
+		static::$clockwork['asserts'] = [];
 
-		return $assertsRan;
-	}
-
-	protected static function logClockworkAssertRan($assert, $arguments)
-	{
+		return $asserts;
 	}
 
 	public static function assertThat($value, Constraint $constraint, string $message = ''): void
@@ -75,7 +63,7 @@ trait UsesClockwork
 
 		$assertFrame = $trace->filter(function ($frame) { return strpos($frame->function, 'assert') === 0; })->last();
 
-		static::$clockwork['assertsRan'][] = [
+		static::$clockwork['asserts'][] = [
 			'name'      => $assertFrame->function,
 			'arguments' => $assertFrame->args,
 			'trace'     => (new Serializer)->trace($trace),

@@ -280,7 +280,8 @@ class ClockworkSupport
 	{
 		return $this->isCollectingCommands()
 			|| $this->isCollectingQueueJobs()
-			|| $this->isCollectingRequests();
+			|| $this->isCollectingRequests()
+			|| $this->isCollectingTests();
 	}
 
 	public function isCollectingCommands()
@@ -300,8 +301,15 @@ class ClockworkSupport
 	public function isCollectingRequests()
 	{
 		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
-			// && ! $this->app->runningInConsole()
+			&& ! $this->app->runningInConsole()
 			&& ! $this->isUriFiltered($this->app['request']->getRequestUri());
+	}
+
+	public function isCollectingTests()
+	{
+		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
+			&& $this->app->runningInConsole()
+			&& $this->getConfig('tests.collect', false);
 	}
 
 	public function isFeatureEnabled($feature)
