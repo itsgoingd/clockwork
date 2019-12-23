@@ -499,7 +499,7 @@ class Request
 	{
 		$this->testAsserts[] = [
 			'name'      => $name,
-			'arguments' => $arguments,
+			'arguments' => (new Serializer)->normalize($arguments),
 			'trace'     => $trace,
 			'passed'    => $passed
 		];

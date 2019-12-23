@@ -268,6 +268,8 @@ class FileStorage extends Storage
 			$nameField = 'commandName';
 		} elseif ($type == 'queue-job') {
 			$nameField = 'jobName';
+		} elseif ($type == 'test') {
+			$nameField = 'testName';
 		} else {
 			$nameField = 'uri';
 		}
@@ -288,6 +290,8 @@ class FileStorage extends Storage
 			$nameField = 'commandName';
 		} elseif ($request->type == 'queue-job') {
 			$nameField = 'jobName';
+		} elseif ($request->type == 'test') {
+			$nameField = 'testName';
 		} else {
 			$nameField = 'uri';
 		}

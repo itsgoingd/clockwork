@@ -168,7 +168,10 @@ class Clockwork implements LoggerInterface
 		$this->request->testName = $name;
 		$this->request->testStatus = $status;
 		$this->request->testStatusMessage = $statusMessage;
-		$this->request->testAsserts = $asserts;
+
+		foreach ($asserts as $assert) {
+			$this->request->addTestAssert($assert['name'], $assert['arguments'], $assert['passed'], $assert['trace']);
+		}
 
 		return $this;
 	}

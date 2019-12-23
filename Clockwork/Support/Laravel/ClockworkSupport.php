@@ -384,6 +384,13 @@ class ClockworkSupport
 		return in_array($queueJob, $blacklist);
 	}
 
+	public function isTestFiltered($test)
+	{
+		$blacklist = $this->getConfig('tests.except', []);
+
+		return in_array($test, $blacklist);
+	}
+
 	protected function appendServerTimingHeader($response, $request)
 	{
 		if (($eventsCount = $this->getConfig('server_timing', 10)) !== false) {

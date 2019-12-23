@@ -38,10 +38,10 @@ class SqlSearch extends Search
 
 		$conditions = array_filter([
 			$this->resolveStringCondition([ 'type' ], $this->type),
-			$this->resolveStringCondition([ 'uri', 'commandName', 'jobName' ], array_merge($this->uri, $this->name)),
+			$this->resolveStringCondition([ 'uri', 'commandName', 'jobName', 'testName' ], array_merge($this->uri, $this->name)),
 			$this->resolveStringCondition([ 'controller' ], $this->controller),
 			$this->resolveExactCondition([ 'method' ], $this->method),
-			$this->resolveNumberCondition([ 'responseStatus', 'commandExitCode', 'jobStatus' ], $this->status),
+			$this->resolveNumberCondition([ 'responseStatus', 'commandExitCode', 'jobStatus', 'testStatus' ], $this->status),
 			$this->resolveNumberCondition([ 'responseDuration' ], $this->time),
 			$this->resolveDateCondition([ 'time' ], $this->received)
 		]);

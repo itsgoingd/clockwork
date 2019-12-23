@@ -15,6 +15,8 @@ trait UsesClockwork
 	protected function setUpClockwork()
 	{
 		$this->beforeApplicationDestroyed(function () {
+			if ($this->app->make('clockwork.support')->isTestFiltered($this->toString())) return;
+
 			$this->app->make('clockwork')
 				->resolveAsTest(
 					$this->toString(),

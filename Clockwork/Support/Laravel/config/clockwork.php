@@ -180,7 +180,12 @@ return [
 
 	'tests' => [
 		// Enable or disable collection of ran tests
-		'collect' => env('CLOCKWORK_TESTS_COLLECT', false)
+		'collect' => env('CLOCKWORK_TESTS_COLLECT', false),
+
+		// List of tests that should not be collected
+		'except' => [
+			// Tests\Unit\ExampleTest::class
+		]
 	],
 
 	/*
