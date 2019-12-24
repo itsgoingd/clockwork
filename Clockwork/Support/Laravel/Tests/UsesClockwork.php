@@ -1,6 +1,7 @@
 <?php namespace Clockwork\Support\Laravel\Tests;
 
 use Clockwork\Helpers\Serializer;
+use Clockwork\Helpers\StackFilter;
 use Clockwork\Helpers\StackTrace;
 
 use PHPUnit\Framework\Constraint\Constraint;
@@ -64,6 +65,7 @@ trait UsesClockwork
 		$trace = StackTrace::get([ 'arguments' => true, 'limit' => 10 ]);
 
 		$assertFrame = $trace->filter(function ($frame) { return strpos($frame->function, 'assert') === 0; })->last();
+		$trace = $trace->skip(StackFilter::make()->isNotVendor([ 'itsgoingd', 'phpunit' ]))->limit(3);
 
 		static::$clockwork['asserts'][] = [
 			'name'      => $assertFrame->function,
