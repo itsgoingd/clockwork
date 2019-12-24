@@ -141,8 +141,10 @@ class LaravelDataSource extends DataSource
 				}
 
 				$time = microtime(true);
-				$data = $view->getData();
-				unset($data['__env']);
+
+				$data = array_filter($view->getData(), function ($v, $k) {
+					return strpos($k, '__') !== 0;
+				}, \ARRAY_FILTER_USE_BOTH);
 
 				$this->views->addEvent(
 					'view ' . $view->getName(),
