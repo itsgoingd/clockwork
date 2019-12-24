@@ -34,6 +34,8 @@ class Search
 			return $this->matchesCommand($request);
 		} elseif ($request->type == RequestType::QUEUE_JOB) {
 			return $this->matchesQueueJob($request);
+		} elseif ($request->type == RequestType::TEST) {
+			return $this->matchesTest($request);
 		} else {
 			return $this->matchesRequest($request);
 		}
@@ -64,6 +66,15 @@ class Search
 		return $this->matchesString($this->type, RequestType::QUEUE_JOB)
 			&& $this->matchesString($this->name, $request->jobName)
 			&& $this->matchesString($this->status, $request->jobStatus)
+			&& $this->matchesNumber($this->time, $request->responseDuration)
+			&& $this->matchesDate($this->received, $request->time);
+	}
+
+	protected function matchesTest(Request $request)
+	{
+		return $this->matchesString($this->type, RequestType::TEST)
+			&& $this->matchesString($this->name, $request->testName)
+			&& $this->matchesString($this->status, $request->testStatus)
 			&& $this->matchesNumber($this->time, $request->responseDuration)
 			&& $this->matchesDate($this->received, $request->time);
 	}

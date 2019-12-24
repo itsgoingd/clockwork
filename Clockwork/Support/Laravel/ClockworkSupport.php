@@ -280,7 +280,8 @@ class ClockworkSupport
 	{
 		return $this->isCollectingCommands()
 			|| $this->isCollectingQueueJobs()
-			|| $this->isCollectingRequests();
+			|| $this->isCollectingRequests()
+			|| $this->isCollectingTests();
 	}
 
 	public function isCollectingCommands()
@@ -302,6 +303,13 @@ class ClockworkSupport
 		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
 			&& ! $this->app->runningInConsole()
 			&& ! $this->isUriFiltered($this->app['request']->getRequestUri());
+	}
+
+	public function isCollectingTests()
+	{
+		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
+			&& $this->app->runningInConsole()
+			&& $this->getConfig('tests.collect', false);
 	}
 
 	public function isFeatureEnabled($feature)
@@ -374,6 +382,13 @@ class ClockworkSupport
 		$blacklist = $this->getConfig('queue.except', []);
 
 		return in_array($queueJob, $blacklist);
+	}
+
+	public function isTestFiltered($test)
+	{
+		$blacklist = $this->getConfig('tests.except', []);
+
+		return in_array($test, $blacklist);
 	}
 
 	protected function appendServerTimingHeader($response, $request)
