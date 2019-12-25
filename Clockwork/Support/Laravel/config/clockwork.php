@@ -91,9 +91,12 @@ return [
 			'enabled' => env('CLOCKWORK_ROUTES_ENABLED', false)
 		],
 
-		// Rendered views including passed data (high performance impact with large amount of data passed to views)
+		// Rendered views
 		'views' => [
-			'enabled' => env('CLOCKWORK_VIEWS_ENABLED', false)
+			'enabled' => env('CLOCKWORK_VIEWS_ENABLED', true),
+
+			// Collect views including view data (high performance impact with a high number of views)
+			'collect_data' => env('CLOCKWORK_VIEWS_COLLECT_DATA', false)
 		]
 
 	],

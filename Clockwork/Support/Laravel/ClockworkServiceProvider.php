@@ -183,7 +183,8 @@ class ClockworkServiceProvider extends ServiceProvider
 				$app,
 				$app['clockwork.support']->isFeatureEnabled('log'),
 				$app['clockwork.support']->isFeatureEnabled('views'),
-				$app['clockwork.support']->isFeatureEnabled('routes')
+				$app['clockwork.support']->isFeatureEnabled('routes'),
+				$app['clockwork.support']->getConfig('features.views.collect_data')
 			))
 				->setLog($app['clockwork.log']);
 		});

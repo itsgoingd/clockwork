@@ -43,7 +43,10 @@ class LaravelDataSource extends DataSource
 	protected $collectLog = true;
 
 	// Whether we should collect views
-	protected $collectViews = false;
+	protected $collectViews = true;
+
+	// Whether we should collect view data when collecting views
+	protected $collectViewsData = false;
 
 	// Whether we should collect routes
 	protected $collectRoutes = false;
@@ -51,11 +54,12 @@ class LaravelDataSource extends DataSource
 	/**
 	 * Create a new data source, takes Laravel application instance as an argument
 	 */
-	public function __construct(Application $app, $collectLog = true, $collectViews = false, $collectRoutes = false)
+	public function __construct(Application $app, $collectLog = true, $collectViews = true, $collectRoutes = false, $collectViewsData = false)
 	{
 		$this->app = $app;
 		$this->collectLog = $collectLog;
 		$this->collectViews = $collectViews;
+		$this->collectViewsData = $collectViewsData;
 		$this->collectRoutes = $collectRoutes;
 
 		$this->timeline = new Timeline();
@@ -140,16 +144,16 @@ class LaravelDataSource extends DataSource
 					$view = $data[0];
 				}
 
-				$time = microtime(true);
-
-				$data = array_filter($view->getData(), function ($v, $k) {
-					return strpos($k, '__') !== 0;
-				}, \ARRAY_FILTER_USE_BOTH);
+				$data = array_filter(
+					$this->collectViewsData ? $view->getData() : [],
+					function ($v, $k) { return strpos($k, '__') !== 0; },
+					\ARRAY_FILTER_USE_BOTH
+				);
 
 				$this->views->addEvent(
 					'view ' . $view->getName(),
 					'Rendering a view',
-					$time,
+					$time = microtime(true),
 					$time,
 					[ 'name' => $view->getName(), 'data' => (new Serializer)->normalize($data) ]
 				);
