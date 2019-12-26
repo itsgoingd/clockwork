@@ -33,12 +33,14 @@ class ProfilerClockworkDumper
 			$this->dumpProfile($p, $timeline, $id);
 		}
 
+		$data = $profile->__serialize();
+
 		$timeline->addEvent(
 			$id,
 			$name,
-			$profile->__serialize()[3]['wt'],
-			$profile->__serialize()[4]['wt'],
-			[ 'data' => [], 'parent' => $parent ]
+			isset($data[3]['wt']) ? $data[3]['wt'] : null,
+			isset($data[4]['wt']) ? $data[4]['wt'] : null,
+			[ 'data' => [], 'memoryUsage' => isset($data[4]['mu']) ? $data[4]['mu'] : null, 'parent' => $parent ]
 		);
 	}
 }
