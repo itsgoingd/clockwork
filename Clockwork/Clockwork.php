@@ -21,7 +21,7 @@ class Clockwork implements LoggerInterface
 	/**
 	 * Clockwork version
 	 */
-	const VERSION = '4.0.13';
+	const VERSION = '4.1-dev';
 
 	/**
 	 * Array of data sources, these objects provide data to be stored in a request object
