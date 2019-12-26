@@ -81,6 +81,10 @@ class SqlStorage extends Storage
 		'jobQueue'                 => 'TEXT NULL',
 		'jobConnection'            => 'TEXT NULL',
 		'jobOptions'               => 'TEXT NULL',
+		'testName'                 => 'TEXT NULL',
+		'testStatus'               => 'TEXT NULL',
+		'testStatusMessage'        => 'TEXT NULL',
+		'testAsserts'              => 'TEXT NULL',
 		'parent'                   => 'TEXT NULL'
 	];
 
@@ -89,7 +93,7 @@ class SqlStorage extends Storage
 		'headers', 'getData', 'postData', 'requestData', 'sessionData', 'authenticatedUser', 'cookies', 'middleware',
 		'databaseQueries', 'cacheQueries', 'redisCommands', 'queueJobs', 'timelineData', 'log', 'events', 'routes',
 		'emailsData', 'viewsData', 'userData', 'subrequests', 'xdebug', 'commandArguments', 'commandArgumentsDefaults',
-		'commandOptions', 'commandOptionsDefaults', 'jobPayload', 'jobOptions', 'parent'
+		'commandOptions', 'commandOptionsDefaults', 'jobPayload', 'jobOptions', 'testAsserts', 'parent'
 	];
 
 	// Return a new storage, takes PDO object or DSN and optionally a table name and database credentials as arguments
