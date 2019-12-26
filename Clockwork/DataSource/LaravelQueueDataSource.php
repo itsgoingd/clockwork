@@ -45,7 +45,8 @@ class LaravelQueueDataSource extends DataSource
 				'name'       => $payload['displayName'],
 				'data'       => isset($payload['data']['command']) ? $payload['data']['command'] : null,
 				'maxTries'   => $payload['maxTries'],
-				'timeout'    => $payload['timeout']
+				'timeout'    => $payload['timeout'],
+				'time'       => microtime(true)
 			]);
 
 			return [ 'clockwork_id' => $id, 'clockwork_parent_id' => $this->currentRequestId ];

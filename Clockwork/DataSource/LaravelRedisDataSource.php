@@ -49,7 +49,8 @@ class LaravelRedisDataSource extends DataSource
 				'command'    => $event->command,
 				'parameters' => $event->parameters,
 				'duration'   => $event->time,
-				'connection' => $event->connectionName
+				'connection' => $event->connectionName,
+				'time'       => microtime(true) - $event->time / 1000
 			]);
 		});
 	}

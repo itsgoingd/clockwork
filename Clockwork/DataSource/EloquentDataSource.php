@@ -96,6 +96,7 @@ class EloquentDataSource extends DataSource
 			'query'      => $this->createRunnableQuery($event->sql, $event->bindings, $event->connectionName),
 			'duration'   => $event->time,
 			'connection' => $event->connectionName,
+			'time'       => microtime(true) - $event->time / 1000,
 			'trace'      => $shortTrace = (new Serializer)->trace($trace),
 			'file'       => isset($shortTrace[0]) ? $shortTrace[0]['file'] : null,
 			'line'       => isset($shortTrace[0]) ? $shortTrace[0]['line'] : null,

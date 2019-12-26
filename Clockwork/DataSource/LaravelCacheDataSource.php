@@ -115,7 +115,7 @@ class LaravelCacheDataSource extends DataSource
 			'type'       => $query['type'],
 			'key'        => $query['key'],
 			'value'      => isset($query['value']) ? (new Serializer)->normalize($query['value']) : null,
-			'time'       => null,
+			'time'       => microtime(true),
 			'connection' => null,
 			'trace'      => $shortTrace = (new Serializer)->trace($trace),
 			'file'       => isset($shortTrace[0]) ? $shortTrace[0]['file'] : null,

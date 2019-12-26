@@ -180,7 +180,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 	{
 		$duration = (microtime(true) - $this->start) * 1000;
 
-		$this->registerQuery($this->query['sql'], $this->query['params'], $duration, $this->connection->getDatabase());
+		$this->registerQuery($this->query['sql'], $this->query['params'], $duration, $this->connection->getDatabase(), $this->start);
 
 		if ($this->timeline !== null) {
 			$this->timeline->endEvent(self::EVENT_NAME);
@@ -190,13 +190,14 @@ class DBALDataSource extends DataSource implements SQLLogger
 	/**
 	 * Log the query into the internal store
 	 */
-	public function registerQuery($query, $bindings, $duration, $connection)
+	public function registerQuery($query, $bindings, $duration, $connection, $time)
 	{
 		$query = [
 			'query'      => $query,
 			'bindings'   => $bindings,
 			'duration'   => $duration,
-			'connection' => $connection
+			'connection' => $connection,
+			'time'       => $time
 		];
 
 		if ($this->passesFilters([ $query ])) {
