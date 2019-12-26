@@ -34,19 +34,8 @@ class LaravelDataSource extends DataSource
 	 */
 	protected $timeline;
 
-	/**
-	 * Timeline data structure for views data
-	 */
-	protected $views;
-
 	// Whether we should collect log messages
 	protected $collectLog = true;
-
-	// Whether we should collect views
-	protected $collectViews = true;
-
-	// Whether we should collect view data when collecting views
-	protected $collectViewsData = false;
 
 	// Whether we should collect routes
 	protected $collectRoutes = false;
@@ -54,16 +43,13 @@ class LaravelDataSource extends DataSource
 	/**
 	 * Create a new data source, takes Laravel application instance as an argument
 	 */
-	public function __construct(Application $app, $collectLog = true, $collectViews = true, $collectRoutes = false, $collectViewsData = false)
+	public function __construct(Application $app, $collectLog = true, $collectRoutes = false)
 	{
 		$this->app = $app;
 		$this->collectLog = $collectLog;
-		$this->collectViews = $collectViews;
-		$this->collectViewsData = $collectViewsData;
 		$this->collectRoutes = $collectRoutes;
 
 		$this->timeline = new Timeline();
-		$this->views    = new Timeline();
 	}
 
 	/**
@@ -84,7 +70,6 @@ class LaravelDataSource extends DataSource
 		$this->resolveAuthenticatedUser($request);
 
 		$request->timelineData = $this->timeline->finalize($request->time);
-		$request->viewsData    = $this->views->finalize();
 
 		return $request;
 	}
@@ -136,28 +121,6 @@ class LaravelDataSource extends DataSource
 					$this->log->log($level, $message, $context);
 				});
 			}
-		}
-
-		if ($this->collectViews) {
-			$this->app['events']->listen('composing:*', function ($view, $data = null) {
-				if (is_string($view) && is_array($data)) { // Laravel 5.4 wildcard event
-					$view = $data[0];
-				}
-
-				$data = array_filter(
-					$this->collectViewsData ? $view->getData() : [],
-					function ($v, $k) { return strpos($k, '__') !== 0; },
-					\ARRAY_FILTER_USE_BOTH
-				);
-
-				$this->views->addEvent(
-					'view ' . $view->getName(),
-					'Rendering a view',
-					$time = microtime(true),
-					$time,
-					[ 'name' => $view->getName(), 'data' => (new Serializer)->normalize($data) ]
-				);
-			});
 		}
 	}
 
