@@ -8,8 +8,11 @@ use Clockwork\DataSource\LaravelCacheDataSource;
 use Clockwork\DataSource\LaravelEventsDataSource;
 use Clockwork\DataSource\LaravelRedisDataSource;
 use Clockwork\DataSource\LaravelQueueDataSource;
+use Clockwork\DataSource\LaravelTwigDataSource;
+use Clockwork\DataSource\LaravelViewsDataSource;
 use Clockwork\DataSource\PhpDataSource;
 use Clockwork\DataSource\SwiftDataSource;
+use Clockwork\DataSource\TwigDataSource;
 use Clockwork\DataSource\XdebugDataSource;
 use Clockwork\Helpers\StackFilter;
 use Clockwork\Request\Log;
@@ -54,6 +57,10 @@ class ClockworkServiceProvider extends ServiceProvider
 			$this->app[RedisManager::class]->enableEvents();
 			$this->app['clockwork.redis']->listenToEvents();
 		}
+		if ($support->isFeatureEnabled('views')) {
+			$support->getConfig('features.views.use_twig_profiler', false)
+				? $this->app['clockwork.twig']->listenToEvents() : $this->app['clockwork.views']->listenToEvents();
+		}
 
 		if ($support->isCollectingCommands()) $support->collectCommands();
 		if ($support->isCollectingQueueJobs()) $support->collectQueueJobs();
@@ -87,6 +94,11 @@ class ClockworkServiceProvider extends ServiceProvider
 			if ($support->isFeatureEnabled('events')) $clockwork->addDataSource($app['clockwork.events']);
 			if ($support->isFeatureEnabled('emails')) $clockwork->addDataSource($app['clockwork.swift']);
 			if ($support->isFeatureAvailable('xdebug')) $clockwork->addDataSource($app['clockwork.xdebug']);
+			if ($support->isFeatureEnabled('views')) {
+				$clockwork->addDataSource(
+					$support->getConfig('features.views.use_twig_profiler', false) ? $app['clockwork.twig'] : $app['clockwork.views']
+				);
+			}
 
 			return $clockwork;
 		});
@@ -181,8 +193,6 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->singleton('clockwork.laravel', function ($app) {
 			return (new LaravelDataSource(
 				$app,
-				$app['clockwork.support']->isFeatureEnabled('log'),
-				$app['clockwork.support']->isFeatureEnabled('views'),
 				$app['clockwork.support']->isFeatureEnabled('routes')
 			))
 				->setLog($app['clockwork.log']);
@@ -212,6 +222,17 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		$this->app->singleton('clockwork.swift', function ($app) {
 			return new SwiftDataSource($app['mailer']->getSwiftMailer());
+		});
+
+		$this->app->singleton('clockwork.twig', function ($app) {
+			return new TwigDataSource($app['twig']);
+		});
+
+		$this->app->singleton('clockwork.views', function ($app) {
+			return new LaravelViewsDataSource(
+				$app['events'],
+				$app['clockwork.support']->getConfig('features.views.collect_data')
+			);
 		});
 
 		$this->app->singleton('clockwork.xdebug', function ($app) {
