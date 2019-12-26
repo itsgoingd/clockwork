@@ -96,7 +96,11 @@ return [
 			'enabled' => env('CLOCKWORK_VIEWS_ENABLED', true),
 
 			// Collect views including view data (high performance impact with a high number of views)
-			'collect_data' => env('CLOCKWORK_VIEWS_COLLECT_DATA', false)
+			'collect_data' => env('CLOCKWORK_VIEWS_COLLECT_DATA', false),
+
+			// Use Twig profiler instead of Laravel events for apps using laravel-twigbridge (more precise, but does
+			// not support collecting view data)
+			'use_twig_profiler' => env('CLOCKWORK_VIEWS_USE_TWIG_PROFILER', false)
 		]
 
 	],
