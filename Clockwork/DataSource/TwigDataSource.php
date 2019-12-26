@@ -12,6 +12,10 @@ use Twig_Profiler_Profile;
  */
 class TwigDataSource extends DataSource
 {
+	// Profiled Twig environment instance
+	protected $twig;
+
+	// Twig profile instance
 	protected $profile;
 
 	/**
@@ -19,7 +23,13 @@ class TwigDataSource extends DataSource
 	 */
 	public function __construct(Twig_Environment $twig)
 	{
-		$twig->addExtension(new Twig_Extension_Profiler($this->profile = new Twig_Profiler_Profile));
+		$this->twig = $twig;
+	}
+
+	// Register the Twig profiler extension
+	public function listenToEvents()
+	{
+		$this->twig->addExtension(new Twig_Extension_Profiler($this->profile = new Twig_Profiler_Profile));
 	}
 
 	/**
