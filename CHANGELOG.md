@@ -1,3 +1,32 @@
+4.1 (unreleased)
+
+- added support for command type requests with command specific metadata (commandName, commandArguments, commandArgumentsDefaults, commandOptions, commandOptionsDefaults, commandExitCode, commandOutput)
+- added support for collecting executed artisan commands in Laravel integration
+- added support for queue-job type requests with queue-job specific metadata (jobName, jobDescription, jobStatus, jobPayload, jobQueue, jobConnection, jobOptions)
+- added support for collecting executed queue-jobs in Laravel integration (also supports Laravel Horizon)
+- added support for test type requests with test specific metadata (testName, testStatus, testStatusMessage, testAsserts)
+- added support for collecting test runs in Laravel integration using PHPunit
+- added support for disabling collection of view data when collecting rendered views (new default is to collect views without data)
+- added Twig data source using the built-in Twig profiler to collect more precise Twig profiling data
+- added support for setting parent requests on requests
+- improved collecting of database queries, cache queries, dispatched queue jobs and redis commands to also collect time
+- improved the data sources filters api to allow multiple filter types
+- improved collecting of Laravel views to use a separate data source
+- improved Eloquent data source to have an additional "early" filter applied before the query is added to query counts
+- improved Eloquent data source now passes raw stack trace as second argument to filters
+- improved Laravel data source to work when response is not provided
+- improved Laravel events data source to include Laravel namespace in the default ignored events
+- improved Laravel views data source to strip view data prefixed with __
+- improved PHP data source to not set request time for cli commands
+- improved Request class now has pre-populated request time on creation
+- improved StackTrace helper with limit option, last method, fixed filter output keys
+
+*BREAKING*
+
+- DataSourceInterface::reset method was added, default empty implementation is provided in the base DataSource class
+- LaravelDataSource constructor arguments changed to reflect removing the views collecting support
+- multiple new settings were added to the Laravel config file
+
 4.0.13
 
 - fixed stack traces processing not handling call_user_func frames properly leading to wrong traces (reported by marcus-at-localhost, thanks!)
