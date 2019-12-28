@@ -20,6 +20,7 @@
 - improved PHP data source to not set request time for cli commands
 - improved Request class now has pre-populated request time on creation
 - improved StackTrace helper with limit option, last method, fixed filter output keys
+- updated to Clockwork App 4.1
 
 *BREAKING*
 
