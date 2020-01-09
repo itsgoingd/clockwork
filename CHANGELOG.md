@@ -1,3 +1,7 @@
+4.0.15
+
+- fixed cleanup not working with file storage (implemented by LucidTaZ, thanks!)
+
 4.0.14
 
 - fixed compatibility with Laravel 5.4 and earlier when resolving authenticated user
