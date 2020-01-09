@@ -98,7 +98,7 @@ class FileStorage extends Storage
 	{
 		if ($this->expiration === false || (! $force && rand(1, $this->cleanupChance) != 1)) return;
 
-		$this->openIndex('start', true, true); // reopan index with lock
+		$this->openIndex('end', true, true); // reopen index with lock
 
 		$expirationTime = time() - ($this->expiration * 60);
 
