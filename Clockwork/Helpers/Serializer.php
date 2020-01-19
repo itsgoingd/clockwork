@@ -36,7 +36,9 @@ class Serializer
 		if ($context === null) $context = [ 'references' => [] ];
 		if ($limit === null) $limit = $this->options['limit'];
 
-		if ($limit < 1) return $data;
+		if ($limit < 1) {
+		    return [ '__type__' => '...' ];
+		}
 
 		if ($data instanceof \Closure) {
 			return [ '__type__' => 'anonymous function' ];
