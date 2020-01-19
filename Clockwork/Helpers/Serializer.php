@@ -68,7 +68,11 @@ class Serializer
 				return $this->cache[$objectHash] = [ '__class__' => $className ];
 			}
 
-			$data = (array) $data;
+			if (method_exists($data, '__debugInfo')) {
+				$data = (array) $data->__debugInfo();
+			} else {
+				$data = (array) $data;
+			}
 			$data = array_column(array_map(function ($key, $item) use ($className, $context, $limit) {
 				return [
 					// replace null-byte prefixes of protected and private properties used by php with * (protected)
