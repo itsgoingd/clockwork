@@ -12,7 +12,10 @@ class Serializer
 			\Laravel\Lumen\Application::class
 		],
 		'limit' => 10,
+		'toArray' => false,
 		'toString' => false,
+		'debugInfo' => true,
+		'jsonSerialize' => false,
 		'traces' => true,
 		'tracesFilter' => null,
 		'tracesSkip' => null,
@@ -68,11 +71,16 @@ class Serializer
 				return $this->cache[$objectHash] = [ '__class__' => $className, '__omitted__' => 'blackbox' ];
 			}
 
-			if (method_exists($data, '__debugInfo')) {
+			if ($this->options['debugInfo'] && method_exists($data, '__debugInfo')) {
 				$data = (array) $data->__debugInfo();
+			} elseif ($this->options['jsonSerialize'] && method_exists($data, 'jsonSerialize')) {
+				$data = (array) $data->jsonSerialize();
+			} elseif ($this->options['toArray'] && method_exists($data, 'toArray')) {
+				$data = (array) $data->toArray();
 			} else {
 				$data = (array) $data;
 			}
+
 			$data = array_column(array_map(function ($key, $item) use ($className, $context, $limit) {
 				return [
 					// replace null-byte prefixes of protected and private properties used by php with * (protected)
