@@ -36,23 +36,23 @@ class Serializer
 		if ($context === null) $context = [ 'references' => [] ];
 		if ($limit === null) $limit = $this->options['limit'];
 
-		if ($limit < 1) {
-		    return [ '__type__' => '...' ];
-		}
-
 		if ($data instanceof \Closure) {
 			return [ '__type__' => 'anonymous function' ];
 		} elseif (is_array($data)) {
+			if ($limit === 0) return [ '__type__' => 'array', '__omitted__' => 'limit' ];
+
 			return [ '__type__' => 'array' ] + array_map(function ($item) use ($context, $limit) {
 				return $this->normalize($item, $context, $limit - 1);
 			}, $data);
 		} elseif (is_object($data)) {
+			$className = get_class($data);
+			$objectHash = spl_object_hash($data);
+
+			if ($limit === 0) return [ '__class__' => $className, '__omitted__' => 'limit' ];
+
 			if ($this->options['toString'] && method_exists($data, '__toString')) {
 				return (string) $data;
 			}
-
-			$className = get_class($data);
-			$objectHash = spl_object_hash($data);
 
 			if (isset($context['references'][$objectHash])) {
 				return [ '__type__' => 'recursion' ];
@@ -65,7 +65,7 @@ class Serializer
 			}
 
 			if ($this->options['blackbox'] && in_array($className, $this->options['blackbox'])) {
-				return $this->cache[$objectHash] = [ '__class__' => $className ];
+				return $this->cache[$objectHash] = [ '__class__' => $className, '__omitted__' => 'blackbox' ];
 			}
 
 			if (method_exists($data, '__debugInfo')) {
