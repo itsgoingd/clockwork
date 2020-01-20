@@ -41,9 +41,9 @@ class ClockworkSupport extends LaravelSupport
 		} elseif ($feature == 'emails') {
 			return $this->app->bound('mailer');
 		} elseif ($feature == 'redis') {
-			return method_exists(\Illuminate\Redis\RedisManager::class, 'enableEvents');
+			return $this->app->bound('redis') && method_exists(\Illuminate\Redis\RedisManager::class, 'enableEvents');
 		} elseif ($feature == 'queue') {
-			return method_exists(\Illuminate\Queue\Queue::class, 'createPayloadUsing');
+			return $this->app->bound('queue') && method_exists(\Illuminate\Queue\Queue::class, 'createPayloadUsing');
 		} elseif ($feature == 'xdebug') {
 			return in_array('xdebug', get_loaded_extensions());
 		}
