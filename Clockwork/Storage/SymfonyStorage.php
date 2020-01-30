@@ -39,7 +39,7 @@ class SymfonyStorage extends FileStorage
 	}
 
 	// Open index file, optionally move file pointer to the end
-	protected function openIndex($position = 'start')
+	protected function openIndex($position = 'start', $lock = null, $force = null)
 	{
 		$this->indexHandle = fopen("{$this->path}/index.csv", 'r');
 

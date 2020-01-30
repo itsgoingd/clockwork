@@ -2,7 +2,7 @@
 
 use Clockwork\Clockwork;
 
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -15,7 +15,7 @@ class ClockworkListener implements EventSubscriberInterface
 		$this->clockwork = $clockwork;
 	}
 
-	public function onKernelResponse(FilterResponseEvent $event)
+	public function onKernelResponse(KernelEvent $event)
 	{
 		if (! $this->clockwork->isEnabled()) return;
 
