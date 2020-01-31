@@ -21,12 +21,14 @@ class ClockworkServiceProvider extends ServiceProvider
 {
 	public function boot()
 	{
-		if ($this->app['clockwork.support']->isCollectingData()) $this->listenToEvents();
+		if ($this->app['clockwork.support']->isCollectingData()) {
+			$this->listenToEvents();
+			$this->registerMiddleware();
+		}
 
 		// If Clockwork is disabled, return before registering middleware or routes
 		if (! $this->app['clockwork.support']->isEnabled()) return;
 
-		$this->registerMiddleware();
 		$this->registerRoutes();
 
 		// register the Clockwork Web UI routes
