@@ -1,3 +1,7 @@
+4.0.16
+
+- fixed Laravel middleware being registered too late, causing "collect data always" setting to not work (reported by Youniteus, thanks!)
+
 4.0.15
 
 - fixed cleanup not working with file storage (implemented by LucidTaZ, thanks!)
