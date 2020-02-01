@@ -2,17 +2,27 @@
 
 use Clockwork\Clockwork;
 
-use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\KernelEvent;
+use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ClockworkListener implements EventSubscriberInterface
 {
 	protected $clockwork;
+	protected $profiler;
 
-	public function __construct(ClockworkSupport $clockwork)
+	public function __construct(ClockworkSupport $clockwork, Profiler $profiler)
 	{
 		$this->clockwork = $clockwork;
+		$this->profiler = $profiler;
+	}
+
+	public function onKernelRequest(KernelEvent $event)
+	{
+		if (preg_match('#/__clockwork(.*)#', $event->getRequest()->getPathInfo())) {
+			$this->profiler->disable();
+		}
 	}
 
 	public function onKernelResponse(KernelEvent $event)
@@ -30,7 +40,8 @@ class ClockworkListener implements EventSubscriberInterface
 	public static function getSubscribedEvents()
 	{
 		return [
-			KernelEvents::RESPONSE => [ 'onKernelResponse', -128 ],
+			KernelEvents::REQUEST => [ 'onKernelRequest', 512 ],
+			KernelEvents::RESPONSE => [ 'onKernelResponse', -128 ]
 		];
 	}
 }

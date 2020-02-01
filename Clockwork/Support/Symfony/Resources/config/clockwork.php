@@ -24,10 +24,10 @@ $container->register(Clockwork\Support\Symfony\ClockworkSupport::class)
 	->setPublic(true);
 
 $container->autowire(Clockwork\Support\Symfony\ClockworkController::class)
-	->setAutoconfigured(true)
-	->setArgument('$profiler', new Reference('profiler'));
+	->setAutoconfigured(true);
 
 $container->autowire(Clockwork\Support\Symfony\ClockworkListener::class)
+	->setArgument('$profiler', new Reference('profiler'))
 	->addTag('kernel.event_subscriber');
 
 $container->setAlias('clockwork', Clockwork\Clockwork::class)->setPublic('true');
