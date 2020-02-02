@@ -18,22 +18,37 @@
 - improved Laravel events data source to include Laravel namespace in the default ignored events
 - improved Laravel views data source to strip view data prefixed with __
 - improved PHP data source to not set request time for cli commands
+- improved serializer to ommit data below depth limit, support debugInfo, jsonSerialize and toArray methods (partially implemented by mahagr, thanks!)
+- improved log to allow overriding serializer settings via context, no longer enabled toString by default
 - improved Request class now has pre-populated request time on creation
 - improved StackTrace helper with limit option, last method, fixed filter output keys
+- improved Lumen queue and redis feature detection
+- fixed Symfony support, added support for latest Symfony 5.x and 4.x (reported by llaville, thanks!)
 - updated to Clockwork App 4.1
 
 *BREAKING*
 
+- multiple new settings were added to the Laravel config file
 - DataSourceInterface::reset method was added, default empty implementation is provided in the base DataSource class
 - LaravelDataSource constructor arguments changed to reflect removing the views collecting support
-- multiple new settings were added to the Laravel config file
+
+4.0.16
+
+- fixed Laravel middleware being registered too late, causing "collect data always" setting to not work (reported by Youniteus, thanks!)
+
+4.0.15
+
+- fixed cleanup not working with file storage (implemented by LucidTaZ, thanks!)
+
+4.0.14
+
+- fixed compatibility with Laravel 5.4 and earlier when resolving authenticated user
 
 4.0.13
 
 - fixed stack traces processing not handling call_user_func frames properly leading to wrong traces (reported by marcus-at-localhost, thanks!)
 - fixed wrong stack traces skip namespaces defaults leading to wrong traces
 - fixed vanilla integration config file missing and no longer used settings
-
 
 4.0.12
 
