@@ -2,6 +2,7 @@
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\HttpKernel\Kernel;
 
 class ClockworkConfiguration implements ConfigurationInterface
 {
@@ -14,7 +15,7 @@ class ClockworkConfiguration implements ConfigurationInterface
 
 	public function getConfigTreeBuilder()
 	{
-		return (new TreeBuilder)->root('clockwork')
+		return $this->getConfigRoot()
 			->children()
 				->booleanNode('enable')->defaultValue($this->debug)->end()
 				->booleanNode('web')->defaultValue(true)->end()
@@ -23,5 +24,14 @@ class ClockworkConfiguration implements ConfigurationInterface
 				->scalarNode('authentication_password')->defaultValue('VerySecretPassword')->end()
 				->end()
 			->end();
+	}
+
+	protected function getConfigRoot()
+	{
+		if (Kernel::VERSION_ID < 40300) {
+			return (new TreeBuilder)->root('clockwork');
+		}
+
+		return (new TreeBuilder('clockwork'))->getRootNode();
 	}
 }

@@ -2,21 +2,19 @@
 
 use Clockwork\Clockwork;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Profiler\Profiler;
 
-class ClockworkController extends Controller
+class ClockworkController extends AbstractController
 {
 	protected $clockwork;
-	protected $profiler;
+	protected $support;
 
-	public function __construct(Clockwork $clockwork, ClockworkSupport $support, Profiler $profiler)
+	public function __construct(Clockwork $clockwork, ClockworkSupport $support)
 	{
 		$this->clockwork = $clockwork;
 		$this->support = $support;
-		$this->profiler = $profiler;
 	}
 
 	public function authenticate(Request $request)
@@ -28,15 +26,11 @@ class ClockworkController extends Controller
 
 	public function getData(Request $request, $id = null, $direction = null, $count = null)
 	{
-		$this->profiler->disable();
-
 		return $this->support->getData($request, $id, $direction, $count);
 	}
 
 	public function webIndex(Request $request)
 	{
-		$this->profiler->disable();
-
 		if ($this->support->isWebUsingDarkTheme() && ! $request->query->has('dark')) {
 			return $this->redirect('/__clockwork/app?dark');
 		}
@@ -46,15 +40,11 @@ class ClockworkController extends Controller
 
 	public function webAsset($path)
 	{
-		$this->profiler->disable();
-
 		return $this->support->getWebAsset($path);
 	}
 
 	public function webRedirect()
 	{
-		$this->profiler->disable();
-
 		return $this->redirect('/__clockwork/app');
 	}
 }
