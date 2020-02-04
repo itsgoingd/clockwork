@@ -14,10 +14,16 @@ class Search
 	public $name = [];
 	public $type = [];
 
-	public function __construct($search = [])
+	public $stopOnFirstMismatch = false;
+
+	public function __construct($search = [], $options = [])
 	{
 		foreach ([ 'uri', 'controller', 'method', 'status', 'time', 'received', 'name', 'type' ] as $condition) {
 			$this->$condition = isset($search[$condition]) ? $search[$condition] : [];
+		}
+
+		foreach ([ 'stopOnFirstMismatch' ] as $option) {
+			$this->$option = isset($options[$option]) ? $options[$option] : $this->$condition;
 		}
 
 		$this->method = array_map('strtolower', $this->method);
