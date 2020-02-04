@@ -1,3 +1,9 @@
+4.0.17
+
+- improved performance and memory usage when doing file storage cleanup (reported by ikkez, thanks!)
+- fixed crash after running file storage cleanup
+- fixed typo in clockwork:clean argument description
+
 4.0.16
 
 - fixed Laravel middleware being registered too late, causing "collect data always" setting to not work (reported by Youniteus, thanks!)
