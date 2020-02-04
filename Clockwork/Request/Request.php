@@ -367,7 +367,7 @@ class Request
 	{
 		$this->databaseQueries[] = [
 			'query'      => $query,
-			'bindings'   => $bindings,
+			'bindings'   => (new Serializer)->normalize($bindings),
 			'duration'   => $duration,
 			'connection' => isset($data['connection']) ? $data['connection'] : null,
 			'file'       => isset($data['file']) ? $data['file'] : null,
