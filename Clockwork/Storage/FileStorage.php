@@ -52,7 +52,7 @@ class FileStorage extends Storage
 	// Returns all requests
 	public function all(Search $search = null)
 	{
-		return $this->searchIndexForward($search);
+		return $this->loadRequests($this->searchIndexForward($search));
 	}
 
 	// Return a single request by id
@@ -64,19 +64,19 @@ class FileStorage extends Storage
 	// Return the latest request
 	public function latest(Search $search = null)
 	{
-		return $this->searchIndexBackward($search, null, 1);
+		return $this->loadRequests($this->searchIndexBackward($search, null, 1));
 	}
 
 	// Return requests received before specified id, optionally limited to specified count
 	public function previous($id, $count = null, Search $search = null)
 	{
-		return $this->searchIndexBackward($search, $id, $count);
+		return $this->loadRequests($this->searchIndexBackward($search, $id, $count));
 	}
 
 	// Return requests received after specified id, optionally limited to specified count
 	public function next($id, $count = null, Search $search = null)
 	{
-		return $this->searchIndexForward($search, $id, $count);
+		return $this->loadRequests($this->searchIndexForward($search, $id, $count));
 	}
 
 	// Store request, requests are stored in JSON representation in files named <request id>.json in storage path
@@ -98,22 +98,22 @@ class FileStorage extends Storage
 	{
 		if ($this->expiration === false || (! $force && rand(1, $this->cleanupChance) != 1)) return;
 
-		$this->openIndex('end', true, true); // reopen index with lock
+		$this->openIndex('start', true, true); // reopen index with lock
 
 		$expirationTime = time() - ($this->expiration * 60);
 
-		$old = $this->searchIndexBackward(new Search([ 'received' => [ '<' . date('c', $expirationTime) ] ]), null, null);
+		$old = $this->searchIndexForward(
+			new Search([ 'received' => [ '<' . date('c', $expirationTime) ] ], [ 'stopOnFirstMismatch' => true ])
+		);
 
 		if (! count($old)) return;
 
-		$this->searchIndexBackward(null, $old[count($old) - 1]->id);
-		$this->readNextIndex();
+		$this->readPreviousIndex();
 		$this->trimIndex();
-
 		$this->closeIndex(true); // explicitly close index to unlock asap
 
-		foreach ($old as $request) {
-			$path = "{$this->path}/{$request->id}.json";
+		foreach ($old as $id) {
+			$path = "{$this->path}/{$id}.json";
 			@unlink($this->compress ? "{$path}.gz" : $path);
 		}
 	}
@@ -129,20 +129,25 @@ class FileStorage extends Storage
 		return new Request(json_decode($this->compress ? gzuncompress($data) : $data, true));
 	}
 
+	protected function loadRequests($ids)
+	{
+		return array_filter(array_map(function ($id) { return $this->loadRequest($id); }, $ids));
+	}
+
 	// Search index backward from specified ID or last record, with optional results count limit
-	protected function searchIndexBackward(Search $search = null, $id = null, $count = 1)
+	protected function searchIndexBackward(Search $search = null, $id = null, $count = null)
 	{
 		return $this->searchIndex('previous', $search, $id, $count);
 	}
 
 	// Search index forward from specified ID or last record, with optional results count limit
-	protected function searchIndexForward(Search $search = null, $id = null, $count = 1)
+	protected function searchIndexForward(Search $search = null, $id = null, $count = null)
 	{
 		return $this->searchIndex('next', $search, $id, $count);
 	}
 
 	// Search index in specified direction from specified ID or last record, with optional results count limit
-	protected function searchIndex($direction, Search $search = null, $id = null, $count = 1)
+	protected function searchIndex($direction, Search $search = null, $id = null, $count = null)
 	{
 		$this->openIndex($direction == 'previous' ? 'end' : 'start');
 
@@ -154,7 +159,9 @@ class FileStorage extends Storage
 
 		while ($request = $this->readIndex($direction)) {
 			if (! $search || $search->matches($request)) {
-				if ($request = $this->loadRequest($request->id)) $found[] = $request;
+				$found[] = $request->id;
+			} elseif ($search->stopOnFirstMismatch) {
+				return $found;
 			}
 
 			if ($count && count($found) == $count) return $found;
@@ -256,7 +263,6 @@ class FileStorage extends Storage
 		$trimmed = $trimmedLength > 0 ? fread($this->indexHandle, $trimmedLength) : '';
 
 		// Rewrite the index file with a trimmed version
-		fclose($this->indexHandle);
 		file_put_contents("{$this->path}/index", $trimmed);
 	}
 

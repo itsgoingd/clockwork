@@ -16,7 +16,7 @@ class ClockworkCleanCommand extends Command
 	{
 		return [
 			[ 'all', 'a', InputOption::VALUE_NONE, 'cleans all data' ],
-			[ 'expiration', 'e', InputOption::VALUE_REQUIRED, 'cleans data older then specified value in seconds' ]
+			[ 'expiration', 'e', InputOption::VALUE_REQUIRED, 'cleans data older then specified value in minutes' ]
 		];
 	}
 
