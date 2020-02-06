@@ -337,11 +337,6 @@ class ClockworkSupport
 		return $this->getConfig('web', true);
 	}
 
-	public function isWebUsingDarkTheme()
-	{
-		return $this->getConfig('web_dark_theme', false);
-	}
-
 	public function isUriFiltered($uri)
 	{
 		$filterUris = $this->getConfig('filter_uris', []);

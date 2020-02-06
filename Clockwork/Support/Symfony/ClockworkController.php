@@ -38,10 +38,6 @@ class ClockworkController extends AbstractController
 		$this->ensureClockworkIsEnabled();
 		$this->ensureClockworkWebIsEnabled();
 
-		if ($this->support->isWebUsingDarkTheme() && ! $request->query->has('dark')) {
-			return $this->redirect('/__clockwork/app?dark');
-		}
-
 		return $this->support->getWebAsset('index.html');
 	}
 

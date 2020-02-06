@@ -88,9 +88,4 @@ class ClockworkSupport
 	{
 		return $this->getConfig('web', false);
 	}
-
-	public function isWebUsingDarkTheme()
-	{
-		return $this->getConfig('web_dark_theme', false);
-	}
 }
