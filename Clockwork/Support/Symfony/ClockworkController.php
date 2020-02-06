@@ -19,6 +19,8 @@ class ClockworkController extends AbstractController
 
 	public function authenticate(Request $request)
 	{
+		$this->ensureClockworkIsEnabled();
+
 		$token = $this->clockwork->getAuthenticator()->attempt($request->request->all());
 
 		return new JsonResponse([ 'token' => $token ], $token ? 200 : 403);
@@ -26,11 +28,16 @@ class ClockworkController extends AbstractController
 
 	public function getData(Request $request, $id = null, $direction = null, $count = null)
 	{
+		$this->ensureClockworkIsEnabled();
+
 		return $this->support->getData($request, $id, $direction, $count);
 	}
 
 	public function webIndex(Request $request)
 	{
+		$this->ensureClockworkIsEnabled();
+		$this->ensureClockworkWebIsEnabled();
+
 		if ($this->support->isWebUsingDarkTheme() && ! $request->query->has('dark')) {
 			return $this->redirect('/__clockwork/app?dark');
 		}
@@ -40,11 +47,27 @@ class ClockworkController extends AbstractController
 
 	public function webAsset($path)
 	{
+		$this->ensureClockworkIsEnabled();
+		$this->ensureClockworkWebIsEnabled();
+
 		return $this->support->getWebAsset($path);
 	}
 
 	public function webRedirect()
 	{
+		$this->ensureClockworkIsEnabled();
+		$this->ensureClockworkWebIsEnabled();
+
 		return $this->redirect('/__clockwork/app');
+	}
+
+	protected function ensureClockworkIsEnabled()
+	{
+		if (! $this->support->isEnabled()) throw $this->createNotFoundException();
+	}
+
+	protected function ensureClockworkWebIsEnabled()
+	{
+		if (! $this->support->isWebEnabled()) throw $this->createNotFoundException();
 	}
 }
