@@ -157,6 +157,9 @@ class ClockworkSupport
 	public function collectQueueJobs()
 	{
 		$this->app['events']->listen(\Illuminate\Queue\Events\JobProcessing::class, function ($event) {
+			// sync jobs are recorded as part of the parent request
+			if ($event->job instanceof \Illuminate\Queue\Jobs\SyncJob) return;
+
 			$payload = $event->job->payload();
 
 			if (! isset($payload['clockwork_id']) || $this->isQueueJobFiltered($payload['displayName'])) return;
@@ -179,6 +182,9 @@ class ClockworkSupport
 
 	protected function processQueueJob($job, $exception = null)
 	{
+		// sync jobs are recorded as part of the parent request
+		if ($job instanceof \Illuminate\Queue\Jobs\SyncJob) return;
+
 		$payload = $job->payload();
 
 		if (! isset($payload['clockwork_id'])) return;
