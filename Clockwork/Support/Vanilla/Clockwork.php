@@ -22,6 +22,8 @@ class Clockwork
 	protected $psrRequest;
 	protected $psrResponse;
 
+	protected $headersSet;
+
 	protected static $defaultInstance;
 
 	public function __construct($config = [])
@@ -37,6 +39,8 @@ class Clockwork
 
 		if ($this->config['register_helpers']) include __DIR__ . '/helpers.php';
 
+		$this->headersSet = false;
+
 		$this->clockwork->getTimeline()->startEvent('total', 'Total execution time.', 'start');
 	}
 
@@ -50,6 +54,23 @@ class Clockwork
 		return static::$defaultInstance;
 	}
 
+	public function setHeaders()
+    {
+        if (!$this->headersSet) {
+            $this->headersSet = true;
+            $this->setHeader('X-Clockwork-Id', $this->getRequest()->id);
+            $this->setHeader('X-Clockwork-Version', BaseClockwork::VERSION);
+
+            if ($this->config['api'] != '/__clockwork/') {
+                $this->setHeader('X-Clockwork-Path', $this->config['api']);
+            }
+
+            foreach ($this->config['headers'] as $headerName => $headerValue) {
+                $this->setHeader("X-Clockwork-Header-{$headerName}", $headerValue);
+            }
+        }
+    }
+
 	public function requestProcessed()
 	{
 		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
@@ -60,16 +81,7 @@ class Clockwork
 
 		if (! $this->config['enable']) return;
 
-		$this->setHeader('X-Clockwork-Id', $this->getRequest()->id);
-		$this->setHeader('X-Clockwork-Version', BaseClockwork::VERSION);
-
-		if ($this->config['api'] != '/__clockwork/') {
-			$this->setHeader('X-Clockwork-Path', $this->config['api']);
-		}
-
-		foreach ($this->config['headers'] as $headerName => $headerValue) {
-			$this->setHeader("X-Clockwork-Header-{$headerName}", $headerValue);
-		}
+		$this->setHeaders();
 
 		if (($eventsCount = $this->config['server_timing']) !== false) {
 			$this->setHeader('Server-Timing', ServerTiming::fromRequest($this->clockwork->getRequest(), $eventsCount)->value());
