@@ -22,7 +22,7 @@ class Clockwork
 	protected $psrRequest;
 	protected $psrResponse;
 
-	protected $headersSet;
+	protected $headersSent = false;
 
 	protected static $defaultInstance;
 
@@ -39,8 +39,6 @@ class Clockwork
 
 		if ($this->config['register_helpers']) include __DIR__ . '/helpers.php';
 
-		$this->headersSet = false;
-
 		$this->clockwork->getTimeline()->startEvent('total', 'Total execution time.', 'start');
 	}
 
@@ -54,23 +52,6 @@ class Clockwork
 		return static::$defaultInstance;
 	}
 
-	public function setHeaders()
-    {
-        if (!$this->headersSet) {
-            $this->headersSet = true;
-            $this->setHeader('X-Clockwork-Id', $this->getRequest()->id);
-            $this->setHeader('X-Clockwork-Version', BaseClockwork::VERSION);
-
-            if ($this->config['api'] != '/__clockwork/') {
-                $this->setHeader('X-Clockwork-Path', $this->config['api']);
-            }
-
-            foreach ($this->config['headers'] as $headerName => $headerValue) {
-                $this->setHeader("X-Clockwork-Header-{$headerName}", $headerValue);
-            }
-        }
-    }
-
 	public function requestProcessed()
 	{
 		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
@@ -81,7 +62,7 @@ class Clockwork
 
 		if (! $this->config['enable']) return;
 
-		$this->setHeaders();
+		$this->sendHeaders();
 
 		if (($eventsCount = $this->config['server_timing']) !== false) {
 			$this->setHeader('Server-Timing', ServerTiming::fromRequest($this->clockwork->getRequest(), $eventsCount)->value());
@@ -110,6 +91,24 @@ class Clockwork
 		$this->clockwork
 			->resolveAsQueueJob($name, $description, $status, $payload, $queue, $connection, $options)
 			->storeRequest();
+	}
+
+	public function sendHeaders()
+	{
+		if (! $this->config['enable'] || $this->headersSent) return;
+
+		$this->headersSent = true;
+
+		$this->setHeader('X-Clockwork-Id', $this->getRequest()->id);
+		$this->setHeader('X-Clockwork-Version', BaseClockwork::VERSION);
+
+		if ($this->config['api'] != '/__clockwork/') {
+			$this->setHeader('X-Clockwork-Path', $this->config['api']);
+		}
+
+		foreach ($this->config['headers'] as $headerName => $headerValue) {
+			$this->setHeader("X-Clockwork-Header-{$headerName}", $headerValue);
+		}
 	}
 
 	public function returnMetadata($request = null)
