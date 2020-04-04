@@ -123,6 +123,9 @@ class ClockworkSupport
 	public function collectCommands()
 	{
 		$this->app['events']->listen(\Illuminate\Console\Events\CommandStarting::class, function ($event) {
+			// only collect commands ran through artisan cli, other commands are recorded as part of respective request
+			if (basename(StackTrace::get()->last()->file) != 'artisan') return;
+
 			if (! $this->getConfig('artisan.collect_output')) return;
 			if (! $event->command || $this->isCommandFiltered($event->command)) return;
 
@@ -132,6 +135,9 @@ class ClockworkSupport
 		});
 
 		$this->app['events']->listen(\Illuminate\Console\Events\CommandFinished::class, function ($event) {
+			// only collect commands ran through artisan cli, other commands are recorded as part of respective request
+			if (basename(StackTrace::get()->last()->file) != 'artisan') return;
+
 			if (! $event->command || $this->isCommandFiltered($event->command)) return;
 
 			$command = $this->app->make(ConsoleKernel::class)->all()[$event->command];
