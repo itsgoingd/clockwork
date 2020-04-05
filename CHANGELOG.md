@@ -23,7 +23,9 @@
 - improved Request class now has pre-populated request time on creation
 - improved StackTrace helper with limit option, last method, fixed filter output keys
 - improved Lumen queue and redis feature detection
+- improved vanilla integration to allow manually sending the headers early (implemented by tminich, thanks!)
 - fixed Symfony support, added support for latest Symfony 5.x and 4.x (reported by llaville, thanks!)
+- removed dark theme for the web UI setting (now configurable in the Clockwork app itself)
 - updated to Clockwork App 4.1
 
 *BREAKING*
@@ -31,6 +33,12 @@
 - multiple new settings were added to the Laravel config file
 - DataSourceInterface::reset method was added, default empty implementation is provided in the base DataSource class
 - LaravelDataSource constructor arguments changed to reflect removing the views collecting support
+
+4.0.17
+
+- improved performance and memory usage when doing file storage cleanup (reported by ikkez, thanks!)
+- fixed crash after running file storage cleanup
+- fixed typo in clockwork:clean argument description
 
 4.0.16
 
