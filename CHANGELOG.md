@@ -1,4 +1,4 @@
-4.1 (unreleased)
+4.1
 
 - added support for command type requests with command specific metadata (commandName, commandArguments, commandArgumentsDefaults, commandOptions, commandOptionsDefaults, commandExitCode, commandOutput)
 - added support for collecting executed artisan commands in Laravel integration
