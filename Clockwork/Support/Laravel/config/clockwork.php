@@ -91,9 +91,16 @@ return [
 			'enabled' => env('CLOCKWORK_ROUTES_ENABLED', false)
 		],
 
-		// Rendered views including passed data (high performance impact with large amount of data passed to views)
+		// Rendered views
 		'views' => [
-			'enabled' => env('CLOCKWORK_VIEWS_ENABLED', false)
+			'enabled' => env('CLOCKWORK_VIEWS_ENABLED', true),
+
+			// Collect views including view data (high performance impact with a high number of views)
+			'collect_data' => env('CLOCKWORK_VIEWS_COLLECT_DATA', false),
+
+			// Use Twig profiler instead of Laravel events for apps using laravel-twigbridge (more precise, but does
+			// not support collecting view data)
+			'use_twig_profiler' => env('CLOCKWORK_VIEWS_USE_TWIG_PROFILER', false)
 		]
 
 	],
@@ -111,7 +118,80 @@ return [
 
 	'web' => env('CLOCKWORK_WEB', true),
 
-	'web_dark_theme' => env('CLOCKWORK_WEB_DARK_THEME', false),
+	/*
+	|--------------------------------------------------------------------------
+	| Artisan commands collection
+	|--------------------------------------------------------------------------
+	|
+	| You can enable or disable and configure collection of executed Artisan
+	| commands here.
+	|
+	*/
+
+	'artisan' => [
+		// Enable or disable collection of executed Artisan commands
+		'collect' => env('CLOCKWORK_ARTISAN_COLLECT', false),
+
+		// List of commands that should not be collected (built-in commands are not collected by default)
+		'except' => [
+			// 'inspire'
+		],
+
+		// List of commands that should be collected, any other command will not be collected if not empty
+		'only' => [
+			// 'inspire'
+		],
+
+		// Enable or disable collection of command output
+		'collect_output' => env('CLOCKWORK_ARTISAN_COLLECT_OUTPUT', false),
+
+		// Enable or disable collection of built-in Laravel commands
+		'except_laravel_commands' => env('CLOCKWORK_ARTISAN_EXCEPT_LARAVEL_COMMANDS', true)
+	],
+
+	/*
+	|--------------------------------------------------------------------------
+	| Queue jobs collection
+	|--------------------------------------------------------------------------
+	|
+	| You can enable or disable and configure collection of executed queue jobs
+	| here.
+	|
+	*/
+
+	'queue' => [
+		// Enable or disable collection of executed queue jobs
+		'collect' => env('CLOCKWORK_QUEUE_COLLECT', false),
+
+		// List of queue jobs that should not be collected
+		'except' => [
+			// App\Jobs\ExpensiveJob::class
+		],
+
+		// List of queue jobs that should be collected, any other queue job will not be collected if not empty
+		'only' => [
+			// App\Jobs\BuggyJob::class
+		]
+	],
+
+	/*
+	|--------------------------------------------------------------------------
+	| Tests collection
+	|--------------------------------------------------------------------------
+	|
+	| You can enable or disable and configure collection of ran tests here.
+	|
+	*/
+
+	'tests' => [
+		// Enable or disable collection of ran tests
+		'collect' => env('CLOCKWORK_TESTS_COLLECT', false),
+
+		// List of tests that should not be collected
+		'except' => [
+			// Tests\Unit\ExampleTest::class
+		]
+	],
 
 	/*
 	|--------------------------------------------------------------------------

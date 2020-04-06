@@ -3,8 +3,10 @@
 use Clockwork\Authentication\AuthenticatorInterface;
 use Clockwork\Authentication\NullAuthenticator;
 use Clockwork\DataSource\DataSourceInterface;
+use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
+use Clockwork\Request\RequestType;
 use Clockwork\Request\Timeline;
 use Clockwork\Storage\StorageInterface;
 
@@ -19,7 +21,7 @@ class Clockwork implements LoggerInterface
 	/**
 	 * Clockwork version
 	 */
-	const VERSION = '4.0.17';
+	const VERSION = '4.1';
 
 	/**
 	 * Array of data sources, these objects provide data to be stored in a request object
@@ -122,6 +124,58 @@ class Clockwork implements LoggerInterface
 		return $this;
 	}
 
+	// Resolve the current request as a "command" type request with command-specific data
+	public function resolveAsCommand($name, $exitCode = null, $arguments = [], $options = [], $argumentsDefaults = [], $optionsDefaults = [], $output = null)
+	{
+		$this->resolveRequest();
+
+		$this->request->type = RequestType::COMMAND;
+		$this->request->commandName = $name;
+		$this->request->commandArguments = $arguments;
+		$this->request->commandArgumentsDefaults = $argumentsDefaults;
+		$this->request->commandOptions = $options;
+		$this->request->commandOptionsDefaults = $optionsDefaults;
+		$this->request->commandExitCode = $exitCode;
+		$this->request->commandOutput = $output;
+
+		return $this;
+	}
+
+	// Resolve the current request as a "queue-job" type request with queue-job-specific data
+	public function resolveAsQueueJob($name, $description = null, $status = 'processed', $payload = [], $queue = null, $connection = null, $options = [])
+	{
+		$this->resolveRequest();
+
+		$this->request->type = RequestType::QUEUE_JOB;
+		$this->request->jobName = $name;
+		$this->request->jobDescription = $description;
+		$this->request->jobStatus = $status;
+		$this->request->jobPayload = (new Serializer)->normalize($payload);
+		$this->request->jobQueue = $queue;
+		$this->request->jobConnection = $connection;
+		$this->request->jobOptions = (new Serializer)->normalizeEach($options);
+
+		return $this;
+	}
+
+	// Resolve the current request as a "test" type request with test-specific data, accepts test name, status, status
+	// message in case of failure and array of ran asserts
+	public function resolveAsTest($name, $status = 'passed', $statusMessage = null, $asserts = [])
+	{
+		$this->resolveRequest();
+
+		$this->request->type = RequestType::TEST;
+		$this->request->testName = $name;
+		$this->request->testStatus = $status;
+		$this->request->testStatusMessage = $statusMessage;
+
+		foreach ($asserts as $assert) {
+			$this->request->addTestAssert($assert['name'], $assert['arguments'], $assert['passed'], $assert['trace']);
+		}
+
+		return $this;
+	}
+
 	// Extends the request with additional data form all data sources when being shown in the Clockwork app
 	public function extendRequest(Request $request = null)
 	{
@@ -138,6 +192,19 @@ class Clockwork implements LoggerInterface
 	public function storeRequest()
 	{
 		return $this->storage->store($this->request);
+	}
+
+	// Reset the log, timeline and all data sources to an empty state, clearing any collected data
+	public function reset()
+	{
+		foreach ($this->dataSources as $dataSource) {
+			$dataSource->reset();
+		}
+
+		$this->log = new Log;
+		$this->timeline = new Timeline;
+
+		return $this;
 	}
 
 	/**

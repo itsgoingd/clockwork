@@ -18,7 +18,7 @@ class Log extends AbstractLogger
 	public $data = [];
 
 	/**
-	 * Add a new timestamped message, with a level and context,
+	 * Add a new timestamped message, with a level and context, context can be used to override serializer defaults
 	 * $context['trace'] = true can be used to force collecting a stack trace
 	 */
 	public function log($level = LogLevel::INFO, $message, array $context = [])
@@ -26,7 +26,7 @@ class Log extends AbstractLogger
 		$trace = $this->hasTrace($context) ? $context['trace'] : StackTrace::get()->resolveViewName();
 
 		$this->data[] = [
-			'message'   => (new Serializer([ 'toString' => true ]))->normalize($message),
+			'message'   => (new Serializer($context))->normalize($message),
 			'exception' => $this->formatException($context),
 			'context'   => $this->formatContext($context),
 			'level'     => $level,

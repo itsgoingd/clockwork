@@ -22,6 +22,8 @@ class Clockwork
 	protected $psrRequest;
 	protected $psrResponse;
 
+	protected $headersSent = false;
+
 	protected static $defaultInstance;
 
 	public function __construct($config = [])
@@ -60,6 +62,43 @@ class Clockwork
 
 		if (! $this->config['enable']) return;
 
+		$this->sendHeaders();
+
+		if (($eventsCount = $this->config['server_timing']) !== false) {
+			$this->setHeader('Server-Timing', ServerTiming::fromRequest($this->clockwork->getRequest(), $eventsCount)->value());
+		}
+
+		return $this->psrResponse;
+	}
+
+	public function commandExecuted($name, $exitCode = null, $arguments = [], $options = [], $argumentsDefaults = [], $optionsDefaults = [], $output = null)
+	{
+		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
+
+		$this->clockwork->getTimeline()->endEvent('total');
+
+		$this->clockwork
+			->resolveAsCommand($name, $exitCode, $arguments, $options, $argumentsDefaults, $optionsDefaults, $output)
+			->storeRequest();
+	}
+
+	public function queueJobExecuted($name, $description = null, $status = 'processed', $payload = [], $queue = null, $connection = null, $options = [])
+	{
+		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
+
+		$this->clockwork->getTimeline()->endEvent('total');
+
+		$this->clockwork
+			->resolveAsQueueJob($name, $description, $status, $payload, $queue, $connection, $options)
+			->storeRequest();
+	}
+
+	public function sendHeaders()
+	{
+		if (! $this->config['enable'] || $this->headersSent) return;
+
+		$this->headersSent = true;
+
 		$this->setHeader('X-Clockwork-Id', $this->getRequest()->id);
 		$this->setHeader('X-Clockwork-Version', BaseClockwork::VERSION);
 
@@ -70,12 +109,6 @@ class Clockwork
 		foreach ($this->config['headers'] as $headerName => $headerValue) {
 			$this->setHeader("X-Clockwork-Header-{$headerName}", $headerValue);
 		}
-
-		if (($eventsCount = $this->config['server_timing']) !== false) {
-			$this->setHeader('Server-Timing', ServerTiming::fromRequest($this->clockwork->getRequest(), $eventsCount)->value());
-		}
-
-		return $this->psrResponse;
 	}
 
 	public function returnMetadata($request = null)

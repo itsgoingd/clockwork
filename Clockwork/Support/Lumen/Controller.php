@@ -49,10 +49,6 @@ class Controller extends LumenController
 	{
 		$this->ensureClockworkIsEnabled();
 
-		if ($this->clockworkSupport->isWebUsingDarkTheme() && ! $request->exists('dark')) {
-			return new RedirectResponse('/__clockwork/app?dark');
-		}
-
 		return $this->clockworkSupport->getWebAsset('index.html');
 	}
 

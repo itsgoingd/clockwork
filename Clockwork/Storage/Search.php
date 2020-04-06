@@ -1,6 +1,7 @@
 <?php namespace Clockwork\Storage;
 
 use Clockwork\Request\Request;
+use Clockwork\Request\RequestType;
 
 class Search
 {
@@ -10,12 +11,14 @@ class Search
 	public $status = [];
 	public $time = [];
 	public $received = [];
+	public $name = [];
+	public $type = [];
 
 	public $stopOnFirstMismatch = false;
 
 	public function __construct($search = [], $options = [])
 	{
-		foreach ([ 'uri', 'controller', 'method', 'status', 'time', 'received' ] as $condition) {
+		foreach ([ 'uri', 'controller', 'method', 'status', 'time', 'received', 'name', 'type' ] as $condition) {
 			$this->$condition = isset($search[$condition]) ? $search[$condition] : [];
 		}
 
@@ -33,7 +36,21 @@ class Search
 
 	public function matches(Request $request)
 	{
-		return $this->matchesString($this->uri, $request->uri)
+		if ($request->type == RequestType::COMMAND) {
+			return $this->matchesCommand($request);
+		} elseif ($request->type == RequestType::QUEUE_JOB) {
+			return $this->matchesQueueJob($request);
+		} elseif ($request->type == RequestType::TEST) {
+			return $this->matchesTest($request);
+		} else {
+			return $this->matchesRequest($request);
+		}
+	}
+
+	protected function matchesRequest(Request $request)
+	{
+		return $this->matchesString($this->type, RequestType::REQUEST)
+			&& $this->matchesString($this->uri, $request->uri)
 			&& $this->matchesString($this->controller, $request->controller)
 			&& $this->matchesExact($this->method, strtolower($request->method))
 			&& $this->matchesNumber($this->status, $request->responseStatus)
@@ -41,10 +58,37 @@ class Search
 			&& $this->matchesDate($this->received, $request->time);
 	}
 
+	protected function matchesCommand(Request $request)
+	{
+		return $this->matchesString($this->type, RequestType::COMMAND)
+			&& $this->matchesString($this->name, $request->commandName)
+			&& $this->matchesNumber($this->status, $request->commandExitCode)
+			&& $this->matchesNumber($this->time, $request->responseDuration)
+			&& $this->matchesDate($this->received, $request->time);
+	}
+
+	protected function matchesQueueJob(Request $request)
+	{
+		return $this->matchesString($this->type, RequestType::QUEUE_JOB)
+			&& $this->matchesString($this->name, $request->jobName)
+			&& $this->matchesString($this->status, $request->jobStatus)
+			&& $this->matchesNumber($this->time, $request->responseDuration)
+			&& $this->matchesDate($this->received, $request->time);
+	}
+
+	protected function matchesTest(Request $request)
+	{
+		return $this->matchesString($this->type, RequestType::TEST)
+			&& $this->matchesString($this->name, $request->testName)
+			&& $this->matchesString($this->status, $request->testStatus)
+			&& $this->matchesNumber($this->time, $request->responseDuration)
+			&& $this->matchesDate($this->received, $request->time);
+	}
+
 	public function isEmpty()
 	{
 		return ! count($this->uri) && ! count($this->controller) && ! count($this->method) && ! count($this->status)
-			&& ! count($this->time) && ! count($this->received);
+			&& ! count($this->time) && ! count($this->received) && ! count($this->name) && ! count($this->type);
 	}
 
 	public function isNotEmpty()

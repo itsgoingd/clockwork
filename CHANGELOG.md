@@ -1,3 +1,39 @@
+4.1
+
+- added support for command type requests with command specific metadata (commandName, commandArguments, commandArgumentsDefaults, commandOptions, commandOptionsDefaults, commandExitCode, commandOutput)
+- added support for collecting executed artisan commands in Laravel integration
+- added support for queue-job type requests with queue-job specific metadata (jobName, jobDescription, jobStatus, jobPayload, jobQueue, jobConnection, jobOptions)
+- added support for collecting executed queue-jobs in Laravel integration (also supports Laravel Horizon)
+- added support for test type requests with test specific metadata (testName, testStatus, testStatusMessage, testAsserts)
+- added support for collecting test runs in Laravel integration using PHPunit
+- added support for disabling collection of view data when collecting rendered views (new default is to collect views without data)
+- added Twig data source using the built-in Twig profiler to collect more precise Twig profiling data
+- added support for setting parent requests on requests
+- improved collecting of database queries, cache queries, dispatched queue jobs and redis commands to also collect time
+- improved the data sources filters api to allow multiple filter types
+- improved collecting of Laravel views to use a separate data source
+- improved Eloquent data source to have an additional "early" filter applied before the query is added to query counts
+- improved Eloquent data source now passes raw stack trace as second argument to filters
+- improved Laravel data source to work when response is not provided
+- improved Laravel events data source to include Laravel namespace in the default ignored events
+- improved Laravel views data source to strip view data prefixed with __
+- improved PHP data source to not set request time for cli commands
+- improved serializer to ommit data below depth limit, support debugInfo, jsonSerialize and toArray methods (partially implemented by mahagr, thanks!)
+- improved log to allow overriding serializer settings via context, no longer enabled toString by default
+- improved Request class now has pre-populated request time on creation
+- improved StackTrace helper with limit option, last method, fixed filter output keys
+- improved Lumen queue and redis feature detection
+- improved vanilla integration to allow manually sending the headers early (implemented by tminich, thanks!)
+- fixed Symfony support, added support for latest Symfony 5.x and 4.x (reported by llaville, thanks!)
+- removed dark theme for the web UI setting (now configurable in the Clockwork app itself)
+- updated to Clockwork App 4.1
+
+*BREAKING*
+
+- multiple new settings were added to the Laravel config file
+- DataSourceInterface::reset method was added, default empty implementation is provided in the base DataSource class
+- LaravelDataSource constructor arguments changed to reflect removing the views collecting support
+
 4.0.17
 
 - improved performance and memory usage when doing file storage cleanup (reported by ikkez, thanks!)
@@ -21,7 +57,6 @@
 - fixed stack traces processing not handling call_user_func frames properly leading to wrong traces (reported by marcus-at-localhost, thanks!)
 - fixed wrong stack traces skip namespaces defaults leading to wrong traces
 - fixed vanilla integration config file missing and no longer used settings
-
 
 4.0.12
 

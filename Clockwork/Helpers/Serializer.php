@@ -12,7 +12,10 @@ class Serializer
 			\Laravel\Lumen\Application::class
 		],
 		'limit' => 10,
+		'toArray' => false,
 		'toString' => false,
+		'debugInfo' => true,
+		'jsonSerialize' => false,
 		'traces' => true,
 		'tracesFilter' => null,
 		'tracesSkip' => null,
@@ -36,45 +39,48 @@ class Serializer
 		if ($context === null) $context = [ 'references' => [] ];
 		if ($limit === null) $limit = $this->options['limit'];
 
-		if ($limit < 1) return $data;
+		if (is_array($data)) {
+			if ($limit === 0) return [ '__type__' => 'array', '__omitted__' => 'limit' ];
 
-		if ($data instanceof \Closure) {
-			return [ '__type__' => 'anonymous function' ];
-		} elseif (is_array($data)) {
-			return [ '__type__' => 'array' ] + array_map(function ($item) use ($context, $limit) {
-				return $this->normalize($item, $context, $limit - 1);
-			}, $data);
+			return [ '__type__' => 'array' ] + $this->normalizeEach($data, $context, $limit - 1);
 		} elseif (is_object($data)) {
-			if ($this->options['toString'] && method_exists($data, '__toString')) {
-				return (string) $data;
-			}
+			if ($data instanceof \Closure) return [ '__type__' => 'anonymous function' ];
 
 			$className = get_class($data);
 			$objectHash = spl_object_hash($data);
 
-			if (isset($context['references'][$objectHash])) {
-				return [ '__type__' => 'recursion' ];
-			}
+			if ($limit === 0) return [ '__class__' => $className, '__omitted__' => 'limit' ];
+
+			if (isset($context['references'][$objectHash])) return [ '__type__' => 'recursion' ];
 
 			$context['references'][$objectHash] = true;
 
-			if (isset($this->cache[$objectHash])) {
-				return $this->cache[$objectHash];
-			}
+			if (isset($this->cache[$objectHash])) return $this->cache[$objectHash];
 
 			if ($this->options['blackbox'] && in_array($className, $this->options['blackbox'])) {
-				return $this->cache[$objectHash] = [ '__class__' => $className ];
+				return $this->cache[$objectHash] = [ '__class__' => $className, '__omitted__' => 'blackbox' ];
+			} elseif ($this->options['toString'] && method_exists($data, '__toString')) {
+				return $this->cache[$objectHash] = (string) $data;
 			}
 
-			$data = (array) $data;
-			$data = array_column(array_map(function ($key, $item) use ($className, $context, $limit) {
-				return [
+			if ($this->options['debugInfo'] && method_exists($data, '__debugInfo')) {
+				$data = (array) $data->__debugInfo();
+			} elseif ($this->options['jsonSerialize'] && method_exists($data, 'jsonSerialize')) {
+				$data = (array) $data->jsonSerialize();
+			} elseif ($this->options['toArray'] && method_exists($data, 'toArray')) {
+				$data = (array) $data->toArray();
+			} else {
+				$data = (array) $data;
+			}
+
+			$data = array_combine(
+				array_map(function ($key) {
 					// replace null-byte prefixes of protected and private properties used by php with * (protected)
 					// and ~ (private)
-					preg_replace('/^\0.+?\0/', '~', str_replace("\0*\0", '*', $key)),
-					$this->normalize($item, $context, $limit - 1)
-				];
-			}, array_keys($data), $data), 1, 0);
+					return preg_replace('/^\0.+?\0/', '~', str_replace("\0*\0", '*', $key));
+				}, array_keys($data)),
+				$this->normalizeEach($data, $context, $limit - 1)
+			);
 
 			return $this->cache[$objectHash] = [ '__class__' => $className ] + $data;
 		} elseif (is_resource($data)) {
@@ -85,8 +91,10 @@ class Serializer
 	}
 
 	// normalize each member of an array (doesn't add metadata for top level)
-	public function normalizeEach($data) {
-		return array_map(function ($item) { return $this->normalize($item); }, $data);
+	public function normalizeEach($data, $context = null, $limit = null) {
+		return array_map(function ($item) use ($context, $limit) {
+			return $this->normalize($item, $context, $limit);
+		}, $data);
 	}
 
 	public function trace(StackTrace $trace)

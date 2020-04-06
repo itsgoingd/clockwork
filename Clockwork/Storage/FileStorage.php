@@ -268,10 +268,21 @@ class FileStorage extends Storage
 
 	protected function makeRequestFromIndex($record)
 	{
-		if (count($record) != 7) return new Request; // invalid index data, return a null request
+		$type = isset($record[7]) ? $record[7] : 'response';
+
+		if ($type == 'command') {
+			$nameField = 'commandName';
+		} elseif ($type == 'queue-job') {
+			$nameField = 'jobName';
+		} elseif ($type == 'test') {
+			$nameField = 'testName';
+		} else {
+			$nameField = 'uri';
+		}
 
 		return new Request(array_combine(
-			[ 'id', 'time', 'method', 'uri', 'controller', 'responseStatus', 'responseDuration' ], $record
+			[ 'id', 'time', 'method', $nameField, 'controller', 'responseStatus', 'responseDuration', 'type' ],
+			$record + [ null, null, null, null, null, null, null, 'response' ]
 		));
 	}
 
@@ -281,14 +292,25 @@ class FileStorage extends Storage
 		$handle = fopen("{$this->path}/index", 'a');
 		flock($handle, LOCK_EX);
 
+		if ($request->type == 'command') {
+			$nameField = 'commandName';
+		} elseif ($request->type == 'queue-job') {
+			$nameField = 'jobName';
+		} elseif ($request->type == 'test') {
+			$nameField = 'testName';
+		} else {
+			$nameField = 'uri';
+		}
+
 		fputcsv($handle, [
 			$request->id,
 			$request->time,
 			$request->method,
-			$request->uri,
+			$request->$nameField,
 			$request->controller,
 			$request->responseStatus,
-			$request->getResponseDuration()
+			$request->getResponseDuration(),
+			$request->type
 		]);
 
 		flock($handle, LOCK_UN);

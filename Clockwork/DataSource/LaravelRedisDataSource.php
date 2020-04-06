@@ -49,7 +49,8 @@ class LaravelRedisDataSource extends DataSource
 				'command'    => $event->command,
 				'parameters' => $event->parameters,
 				'duration'   => $event->time,
-				'connection' => $event->connectionName
+				'connection' => $event->connectionName,
+				'time'       => microtime(true) - $event->time / 1000
 			]);
 		});
 	}
@@ -62,6 +63,12 @@ class LaravelRedisDataSource extends DataSource
 		$request->redisCommands = array_merge($request->redisCommands, $this->getCommands());
 
 		return $request;
+	}
+
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
+	{
+		$this->commands = [];
 	}
 
 	/**

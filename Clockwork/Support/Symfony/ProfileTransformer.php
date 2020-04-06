@@ -49,10 +49,11 @@ class ProfileTransformer
 
 				return [
 					'connection' => $connection,
-					'time' => $query['end'] - $query['start'],
-					'type' => array_values($value)[0] ? 'hit' : 'miss',
-					'key' => array_keys($value)[0],
-					'value' => ''
+					'time'       => $query['start'],
+					'type'       => array_values($value)[0] ? 'hit' : 'miss',
+					'key'        => array_keys($value)[0],
+					'value'      => '',
+					'duration'   => $query['end'] - $query['start']
 				];
 			}, $queries));
 		}, $this->unwrap($data->getCalls()), array_keys($this->unwrap($data->getCalls()))), function ($all, $queries) {

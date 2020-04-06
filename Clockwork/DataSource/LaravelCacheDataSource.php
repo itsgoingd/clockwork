@@ -23,10 +23,7 @@ class LaravelCacheDataSource extends DataSource
 
 	// Query counts by type
 	protected $count = [
-		'read'   => 0,
-		'hit'    => 0,
-		'write'  => 0,
-		'delete' => 0
+		'read' => 0, 'hit' => 0, 'write' => 0, 'delete' => 0
 	];
 
 	// Whether we are collecting cache queries or stats only
@@ -97,6 +94,16 @@ class LaravelCacheDataSource extends DataSource
 		return $request;
 	}
 
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
+	{
+		$this->queries = [];
+
+		$this->count = [
+			'read' => 0, 'hit' => 0, 'write' => 0, 'delete' => 0
+		];
+	}
+
 	/**
 	 * Registers a new query, resolves caller file and line no
 	 */
@@ -108,7 +115,7 @@ class LaravelCacheDataSource extends DataSource
 			'type'       => $query['type'],
 			'key'        => $query['key'],
 			'value'      => isset($query['value']) ? (new Serializer)->normalize($query['value']) : null,
-			'time'       => null,
+			'time'       => microtime(true),
 			'connection' => null,
 			'trace'      => $shortTrace = (new Serializer)->trace($trace),
 			'file'       => isset($shortTrace[0]) ? $shortTrace[0]['file'] : null,
