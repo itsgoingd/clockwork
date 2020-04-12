@@ -10,6 +10,7 @@ use Clockwork\Request\IncomingRequest;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\Search;
 use Clockwork\Storage\SqlStorage;
+use Clockwork\Web\Web;
 
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Message\ResponseInterface as PsrResponse;
@@ -233,6 +234,55 @@ class Clockwork
 		$storage->update($request);
 
 		return $this->response();
+	}
+
+	public function returnWeb()
+	{
+		if (! $this->config['web']['enable']) return;
+
+		$this->installWeb();
+
+		$asset = function ($uri) { return "{$this->config['web']['uri']}/{$uri}"; };
+		$url = $this->config['web']['uri'];
+
+		if (! preg_match('#/index.html$#', $url)) {
+			$url = rtrim($url, '/') . '/index.html';
+		}
+
+		if ($this->config['api'] != '/__clockwork/') {
+			$url .= '?' . http_build_query([ 'clockwork-path' => $this->config['api'] ]);
+		}
+
+		ob_start();
+
+		include __DIR__ . '/iframe.html.php';
+
+		$html = ob_get_clean();
+
+		echo $html;
+	}
+
+	public function installWeb()
+	{
+		$path = $this->config['web']['path'];
+		$source = __DIR__ . '/../../Web/public';
+
+		if (file_exists("{$path}/index.html")) return;
+
+		@mkdir($path, 0755, true);
+
+		$iterator = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS),
+			\RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		foreach ($iterator as $item) {
+			if ($item->isDir()) {
+				mkdir("{$path}/" . $iterator->getSubPathName());
+			} else {
+				copy($item, "{$path}/" . $iterator->getSubPathName());
+			}
+		}
 	}
 
 	// Use a PSR-7 request and response instances instead of vanilla php HTTP apis

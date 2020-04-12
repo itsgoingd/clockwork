@@ -113,6 +113,23 @@ return [
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------
+	| Clockwork web UI
+	|------------------------------------------------------------------------------------------------------------------
+	*/
+
+	'web' => [
+		// enable or disable the web UI
+		'enable' => isset($_ENV['CLOCKWORK_WEB_ENABLE']) ? $_ENV['CLOCKWORK_WEB_ENABLE'] : true,
+
+		// path to the clockwork app source
+		'path' => isset($_ENV['CLOCKWORK_WEB_PATH']) ? $_ENV['CLOCKWORK_WEB_PATH'] : __DIR__ . '/../../../../../public/vendor/clockwork',
+
+		// uri of the clockwork app source
+		'uri' => isset($_ENV['CLOCKWORK_WEB_URI']) ? $_ENV['CLOCKWORK_WEB_URI'] : '/vendor/clockwork'
+	],
+
+	/*
+	|------------------------------------------------------------------------------------------------------------------
 	| Metadata storage
 	|------------------------------------------------------------------------------------------------------------------
 	|
