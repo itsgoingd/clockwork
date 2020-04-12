@@ -1,3 +1,7 @@
+4.2 (unreleased)
+
+- added ext-json to composer.json require section (idea by staabm, thanks!)
+
 4.1
 
 - added support for command type requests with command specific metadata (commandName, commandArguments, commandArgumentsDefaults, commandOptions, commandOptionsDefaults, commandExitCode, commandOutput)
