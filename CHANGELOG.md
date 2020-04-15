@@ -1,3 +1,8 @@
+4.1.1
+
+- added ext-json to composer.json require section (idea by staabm, thanks!)
+- fixed Clockwork being initialized too soon in Laravel integration leading to possible crashes (reported by tminich, thanks!)
+
 4.1
 
 - added support for command type requests with command specific metadata (commandName, commandArguments, commandArgumentsDefaults, commandOptions, commandOptionsDefaults, commandExitCode, commandOutput)
