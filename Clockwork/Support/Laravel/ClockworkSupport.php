@@ -223,7 +223,7 @@ class ClockworkSupport
 
 	public function process($request, $response)
 	{
-		if (! $this->isCollectingData()) {
+		if (! $this->isCollectingRequests()) {
 			return $response; // Collecting data is disabled, return immediately
 		}
 
