@@ -1,3 +1,8 @@
+4.1.2
+
+- fixed interaction when making HTTP requests in feature tests when collecting tests in Laravel
+- updated to Clockwork App 4.1.1
+
 4.1.1
 
 - added ext-json to composer.json require section (idea by staabm, thanks!)
