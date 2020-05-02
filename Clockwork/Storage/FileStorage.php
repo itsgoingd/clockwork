@@ -106,10 +106,7 @@ class FileStorage extends Storage
 			new Search([ 'received' => [ '<' . date('c', $expirationTime) ] ], [ 'stopOnFirstMismatch' => true ])
 		);
 
-		if (! count($old)) {
-		    $this->closeIndex(true);
-		    return;
-        };
+		if (! count($old)) return $this->closeIndex(true);
 
 		$this->readPreviousIndex();
 		$this->trimIndex();
