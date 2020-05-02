@@ -1,3 +1,7 @@
+4.1.3
+
+- fixed file storage not unlocking index when cleanup has nothing to clean (implemented by Nacoma, thanks!)
+
 4.1.2
 
 - fixed interaction when making HTTP requests in feature tests when collecting tests in Laravel
