@@ -449,7 +449,7 @@ class Request
 		];
 	}
 
-	// Add view, takes view name, view data and additional data - time (when was the email sent), duration (sending
+	// Add view, takes view name, view data and additional data - time (when was the view rendered), duration (sending
 	// time in ms)
 	public function addView($name, $viewData = [], $data = [])
 	{
