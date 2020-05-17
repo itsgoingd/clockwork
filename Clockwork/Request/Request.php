@@ -143,6 +143,15 @@ class Request
 	 */
 	public $cacheTime;
 
+	// Model actions
+	public $modelsActions = [];
+
+	// Model action counts by model
+	public $modelsRetrieved;
+	public $modelsCreated;
+	public $modelsUpdated;
+	public $modelsDeleted;
+
 	// Redis commands
 	public $redisCommands = [];
 
@@ -318,6 +327,11 @@ class Request
 			'cacheWrites'              => $this->cacheWrites,
 			'cacheDeletes'             => $this->cacheDeletes,
 			'cacheTime'                => $this->cacheTime,
+			'modelsActions'            => $this->modelsActions,
+			'modelsRetrieved'          => $this->modelsRetrieved,
+			'modelsCreated'            => $this->modelsCreated,
+			'modelsUpdated'            => $this->modelsUpdated,
+			'modelsDeleted'            => $this->modelsDeleted,
 			'redisCommands'            => $this->redisCommands,
 			'queueJobs'                => $this->queueJobs,
 			'timelineData'             => $this->timelineData,

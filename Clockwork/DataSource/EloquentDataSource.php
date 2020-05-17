@@ -31,8 +31,22 @@ class EloquentDataSource extends DataSource
 		'total' => 0, 'slow' => 0, 'select' => 0, 'insert' => 0, 'update' => 0, 'delete' => 0, 'other' => 0
 	];
 
-	// Whether we are collecting cache queries or stats only
+	// Collected models actions
+	protected $modelsActions = [];
+
+	// Model action counts by model, eg. [ 'retrieved' => [ User::class => 1 ] ]
+	protected $modelsCount = [
+		'retrieved' => [], 'created' => [], 'updated' => [], 'deleted' => []
+	];
+
+	// Whether we are collecting database queries or stats only
 	protected $collectQueries = true;
+
+	// Whether we are collecting models actions or stats only
+	protected $collectModelsActions = true;
+
+	// Whether we are collecting retrieved models as well when collecting models actions
+	protected $collectModelsRetrieved = false;
 
 	// Query execution time threshold in ms after which the query is marked as slow
 	protected $slowThreshold;
@@ -48,13 +62,15 @@ class EloquentDataSource extends DataSource
 	/**
 	 * Create a new data source instance, takes a database manager and an event dispatcher as arguments
 	 */
-	public function __construct(ConnectionResolverInterface $databaseManager, EventDispatcher $eventDispatcher, $collectQueries = true, $slowThreshold = null, $slowOnly = false, $detectDuplicateQueries = false)
+	public function __construct(ConnectionResolverInterface $databaseManager, EventDispatcher $eventDispatcher, $collectQueries = true, $slowThreshold = null, $slowOnly = false, $detectDuplicateQueries = false, $collectModelsActions = true, $collectModelsRetrieved = false)
 	{
 		$this->databaseManager = $databaseManager;
 		$this->eventDispatcher = $eventDispatcher;
 		$this->collectQueries = $collectQueries;
 		$this->slowThreshold = $slowThreshold;
 		$this->detectDuplicateQueries = $detectDuplicateQueries;
+		$this->collectModelsActions = $collectModelsActions;
+		$this->collectModelsRetrieved = $collectModelsRetrieved;
 
 		if ($slowOnly) $this->addFilter(function ($query) { return $query['duration'] > $this->slowThreshold; });
 	}
@@ -81,6 +97,24 @@ class EloquentDataSource extends DataSource
 			// Laravel 5.0 to 5.1
 			$this->eventDispatcher->listen('illuminate.query', [ $this, 'registerLegacyQuery' ]);
 		}
+
+		// register all event listeners individually so we don't have to regex the event type and support Laravel <5.4
+		$this->listenToModelEvent('retrieved');
+		$this->listenToModelEvent('created');
+		$this->listenToModelEvent('updated');
+		$this->listenToModelEvent('deleted');
+	}
+
+	// Register a listener collecting model events of specified type
+	protected function listenToModelEvent($event)
+	{
+		$this->eventDispatcher->listen("eloquent.{$event}: *", function ($model, $data = null) use ($event) {
+			if (is_string($model) && is_array($data)) { // Laravel 5.4 wildcard event
+				$model = reset($data);
+			}
+
+			$this->collectModelEvent($event, $model);
+		});
 	}
 
 	/**
@@ -128,6 +162,35 @@ class EloquentDataSource extends DataSource
 		]);
 	}
 
+	// Collect a model event and update stats
+	protected function collectModelEvent($event, $model)
+	{
+		$trace = StackTrace::get()->resolveViewName();
+
+		$action = [
+			'model'      => get_class($model),
+			'key'        => $model->getKey(),
+			'action'     => $event,
+			'attributes' => $this->collectModelsRetrieved && $event == 'retrieved' ? $model->getOriginal() : [],
+			'changes'    => $this->collectModelsActions ? $model->getChanges() : [],
+			'time'       => microtime(true) / 1000,
+			'trace'      => $shortTrace = (new Serializer)->trace($trace),
+			'file'       => isset($shortTrace[0]) ? $shortTrace[0]['file'] : null,
+			'line'       => isset($shortTrace[0]) ? $shortTrace[0]['line'] : null,
+			'tags'       => []
+		];
+
+		if (! $this->passesFilters([ $action, $trace ], 'models-early')) return;
+
+		$this->incrementModelsCount($action['action'], $action['model']);
+
+		if (! $this->collectModelsActions) return;
+		if (! $this->collectModelsRetrieved && $event == 'retrieved') return;
+		if (! $this->passesFilters([ $action, $trace ], 'models')) return;
+
+		$this->modelsActions[] = $action;
+	}
+
 	/**
 	 * Adds ran database queries to the request
 	 */
@@ -142,6 +205,13 @@ class EloquentDataSource extends DataSource
 		$request->databaseUpdates      += $this->count['update'];
 		$request->databaseDeletes      += $this->count['delete'];
 		$request->databaseOthers       += $this->count['other'];
+
+		$request->modelsActions = array_merge($request->modelsActions, $this->modelsActions);
+
+		$request->modelsRetrieved = $this->modelsCount['retrieved'];
+		$request->modelsCreated   = $this->modelsCount['created'];
+		$request->modelsUpdated   = $this->modelsCount['updated'];
+		$request->modelsDeleted   = $this->modelsCount['deleted'];
 
 		$this->appendDuplicateQueriesWarnings($request);
 
@@ -207,7 +277,7 @@ class EloquentDataSource extends DataSource
 		return $connection->getPdo()->quote($binding);
 	}
 
-	// Increase query counts for collected query
+	// Increment query counts for collected query
 	protected function incrementQueryCount($query)
 	{
 		$this->count['total']++;
@@ -227,6 +297,16 @@ class EloquentDataSource extends DataSource
 		if (in_array('slow', $query['tags'])) {
 			$this->count['slow']++;
 		}
+	}
+
+	// Increment model counts for collected model action
+	protected function incrementModelsCount($action, $model)
+	{
+		if (! isset($this->modelsCount[$action][$model])) {
+			$this->modelsCount[$action][$model] = 0;
+		}
+
+		$this->modelsCount[$action][$model]++;
 	}
 
 	/**

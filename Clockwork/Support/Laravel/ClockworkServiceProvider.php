@@ -163,7 +163,9 @@ class ClockworkServiceProvider extends ServiceProvider
 				$app['clockwork.support']->getConfig('features.database.collect_queries'),
 				$app['clockwork.support']->getConfig('features.database.slow_threshold'),
 				$app['clockwork.support']->getConfig('features.database.slow_only'),
-				$app['clockwork.support']->getConfig('features.database.detect_duplicate_queries')
+				$app['clockwork.support']->getConfig('features.database.detect_duplicate_queries'),
+				$app['clockwork.support']->getConfig('features.database.collect_models_actions'),
+				$app['clockwork.support']->getConfig('features.database.collect_models_retrieved')
 			));
 
 			// if we are collecting queue jobs, filter out queries caused by the database queue implementation
