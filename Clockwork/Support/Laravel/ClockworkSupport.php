@@ -147,11 +147,11 @@ class ClockworkSupport
 			$inputArguments = $event->input->getArguments();
 			$inputOptions = $event->input->getOptions();
 			$comparator = function($a, $b) {
-				return strcmp(serialize($a), serialize($b));
+				return $a === $b ? 0 : 1;
 			};
-			$arguments = array_udiff($inputArguments, $argumentsDefaults, $comparator);
-			$options = array_udiff($inputOptions, $optionsDefaults, $comparator);
-
+			$arguments =  array_udiff_assoc($inputArguments, $argumentsDefaults, $comparator);
+			$options = array_udiff_assoc($inputOptions, $optionsDefaults, $comparator);
+			dump($options);
 			$this->app->make('clockwork')
 				->resolveAsCommand(
 					$event->command,
