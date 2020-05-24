@@ -59,7 +59,7 @@ return [
 
 	'storage' => isset($_ENV['CLOCKWORK_STORAGE']) ? $_ENV['CLOCKWORK_STORAGE'] : 'files',
 
-	'storage_files_path' => isset($_ENV['CLOCKWORK_STORAGE_FILES_PATH']) ? $_ENV['CLOCKWORK_STORAGE_FILES_PATH'] : __DIR__ . '/../../../../../clockwork',
+	'storage_files_path' => isset($_ENV['CLOCKWORK_STORAGE_FILES_PATH']) ? $_ENV['CLOCKWORK_STORAGE_FILES_PATH'] : __DIR__ . '/../../../../../../clockwork',
 
 	// Compress the metadata files using gzip, trading a little bit of performance for lower disk usage
 	'storage_files_compress' => isset($_ENV['CLOCKWORK_STORAGE_FILES_COMPRESS']) ? $_ENV['CLOCKWORK_STORAGE_FILES_COMPRESS'] : false,

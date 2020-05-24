@@ -21,7 +21,7 @@ class Clockwork implements LoggerInterface
 	/**
 	 * Clockwork version
 	 */
-	const VERSION = '4.1.3';
+	const VERSION = '4.1.4';
 
 	/**
 	 * Array of data sources, these objects provide data to be stored in a request object
@@ -344,15 +344,17 @@ class Clockwork implements LoggerInterface
 
 	// Shortcut methods for the Request object
 
-	// Add database query, takes query, bindings, duration and additional data - connection (connection name), file
-	// (caller file name), line (caller line number), trace (serialized trace), model (associated ORM model)
+	// Add database query, takes query, bindings, duration (in ms) and additional data - connection (connection name),
+	// time (when was the query executed), file (caller file name), line (caller line number), trace (serialized trace),
+	// model (associated ORM model)
 	public function addDatabaseQuery($query, $bindings = [], $duration = null, $data = [])
 	{
 		return $this->getRequest()->addDatabaseQuery($query, $bindings, $duration, $data);
 	}
 
-	// Add cache query, takes type, key, value and additional data - connection (connection name), file
-	// (caller file name), line (caller line number), trace (serialized trace), expiration
+	// Add cache query, takes type, key, value, duration (in ms) and additional data - connection (connection name),
+	// time (when was the query executed), file (caller file name), line (caller line number), trace (serialized trace),
+	// expiration
 	public function addCacheQuery($type, $key, $value = null, $duration = null, $data = [])
 	{
 		return $this->getRequest()->addCacheQuery($type, $key, $value, $duration, $data);
@@ -372,17 +374,18 @@ class Clockwork implements LoggerInterface
 		return $this->getRequest()->addRoute($method, $uri, $action, $data);
 	}
 
-	// Add route, takes method, uri, action and additional data - name, middleware, before (before filters), after
-	// (after filters)
-	public function addEmail($subject, $to, $from = null, $headers = [])
+	// Add sent email, takes subject, recipient address, sender address, array of headers, and additional data - time
+	// (when was the email sent), duration (sending time in ms)
+	public function addEmail($subject, $to, $from = null, $headers = [], $data = [])
 	{
-		return $this->getRequest()->addEmail($subject, $to, $from, $headers);
+		return $this->getRequest()->addEmail($subject, $to, $from, $headers, $data);
 	}
 
-	// Add view, takes view name and data
-	public function addView($name, $data = [])
+	// Add view, takes view name, view data and additional data - time (when was the view rendered), duration (sending
+	// time in ms)
+	public function addView($name, $viewData = [], $data = [])
 	{
-		return $this->getRequest()->addView($name, $data);
+		return $this->getRequest()->addView($name, $viewData, $data);
 	}
 
 	// Add executed subrequest, takes the requested url, suvrequest Clockwork ID and additional data - path if non-default,

@@ -1,3 +1,9 @@
+4.1.4
+
+- added support for a time property to the Request:add* apis, defaults to "current time - duration"
+- fixed crash when collecting console commands with array arguments or options in the Laravel integration (implemented by mortenscheel, thanks!)
+- fixed default storage directory being one level too deep in vanilla integration
+
 4.1.3
 
 - fixed file storage not unlocking index when cleanup has nothing to clean (implemented by Nacoma, thanks!)

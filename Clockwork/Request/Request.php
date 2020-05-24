@@ -361,8 +361,9 @@ class Request
 		return json_encode($this->toArray(), \JSON_PARTIAL_OUTPUT_ON_ERROR);
 	}
 
-	// Add database query, takes query, bindings, duration and additional data - connection (connection name), file
-	// (caller file name), line (caller line number), trace (serialized trace), model (associated ORM model)
+	// Add database query, takes query, bindings, duration (in ms) and additional data - connection (connection name),
+	// time (when was the query executed), file (caller file name), line (caller line number), trace (serialized trace),
+	// model (associated ORM model)
 	public function addDatabaseQuery($query, $bindings = [], $duration = null, $data = [])
 	{
 		$this->databaseQueries[] = [
@@ -370,6 +371,7 @@ class Request
 			'bindings'   => (new Serializer)->normalize($bindings),
 			'duration'   => $duration,
 			'connection' => isset($data['connection']) ? $data['connection'] : null,
+			'time'       => isset($data['time']) ? $data['time'] : microtime(true) - $duration / 1000,
 			'file'       => isset($data['file']) ? $data['file'] : null,
 			'line'       => isset($data['line']) ? $data['line'] : null,
 			'trace'      => isset($data['trace']) ? $data['trace'] : null,
@@ -380,8 +382,9 @@ class Request
 		];
 	}
 
-	// Add cache query, takes type, key, value and additional data - connection (connection name), file
-	// (caller file name), line (caller line number), trace (serialized trace), expiration
+	// Add cache query, takes type, key, value, duration (in ms) and additional data - connection (connection name),
+	// time (when was the query executed), file (caller file name), line (caller line number), trace (serialized trace),
+	// expiration
 	public function addCacheQuery($type, $key, $value = null, $duration = null, $data = [])
 	{
 		$this->cacheQueries[] = [
@@ -390,6 +393,7 @@ class Request
 			'value'      => (new Serializer)->normalize($value),
 			'duration'   => $duration,
 			'connection' => isset($data['connection']) ? $data['connection'] : null,
+			'time'       => isset($data['time']) ? $data['time'] : microtime(true) - $duration / 1000,
 			'file'       => isset($data['file']) ? $data['file'] : null,
 			'line'       => isset($data['line']) ? $data['line'] : null,
 			'trace'      => isset($data['trace']) ? $data['trace'] : null,
@@ -404,7 +408,7 @@ class Request
 		$this->events[] = [
 			'event'     => $event,
 			'data'      => (new Serializer)->normalize($eventData),
-			'time'      => $time,
+			'time'      => $time ?: microtime(true),
 			'listeners' => isset($data['listeners']) ? $data['listeners'] : null,
 			'file'      => isset($data['file']) ? $data['file'] : null,
 			'line'      => isset($data['line']) ? $data['line'] : null,
@@ -427,12 +431,16 @@ class Request
 		];
 	}
 
-	// Add route, takes method, uri, action and additional data - name, middleware, before (before filters), after
-	// (after filters)
-	public function addEmail($subject, $to, $from = null, $headers = [])
+	// Add sent email, takes subject, recipient address, sender address, array of headers, and additional data - time
+	// (when was the email sent), duration (sending time in ms)
+	public function addEmail($subject, $to, $from = null, $headers = [], $data = [])
 	{
 		$this->emailsData[] = [
-			'data' => [
+			'start'       => isset($data['time']) ? $data['time'] : null,
+			'end'         => isset($data['time'], $data['duration']) ? $data['time'] + $data['duration'] / 1000 : null,
+			'duration'    => isset($data['duration']) ? $data['duration'] : null,
+			'description' => 'Sending an email message',
+			'data'        => [
 				'subject' => $subject,
 				'to'      => $to,
 				'from'    => $from,
@@ -441,13 +449,18 @@ class Request
 		];
 	}
 
-	// Add view, takes view name and data
-	public function addView($name, $data = [])
+	// Add view, takes view name, view data and additional data - time (when was the view rendered), duration (sending
+	// time in ms)
+	public function addView($name, $viewData = [], $data = [])
 	{
 		$this->viewsData[] = [
-			'data' => [
+			'start'       => isset($data['time']) ? $data['time'] : null,
+			'end'         => isset($data['time'], $data['duration']) ? $data['time'] + $data['duration'] / 1000 : null,
+			'duration'    => isset($data['duration']) ? $data['duration'] : null,
+			'description' => 'Rendering a view',
+			'data'        => [
 				'name' => $name,
-				'data' => (new Serializer)->normalize($data)
+				'data' => (new Serializer)->normalize($viewData)
 			]
 		];
 	}
