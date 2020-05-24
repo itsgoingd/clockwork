@@ -144,13 +144,20 @@ class ClockworkSupport
 
 			$argumentsDefaults = $command->getDefinition()->getArgumentDefaults();
 			$optionsDefaults = $command->getDefinition()->getOptionDefaults();
-
+			$inputArguments = $event->input->getArguments();
+			$inputOptions = $event->input->getOptions();
+			$comparator = function($a, $b) {
+				return $a === $b ? 0 : 1;
+			};
+			$arguments =  array_udiff_assoc($inputArguments, $argumentsDefaults, $comparator);
+			$options = array_udiff_assoc($inputOptions, $optionsDefaults, $comparator);
+			dump($options);
 			$this->app->make('clockwork')
 				->resolveAsCommand(
 					$event->command,
 					$event->exitCode,
-					array_diff($event->input->getArguments(), $argumentsDefaults),
-					array_diff($event->input->getOptions(), $optionsDefaults),
+					$arguments,
+					$options,
 					$argumentsDefaults,
 					$optionsDefaults,
 					$this->getConfig('artisan.collect_output') ? $event->output->getFormatter()->capturedOutput() : null
