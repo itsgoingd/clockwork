@@ -4,6 +4,7 @@ use Clockwork\Clockwork;
 use Clockwork\DataSource\LumenDataSource;
 use Clockwork\DataSource\PhpDataSource;
 use Clockwork\Request\Log;
+use Clockwork\Request\Request;
 use Clockwork\Support\Laravel\ClockworkServiceProvider as LaravelServiceProvider;
 
 use Illuminate\Support\Facades\Facade;
@@ -26,6 +27,7 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 			$clockwork = (new Clockwork)
 				->setAuthenticator($app['clockwork.authenticator'])
 				->setLog($app['clockwork.log'])
+				->setRequest($app['clockwork.request'])
 				->setStorage($app['clockwork.storage'])
 				->addDataSource(new PhpDataSource())
 				->addDataSource($app['clockwork.lumen']);
@@ -49,6 +51,10 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 			return new Log;
 		});
 
+		$this->app->singleton('clockwork.request', function ($app) {
+ 			return new Request;
+ 		});
+
 		$this->app->singleton('clockwork.storage', function ($app) {
 			return $app['clockwork.support']->getStorage();
 		});
@@ -61,6 +67,7 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 		$this->registerDataSources();
 		$this->registerAliases();
 
+		$this->app->make('clockwork.request'); // instantiate the request to have id and time available as early as possible
 		$this->app['clockwork.support']->configureSerializer();
 
 		if ($this->isRunningWithFacades() && ! class_exists('Clockwork')) {
