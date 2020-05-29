@@ -1,3 +1,7 @@
+4.1.5
+
+- fixed crash on initialization in Lumen apps using queue (reported by gramparallelo, thanks!)
+
 4.1.4
 
 - added support for a time property to the Request:add* apis, defaults to "current time - duration"
