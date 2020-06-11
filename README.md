@@ -1,80 +1,89 @@
 <p align="center">
-	<img width="412px" src="https://underground.works/clockwork/images/github/title.png">
-	<img src="https://underground.works/clockwork/images/github/clockwork-intro.png">
+	<img width="300px" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/title.png">
+	<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/screenshot.png">
 </p>
 
+> Clockwork is a development tool for PHP available right in your browser. Clockwork gives you an insight into your application runtime - including request data, performance metrics, log entries, database queries, cache queries, redis commands, dispatched events, queued jobs, rendered views and more - for HTTP requests, commands, queue jobs and tests.
 
-### What is Clockwork?
+> *This repository contains the server-side component of Clockwork.*
 
-Clockwork is a browser extension, providing tools for debugging and profiling your PHP applications, including request data, application log, database queries, routes, visualisation of application runtime and more.
+> Check out on the [Clockwork website](https://underground.works/clockwork) for details.
 
-Clockwork uses a server-side component, that gathers all the data and easily integrates with any PHP project, including out-of-the-box support for major frameworks.
-
-Read more and try it out on the [Clockwork website](https://underground.works/clockwork).
-
-*This repository contains the server-side component of Clockwork.*
+<p align="center">
+	<a href="https://underground.works/clockwork">
+		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-1.png">
+	</a>
+	<a href="https://underground.works/clockwork">
+		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-2.png">
+	</a>
+	<a href="https://underground.works/clockwork">
+		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-3.png">
+	</a>
+	<a href="https://underground.works/clockwork">
+		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-4.png">
+	</a>
+	<a href="https://underground.works/clockwork">
+		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-5.png">
+	</a>
+	<a href="https://underground.works/clockwork">
+		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-6.png">
+	</a>
+</p>
 
 ### Installation
 
-*This readme contains installation and usage instructions for the Laravel framework, for other integrations check out the [Clockwork website](https://underground.works/clockwork).*
-
 Install the Clockwork library via Composer.
 
-```shell
+```
 $ composer require itsgoingd/clockwork
 ```
 
-If you are running the latest Laravel version, congratulations you are done!
+Congratulations, you are done! To enable more features like commands or queue jobs profiling, publish the configuration file via the `vendor:publish` Artisan command.
 
-For Laravel versions older than 5.5, you'll need to register the service provider, in your `config/app.php`:
+**Note:** If you are using the Laravel route cache, you will need to refresh it using the route:cache Artisan command.
 
-```php
-'providers' => [
-	...
-	Clockwork\Support\Laravel\ClockworkServiceProvider::class
-]
-```
+Read more about other integrations on the [Clockwork website](https://underground.works/clockwork).
 
-By default, Clockwork will only be available in debug mode, you can change this and other settings in the configuration file. Use the `vendor:publish` Artisan command to publish the configuration file into your config directory.
+### Features
 
-Clockwork comes with a `clock()` helper function, which provides an easy way to add records to the Clockwork log and events to the timeline.
+#### Collecting data
 
-If you prefer to use a Facade, add following to your `config/app.php`:
+The Clockwork server-side component collects and stores data about your application.
 
-```php
-'aliases' => [
-	...
-	'Clockwork' => Clockwork\Support\Laravel\Facade::class,
-]
-```
+Clockwork is only active when your app is in debug mode by default. You can choose to explicitly enable or disable Clockwork, or even set Clockwork to always collect data without exposing them for further analysis.
 
-**Note:** If you are using Laravel route cache, you will need to refresh it using the `route:cache` Artisan command.
+We collect a whole bunch of useful data by default, but you can enable more features or disable features you don't need in the config file.
 
-### Usage
+Some features might allow for advanced options, eg. for database queries you can set a slow query threshold or enable detecting of duplicate (N+1) queries. Check out the config file to see all what Clockwork can do.
 
-To interact with the data collected by Clockwork, you will need to
+New in Clockwork 4.1, artisan commands, queue jobs and tests can now also be collected, you need to enable this in the config file.
 
-- install the [Chrome extension](https://chrome.google.com/webstore/detail/clockwork/dmggabnehkmmfmdffgajcflpdjlnoemp)
-- or the [Firefox add-on](https://addons.mozilla.org/en-US/firefox/addon/clockwork-dev-tools/)
-- or use the web UI `http://your.app/__clockwork`
+Clockwork also collects stack traces for data like log messages or database queries. Last 10 frames of the trace are collected by default. You can change the frames limit or disable this feature in the configuration file.
 
-Clockwork comes with a `clock()` helper function, which provides an easy way to add records to the Clockwork log or events to the timeline.
+#### Viewing data
 
-You can also access Clockwork using the `Clockwork` facade, resolving from the container `app('clockwork')` or typehinting `Clockwork\Clockwork`.
+Clockwork app is available as a browser extension:
+
+- [Chrome](https://chrome.google.com/webstore/detail/clockwork/dmggabnehkmmfmdffgajcflpdjlnoemp)
+- [Firefox](https://addons.mozilla.org/en-US/firefox/addon/clockwork-dev-tools/)
+
+The server-side component also includes a full copy of the Clockwork app available at `your.app/__clockwork`.
 
 #### Logging
 
-All data logged using the Laravel log methods will also appear in the Clockwork log tab for the request.
-
-You can also use the Clockwork log directly, with the benefit of rich logging capabilities. You can safely log any variable, from a simple string to an object.
-
-Logging data to Clockwork can be done using the helper function, which even supports logging multiple values at once
+You can log any variable via the clock() helper, from a simple string to an array or object, even multiple values:
 
 ```php
 clock(User::first(), auth()->user(), $username)
 ```
 
-If you want to specify a log level, you can use the long-form call
+The `clock()` helper function returns it's first argument, so you can easily add inline debugging statements to your code:
+
+```php
+User::create(clock($request->all()))
+```
+
+If you want to specify a log level, you can use the long-form call:
 
 ```php
 clock()->info("User {$username} logged in!")
@@ -82,12 +91,14 @@ clock()->info("User {$username} logged in!")
 
 #### Timeline
 
-Clockwork adds some general application runtime timeline events for you by default.
+Timeline gives you a visual representation of your application runtime.
 
-To add a custom event to the timeline, you'll need to start an event with an unique name and description first.
+Clockwork will automatically add some default events, but you can also add custom ones.
+
+To add a custom event to the timeline, you'll need to start an event with an unique name and description first:
 
 ```php
-clock()->startEvent('twitter-api-call', "Loading users latest tweets via Twitter API")
+clock()->startEvent('twitter-api-call', "Loading user's latest tweets via Twitter API")
 ```
 
 After executing the tracked block of code, you can end the event, using it's unique name.
@@ -96,41 +107,10 @@ After executing the tracked block of code, you can end the event, using it's uni
 clock()->endEvent('twitter-api-call')
 ```
 
-Events that are not stopped explicitly will simply finish when the application runtime ends.
+Read more about available features on the [Clockwork website](https://underground.works/clockwork).
 
-#### Configuration
-
-By default, Clockwork will only be available in debug mode, you can change this and more settings in the configuration file.
-
-You can publish the configuration file using the `vendor:publish` artisan command to
-
-- set when Clockwork should be enabled
-- enable or disable the web UI
-- configure how the request metadata is stored
-- set what data should be collected
-- how long Clockwork stores log files
-
-### Licence
-
-Copyright (c) 2013 Miroslav Rigler
-
-MIT License
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+<p align="center">
+	<a href="https://underground.works">
+		<img width="150px" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/footer.png">
+	</a>
+</p>
