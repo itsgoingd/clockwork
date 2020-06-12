@@ -1,6 +1,6 @@
 {
     "name": "itsgoingd/clockwork",
-    "description": "php dev tools integrated to your browser",
+    "description": "php dev tools in your browser",
     "keywords": ["debugging", "profiling", "logging", "laravel", "lumen", "slim", "devtools"],
     "homepage": "https://underground.works/clockwork",
     "license": "MIT",
