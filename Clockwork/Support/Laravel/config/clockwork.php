@@ -267,17 +267,22 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Disable data collection for certain URIs
+	| Disable data collection for certain URIs or methods
 	|--------------------------------------------------------------------------
 	|
 	| You can disable data collection for specific URIs by adding matching
-	| regular expressions here.
+	| regular expressions here. You can also disable collecting all requests
+	| with a specific method.
 	|
 	*/
 
 	'filter_uris' => [
 		'/horizon/.*', // Laravel Horizon requests
 		'/telescope/.*' // Laravel Telescope requests
+	],
+
+	'filter_methods' => [
+		'options' // mostly used in the csrf pre-flight requests and is rarely of interest
 	],
 
 	/*

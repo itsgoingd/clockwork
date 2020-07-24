@@ -317,6 +317,7 @@ class ClockworkSupport
 	{
 		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
 			&& ! $this->app->runningInConsole()
+			&& ! $this->isMethodFiltered($this->app['request']->getMethod())
 			&& ! $this->isUriFiltered($this->app['request']->getRequestUri());
 	}
 
@@ -364,6 +365,14 @@ class ClockworkSupport
 		}
 
 		return false;
+	}
+
+	public function isMethodFiltered($method)
+	{
+		return in_array($method, array_map(
+			function ($method) { return strtoupper($method); },
+			$this->getConfig('filter_methods', [])
+		));
 	}
 
 	protected function isCommandFiltered($command)
