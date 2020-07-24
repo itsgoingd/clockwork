@@ -142,8 +142,6 @@ class ClockworkServiceProvider extends ServiceProvider
 			->configureShouldCollect()
 			->configureShouldRecord();
 
-		$this->app['clockwork.laravel']->listenToEarlyEvents();
-
 		if ($this->app['clockwork.support']->getConfig('register_helpers', true)) {
 			require __DIR__ . '/helpers.php';
 		}
