@@ -85,6 +85,25 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Disable data collection for certain URIs or methods
+	|--------------------------------------------------------------------------
+	|
+	| You can disable data collection for specific URIs by adding matching
+	| regular expressions here. You can also disable collecting all requests
+	| with a specific method.
+	|
+	*/
+
+	'filter_uris' => [
+		// '/some/uri/.*'
+	],
+
+	'filter_methods' => [
+		'options' // mostly used in the csrf pre-flight requests and is rarely of interest
+	],
+
+	/*
+	|--------------------------------------------------------------------------
 	| Enable collecting of stack traces
 	|--------------------------------------------------------------------------
 	|

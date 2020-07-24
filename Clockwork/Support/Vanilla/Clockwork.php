@@ -56,6 +56,9 @@ class Clockwork
 	{
 		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
 
+		if (isset($_SERVER['REQUEST_METHOD']) && $this->isMethodFiltered($_SERVER['REQUEST_METHOD'])) return;
+		if (isset($_SERVER['REQUEST_URI']) && $this->isUriFiltered($_SERVER['REQUEST_URI'])) return;
+
 		$this->clockwork->getTimeline()->endEvent('total');
 
 		$this->clockwork->resolveRequest()->storeRequest();
@@ -204,6 +207,28 @@ class Clockwork
 				->isNotClass($this->config['stack_traces']['skip_classes']),
 			'tracesLimit' => $this->config['stack_traces']['limit']
 		]);
+	}
+
+	protected function isUriFiltered($uri)
+	{
+		$filterUris = $this->config['filter_uris'];
+		$filterUris[] = rtrim($this->config['api'], '/'); // don't collect data for Clockwork requests
+
+		foreach ($filterUris as $filterUri) {
+			$regexp = '#' . str_replace('#', '\#', $filterUri) . '#';
+
+			if (preg_match($regexp, $uri)) return true;
+		}
+
+		return false;
+	}
+
+	protected function isMethodFiltered($method)
+	{
+		return in_array($method, array_map(
+			function ($method) { return strtoupper($method); },
+			$this->config['filter_methods']
+		));
 	}
 
 	protected function setHeader($header, $value)
