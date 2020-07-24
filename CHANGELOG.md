@@ -1,3 +1,9 @@
+4.1.6
+
+- added support for filtering collected requests by method to Laravel integration (options requests filtered by default) (idea by mortenscheel, thanks!)
+- added support for filtering collected requests by uri and method to vanilla integration
+- fixed handling of failed file operations on index file in file storage (reported by staabm, thanks!)
+
 4.1.5
 
 - fixed crash on initialization in Lumen apps using queue (reported by gramparallelo, thanks!)
