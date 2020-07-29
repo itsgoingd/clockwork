@@ -143,6 +143,15 @@ class Request
 	 */
 	public $cacheTime;
 
+	// Model actions
+	public $modelsActions = [];
+
+	// Model action counts by model
+	public $modelsRetrieved;
+	public $modelsCreated;
+	public $modelsUpdated;
+	public $modelsDeleted;
+
 	// Redis commands
 	public $redisCommands = [];
 
@@ -318,6 +327,11 @@ class Request
 			'cacheWrites'              => $this->cacheWrites,
 			'cacheDeletes'             => $this->cacheDeletes,
 			'cacheTime'                => $this->cacheTime,
+			'modelsActions'            => $this->modelsActions,
+			'modelsRetrieved'          => $this->modelsRetrieved,
+			'modelsCreated'            => $this->modelsCreated,
+			'modelsUpdated'            => $this->modelsUpdated,
+			'modelsDeleted'            => $this->modelsDeleted,
 			'redisCommands'            => $this->redisCommands,
 			'queueJobs'                => $this->queueJobs,
 			'timelineData'             => $this->timelineData,
@@ -379,6 +393,28 @@ class Request
 			'tags'       => array_merge(
 				isset($data['tags']) ? $data['tags'] : [], isset($data['slow']) ? [ 'slow' ] : []
 			)
+		];
+	}
+
+	// Add model action, takes model, action and additional data - key, attributes, changes, time (when was the action
+	// executed), query, duration (in ms), connection (connection name), trace (serialized trace), file (caller file
+	// name), line (caller line number), tags
+	public function addModelAction($model, $action, $data = [])
+	{
+		$this->modelActions[] = [
+			'model'      => $model,
+			'key'        => isset($data['key']) ? $data['key'] : null,
+			'action'     => $action,
+			'attributes' => isset($data['attributes']) ? $data['attributes'] : [],
+			'changes'    => isset($data['changes']) ? $data['changes'] : [],
+			'time'       => isset($data['time']) ? $data['time'] : microtime(true) / 1000,
+			'query'      => isset($data['query']) ? $data['query'] : null,
+			'duration'   => isset($data['duration']) ? $data['duration'] : null,
+			'connection' => isset($data['connection']) ? $data['connection'] : null,
+			'trace'      => isset($data['trace']) ? $data['trace'] : null,
+			'file'       => isset($data['file']) ? $data['file'] : null,
+			'line'       => isset($data['line']) ? $data['line'] : null,
+			'tags'       => isset($data['tags']) ? $data['tags'] : []
 		];
 	}
 

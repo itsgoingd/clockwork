@@ -45,6 +45,12 @@ return [
 			// Collect database queries (high performance impact with a very high number of queries)
 			'collect_queries' => env('CLOCKWORK_DATABASE_COLLECT_QUERIES', true),
 
+			// Collect details of models updates (high performance impact with a lot of model updates)
+			'collect_models_actions' => env('CLOCKWORK_DATABASE_COLLECT_MODELS_ACTIONS', true),
+
+			// Collect details of retrieved models (very high performance impact with a lot of models retrieved)
+			'collect_models_retrieved' => env('CLOCKWORK_DATABASE_COLLECT_MODELS_RETRIEVED', false),
+
 			// Query execution time threshold in miliseconds after which the query will be marked as slow
 			'slow_threshold' => env('CLOCKWORK_DATABASE_SLOW_THRESHOLD'),
 

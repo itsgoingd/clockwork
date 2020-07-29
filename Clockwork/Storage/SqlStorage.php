@@ -56,6 +56,11 @@ class SqlStorage extends Storage
 		'cacheWrites'              => 'INTEGER NULL',
 		'cacheDeletes'             => 'INTEGER NULL',
 		'cacheTime'                => 'DOUBLE PRECISION NULL',
+		'modelsActions'            => 'TEXT NULL',
+		'modelsRetrieved'          => 'TEXT NULL',
+		'modelsCreated'            => 'TEXT NULL',
+		'modelsUpdated'            => 'TEXT NULL',
+		'modelsDeleted'            => 'TEXT NULL',
 		'redisCommands'            => 'TEXT NULL',
 		'queueJobs'                => 'TEXT NULL',
 		'timelineData'             => 'TEXT NULL',
@@ -91,8 +96,9 @@ class SqlStorage extends Storage
 	// List of Request keys that need to be serialized before they can be stored in database
 	protected $needsSerialization = [
 		'headers', 'getData', 'postData', 'requestData', 'sessionData', 'authenticatedUser', 'cookies', 'middleware',
-		'databaseQueries', 'cacheQueries', 'redisCommands', 'queueJobs', 'timelineData', 'log', 'events', 'routes',
-		'emailsData', 'viewsData', 'userData', 'subrequests', 'xdebug', 'commandArguments', 'commandArgumentsDefaults',
+		'databaseQueries', 'cacheQueries', 'modelsActions', 'modelsRetrieved', 'modelsCreated', 'modelsUpdated',
+		'modelsDeleted', 'redisCommands', 'queueJobs', 'timelineData', 'log', 'events', 'routes', 'emailsData',
+		'viewsData', 'userData', 'subrequests', 'xdebug', 'commandArguments', 'commandArgumentsDefaults',
 		'commandOptions', 'commandOptionsDefaults', 'jobPayload', 'jobOptions', 'testAsserts', 'parent'
 	];
 
