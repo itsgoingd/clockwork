@@ -1,29 +1,21 @@
 <?php namespace Clockwork\Support\Lumen;
 
-use Clockwork\Clockwork;
-use Clockwork\Support\Lumen\ClockworkSupport;
-
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Laravel\Lumen\Application;
 
 class ClockworkMiddleware
 {
 	/**
-	 * Clockwork support instance
+	 * The Laravel Application
 	 */
-	protected $clockworkSupport;
-
-	/**
-	 * Exception handler instance
-	 */
-	protected $exceptionHandler;
+	protected $app;
 
 	/**
 	 * Create a new middleware instance.
 	 */
-	public function __construct(ClockworkSupport $clockworkSupport, ExceptionHandler $exceptionHandler)
+	public function __construct(Application $app)
 	{
-		$this->clockworkSupport = $clockworkSupport;
-		$this->exceptionHandler = $exceptionHandler;
+		$this->app = $app;
 	}
 
 	/**
@@ -31,13 +23,15 @@ class ClockworkMiddleware
 	 */
 	public function handle($request, \Closure $next)
 	{
+		$this->app['clockwork']->startEvent('controller', 'Controller');
+
 		try {
 			$response = $next($request);
 		} catch (\Exception $e) {
-			$this->exceptionHandler->report($e);
-			$response = $this->exceptionHandler->render($request, $e);
+			$this->app[ExceptionHandler::class]->report($e);
+			$response = $this->app[ExceptionHandler::class]->render($request, $e);
 		}
 
-		return $this->clockworkSupport->process($request, $response);
+		return $this->app['clockwork.support']->process($request, $response);
 	}
 }
