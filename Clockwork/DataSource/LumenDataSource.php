@@ -118,10 +118,8 @@ class LumenDataSource extends DataSource
 	 */
 	public function listenToEvents()
 	{
-		$this->timeline->startEvent('total', 'Total execution time.', 'start');
-
 		$this->app['events']->listen('clockwork.controller.start', function () {
-			$this->timeline->startEvent('controller', 'Controller running.');
+			$this->timeline->startEvent('controller', 'Controller');
 		});
 		$this->app['events']->listen('clockwork.controller.end', function () {
 			$this->timeline->endEvent('controller');

@@ -103,7 +103,7 @@ class LaravelDataSource extends DataSource
 	public function listenToEvents()
 	{
 		$this->app['events']->listen('clockwork.controller.start', function () {
-			$this->timeline->startEvent('controller', 'Controller running.');
+			$this->timeline->startEvent('controller', 'Controller');
 		});
 		$this->app['events']->listen('clockwork.controller.end', function () {
 			$this->timeline->endEvent('controller');

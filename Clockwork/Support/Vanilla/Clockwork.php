@@ -41,8 +41,6 @@ class Clockwork
 		$this->configureShouldRecord();
 
 		if ($this->config['register_helpers']) include __DIR__ . '/helpers.php';
-
-		$this->clockwork->getTimeline()->startEvent('total', 'Total execution time.', 'start');
 	}
 
 	public static function init($config = [])
@@ -61,8 +59,6 @@ class Clockwork
 
 		if (! $this->clockwork->shouldCollect()->filter($this->incomingRequest())) return;
 		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->getRequest())) return;
-
-		$this->clockwork->getTimeline()->endEvent('total');
 
 		$this->clockwork->resolveRequest()->storeRequest();
 
@@ -83,8 +79,6 @@ class Clockwork
 
 		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->getRequest())) return;
 
-		$this->clockwork->getTimeline()->endEvent('total');
-
 		$this->clockwork
 			->resolveAsCommand($name, $exitCode, $arguments, $options, $argumentsDefaults, $optionsDefaults, $output)
 			->storeRequest();
@@ -95,8 +89,6 @@ class Clockwork
 		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
 
 		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->getRequest())) return;
-
-		$this->clockwork->getTimeline()->endEvent('total');
 
 		$this->clockwork
 			->resolveAsQueueJob($name, $description, $status, $payload, $queue, $connection, $options)
