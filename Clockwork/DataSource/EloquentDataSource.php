@@ -167,18 +167,25 @@ class EloquentDataSource extends DataSource
 	{
 		$trace = StackTrace::get()->resolveViewName();
 
+		$lastQuery = ($queryCount = count($this->queries)) ? $this->queries[$queryCount - 1] : null;
+
 		$action = [
-			'model'      => get_class($model),
+			'model'      => $modelClass = get_class($model),
 			'key'        => $model->getKey(),
 			'action'     => $event,
 			'attributes' => $this->collectModelsRetrieved && $event == 'retrieved' ? $model->getOriginal() : [],
 			'changes'    => $this->collectModelsActions ? $model->getChanges() : [],
 			'time'       => microtime(true) / 1000,
+			'query'      => $lastQuery ? $lastQuery['query'] : null,
+			'duration'   => $lastQuery ? $lastQuery['duration'] : null,
+			'connection' => $lastQuery ? $lastQuery['connection'] : null,
 			'trace'      => $shortTrace = (new Serializer)->trace($trace),
 			'file'       => isset($shortTrace[0]) ? $shortTrace[0]['file'] : null,
 			'line'       => isset($shortTrace[0]) ? $shortTrace[0]['line'] : null,
 			'tags'       => []
 		];
+
+		if ($lastQuery) $this->queries[$queryCount - 1]['model'] = $modelClass;
 
 		if (! $this->passesFilters([ $action, $trace ], 'models-early')) return;
 
