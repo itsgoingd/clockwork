@@ -48,11 +48,6 @@ class Clockwork implements LoggerInterface
 	 */
 	protected $log;
 
-	/**
-	 * Request\Timeline instance, data structure which stores data for the timeline view
-	 */
-	protected $timeline;
-
 	// Callback to filter whether the request should be collected
 	protected $shouldCollect;
 
@@ -66,7 +61,6 @@ class Clockwork implements LoggerInterface
 	{
 		$this->request = new Request;
 		$this->log = new Log;
-		$this->timeline = new Timeline;
 		$this->authenticator = new NullAuthenticator;
 
 		$this->shouldCollect = new ShouldCollect;
@@ -118,19 +112,16 @@ class Clockwork implements LoggerInterface
 			$dataSource->resolve($this->request);
 		}
 
-		// merge global log and timeline data with data collected from data sources
+		// merge global log with data collected from data sources
 		$this->request->log = array_merge($this->request->log, $this->log->toArray());
-		$this->request->timelineData = array_merge($this->request->timelineData, $this->timeline->finalize($this->request->time));
 
-		// sort log and timeline data by time
+		// sort log data by time
 		uasort($this->request->log, function($a, $b) {
 			if ($a['time'] == $b['time']) return 0;
 			return $a['time'] < $b['time'] ? -1 : 1;
 		});
-		uasort($this->request->timelineData, function($a, $b) {
-			if ($a['start'] == $b['start']) return 0;
-			return $a['start'] < $b['start'] ? -1 : 1;
-		});
+
+		$this->request->timeline()->finalize($this->request->time);
 
 		return $this;
 	}
@@ -213,7 +204,6 @@ class Clockwork implements LoggerInterface
 		}
 
 		$this->log = new Log;
-		$this->timeline = new Timeline;
 
 		return $this;
 	}
@@ -291,24 +281,6 @@ class Clockwork implements LoggerInterface
 	}
 
 	/**
-	 * Return the timeline instance
-	 */
-	public function getTimeline()
-	{
-		return $this->timeline;
-	}
-
-	/**
-	 * Set a custom timeline instance
-	 */
-	public function setTimeline(Timeline $timeline)
-	{
-		$this->timeline = $timeline;
-
-		return $this;
-	}
-
-	/**
 	 * Shortcut methods for the current log instance
 	 */
 
@@ -361,7 +333,7 @@ class Clockwork implements LoggerInterface
 
 	public function event($description, $data = [])
 	{
-		return $this->getTimeline()->event($description, $data);
+		return $this->request->timeline()->event($description, $data);
 	}
 
 	// Shortcut methods for the Request object

@@ -6,6 +6,14 @@ class Timeline
 	// Timeline events
 	public $events = [];
 
+	// Create a new timeline, optionally with existing events
+	public function __construct($events = [])
+	{
+		foreach ($events as $event) {
+			$this->create($event['description'], $event);
+		}
+	}
+
 	// Find or create a new event, takes description and optional data - name, start, end, duration, color, data
 	public function event($description, $data = [])
 	{
@@ -28,6 +36,14 @@ class Timeline
 		foreach ($this->events as $event) {
 			if ($event->name == $name) return $event;
 		}
+	}
+
+	// Merge another timeline instance into the current timeline
+	public function merge(Timeline $timeline)
+	{
+		$this->events = array_merge($this->events, $timeline->events);
+
+		return $this;
 	}
 
 	// Finalize timeline, ends all events, sorts them and returns as an array

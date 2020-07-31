@@ -2,6 +2,7 @@
 
 use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Request;
+use Clockwork\Request\Request\Timeline\Timeline;
 
 use Symfony\Component\HttpKernel\Profiler\Profile;
 
@@ -211,7 +212,8 @@ class ProfileTransformer
 
 		$request->time         = $data->getStartTime() / 1000;
 		$request->responseTime = $this->getResponseTime($data);
-		$request->timelineData = $this->getTimeline($data);
+
+		$request->timeline()->merge($this->getTimeline($data));
 	}
 
 	protected function getResponseTime($data)
@@ -248,7 +250,7 @@ class ProfileTransformer
 			'data'        => []
 		]);
 
-		return $events;
+		return new Timeline($events);
 	}
 
 	// Twig collector

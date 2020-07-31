@@ -67,7 +67,7 @@ class LumenDataSource extends DataSource
 
 		$this->resolveAuthenticatedUser($request);
 
-		$request->timelineData = $this->timeline->finalize($request->time);
+		$request->timeline()->merge($this->timeline);
 
 		return $request;
 	}
