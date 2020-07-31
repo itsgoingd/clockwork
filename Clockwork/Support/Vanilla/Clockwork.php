@@ -58,6 +58,7 @@ class Clockwork
 
 		if (isset($_SERVER['REQUEST_METHOD']) && $this->isMethodFiltered($_SERVER['REQUEST_METHOD'])) return;
 		if (isset($_SERVER['REQUEST_URI']) && $this->isUriFiltered($_SERVER['REQUEST_URI'])) return;
+		if ($this->isOnDemandFiltered()) return;
 
 		$this->clockwork->getTimeline()->endEvent('total');
 
@@ -229,6 +230,20 @@ class Clockwork
 			function ($method) { return strtoupper($method); },
 			$this->config['filter_methods']
 		));
+	}
+
+	protected function isOnDemandFiltered()
+	{
+		if (! $this->config['on_demand']['enabled']) return false;
+
+		if ($secret = $this->config['on_demand']['secret']) {
+			$request = isset($_REQUEST['clockwork-profile']) ? $_REQUEST['clockwork-profile'] : '';
+			$cookie = isset($_COOKIE['clockwork-profile']) ? $_COOKIE['clockwork-profile'] : '';
+
+			return ! hash_equals($secret, $request) && ! hash_equals($secret, $cookie);
+		}
+
+		return ! isset($_REQUEST['clockwork-profile']) && ! isset($_COOKIE['clockwork-profile']);
 	}
 
 	protected function setHeader($header, $value)
