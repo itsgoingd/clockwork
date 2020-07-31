@@ -318,7 +318,8 @@ class ClockworkSupport
 		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
 			&& ! $this->app->runningInConsole()
 			&& ! $this->isMethodFiltered($this->app['request']->getMethod())
-			&& ! $this->isUriFiltered($this->app['request']->getRequestUri());
+			&& ! $this->isUriFiltered($this->app['request']->getRequestUri())
+			&& ! $this->isOnDemandFiltered($this->app['request']);
 	}
 
 	public function isCollectingTests()
@@ -373,6 +374,19 @@ class ClockworkSupport
 			function ($method) { return strtoupper($method); },
 			$this->getConfig('filter_methods', [])
 		));
+	}
+
+	protected function isOnDemandFiltered($request)
+	{
+		if (! $this->getConfig('on_demand.enabled')) return false;
+
+		if ($secret = $this->getConfig('on_demand.secret')) {
+			return ! hash_equals($secret, (string) $request->input('clockwork-profile'))
+				&& ! hash_equals($secret, (string) $request->cookie('clockwork-profile'));
+		}
+
+		return ! $request->has('clockwork-profile')
+			&& ! $request->hasCookie('clockwork-profile');
 	}
 
 	protected function isCommandFiltered($command)
