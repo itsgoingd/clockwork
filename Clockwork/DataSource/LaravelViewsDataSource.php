@@ -3,7 +3,7 @@
 use Clockwork\DataSource\DataSource;
 use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Request;
-use Clockwork\Request\Timeline;
+use Clockwork\Request\Timeline\Timeline;
 
 use Illuminate\Contracts\Events\Dispatcher;
 
@@ -52,13 +52,15 @@ class LaravelViewsDataSource extends DataSource
 				\ARRAY_FILTER_USE_BOTH
 			);
 
-			$this->views->addEvent(
-				'view ' . $view->getName(),
-				'Rendering a view',
-				$time = microtime(true),
-				$time,
-				[ 'name' => $view->getName(), 'data' => (new Serializer)->normalize($data) ]
-			);
+			$this->views->event('Rendering a view', [
+				'name'  => 'view ' . $view->getName(),
+				'start' => $time = microtime(true),
+				'end'   => $time,
+				'data'  => [
+					'name' => $view->getName(),
+					'data' => (new Serializer)->normalize($data)
+				]
+			]);
 		});
 	}
 }

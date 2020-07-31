@@ -1,6 +1,6 @@
 <?php namespace Clockwork\Support\Swift;
 
-use Clockwork\Request\Timeline as ClockworkTimeline;
+use Clockwork\Request\Timeline\Timeline as ClockworkTimeline;
 
 use Swift_Events_SendEvent;
 use Swift_Events_SendListener;
@@ -32,17 +32,16 @@ class SwiftPluginClockworkTimeline implements Swift_Events_SendListener
 			$headers[$header->getFieldName()] = $header->getFieldBody();
 		}
 
-		$this->timeline->startEvent(
-			'email ' . $message->getId(),
-			'Sending an email message',
-			null,
-			[
+		$this->timeline->event('Sending an email message', [
+			'name'  => 'email ' . $message->getId(),
+			'start' => $time = microtime(true),
+			'data'  => [
 				'from'    => $this->addressToString($message->getFrom()),
 				'to'      => $this->addressToString($message->getTo()),
 				'subject' => $message->getSubject(),
 				'headers' => $headers
 			]
-		);
+		]);
 	}
 
 	/**
@@ -52,7 +51,7 @@ class SwiftPluginClockworkTimeline implements Swift_Events_SendListener
 	{
 		$message = $evt->getMessage();
 
-		$this->timeline->endEvent('email ' . $message->getId());
+		$this->timeline->event('email ' . $message->getId())->end();
 	}
 
 	protected function addressToString($address)

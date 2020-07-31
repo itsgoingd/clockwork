@@ -4,7 +4,7 @@ use Clockwork\DataSource\DataSource;
 use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
-use Clockwork\Request\Timeline;
+use Clockwork\Request\Timeline\Timeline;
 
 use Illuminate\Contracts\Foundation\Application;
 use Symfony\Component\HttpFoundation\Response;
@@ -103,10 +103,10 @@ class LaravelDataSource extends DataSource
 	public function listenToEvents()
 	{
 		$this->app['events']->listen('clockwork.controller.start', function () {
-			$this->timeline->startEvent('controller', 'Controller');
+			$this->timeline->event('Controller')->begin();
 		});
 		$this->app['events']->listen('clockwork.controller.end', function () {
-			$this->timeline->endEvent('controller');
+			$this->timeline->event('Controller')->end();
 		});
 
 		if ($this->collectLog) {

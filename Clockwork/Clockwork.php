@@ -9,7 +9,7 @@ use Clockwork\Request\Request;
 use Clockwork\Request\RequestType;
 use Clockwork\Request\ShouldCollect;
 use Clockwork\Request\ShouldRecord;
-use Clockwork\Request\Timeline;
+use Clockwork\Request\Timeline\Timeline;
 use Clockwork\Storage\StorageInterface;
 
 use Psr\Log\LogLevel;
@@ -357,18 +357,11 @@ class Clockwork implements LoggerInterface
 		return $this->getLog()->log(LogLevel::DEBUG, $message, $context);
 	}
 
-	/**
-	 * Shortcut methods for the current timeline instance
-	 */
+	// Shortcut methods for the current timeline instance
 
-	public function startEvent($name, $description, $time = null)
+	public function event($description, $data = [])
 	{
-		return $this->getTimeline()->startEvent($name, $description, $time);
-	}
-
-	public function endEvent($name)
-	{
-		return $this->getTimeline()->endEvent($name);
+		return $this->getTimeline()->event($description, $data);
 	}
 
 	// Shortcut methods for the Request object
@@ -427,9 +420,11 @@ class Clockwork implements LoggerInterface
 		}
 
 		if (isset($data['start'])) {
-			$this->timeline->addEvent(
-				"subrequest-{$id}", "Subrequest - {$url}", $data['start'], isset($data['end']) ? $data['end'] : null
-			);
+			$this->timeline->event("Subrequest - {$url}", [
+				'name'  => "subrequest-{$id}",
+				'start' => $data['start'],
+				'end'   => isset($data['end']) ? $data['end'] : null
+			]);
 		}
 
 		return $this->getRequest()->addSubrequest($url, $id, $data);

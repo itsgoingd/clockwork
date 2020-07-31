@@ -95,16 +95,24 @@ Timeline gives you a visual representation of your application runtime.
 
 Clockwork will automatically add some default events, but you can also add custom ones.
 
-To add a custom event to the timeline, you'll need to start an event with an unique name and description first:
+To add a custom event to the timeline, you'll need to start an event first:
 
 ```php
-clock()->startEvent('twitter-api-call', "Loading user's latest tweets via Twitter API")
+clock()->event("Loading user's latest tweets via Twitter API")->begin()
 ```
 
-After executing the tracked block of code, you can end the event, using it's unique name.
+After executing the traced block of code, you can end the event, using it's unique name.
 
 ```php
-clock()->endEvent('twitter-api-call')
+clock()->event("Loading user's latest tweets via Twitter API")->end()
+```
+
+Or simply wrap the traced code into a closure:
+
+```php
+clock()->event("Loading user's latest tweets via Twitter API")->run(function () {
+	...
+})
 ```
 
 Read more about available features on the [Clockwork website](https://underground.works/clockwork).

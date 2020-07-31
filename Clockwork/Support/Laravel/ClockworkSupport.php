@@ -226,6 +226,8 @@ class ClockworkSupport
 
 	public function process($request, $response)
 	{
+		$this->app['clockwork']->event('Controller')->end();
+
 		$this->setResponse($response);
 
 		$this->app['clockwork']->resolveRequest();
