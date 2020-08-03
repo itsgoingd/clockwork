@@ -7,6 +7,8 @@ use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
 use Clockwork\Request\RequestType;
+use Clockwork\Request\ShouldCollect;
+use Clockwork\Request\ShouldRecord;
 use Clockwork\Request\Timeline;
 use Clockwork\Storage\StorageInterface;
 
@@ -51,6 +53,12 @@ class Clockwork implements LoggerInterface
 	 */
 	protected $timeline;
 
+	// Callback to filter whether the request should be collected
+	protected $shouldCollect;
+
+	// Callback to filter whether the request should be recorded
+	protected $shouldRecord;
+
 	/**
 	 * Create a new Clockwork instance with default request object
 	 */
@@ -60,6 +68,9 @@ class Clockwork implements LoggerInterface
 		$this->log = new Log;
 		$this->timeline = new Timeline;
 		$this->authenticator = new NullAuthenticator;
+
+		$this->shouldCollect = new ShouldCollect;
+		$this->shouldRecord = new ShouldRecord;
 	}
 
 	/**
@@ -205,6 +216,24 @@ class Clockwork implements LoggerInterface
 		$this->timeline = new Timeline;
 
 		return $this;
+	}
+
+	public function shouldCollect($shouldCollect = null)
+	{
+		if ($shouldCollect instanceof Closure) return $this->shouldCollect->call($shouldCollect);
+
+		if (is_array($shouldCollect)) return $this->shouldCollect->merge($shouldCollect);
+
+		return $this->shouldCollect;
+	}
+
+	public function shouldRecord($shouldRecord = null)
+	{
+		if ($shouldRecord instanceof Closure) return $this->shouldRecord->call($shouldRecord);
+
+		if (is_array($shouldRecord)) return $this->shouldRecord->merge($shouldRecord);
+
+		return $this->shouldRecord;
 	}
 
 	/**

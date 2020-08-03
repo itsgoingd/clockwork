@@ -7,6 +7,7 @@ use Clockwork\Helpers\Serializer;
 use Clockwork\Helpers\ServerTiming;
 use Clockwork\Helpers\StackFilter;
 use Clockwork\Helpers\StackTrace;
+use Clockwork\Request\IncomingRequest;
 use Clockwork\Request\Request;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\Search;
@@ -226,13 +227,14 @@ class ClockworkSupport
 
 	public function process($request, $response)
 	{
-		if (! $this->isCollectingRequests()) {
-			return $response; // Collecting data is disabled, return immediately
-		}
-
 		$this->setResponse($response);
 
 		$this->app['clockwork']->resolveRequest();
+
+		if (! $this->isRecording($this->app['clockwork']->getRequest())) {
+			return $response; // Collecting data is disabled, return immediately
+		}
+
 		$this->app['clockwork']->storeRequest();
 
 		if (! $this->isEnabled()) {
@@ -283,6 +285,34 @@ class ClockworkSupport
 				->isNotClass($this->getConfig('stack_traces.skip_classes', [])),
 			'tracesLimit' => $this->getConfig('stack_traces.limit', 10)
 		]);
+
+		return $this;
+	}
+
+	public function configureShouldCollect()
+	{
+		$this->app['clockwork']->shouldCollect([
+			'onDemand'        => $this->getConfig('requests.on_demand', false),
+			'sample'          => $this->getConfig('requests.sample', false),
+			'except'          => $this->getConfig('requests.except', []),
+			'only'            => $this->getConfig('requests.only', []),
+			'exceptPreflight' => $this->getConfig('requests.except_preflight', [])
+		]);
+
+		// don't collect data for Clockwork requests
+		$this->app['clockwork']->shouldCollect()->except('/__clockwork(?:/.*)?');
+
+		return $this;
+	}
+
+	public function configureShouldRecord()
+	{
+		$this->app['clockwork']->shouldRecord([
+			'errorsOnly' => $this->getConfig('requests.errors_only', false),
+			'slowOnly'   => $this->getConfig('requests.slow_only', false) ? $this->getConfig('requests.slow_threshold') : false
+		]);
+
+		return $this;
 	}
 
 	public function isEnabled()
@@ -317,9 +347,7 @@ class ClockworkSupport
 	{
 		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
 			&& ! $this->app->runningInConsole()
-			&& ! $this->isMethodFiltered($this->app['request']->getMethod())
-			&& ! $this->isUriFiltered($this->app['request']->getRequestUri())
-			&& ! $this->isOnDemandFiltered($this->app['request']);
+			&& $this->app['clockwork']->shouldCollect()->filter($this->incomingRequest());
 	}
 
 	public function isCollectingTests()
@@ -327,6 +355,12 @@ class ClockworkSupport
 		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
 			&& $this->app->runningInConsole()
 			&& $this->getConfig('tests.collect', false);
+	}
+
+	public function isRecording($incomingRequest)
+	{
+		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
+			&& $this->app['clockwork']->shouldRecord()->filter($incomingRequest);
 	}
 
 	public function isFeatureEnabled($feature)
@@ -352,41 +386,6 @@ class ClockworkSupport
 	public function isWebEnabled()
 	{
 		return $this->getConfig('web', true);
-	}
-
-	public function isUriFiltered($uri)
-	{
-		$filterUris = $this->getConfig('filter_uris', []);
-		$filterUris[] = '/__clockwork(?:/.*)?'; // don't collect data for Clockwork requests
-
-		foreach ($filterUris as $filterUri) {
-			$regexp = '#' . str_replace('#', '\#', $filterUri) . '#';
-
-			if (preg_match($regexp, $uri)) return true;
-		}
-
-		return false;
-	}
-
-	public function isMethodFiltered($method)
-	{
-		return in_array($method, array_map(
-			function ($method) { return strtoupper($method); },
-			$this->getConfig('filter_methods', [])
-		));
-	}
-
-	protected function isOnDemandFiltered($request)
-	{
-		if (! $this->getConfig('on_demand.enabled')) return false;
-
-		if ($secret = $this->getConfig('on_demand.secret')) {
-			return ! hash_equals($secret, (string) $request->input('clockwork-profile'))
-				&& ! hash_equals($secret, (string) $request->cookie('clockwork-profile'));
-		}
-
-		return ! $request->has('clockwork-profile')
-			&& ! $request->hasCookie('clockwork-profile');
 	}
 
 	protected function isCommandFiltered($command)
@@ -429,6 +428,16 @@ class ClockworkSupport
 		if (($eventsCount = $this->getConfig('server_timing', 10)) !== false) {
 			$response->headers->set('Server-Timing', ServerTiming::fromRequest($request, $eventsCount)->value());
 		}
+	}
+
+	protected function incomingRequest()
+	{
+		return new IncomingRequest([
+			'method'  => $this->app['request']->getMethod(),
+			'uri'     => $this->app['request']->getRequestUri(),
+			'input'   => $this->app['request']->input(),
+			'cookies' => $this->app['request']->cookie()
+		]);
 	}
 
 	protected function builtinLaravelCommands()

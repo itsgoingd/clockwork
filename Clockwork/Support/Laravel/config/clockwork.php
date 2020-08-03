@@ -126,6 +126,48 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| HTTP requests collection
+	|--------------------------------------------------------------------------
+	|
+	| You can enable or disable and configure collection of received HTTP
+	| requests here.
+	|
+	*/
+	'requests' => [
+		// With on-demand mode enabled, Clockwork will only profile requests when the browser extension is open or you
+		// manually pass a "clockwork-profile" cookie or get/post data key.
+		// Optionally you can specify a "secret" that has to be passed as the value to enable profiling.
+		'on_demand' => env('CLOCKWORK_REQUESTS_ON_DEMAND', false),
+
+		// Collect only errors (requests with HTTP 4xx and 5xx responses)
+		'errors_only' => env('CLOCKWORK_REQUESTS_ERRORS_ONLY', false),
+
+		// Response time threshold in miliseconds after which the request will be marked as slow
+		'slow_threshold' => env('CLOCKWORK_REQUESTS_SLOW_THRESHOLD'),
+
+		// Collect only slow requests
+		'slow_only' => env('CLOCKWORK_REQUESTS_SLOW_ONLY', false),
+
+		// Sample the collected requests (eg. set to 100 to collect only 1 in 100 requests)
+		'sample' => env('CLOCKWORK_REQUESTS_SAMPLE', false),
+
+		// List of URIs that should not be collected
+		'except' => [
+			'/horizon/.*', // Laravel Horizon requests
+			'/telescope/.*' // Laravel Telescope requests
+		],
+
+		// List of URIs that should be collected, any other URI will not be collected if not empty
+		'only' => [
+			// '/api/.*'
+		],
+
+		// Don't collect OPTIONS requests, mostly used in the CSRF pre-flight requests and are rarely of interest
+		'except_preflight' => env('CLOCKWORK_REQUESTS_EXCEPT_PREFLIGHT', true)
+	],
+
+	/*
+	|--------------------------------------------------------------------------
 	| Artisan commands collection
 	|--------------------------------------------------------------------------
 	|
@@ -270,47 +312,6 @@ return [
 	'authentication' => env('CLOCKWORK_AUTHENTICATION', false),
 
 	'authentication_password' => env('CLOCKWORK_AUTHENTICATION_PASSWORD', 'VerySecretPassword'),
-
-	/*
-	|--------------------------------------------------------------------------
-	| On-demand mode
-	|--------------------------------------------------------------------------
-	|
-	| With on-demand mode enabled, Clockwork will only profile requests when
-	| the browser extension is open or you manually pass a "clockwork-profile"
-	| cookie or get/post data key.
-	| Optionally you can specify a secret value that has to be also passed
-	| to enable profiling.
-	|
-	*/
-
-	'on_demand' => [
-		// Enable or disable the on-demand mode
-		'enabled' => env('CLOCKWORK_ON_DEMAND_ENABLED', false),
-
-		// Secret that has to be provided to enable profiling in on-demand mode (none by default)
-		'secret' => env('CLOCKWORK_ON_DEMAND_SECRET', null)
-	],
-
-	/*
-	|--------------------------------------------------------------------------
-	| Disable data collection for certain URIs or methods
-	|--------------------------------------------------------------------------
-	|
-	| You can disable data collection for specific URIs by adding matching
-	| regular expressions here. You can also disable collecting all requests
-	| with a specific method.
-	|
-	*/
-
-	'filter_uris' => [
-		'/horizon/.*', // Laravel Horizon requests
-		'/telescope/.*' // Laravel Telescope requests
-	],
-
-	'filter_methods' => [
-		'options' // mostly used in the csrf pre-flight requests and is rarely of interest
-	],
 
 	/*
 	|--------------------------------------------------------------------------
