@@ -17,6 +17,48 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| HTTP requests collection
+	|--------------------------------------------------------------------------
+	|
+	| You can enable or disable and configure collection of received HTTP
+	| requests here.
+	|
+	*/
+
+	'requests' => [
+		// With on-demand mode enabled, Clockwork will only profile requests when the browser extension is open or you
+		// manually pass a "clockwork-profile" cookie or get/post data key.
+		// Optionally you can specify a "secret" that has to be passed as the value to enable profiling.
+		'on_demand' => isset($_ENV['CLOCKWORK_REQUESTS_ON_DEMAND']) ? $_ENV['CLOCKWORK_REQUESTS_ON_DEMAND'] : false,
+
+		// Collect only errors (requests with HTTP 4xx and 5xx responses)
+		'errors_only' => isset($_ENV['CLOCKWORK_REQUESTS_ERRORS_ONLY']) ? $_ENV['CLOCKWORK_REQUESTS_ERRORS_ONLY'] : false,
+
+		// Response time threshold in miliseconds after which the request will be marked as slow
+		'slow_threshold' => isset($_ENV['CLOCKWORK_REQUESTS_SLOW_THRESHOLD']) ? $_ENV['CLOCKWORK_REQUESTS_SLOW_THRESHOLD'] : null,
+
+		// Collect only slow requests
+		'slow_only' => isset($_ENV['CLOCKWORK_REQUESTS_SLOW_ONLY']) ? $_ENV['CLOCKWORK_REQUESTS_SLOW_ONLY'] : false,
+
+		// Sample the collected requests (eg. set to 100 to collect only 1 in 100 requests)
+		'sample' => isset($_ENV['CLOCKWORK_REQUESTS_SAMPLE']) ? $_ENV['CLOCKWORK_REQUESTS_SAMPLE'] : false,
+
+		// List of URIs that should not be collected
+		'except' => [
+			// '/api/.*'
+		],
+
+		// List of URIs that should be collected, any other URI will not be collected if not empty
+		'only' => [
+			// '/api/.*'
+		],
+
+		// Don't collect OPTIONS requests, mostly used in the CSRF pre-flight requests and are rarely of interest
+		'except_preflight' => isset($_ENV['CLOCKWORK_REQUESTS_EXCEPT_PREFLIGHT']) ? $_ENV['CLOCKWORK_REQUESTS_EXCEPT_PREFLIGHT'] : true
+	],
+
+	/*
+	|--------------------------------------------------------------------------
 	| Enable data collection, when Clockwork is disabled
 	|--------------------------------------------------------------------------
 	|

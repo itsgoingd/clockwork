@@ -7,6 +7,7 @@ use Clockwork\Helpers\Serializer;
 use Clockwork\Helpers\ServerTiming;
 use Clockwork\Helpers\StackFilter;
 use Clockwork\Helpers\StackTrace;
+use Clockwork\Request\IncomingRequest;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\Search;
 use Clockwork\Storage\SqlStorage;
@@ -36,6 +37,8 @@ class Clockwork
 		$this->clockwork->setStorage($this->resolveStorage());
 
 		$this->configureSerializer();
+		$this->configureShouldCollect();
+		$this->configureShouldRecord();
 
 		if ($this->config['register_helpers']) include __DIR__ . '/helpers.php';
 
@@ -56,9 +59,8 @@ class Clockwork
 	{
 		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
 
-		if (isset($_SERVER['REQUEST_METHOD']) && $this->isMethodFiltered($_SERVER['REQUEST_METHOD'])) return;
-		if (isset($_SERVER['REQUEST_URI']) && $this->isUriFiltered($_SERVER['REQUEST_URI'])) return;
-		if ($this->isOnDemandFiltered()) return;
+		if (! $this->clockwork->shouldCollect()->filter($this->incomingRequest())) return;
+		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->getRequest())) return;
 
 		$this->clockwork->getTimeline()->endEvent('total');
 
@@ -79,6 +81,8 @@ class Clockwork
 	{
 		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
 
+		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->getRequest())) return;
+
 		$this->clockwork->getTimeline()->endEvent('total');
 
 		$this->clockwork
@@ -89,6 +93,8 @@ class Clockwork
 	public function queueJobExecuted($name, $description = null, $status = 'processed', $payload = [], $queue = null, $connection = null, $options = [])
 	{
 		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
+
+		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->getRequest())) return;
 
 		$this->clockwork->getTimeline()->endEvent('total');
 
@@ -210,40 +216,26 @@ class Clockwork
 		]);
 	}
 
-	protected function isUriFiltered($uri)
+	public function configureShouldCollect()
 	{
-		$filterUris = $this->config['filter_uris'];
-		$filterUris[] = rtrim($this->config['api'], '/'); // don't collect data for Clockwork requests
+		$this->clockwork->shouldCollect([
+			'onDemand'        => $this->config['requests']['on_demand'],
+			'sample'          => $this->config['requests']['sample'],
+			'except'          => $this->config['requests']['except'],
+			'only'            => $this->config['requests']['only'],
+			'exceptPreflight' => $this->config['requests']['except_preflight']
+		]);
 
-		foreach ($filterUris as $filterUri) {
-			$regexp = '#' . str_replace('#', '\#', $filterUri) . '#';
-
-			if (preg_match($regexp, $uri)) return true;
-		}
-
-		return false;
+		// don't collect data for Clockwork requests
+		$this->clockwork->shouldCollect()->except(rtrim($this->config['api'], '/'));
 	}
 
-	protected function isMethodFiltered($method)
+	public function configureShouldRecord()
 	{
-		return in_array($method, array_map(
-			function ($method) { return strtoupper($method); },
-			$this->config['filter_methods']
-		));
-	}
-
-	protected function isOnDemandFiltered()
-	{
-		if (! $this->config['on_demand']['enabled']) return false;
-
-		if ($secret = $this->config['on_demand']['secret']) {
-			$request = isset($_REQUEST['clockwork-profile']) ? $_REQUEST['clockwork-profile'] : '';
-			$cookie = isset($_COOKIE['clockwork-profile']) ? $_COOKIE['clockwork-profile'] : '';
-
-			return ! hash_equals($secret, $request) && ! hash_equals($secret, $cookie);
-		}
-
-		return ! isset($_REQUEST['clockwork-profile']) && ! isset($_COOKIE['clockwork-profile']);
+		$this->clockwork->shouldRecord([
+			'errorsOnly' => $this->config['requests']['errors_only'],
+			'slowOnly'   => $this->config['requests']['slow_only'] ? $this->config['requests']['slow_threshold'] : false
+		]);
 	}
 
 	protected function setHeader($header, $value)
@@ -253,6 +245,16 @@ class Clockwork
 		} else {
 			header("{$header}: {$value}");
 		}
+	}
+
+	protected function incomingRequest()
+	{
+		return new IncomingRequest([
+			'method'  => $_SERVER['REQUEST_METHOD'],
+			'uri'     => $_SERVER['REQUEST_URI'],
+			'input'   => $_REQUEST,
+			'cookies' => $_COOKIE
+		]);
 	}
 
 	public function getClockwork()
