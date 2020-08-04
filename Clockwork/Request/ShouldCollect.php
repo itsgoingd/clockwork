@@ -1,31 +1,25 @@
 <?php namespace Clockwork\Request;
 
+// Filter incoming requests before collecting data
 class ShouldCollect
 {
+	// Enable on-demand mode, boolean or the secret value
 	protected $onDemand = false;
+	// Enable sampling, chance to be sampled (eg. 100 to collect 1 in 100 requests)
 	protected $sample = false;
 
+	// List of URIs that should not be collected, can contain regexes
 	protected $except = [];
+	// List of URIs that should only be collected, can contain regexes (only used if non-empty)
 	protected $only = [];
 
+	// Disable collection of OPTIONS method requests (most commonly used for CORS pre-flight requests)
 	protected $exceptPreflight = false;
 
+	// Custom filter callback
 	protected $callback;
 
-	public function onDemand($onDemand = true)
-	{
-		$this->onDemand = $onDemand;
-
-		return $this;
-	}
-
-	public function sample($sample)
-	{
-		$this->sample = $sample;
-
-		return $this;
-	}
-
+	// Append one or more except URIs
 	public function except($uris)
 	{
 		$this->except = array_merge($this->except, is_array($uris) ? $uris : [ $uris ]);
@@ -33,6 +27,7 @@ class ShouldCollect
 		return $this;
 	}
 
+	// Append one or more only URIs
 	public function only($uris)
 	{
 		$this->only = array_merge($this->only, is_array($uris) ? $uris : [ $uris ]);
@@ -40,25 +35,13 @@ class ShouldCollect
 		return $this;
 	}
 
-	public function exceptPreflight($exceptPreflight = true)
-	{
-		$this->exceptPreflight = $exceptPreflight;
-
-		return $this;
-	}
-
-	public function call($callback)
-	{
-		$this->callback = $callback;
-
-		return $this;
-	}
-
+	// Merge multiple settings from array
 	public function merge(array $data = [])
 	{
 		foreach ($data as $key => $val) $this->$key = $val;
 	}
 
+	// Apply the filter to an incoming request
 	public function filter(IncomingRequest $request)
 	{
 		return $this->passOnDemand($request)
@@ -125,4 +108,13 @@ class ShouldCollect
 
 		return $this->callback($request);
 	}
+
+ 	public function __call($method, $parameters)
+ 	{
+ 		if (! count($parameters)) return $this->$method;
+
+ 		$this->$method = count($parameters) ? $parameters[0] : true;
+
+ 		return $this;
+ 	}
 }

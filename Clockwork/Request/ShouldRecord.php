@@ -1,38 +1,23 @@
 <?php namespace Clockwork\Request;
 
+// Filter requests before recording
 class ShouldRecord
 {
+	// Enable collecting of errors only (requests with 4xx or 5xx responses)
 	protected $errorsOnly = false;
+	// Enable collecting of slow requests only, slow response time threshold in ms
 	protected $slowOnly = false;
 
+	// Custom filter callback
 	protected $callback;
 
-	public function errorsOnly($errorsOnly = true)
-	{
-		$this->errorsOnly = $errorsOnly;
-
-		return $this;
-	}
-
-	public function slowOnly($slowOnly)
-	{
-		$this->slowOnly = $slowOnly;
-
-		return $this;
-	}
-
-	public function call($callback)
-	{
-		$this->callback = $callback;
-
-		return $this;
-	}
-
+	// Merge multiple settings from array
 	public function merge(array $data = [])
 	{
 		foreach ($data as $key => $val) $this->$key = $val;
 	}
 
+	// Apply the filter to a request
 	public function filter(Request $request)
 	{
 		return $this->passErrorsOnly($request)
@@ -60,4 +45,14 @@ class ShouldRecord
 
 		return $this->callback($request);
 	}
+
+	// Fluent API
+ 	public function __call($method, $parameters)
+ 	{
+ 		if (! count($parameters)) return $this->$method;
+
+ 		$this->$method = count($parameters) ? $parameters[0] : true;
+
+ 		return $this;
+ 	}
 }

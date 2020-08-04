@@ -220,7 +220,7 @@ class Clockwork implements LoggerInterface
 
 	public function shouldCollect($shouldCollect = null)
 	{
-		if ($shouldCollect instanceof Closure) return $this->shouldCollect->call($shouldCollect);
+		if ($shouldCollect instanceof Closure) return $this->shouldCollect->callback($shouldCollect);
 
 		if (is_array($shouldCollect)) return $this->shouldCollect->merge($shouldCollect);
 
@@ -229,7 +229,7 @@ class Clockwork implements LoggerInterface
 
 	public function shouldRecord($shouldRecord = null)
 	{
-		if ($shouldRecord instanceof Closure) return $this->shouldRecord->call($shouldRecord);
+		if ($shouldRecord instanceof Closure) return $this->shouldRecord->callback($shouldRecord);
 
 		if (is_array($shouldRecord)) return $this->shouldRecord->merge($shouldRecord);
 
