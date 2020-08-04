@@ -27,6 +27,7 @@ class ClockworkServiceProvider extends ServiceProvider
 	public function boot()
 	{
 		if ($this->app['clockwork.support']->isCollectingData()) {
+			$this->addDataSources();
 			$this->listenToEvents();
 			$this->registerMiddleware();
 		}
@@ -39,6 +40,30 @@ class ClockworkServiceProvider extends ServiceProvider
 		// register the Clockwork Web UI routes
 		if ($this->app['clockwork.support']->isWebEnabled()) {
 			$this->registerWebRoutes();
+		}
+	}
+
+	protected function addDataSources()
+	{
+		$clockwork = $this->app['clockwork'];
+		$support = $this->app['clockwork.support'];
+
+		$clockwork
+			->addDataSource(new PhpDataSource)
+			->addDataSource($this->app['clockwork.laravel']);
+
+		if ($support->isFeatureEnabled('database')) $clockwork->addDataSource($this->app['clockwork.eloquent']);
+		if ($support->isFeatureEnabled('cache')) $clockwork->addDataSource($this->app['clockwork.cache']);
+		if ($support->isFeatureEnabled('redis')) $clockwork->addDataSource($this->app['clockwork.redis']);
+		if ($support->isFeatureEnabled('queue')) $clockwork->addDataSource($this->app['clockwork.queue']);
+		if ($support->isFeatureEnabled('events')) $clockwork->addDataSource($this->app['clockwork.events']);
+		if ($support->isFeatureEnabled('emails')) $clockwork->addDataSource($this->app['clockwork.swift']);
+		if ($support->isFeatureAvailable('xdebug')) $clockwork->addDataSource($this->app['clockwork.xdebug']);
+		if ($support->isFeatureEnabled('views')) {
+			$clockwork->addDataSource(
+				$support->getConfig('features.views.use_twig_profiler', false)
+					? $this->app['clockwork.twig'] : $this->app['clockwork.views']
+			);
 		}
 	}
 
@@ -79,30 +104,11 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->mergeConfigFrom(__DIR__ . '/config/clockwork.php', 'clockwork');
 
 		$this->app->singleton('clockwork', function ($app) {
-			$support = $app['clockwork.support'];
-
-			$clockwork = (new Clockwork)
+			return (new Clockwork)
 				->setAuthenticator($app['clockwork.authenticator'])
 				->setLog($app['clockwork.log'])
 				->setRequest($app['clockwork.request'])
-				->setStorage($app['clockwork.storage'])
-				->addDataSource(new PhpDataSource())
-				->addDataSource($app['clockwork.laravel']);
-
-			if ($support->isFeatureEnabled('database')) $clockwork->addDataSource($app['clockwork.eloquent']);
-			if ($support->isFeatureEnabled('cache')) $clockwork->addDataSource($app['clockwork.cache']);
-			if ($support->isFeatureEnabled('redis')) $clockwork->addDataSource($app['clockwork.redis']);
-			if ($support->isFeatureEnabled('queue')) $clockwork->addDataSource($app['clockwork.queue']);
-			if ($support->isFeatureEnabled('events')) $clockwork->addDataSource($app['clockwork.events']);
-			if ($support->isFeatureEnabled('emails')) $clockwork->addDataSource($app['clockwork.swift']);
-			if ($support->isFeatureAvailable('xdebug')) $clockwork->addDataSource($app['clockwork.xdebug']);
-			if ($support->isFeatureEnabled('views')) {
-				$clockwork->addDataSource(
-					$support->getConfig('features.views.use_twig_profiler', false) ? $app['clockwork.twig'] : $app['clockwork.views']
-				);
-			}
-
-			return $clockwork;
+				->setStorage($app['clockwork.storage']);
 		});
 
 		$this->app->singleton('clockwork.authenticator', function ($app) {
@@ -130,7 +136,12 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->registerAliases();
 
 		$this->app->make('clockwork.request'); // instantiate the request to have id and time available as early as possible
-		$this->app['clockwork.support']->configureSerializer();
+
+		$this->app['clockwork.support']
+			->configureSerializer()
+			->configureShouldCollect()
+			->configureShouldRecord();
+
 		$this->app['clockwork.laravel']->listenToEarlyEvents();
 
 		if ($this->app['clockwork.support']->getConfig('register_helpers', true)) {
