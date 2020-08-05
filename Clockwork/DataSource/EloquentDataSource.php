@@ -259,8 +259,8 @@ class EloquentDataSource extends DataSource
 
 		// highlight keywords
 		$keywords = [
-			'select', 'insert', 'update', 'delete', 'where', 'from', 'limit', 'is', 'null', 'having', 'group by',
-			'order by', 'asc', 'desc'
+			'select', 'insert', 'update', 'delete', 'into', 'values', 'set', 'where', 'from', 'limit', 'is', 'null',
+			'having', 'group by', 'order by', 'asc', 'desc'
 		];
 		$regexp = '/\b' . implode('\b|\b', $keywords) . '\b/i';
 

@@ -1,6 +1,6 @@
 <?php namespace Clockwork\Support\Twig;
 
-use Clockwork\Request\Timeline;
+use Clockwork\Request\Timeline\Timeline;
 
 use Twig\Profiler\Profile;
 
@@ -35,12 +35,15 @@ class ProfilerClockworkDumper
 
 		$data = $profile->__serialize();
 
-		$timeline->addEvent(
-			$id,
-			$name,
-			isset($data[3]['wt']) ? $data[3]['wt'] : null,
-			isset($data[4]['wt']) ? $data[4]['wt'] : null,
-			[ 'data' => [], 'memoryUsage' => isset($data[4]['mu']) ? $data[4]['mu'] : null, 'parent' => $parent ]
-		);
+		$timeline->event($name, [
+			'name'  => $id,
+			'start' => isset($data[3]['wt']) ? $data[3]['wt'] : null,
+			'end'   => isset($data[4]['wt']) ? $data[4]['wt'] : null,
+			'data'  => [
+				'data'        => [],
+				'memoryUsage' => isset($data[4]['mu']) ? $data[4]['mu'] : null,
+				'parent'      => $parent
+			]
+		]);
 	}
 }

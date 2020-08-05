@@ -31,8 +31,8 @@ class ServerTiming
 		}
 
 		// add timeline events limited to a set number so the header doesn't get too large
-		foreach (array_slice($request->timelineData, 0, $eventsCount) as $i => $event) {
-			$header->add("timeline-event-{$i}", $event['duration'], $event['description']);
+		foreach (array_slice($request->timeline()->events, 0, $eventsCount) as $i => $event) {
+			$header->add("timeline-event-{$i}", $event->duration(), $event->description);
 		}
 
 		return $header;

@@ -4,7 +4,7 @@ use Clockwork\DataSource\DataSource;
 use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
-use Clockwork\Request\Timeline;
+use Clockwork\Request\Timeline\Timeline;
 
 use Laravel\Lumen\Application;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,16 +34,8 @@ class LumenDataSource extends DataSource
 	 */
 	protected $timeline;
 
-	/**
-	 * Timeline data structure for views data
-	 */
-	protected $views;
-
 	// Whether we should collect log messages
 	protected $collectLog = true;
-
-	// Whether we should collect views
-	protected $collectViews = false;
 
 	// Whether we should collect routes
 	protected $collectRoutes = false;
@@ -51,15 +43,13 @@ class LumenDataSource extends DataSource
 	/**
 	 * Create a new data source, takes Laravel application instance as an argument
 	 */
-	public function __construct(Application $app, $collectLog = true, $collectViews = false, $collectRoutes = false)
+	public function __construct(Application $app, $collectLog = true, $collectRoutes = false)
 	{
 		$this->app = $app;
 		$this->collectLog = $collectLog;
-		$this->collectViews = $collectViews;
 		$this->collectRoutes = $collectRoutes;
 
 		$this->timeline = new Timeline();
-		$this->views    = new Timeline();
 	}
 
 	/**
@@ -77,8 +67,7 @@ class LumenDataSource extends DataSource
 
 		$this->resolveAuthenticatedUser($request);
 
-		$request->timelineData = $this->timeline->finalize($request->time);
-		$request->viewsData    = $this->views->finalize();
+		$request->timeline()->merge($this->timeline);
 
 		return $request;
 	}
@@ -87,7 +76,6 @@ class LumenDataSource extends DataSource
 	public function reset()
 	{
 		$this->timeline = new Timeline;
-		$this->views    = new Timeline;
 	}
 
 	// Set a log instance
@@ -106,48 +94,21 @@ class LumenDataSource extends DataSource
 		return $this;
 	}
 
-	// Enable or disable collecting views
-	public function collectViews($collectViews = true)
-	{
-		$this->collectViews = $collectViews;
-		return $this;
-	}
-
 	/**
 	 * Hook up callbacks for various Laravel events, providing information for timeline and log entries
 	 */
 	public function listenToEvents()
 	{
-		$this->timeline->startEvent('total', 'Total execution time.', 'start');
-
 		$this->app['events']->listen('clockwork.controller.start', function () {
-			$this->timeline->startEvent('controller', 'Controller running.');
+			$this->timeline->event('Controller')->begin();
 		});
 		$this->app['events']->listen('clockwork.controller.end', function () {
-			$this->timeline->endEvent('controller');
+			$this->timeline->event('Controller')->end();
 		});
 
 		if ($this->collectLog) {
 			$this->app['events']->listen('illuminate.log', function ($level, $message, $context) {
 				$this->log->log($level, $message, $context);
-			});
-		}
-
-		if ($this->collectViews) {
-			$this->app['events']->listen('composing:*', function ($view, $data = null) {
-				if (is_string($view) && is_array($data)) { // Laravel 5.4 wildcard event
-					$view = $data[0];
-				}
-
-				$time = microtime(true);
-
-				$this->views->addEvent(
-					'view ' . $view->getName(),
-					'Rendering a view',
-					$time,
-					$time,
-					[ 'name' => $view->getName(), 'data' => (new Serializer)->normalize($view->getData()) ]
-				);
 			});
 		}
 	}

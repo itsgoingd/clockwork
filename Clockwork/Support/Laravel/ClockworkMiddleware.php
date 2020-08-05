@@ -23,6 +23,8 @@ class ClockworkMiddleware
 	 */
 	public function handle($request, \Closure $next)
 	{
+		$this->app['clockwork']->event('Controller')->begin();
+
 		try {
 			$response = $next($request);
 		} catch (\Exception $e) {

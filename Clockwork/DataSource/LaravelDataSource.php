@@ -4,7 +4,7 @@ use Clockwork\DataSource\DataSource;
 use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
-use Clockwork\Request\Timeline;
+use Clockwork\Request\Timeline\Timeline;
 
 use Illuminate\Contracts\Foundation\Application;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,7 +69,7 @@ class LaravelDataSource extends DataSource
 
 		$this->resolveAuthenticatedUser($request);
 
-		$request->timelineData = $this->timeline->finalize($request->time);
+		$request->timeline()->merge($this->timeline);
 
 		return $request;
 	}
@@ -103,10 +103,10 @@ class LaravelDataSource extends DataSource
 	public function listenToEvents()
 	{
 		$this->app['events']->listen('clockwork.controller.start', function () {
-			$this->timeline->startEvent('controller', 'Controller running.');
+			$this->timeline->event('Controller')->begin();
 		});
 		$this->app['events']->listen('clockwork.controller.end', function () {
-			$this->timeline->endEvent('controller');
+			$this->timeline->event('Controller')->end();
 		});
 
 		if ($this->collectLog) {
@@ -123,25 +123,6 @@ class LaravelDataSource extends DataSource
 			}
 		}
 	}
-
-	/**
-	 * Hook up callbacks for some Laravel events, that we need to register as soon as possible
-	 */
-	public function listenToEarlyEvents()
- 	{
-		$this->timeline->startEvent('total', 'Total execution time.', 'start');
-		$this->timeline->startEvent('initialisation', 'Application initialisation.', 'start');
-
- 		$this->app->booting(function () {
- 			$this->timeline->endEvent('initialisation');
- 			$this->timeline->startEvent('boot', 'Framework booting.');
- 			$this->timeline->startEvent('run', 'Framework running.');
- 		});
-
- 		$this->app->booted(function () {
- 			$this->timeline->endEvent('boot');
- 		});
- 	}
 
 	/**
 	 * Return a textual representation of current route's controller
