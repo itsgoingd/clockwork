@@ -30,6 +30,9 @@ $container->autowire(Clockwork\Support\Symfony\ClockworkListener::class)
 	->setArgument('$profiler', new Reference('profiler'))
 	->addTag('kernel.event_subscriber');
 
+$container->autowire(Clockwork\Support\Symfony\ClockworkLoader::class)
+	->addTag('routing.loader');
+
 $container->setAlias('clockwork', Clockwork\Clockwork::class)->setPublic('true');
 $container->setAlias('clockwork.authenticator', Clockwork\Authentication\AuthenticatorInterface::class)->setPublic('true');
 $container->setAlias('clockwork.storage', Clockwork\Storage\StorageInterface::class)->setPublic('true');

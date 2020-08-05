@@ -18,7 +18,7 @@ class ClockworkConfiguration implements ConfigurationInterface
 		return $this->getConfigRoot()
 			->children()
 				->booleanNode('enable')->defaultValue($this->debug)->end()
-				->booleanNode('web')->defaultValue(true)->end()
+				->variableNode('web')->defaultValue(true)->end()
 				->booleanNode('authentication')->defaultValue(false)->end()
 				->scalarNode('authentication_password')->defaultValue('VerySecretPassword')->end()
 				->end()
