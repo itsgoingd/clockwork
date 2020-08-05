@@ -287,6 +287,7 @@ class ClockworkServiceProvider extends ServiceProvider
 			->where('id', '([0-9-]+|latest)');
 		$this->app['router']->get('/__clockwork/{id}/{direction?}/{count?}', 'Clockwork\Support\Laravel\ClockworkController@getData')
 			->where('id', '([0-9-]+|latest)')->where('direction', '(next|previous)')->where('count', '\d+');
+		$this->app['router']->post('/__clockwork/auth', 'Clockwork\Support\Laravel\ClockworkController@authenticate');
 	}
 
 	protected function registerWebRoutes()
@@ -295,7 +296,6 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app['router']->get('/__clockwork/app', 'Clockwork\Support\Laravel\ClockworkController@webIndex');
 		$this->app['router']->get('/__clockwork/{path}', 'Clockwork\Support\Laravel\ClockworkController@webAsset')
 			->where('path', '.+');
-		$this->app['router']->post('/__clockwork/auth', 'Clockwork\Support\Laravel\ClockworkController@authenticate');
 	}
 
 	public function provides()
