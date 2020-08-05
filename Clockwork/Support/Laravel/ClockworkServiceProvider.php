@@ -292,10 +292,12 @@ class ClockworkServiceProvider extends ServiceProvider
 
 	protected function registerWebRoutes()
 	{
-		$this->app['router']->get('/__clockwork', 'Clockwork\Support\Laravel\ClockworkController@webRedirect');
-		$this->app['router']->get('/__clockwork/app', 'Clockwork\Support\Laravel\ClockworkController@webIndex');
-		$this->app['router']->get('/__clockwork/{path}', 'Clockwork\Support\Laravel\ClockworkController@webAsset')
-			->where('path', '.+');
+		$this->app['clockwork.support']->webPaths()->each(function ($path) {
+			$this->app['router']->get("{$path}", 'Clockwork\Support\Laravel\ClockworkController@webRedirect');
+			$this->app['router']->get("{$path}/app", 'Clockwork\Support\Laravel\ClockworkController@webIndex');
+			$this->app['router']->get("{$path}/{path}", 'Clockwork\Support\Laravel\ClockworkController@webAsset')
+				->where('path', '.+');
+		});
 	}
 
 	public function provides()

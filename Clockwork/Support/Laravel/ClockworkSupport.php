@@ -441,6 +441,15 @@ class ClockworkSupport
 		]);
 	}
 
+	public function webPaths()
+	{
+		$path = $this->getConfig('web', true);
+
+		if (is_string($path)) return collect([ trim($path, '/') ]);
+
+		return collect([ 'clockwork', '__clockwork' ]);
+	}
+
 	protected function builtinLaravelCommands()
 	{
 		return [
