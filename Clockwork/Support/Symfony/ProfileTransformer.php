@@ -2,7 +2,7 @@
 
 use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Request;
-use Clockwork\Request\Request\Timeline\Timeline;
+use Clockwork\Request\Timeline\Timeline;
 
 use Symfony\Component\HttpKernel\Profiler\Profile;
 

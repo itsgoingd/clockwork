@@ -86,6 +86,15 @@ class ClockworkSupport
 
 	public function isWebEnabled()
 	{
-		return $this->getConfig('web', false);
+		return $this->getConfig('web', true);
+	}
+
+	public function webPaths()
+	{
+		$path = $this->getConfig('web', true);
+
+		if (is_string($path)) return [ trim($path, '/') ];
+
+		return [ 'clockwork', '__clockwork' ];
 	}
 }

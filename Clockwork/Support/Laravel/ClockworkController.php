@@ -58,7 +58,7 @@ class ClockworkController extends Controller
 	{
 		$this->ensureClockworkIsEnabled();
 
-		return new RedirectResponse('/__clockwork/app');
+		return new RedirectResponse($this->app['request']->path() . '/app');
 	}
 
 	protected function ensureClockworkIsEnabled()

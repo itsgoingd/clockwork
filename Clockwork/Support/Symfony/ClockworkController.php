@@ -49,12 +49,12 @@ class ClockworkController extends AbstractController
 		return $this->support->getWebAsset($path);
 	}
 
-	public function webRedirect()
+	public function webRedirect(Request $request)
 	{
 		$this->ensureClockworkIsEnabled();
 		$this->ensureClockworkWebIsEnabled();
 
-		return $this->redirect('/__clockwork/app');
+		return $this->redirect($request->getPathInfo() . '/app');
 	}
 
 	protected function ensureClockworkIsEnabled()
