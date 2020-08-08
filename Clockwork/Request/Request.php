@@ -178,6 +178,9 @@ class Request
 	 */
 	public $routes = [];
 
+	// Sent notifications
+	public $notifications = [];
+
 	/**
 	 * Emails data array
 	 */
@@ -343,6 +346,7 @@ class Request
 			'log'                      => array_values($this->log),
 			'events'                   => $this->events,
 			'routes'                   => $this->routes,
+			'notifications'            => $this->notifications,
 			'emailsData'               => $this->emailsData,
 			'viewsData'                => $this->viewsData,
 			'userData'                 => array_map(function ($data) {
@@ -475,6 +479,23 @@ class Request
 			'middleware' => isset($data['middleware']) ? $data['middleware'] : null,
 			'before'     => isset($data['before']) ? $data['before'] : null,
 			'after'      => isset($data['after']) ? $data['after'] : null
+		];
+	}
+
+	// Add sent notifucation, takes subject, recipient, sender, and additional data - time, duration, type, content, data
+	public function addNotification($subject, $to, $from = null, $data = [])
+	{
+		$this->notifications[] = [
+			'subject' => $subject,
+			'from'    => $from,
+			'to'      => $to,
+			'content' => isset($data['content']) ? $data['content'] : null,
+			'type'    => isset($data['type']) ? $data['type'] : null,
+			'data'    => isset($data['data']) ? $data['data'] : [],
+			'time'    => isset($data['time']) ? $data['time'] : microtime(true),
+			'trace'   => isset($data['trace']) ? $data['trace'] : null,
+			'file'    => isset($data['file']) ? $data['file'] : null,
+			'line'    => isset($data['line']) ? $data['line'] : null
 		];
 	}
 

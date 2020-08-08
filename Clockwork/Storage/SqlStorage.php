@@ -67,6 +67,7 @@ class SqlStorage extends Storage
 		'log'                      => 'TEXT NULL',
 		'events'                   => 'TEXT NULL',
 		'routes'                   => 'TEXT NULL',
+		'notifications'            => 'TEXT NULL',
 		'emailsData'               => 'TEXT NULL',
 		'viewsData'                => 'TEXT NULL',
 		'userData'                 => 'TEXT NULL',
@@ -97,8 +98,8 @@ class SqlStorage extends Storage
 	protected $needsSerialization = [
 		'headers', 'getData', 'postData', 'requestData', 'sessionData', 'authenticatedUser', 'cookies', 'middleware',
 		'databaseQueries', 'cacheQueries', 'modelsActions', 'modelsRetrieved', 'modelsCreated', 'modelsUpdated',
-		'modelsDeleted', 'redisCommands', 'queueJobs', 'timelineData', 'log', 'events', 'routes', 'emailsData',
-		'viewsData', 'userData', 'subrequests', 'xdebug', 'commandArguments', 'commandArgumentsDefaults',
+		'modelsDeleted', 'redisCommands', 'queueJobs', 'timelineData', 'log', 'events', 'routes', 'notifications',
+		'emailsData', 'viewsData', 'userData', 'subrequests', 'xdebug', 'commandArguments', 'commandArgumentsDefaults',
 		'commandOptions', 'commandOptionsDefaults', 'jobPayload', 'jobOptions', 'testAsserts', 'parent'
 	];
 

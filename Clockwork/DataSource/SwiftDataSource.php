@@ -11,6 +11,8 @@ use Swift_Mailer;
  */
 class SwiftDataSource extends DataSource
 {
+	protected $swift;
+
 	/**
 	 * Timeline data structure
 	 */
@@ -21,9 +23,14 @@ class SwiftDataSource extends DataSource
 	 */
 	public function __construct(Swift_Mailer $swift)
 	{
-		$this->timeline = new Timeline();
+		$this->swift = $swift;
+		$this->timeline = new Timeline;
+	}
 
-		$swift->registerPlugin(new SwiftPluginClockworkTimeline($this->timeline));
+	// Start listening to the events
+	public function listenToEvents()
+	{
+		$this->swift->registerPlugin(new SwiftPluginClockworkTimeline($this->timeline));
 	}
 
 	/**

@@ -373,6 +373,9 @@ class ClockworkSupport
 	{
 		if ($feature == 'database') {
 			return $this->app['config']->get('database.default');
+		} elseif ($feature == 'notifications-events') {
+			return class_exists(\Illuminate\Mail\Events\MessageSent::class)
+				&& class_exists(\Illuminate\Notifications\Events\NotificationSent::class);
 		} elseif ($feature == 'redis') {
 			return method_exists(\Illuminate\Redis\RedisManager::class, 'enableEvents');
 		} elseif ($feature == 'queue') {

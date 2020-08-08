@@ -6,6 +6,7 @@ use Clockwork\DataSource\EloquentDataSource;
 use Clockwork\DataSource\LaravelDataSource;
 use Clockwork\DataSource\LaravelCacheDataSource;
 use Clockwork\DataSource\LaravelEventsDataSource;
+use Clockwork\DataSource\LaravelNotificationsDataSource;
 use Clockwork\DataSource\LaravelRedisDataSource;
 use Clockwork\DataSource\LaravelQueueDataSource;
 use Clockwork\DataSource\LaravelTwigDataSource;
@@ -57,7 +58,12 @@ class ClockworkServiceProvider extends ServiceProvider
 		if ($support->isFeatureEnabled('redis')) $clockwork->addDataSource($this->app['clockwork.redis']);
 		if ($support->isFeatureEnabled('queue')) $clockwork->addDataSource($this->app['clockwork.queue']);
 		if ($support->isFeatureEnabled('events')) $clockwork->addDataSource($this->app['clockwork.events']);
-		if ($support->isFeatureEnabled('emails')) $clockwork->addDataSource($this->app['clockwork.swift']);
+		if ($support->isFeatureEnabled('notifications')) {
+			$clockwork->addDataSource(
+				$support->isFeatureAvailable('notifications-events')
+					? $this->app['clockwork.notifications'] : $this->app['clockwork.swift']
+			);
+		}
 		if ($support->isFeatureAvailable('xdebug')) $clockwork->addDataSource($this->app['clockwork.xdebug']);
 		if ($support->isFeatureEnabled('views')) {
 			$clockwork->addDataSource(
@@ -76,6 +82,10 @@ class ClockworkServiceProvider extends ServiceProvider
 		if ($support->isFeatureEnabled('cache')) $this->app['clockwork.cache']->listenToEvents();
 		if ($support->isFeatureEnabled('database')) $this->app['clockwork.eloquent']->listenToEvents();
 		if ($support->isFeatureEnabled('events')) $this->app['clockwork.events']->listenToEvents();
+		if ($support->isFeatureEnabled('notifications')) {
+			$support->isFeatureAvailable('notifications-events')
+				? $this->app['clockwork.notifications']->listenToEvents() : $this->app['clockwork.swift']->listenToEvents();
+		}
 		if ($support->isFeatureEnabled('queue')) {
 			$this->app['clockwork.queue']->listenToEvents();
 			$this->app['clockwork.queue']->setCurrentRequestId($this->app['clockwork.request']->id);
@@ -212,6 +222,10 @@ class ClockworkServiceProvider extends ServiceProvider
 				->setLog($app['clockwork.log']);
 		});
 
+		$this->app->singleton('clockwork.notifications', function ($app) {
+			return new LaravelNotificationsDataSource($app['events']);
+		});
+
 		$this->app->singleton('clockwork.queue', function ($app) {
 			return (new LaravelQueueDataSource($app['queue']->connection()));
 		});
@@ -268,6 +282,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->alias('clockwork.eloquent', EloquentDataSource::class);
 		$this->app->alias('clockwork.events', LaravelEventsDataSource::class);
 		$this->app->alias('clockwork.laravel', LaravelDataSource::class);
+		$this->app->alias('clockwork.notifications', LaravelNotificationsDataSource::class);
 		$this->app->alias('clockwork.queue', LaravelQueueDataSource::class);
 		$this->app->alias('clockwork.redis', LaravelRedisDataSource::class);
 		$this->app->alias('clockwork.swift', SwiftDataSource::class);
