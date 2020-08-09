@@ -61,11 +61,6 @@ return [
 			'detect_duplicate_queries' => env('CLOCKWORK_DATABASE_DETECT_DUPLICATE_QUERIES', false)
 		],
 
-		// Sent emails
-		'emails' => [
-			'enabled' => env('CLOCKWORK_EMAILS_ENABLED', true),
-		],
-
 		// Dispatched events
 		'events' => [
 			'enabled' => env('CLOCKWORK_EVENTS_ENABLED', true),
@@ -80,6 +75,11 @@ return [
 		// Laravel log (you can still log directly to Clockwork with laravel log disabled)
 		'log' => [
 			'enabled' => env('CLOCKWORK_LOG_ENABLED', true)
+		],
+
+		// Sent notifications
+		'notifications' => [
+			'enabled' => env('CLOCKWORK_NOTIFICATIONS_ENABLED', true),
 		],
 
 		// Dispatched queue jobs
