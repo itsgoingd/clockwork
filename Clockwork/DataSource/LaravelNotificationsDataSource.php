@@ -6,7 +6,9 @@ use Clockwork\Request\Request;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Mail\Events\MessageSent;
+use Illuminate\Notifications\Events\NotificationSending;
 use Illuminate\Notifications\Events\NotificationSent;
 
 // Data source for Laravel notifications and mail components, provides sent notifications and emails
@@ -27,8 +29,11 @@ class LaravelNotificationsDataSource extends DataSource
 	// Start listening to the events
 	public function listenToEvents()
 	{
-		$this->dispatcher->listen(MessageSent::class, function ($event) { $this->registerMessage($event); });
-		$this->dispatcher->listen(NotificationSent::class, function ($event) { $this->registerNotification($event); });
+		$this->dispatcher->listen(MessageSending::class, function ($event) { $this->sendingMessage($event); });
+		$this->dispatcher->listen(MessageSent::class, function ($event) { $this->sentMessage($event); });
+
+		$this->dispatcher->listen(NotificationSending::class, function ($event) { $this->sendingNotification($event); });
+		$this->dispatcher->listen(NotificationSent::class, function ($event) { $this->sentNotification($event); });
 	}
 
 	// Add sent notifications to the request
@@ -46,7 +51,7 @@ class LaravelNotificationsDataSource extends DataSource
 	}
 
 	// Register a sent email
-	protected function registerMessage($event)
+	protected function sendingMessage($event)
 	{
 		$trace = StackTrace::get()->resolveViewName();
 
@@ -71,13 +76,24 @@ class LaravelNotificationsDataSource extends DataSource
 			'line'    => isset($shortTrace[0]) ? $shortTrace[0]['line'] : null
 		];
 
+		if ($this->updateLastNotification($notification)) return;
+
 		if ($this->passesFilters([ $notification ])) {
 			$this->notifications[] = $notification;
 		}
 	}
 
+	// Update last notification with time taken to send it
+	protected function sentMessage($event)
+	{
+		$lastIndex = count($this->notifications) - 1;
+		$lastNotification = $this->notifications[$lastIndex];
+
+		$this->notifications[$lastIndex]['duration'] = (microtime(true) - $lastNotification['time']) * 1000;
+	}
+
 	// Register a sent notification
-	protected function registerNotification($event)
+	protected function sendingNotification($event)
 	{
 		$trace = StackTrace::get()->resolveViewName();
 
@@ -91,8 +107,7 @@ class LaravelNotificationsDataSource extends DataSource
 			'type'    => $event->channel,
 			'data'    => (new Serializer)->normalizeEach(array_merge($channelSpecific['data'], [
 				'notification' => $event->notification,
-				'notifiable'   => $event->notifiable,
-				'response'     => $event->response
+				'notifiable'   => $event->notifiable
 			])),
 			'time'    => microtime(true),
 			'trace'   => $shortTrace = (new Serializer)->trace($trace),
@@ -100,22 +115,37 @@ class LaravelNotificationsDataSource extends DataSource
 			'line'    => isset($shortTrace[0]) ? $shortTrace[0]['line'] : null
 		];
 
-		if ($event->channel == 'mail') {
-			if ($this->updateLastEmailNotification($notification)) return;
-		}
-
 		if ($this->passesFilters([ $notification ])) {
 			$this->notifications[] = $notification;
 		}
 	}
 
-	// Update last sent email notification with additional data from the notification event
-	protected function updateLastEmailNotification($notification)
+	// Update last notification with time taken to send it and response
+	protected function sentNotification($event)
 	{
 		$lastIndex = count($this->notifications) - 1;
 		$lastNotification = $this->notifications[$lastIndex];
 
+		$this->notifications[$lastIndex]['duration'] = (microtime(true) - $lastNotification['time']) * 1000;
+		$this->notifications[$lastIndex]['data']['response'] = $event->response;
+	}
+
+	// Update last sent email notification with additional data from the message sent event
+	protected function updateLastNotification($notification)
+	{
+		if (! count($this->notifications)) return false;
+
+		$lastIndex = count($this->notifications) - 1;
+		$lastNotification = $this->notifications[$lastIndex];
+
 		if (implode($lastNotification['to']) != implode($notification['to'])) return false;
+
+		$this->notifications[$lastIndex] = array_merge($this->notifications[$lastIndex], [
+			'subject' => $notification['subject'],
+			'from'    => $notification['from'],
+			'to'      => $notification['to'],
+			'content' => $notification['content']
+		]);
 
 		$this->notifications[$lastIndex]['data'] = array_merge($lastNotification['data'], $notification['data']);
 
