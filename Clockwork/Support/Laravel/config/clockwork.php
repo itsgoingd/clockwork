@@ -278,7 +278,7 @@ return [
 
 	'filter_uris' => [
 		'/horizon/.*', // Laravel Horizon requests
-		'/telescope/.*' // Laravel Telescope requests
+		'/telescope/.*', // Laravel Telescope requests
 	],
 
 	'filter_methods' => [
