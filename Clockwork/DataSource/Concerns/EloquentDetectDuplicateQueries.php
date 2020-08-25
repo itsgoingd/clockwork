@@ -37,7 +37,7 @@ trait EloquentDetectDuplicateQueries
 				|| $frame->class == \Illuminate\Database\Eloquent\Relations\Relation::class;
 		});
 
-		if (! $relationFrame) return;
+		if (! $relationFrame || ! $relationFrame->object) return;
 
 		if ($relationFrame->class == \Illuminate\Database\Eloquent\Relations\Relation::class) {
 			$model = get_class($relationFrame->object->getParent());
