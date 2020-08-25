@@ -105,6 +105,7 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 
 		$router->get('/__clockwork/{id:(?:[0-9-]+|latest)}/extended', 'Clockwork\Support\Lumen\Controller@getExtendedData');
 		$router->get('/__clockwork/{id:(?:[0-9-]+|latest)}[/{direction:(?:next|previous)}[/{count:\d+}]]', 'Clockwork\Support\Lumen\Controller@getData');
+		$router->put('/__clockwork/{id}', 'Clockwork\Support\Lumen\Controller@updateData');
 		$router->post('/__clockwork/auth', 'Clockwork\Support\Lumen\Controller@authenticate');
 	}
 

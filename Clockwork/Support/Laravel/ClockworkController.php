@@ -40,6 +40,13 @@ class ClockworkController extends Controller
 		return $this->app['clockwork.support']->getExtendedData($id);
 	}
 
+	public function updateData($id = null)
+	{
+		$this->ensureClockworkIsEnabled();
+
+		return $this->app['clockwork.support']->updateData($id, $this->app['request']->json()->all());
+	}
+
 	public function webIndex()
 	{
 		$this->ensureClockworkIsEnabled();

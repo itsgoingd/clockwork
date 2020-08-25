@@ -16,7 +16,7 @@ use Clockwork\Web\Web;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\{JsonResponse, Response};
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -61,12 +61,43 @@ class ClockworkSupport
 			$this->app['clockwork']->extendRequest($data);
 		}
 
+		if ($authenticator instanceof NullAuthenticator && $data) {
+			$data = is_array($data)
+				? array_map(function ($request) { return $request->except([ 'updateToken' ]); }, $data)
+				: $data->except([ 'updateToken' ]);
+		}
+
 		return new JsonResponse($data);
 	}
 
 	public function getExtendedData($id)
 	{
 		return $this->getData($id, null, null, true);
+	}
+
+	public function updateData($id, $input = [])
+	{
+		if (isset($this->app['session'])) $this->app['session.store']->reflash();
+
+		$storage = $this->app['clockwork']->getStorage();
+
+		$request = $storage->find($id);
+
+		if (! $request) {
+			return new JsonResponse([ 'message' => 'Request not found.' ], 404);
+		}
+
+		$token = isset($input['_token']) ? $input['_token'] : '';
+
+		if (! $request->updateToken || ! hash_equals($request->updateToken, $token)) {
+			return new JsonResponse([ 'message' => 'Invalid update token.' ], 403);
+		}
+
+		foreach ($input as $key => $value) {
+			$request->$key = $value;
+		}
+
+		$storage->update($request);
 	}
 
 	public function getStorage()
@@ -261,6 +292,15 @@ class ClockworkSupport
 		}
 
 		$this->appendServerTimingHeader($response, $this->app['clockwork']->getRequest());
+
+		$clockworkRequest = $this->app['clockwork']->getRequest();
+
+		if ($response instanceof Response) {
+			$response->cookie('clockwork_id', $clockworkRequest->id, 60, null, null, null, false);
+			$response->cookie('clockwork_version', Clockwork::VERSION, 60, null, null, null, false);
+			$response->cookie('clockwork_path', $request->getBasePath() . '/__clockwork/', 60, null, null, null, false);
+			$response->cookie('clockwork_token', $clockworkRequest->updateToken, 60, null, null, null, false);
+		}
 
 		return $response;
 	}

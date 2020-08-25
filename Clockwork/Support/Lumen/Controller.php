@@ -45,6 +45,13 @@ class Controller extends LumenController
 		return $this->clockworkSupport->getExtendedData($id);
 	}
 
+	public function updateData(Request $request, $id = null)
+	{
+		$this->ensureClockworkIsEnabled();
+
+		return $this->clockworkSupport->updateData($id, $request->json()->all());
+	}
+
 	public function webIndex(Request $request)
 	{
 		$this->ensureClockworkIsEnabled();
