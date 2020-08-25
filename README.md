@@ -35,7 +35,7 @@
 Install the Clockwork library via Composer.
 
 ```
-$ composer require itsgoingd/clockwork
+$ composer require itsgoingd/clockwork --dev
 ```
 
 Congratulations, you are done! To enable more features like commands or queue jobs profiling, publish the configuration file via the `vendor:publish` Artisan command.
