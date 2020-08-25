@@ -35,6 +35,12 @@
 Install the Clockwork library via Composer.
 
 ```
+$ composer require itsgoingd/clockwork
+```
+
+Alternative installation as a dev-dependency:
+
+```
 $ composer require itsgoingd/clockwork --dev
 ```
 
