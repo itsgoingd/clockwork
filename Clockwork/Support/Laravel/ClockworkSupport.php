@@ -61,7 +61,7 @@ class ClockworkSupport
 			$this->app['clockwork']->extendRequest($data);
 		}
 
-		if ($authenticator instanceof NullAuthenticator && $data) {
+		if ($data) {
 			$data = is_array($data)
 				? array_map(function ($request) { return $request->except([ 'updateToken' ]); }, $data)
 				: $data->except([ 'updateToken' ]);
@@ -79,6 +79,10 @@ class ClockworkSupport
 	{
 		if (isset($this->app['session'])) $this->app['session.store']->reflash();
 
+		if (! $this->isCollectingClientMetrics()) {
+			throw new NotFoundHttpException;
+		}
+
 		$storage = $this->app['clockwork']->getStorage();
 
 		$request = $storage->find($id);
@@ -94,7 +98,9 @@ class ClockworkSupport
 		}
 
 		foreach ($input as $key => $value) {
-			$request->$key = $value;
+			if (in_array($key, [ 'clientMetrics', 'webVitals' ])) {
+				$request->$key = $value;
+			}
 		}
 
 		$storage->update($request);
@@ -295,7 +301,7 @@ class ClockworkSupport
 
 		$clockworkRequest = $this->app['clockwork']->getRequest();
 
-		if ($response instanceof Response) {
+		if ($this->isCollectingClientMetrics() && $response instanceof Response) {
 			$response->cookie('clockwork_id', $clockworkRequest->id, 60, null, null, null, false);
 			$response->cookie('clockwork_version', Clockwork::VERSION, 60, null, null, null, false);
 			$response->cookie('clockwork_path', $request->getBasePath() . '/__clockwork/', 60, null, null, null, false);
@@ -425,6 +431,11 @@ class ClockworkSupport
 		}
 
 		return true;
+	}
+
+	public function isCollectingClientMetrics()
+	{
+		return $this->getConfig('performance.client_metrics', true);
 	}
 
 	public function isWebEnabled()
