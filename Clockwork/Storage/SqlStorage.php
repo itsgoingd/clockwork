@@ -235,10 +235,10 @@ class SqlStorage extends Storage
 	protected function query($query, array $bindings = [], $firstTry = true)
 	{
 		try {
-            if ($stmt = $this->pdo->prepare($query)) {
-                if ($stmt->execute($bindings)) return $stmt;
-                throw new \PDOException;
-            }
+			if ($stmt = $this->pdo->prepare($query)) {
+				if ($stmt->execute($bindings)) return $stmt;
+				throw new \PDOException;
+			}
 		} catch (\PDOException $e) {
 			$stmt = false;
 		}
