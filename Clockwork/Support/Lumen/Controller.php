@@ -31,18 +31,22 @@ class Controller extends LumenController
 		return new JsonResponse([ 'token' => $token ], $token ? 200 : 403);
 	}
 
-	public function getData($id = null, $direction = null, $count = null)
+	public function getData(Request $request, $id = null, $direction = null, $count = null)
 	{
 		$this->ensureClockworkIsEnabled();
 
-		return $this->clockworkSupport->getData($id, $direction, $count);
+		return $this->clockworkSupport->getData(
+			$id, $direction, $count, $request->only([ 'only', 'except' ])
+		);
 	}
 
-	public function getExtendedData($id = null)
+	public function getExtendedData(Request $request, $id = null)
 	{
 		$this->ensureClockworkIsEnabled();
 
-		return $this->clockworkSupport->getExtendedData($id);
+		return $this->clockworkSupport->getExtendedData(
+			$id, $request->only([ 'only', 'except' ])
+		);
 	}
 
 	public function updateData(Request $request, $id = null)

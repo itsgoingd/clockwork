@@ -400,11 +400,17 @@ class Request
 	// Return request data except specified keys as an array
 	public function except($keys)
 	{
-		$data = $this->toArray();
+		return array_filter($this->toArray(), function ($value, $key) use ($keys) {
+			return ! in_array($key, $keys);
+		}, ARRAY_FILTER_USE_BOTH);
+	}
 
-		foreach ($keys as $key) unset($data[$key]);
-
-		return $data;
+	// Return only request data with specified keys as an array
+	public function only($keys)
+	{
+		return array_filter($this->toArray(), function ($value, $key) use ($keys) {
+			return in_array($key, $keys);
+		}, ARRAY_FILTER_USE_BOTH);
 	}
 
 	// Return timeline instance for the current request

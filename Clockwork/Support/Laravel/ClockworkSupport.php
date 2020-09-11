@@ -34,7 +34,7 @@ class ClockworkSupport
 		return $this->app['config']->get("clockwork.{$key}", $default);
 	}
 
-	public function getData($id = null, $direction = null, $count = null, $extended = false)
+	public function getData($id = null, $direction = null, $count = null, $filter = [], $extended = false)
 	{
 		if (isset($this->app['session'])) $this->app['session.store']->reflash();
 
@@ -61,18 +61,23 @@ class ClockworkSupport
 			$this->app['clockwork']->extendRequest($data);
 		}
 
-		if ($data) {
-			$data = is_array($data)
-				? array_map(function ($request) { return $request->except([ 'updateToken' ]); }, $data)
-				: $data->except([ 'updateToken' ]);
+		$except = isset($filter['except']) ? explode(',', $filter['except']) : [];
+		$only = isset($filter['only']) ? explode(',', $filter['only']) : null;
+
+		if (is_array($data)) {
+			$data = array_map(function ($request) use ($except, $only) {
+				return $only ? $request->only($only) : $request->except(array_merge($except, [ 'updateToken' ]));
+			}, $data);
+		} elseif ($data) {
+			$data = $only ? $data->only($only) : $data->except(array_merge($except, [ 'updateToken' ]));
 		}
 
 		return new JsonResponse($data);
 	}
 
-	public function getExtendedData($id)
+	public function getExtendedData($id, $filter = [])
 	{
-		return $this->getData($id, null, null, true);
+		return $this->getData($id, null, null, $filter, true);
 	}
 
 	public function updateData($id, $input = [])
