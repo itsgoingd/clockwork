@@ -308,15 +308,19 @@ class ClockworkSupport
 			return $response;
 		}
 
-		$clockworkRequest = $this->app['clockwork']->getRequest();
-
 		if ($this->isCollectingClientMetrics() || $this->isToolbarEnabled()) {
-			$response->cookie('clockwork_id', $clockworkRequest->id, 60, null, null, null, false);
-			$response->cookie('clockwork_version', Clockwork::VERSION, 60, null, null, null, false);
-			$response->cookie('clockwork_path', $request->getBasePath() . '/__clockwork/', 60, null, null, null, false);
-			$response->cookie('clockwork_token', $clockworkRequest->updateToken, 60, null, null, null, false);
-			$response->cookie('clockwork_metrics', $this->isCollectingClientMetrics() ? 1 : 0, 60, null, null, null, false);
-			$response->cookie('clockwork_toolbar', $this->isToolbarEnabled() ? 1 : 0, 60, null, null, null, false);
+			$clockworkRequest = $this->app['clockwork']->getRequest();
+
+			$clockworkBrowser = [
+				'requestId' => $clockworkRequest->id,
+				'version'   => Clockwork::VERSION,
+				'path'      => $request->getBasePath() . '/__clockwork/',
+				'token'     => $clockworkRequest->updateToken,
+				'metrics'   => $this->isCollectingClientMetrics(),
+				'toolbar'   => $this->isToolbarEnabled()
+			];
+
+			$response->cookie('x-clockwork', json_encode($clockworkBrowser), 60, null, null, null, false);
 		}
 
 		return $response;
