@@ -362,7 +362,8 @@ class ClockworkSupport
 		]);
 
 		// don't collect data for Clockwork requests
-		$this->app['clockwork']->shouldCollect()->except('/__clockwork(?:/.*)?');
+		$webPath = $this->webPaths()[0];
+		$this->app['clockwork']->shouldCollect()->except([ '/__clockwork(?:/.*)?', "/{$webPath}(?:/.*)?" ]);
 
 		return $this;
 	}
