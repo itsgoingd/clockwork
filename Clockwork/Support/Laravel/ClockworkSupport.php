@@ -446,7 +446,7 @@ class ClockworkSupport
 
 	public function isCollectingClientMetrics()
 	{
-		return $this->getConfig('performance.client_metrics', true);
+		return $this->getConfig('features.performance.client_metrics', true);
 	}
 
 	public function isToolbarEnabled()
