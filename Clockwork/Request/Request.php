@@ -254,8 +254,17 @@ class Request
 	// Ran test asserts
 	public $testAsserts = [];
 
+	// Client-side performance metrics in the form of [ metric => value ]
+	public $clientMetrics = [];
+
+	// Web vitals in the form of [ vital => value ]
+	public $webVitals = [];
+
 	// Parent request
 	public $parent;
+
+	// Token to update this request data
+	public $updateToken;
 
 	// Timeline instance for the current request
 	protected $currentTimeline;
@@ -268,6 +277,7 @@ class Request
 	{
 		$this->id = isset($data['id']) ? $data['id'] : $this->generateRequestId();
 		$this->time = microtime(true);
+		$this->updateToken = isset($data['updateToken']) ? $data['updateToken'] : $this->generateUpdateToken();
 
 		foreach ($data as $key => $val) {
 			$this->$key = $val;
@@ -372,7 +382,10 @@ class Request
 			'testStatus'               => $this->testStatus,
 			'testStatusMessage'        => $this->testStatusMessage,
 			'testAsserts'              => $this->testAsserts,
-			'parent'                   => $this->parent
+			'clientMetrics'            => $this->clientMetrics,
+			'webVitals'                => $this->webVitals,
+			'parent'                   => $this->parent,
+			'updateToken'              => $this->updateToken
 		];
 	}
 
@@ -382,6 +395,22 @@ class Request
 	public function toJson()
 	{
 		return json_encode($this->toArray(), \JSON_PARTIAL_OUTPUT_ON_ERROR);
+	}
+
+	// Return request data except specified keys as an array
+	public function except($keys)
+	{
+		return array_filter($this->toArray(), function ($value, $key) use ($keys) {
+			return ! in_array($key, $keys);
+		}, ARRAY_FILTER_USE_BOTH);
+	}
+
+	// Return only request data with specified keys as an array
+	public function only($keys)
+	{
+		return array_filter($this->toArray(), function ($value, $key) use ($keys) {
+			return in_array($key, $keys);
+		}, ARRAY_FILTER_USE_BOTH);
 	}
 
 	// Return timeline instance for the current request
@@ -592,5 +621,14 @@ class Request
 	protected function generateRequestId()
 	{
 		return str_replace('.', '-', sprintf('%.4F', microtime(true))) . '-' . mt_rand();
+	}
+
+	// Generate a random update token
+	protected function generateUpdateToken()
+	{
+		$length = 8;
+		$bytes = function_exists('random_bytes') ? random_bytes($length) : openssl_random_pseudo_bytes($length);
+
+		return substr(bin2hex($bytes), 0, $length);
 	}
 }

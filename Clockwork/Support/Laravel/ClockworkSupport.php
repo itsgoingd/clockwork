@@ -16,7 +16,7 @@ use Clockwork\Web\Web;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\{JsonResponse, Response};
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -34,7 +34,7 @@ class ClockworkSupport
 		return $this->app['config']->get("clockwork.{$key}", $default);
 	}
 
-	public function getData($id = null, $direction = null, $count = null, $extended = false)
+	public function getData($id = null, $direction = null, $count = null, $filter = [], $extended = false)
 	{
 		if (isset($this->app['session'])) $this->app['session.store']->reflash();
 
@@ -61,12 +61,54 @@ class ClockworkSupport
 			$this->app['clockwork']->extendRequest($data);
 		}
 
+		$except = isset($filter['except']) ? explode(',', $filter['except']) : [];
+		$only = isset($filter['only']) ? explode(',', $filter['only']) : null;
+
+		if (is_array($data)) {
+			$data = array_map(function ($request) use ($except, $only) {
+				return $only ? $request->only($only) : $request->except(array_merge($except, [ 'updateToken' ]));
+			}, $data);
+		} elseif ($data) {
+			$data = $only ? $data->only($only) : $data->except(array_merge($except, [ 'updateToken' ]));
+		}
+
 		return new JsonResponse($data);
 	}
 
-	public function getExtendedData($id)
+	public function getExtendedData($id, $filter = [])
 	{
-		return $this->getData($id, null, null, true);
+		return $this->getData($id, null, null, $filter, true);
+	}
+
+	public function updateData($id, $input = [])
+	{
+		if (isset($this->app['session'])) $this->app['session.store']->reflash();
+
+		if (! $this->isCollectingClientMetrics()) {
+			throw new NotFoundHttpException;
+		}
+
+		$storage = $this->app['clockwork']->getStorage();
+
+		$request = $storage->find($id);
+
+		if (! $request) {
+			return new JsonResponse([ 'message' => 'Request not found.' ], 404);
+		}
+
+		$token = isset($input['_token']) ? $input['_token'] : '';
+
+		if (! $request->updateToken || ! hash_equals($request->updateToken, $token)) {
+			return new JsonResponse([ 'message' => 'Invalid update token.' ], 403);
+		}
+
+		foreach ($input as $key => $value) {
+			if (in_array($key, [ 'clientMetrics', 'webVitals' ])) {
+				$request->$key = $value;
+			}
+		}
+
+		$storage->update($request);
 	}
 
 	public function getStorage()
@@ -262,6 +304,15 @@ class ClockworkSupport
 
 		$this->appendServerTimingHeader($response, $this->app['clockwork']->getRequest());
 
+		$clockworkRequest = $this->app['clockwork']->getRequest();
+
+		if ($this->isCollectingClientMetrics() && $response instanceof Response) {
+			$response->cookie('clockwork_id', $clockworkRequest->id, 60, null, null, null, false);
+			$response->cookie('clockwork_version', Clockwork::VERSION, 60, null, null, null, false);
+			$response->cookie('clockwork_path', $request->getBasePath() . '/__clockwork/', 60, null, null, null, false);
+			$response->cookie('clockwork_token', $clockworkRequest->updateToken, 60, null, null, null, false);
+		}
+
 		return $response;
 	}
 
@@ -385,6 +436,11 @@ class ClockworkSupport
 		}
 
 		return true;
+	}
+
+	public function isCollectingClientMetrics()
+	{
+		return $this->getConfig('performance.client_metrics', true);
 	}
 
 	public function isWebEnabled()

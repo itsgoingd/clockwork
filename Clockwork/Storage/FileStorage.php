@@ -80,7 +80,7 @@ class FileStorage extends Storage
 	}
 
 	// Store request, requests are stored in JSON representation in files named <request id>.json in storage path
-	public function store(Request $request)
+	public function store(Request $request, $skipIndex = false)
 	{
 		$path = "{$this->path}/{$request->id}.json";
 		$data = @json_encode($request->toArray(), \JSON_PARTIAL_OUTPUT_ON_ERROR);
@@ -89,8 +89,15 @@ class FileStorage extends Storage
 			? file_put_contents("{$path}.gz", gzcompress($data))
 			: file_put_contents($path, $data);
 
-		$this->updateIndex($request);
+		if (! $skipIndex) $this->updateIndex($request);
+
 		$this->cleanup();
+	}
+
+	// Update existing request
+	public function update(Request $request)
+	{
+		return $this->store($request, true);
 	}
 
 	// Cleanup old requests

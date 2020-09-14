@@ -91,7 +91,10 @@ class SqlStorage extends Storage
 		'testStatus'               => 'TEXT NULL',
 		'testStatusMessage'        => 'TEXT NULL',
 		'testAsserts'              => 'TEXT NULL',
-		'parent'                   => 'TEXT NULL'
+		'clientMetrics'            => 'TEXT NULL',
+		'webVitals'                => 'TEXT NULL',
+		'parent'                   => 'TEXT NULL',
+		'updateToken'              => 'VARCHAR(100) NULL'
 	];
 
 	// List of Request keys that need to be serialized before they can be stored in database
@@ -100,7 +103,8 @@ class SqlStorage extends Storage
 		'databaseQueries', 'cacheQueries', 'modelsActions', 'modelsRetrieved', 'modelsCreated', 'modelsUpdated',
 		'modelsDeleted', 'redisCommands', 'queueJobs', 'timelineData', 'log', 'events', 'routes', 'notifications',
 		'emailsData', 'viewsData', 'userData', 'subrequests', 'xdebug', 'commandArguments', 'commandArgumentsDefaults',
-		'commandOptions', 'commandOptionsDefaults', 'jobPayload', 'jobOptions', 'testAsserts', 'parent'
+		'commandOptions', 'commandOptionsDefaults', 'jobPayload', 'jobOptions', 'testAsserts', 'parent',
+		'clientMetrics', 'webVitals'
 	];
 
 	// Return a new storage, takes PDO object or DSN and optionally a table name and database credentials as arguments
@@ -187,6 +191,24 @@ class SqlStorage extends Storage
 		$bindings = implode(', ', array_map(function ($field) { return ":{$field}"; }, array_keys($this->fields)));
 
 		$this->query("INSERT INTO {$this->table} ($fields) VALUES ($bindings)", $data);
+
+		$this->cleanup();
+	}
+
+	// Update an existing request in the database
+	public function update(Request $request)
+	{
+		$data = $request->toArray();
+
+		foreach ($this->needsSerialization as $key) {
+			$data[$key] = @json_encode($data[$key], \JSON_PARTIAL_OUTPUT_ON_ERROR);
+		}
+
+		$values = implode(', ', array_map(function ($field) {
+			return $this->quote($field) . " = :{$field}";
+		}, array_keys($this->fields)));
+
+		$this->query("UPDATE {$this->table} SET {$values} WHERE id = :id", $data);
 
 		$this->cleanup();
 	}

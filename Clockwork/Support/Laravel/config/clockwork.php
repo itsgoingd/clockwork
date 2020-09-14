@@ -82,6 +82,12 @@ return [
 			'enabled' => env('CLOCKWORK_NOTIFICATIONS_ENABLED', true),
 		],
 
+		// Performance metrics
+		'performance' => [
+			// Allow collecting of client metrics. Requires separate clockwork-browser npm package.
+			'client_metrics' => env('CLOCKWORK_PERFORMANCE_CLIENT_METRICS', true)
+		],
+
 		// Dispatched queue jobs
 		'queue' => [
 			'enabled' => env('CLOCKWORK_QUEUE_ENABLED', true)
