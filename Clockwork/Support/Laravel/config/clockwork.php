@@ -123,12 +123,23 @@ return [
 	|--------------------------------------------------------------------------
 	|
 	| Enable or disable the Clockwork web UI available at  http://your.app/__clockwork.
-	| You can also set whether to use the dark theme by default.
 	| Default: true
 	|
 	*/
 
 	'web' => env('CLOCKWORK_WEB', true),
+
+	/*
+	|--------------------------------------------------------------------------
+	| Enable toolbar
+	|--------------------------------------------------------------------------
+	|
+	| Enable or disable the Clockwork toolbar. Requires a separate clockwork-browser npm package.
+	| Default: false
+	|
+	*/
+
+	'toolbar' => env('CLOCKWORK_TOOLBAR', false),
 
 	/*
 	|--------------------------------------------------------------------------

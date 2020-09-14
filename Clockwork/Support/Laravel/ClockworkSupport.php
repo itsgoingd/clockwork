@@ -304,13 +304,19 @@ class ClockworkSupport
 
 		$this->appendServerTimingHeader($response, $this->app['clockwork']->getRequest());
 
+		if (! ($response instanceof Response)) {
+			return $response;
+		}
+
 		$clockworkRequest = $this->app['clockwork']->getRequest();
 
-		if ($this->isCollectingClientMetrics() && $response instanceof Response) {
+		if ($this->isCollectingClientMetrics() || $this->isToolbarEnabled()) {
 			$response->cookie('clockwork_id', $clockworkRequest->id, 60, null, null, null, false);
 			$response->cookie('clockwork_version', Clockwork::VERSION, 60, null, null, null, false);
 			$response->cookie('clockwork_path', $request->getBasePath() . '/__clockwork/', 60, null, null, null, false);
 			$response->cookie('clockwork_token', $clockworkRequest->updateToken, 60, null, null, null, false);
+			$response->cookie('clockwork_metrics', $this->isCollectingClientMetrics() ? 1 : 0, 60, null, null, null, false);
+			$response->cookie('clockwork_toolbar', $this->isToolbarEnabled() ? 1 : 0, 60, null, null, null, false);
 		}
 
 		return $response;
@@ -441,6 +447,11 @@ class ClockworkSupport
 	public function isCollectingClientMetrics()
 	{
 		return $this->getConfig('performance.client_metrics', true);
+	}
+
+	public function isToolbarEnabled()
+	{
+		return $this->getConfig('toolbar', false);
 	}
 
 	public function isWebEnabled()
