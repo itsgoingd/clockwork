@@ -304,13 +304,23 @@ class ClockworkSupport
 
 		$this->appendServerTimingHeader($response, $this->app['clockwork']->getRequest());
 
-		$clockworkRequest = $this->app['clockwork']->getRequest();
+		if (! ($response instanceof Response)) {
+			return $response;
+		}
 
-		if ($this->isCollectingClientMetrics() && $response instanceof Response) {
-			$response->cookie('clockwork_id', $clockworkRequest->id, 60, null, null, null, false);
-			$response->cookie('clockwork_version', Clockwork::VERSION, 60, null, null, null, false);
-			$response->cookie('clockwork_path', $request->getBasePath() . '/__clockwork/', 60, null, null, null, false);
-			$response->cookie('clockwork_token', $clockworkRequest->updateToken, 60, null, null, null, false);
+		if ($this->isCollectingClientMetrics() || $this->isToolbarEnabled()) {
+			$clockworkRequest = $this->app['clockwork']->getRequest();
+
+			$clockworkBrowser = [
+				'requestId' => $clockworkRequest->id,
+				'version'   => Clockwork::VERSION,
+				'path'      => $request->getBasePath() . '/__clockwork/',
+				'token'     => $clockworkRequest->updateToken,
+				'metrics'   => $this->isCollectingClientMetrics(),
+				'toolbar'   => $this->isToolbarEnabled()
+			];
+
+			$response->cookie('x-clockwork', json_encode($clockworkBrowser), 60, null, null, null, false);
 		}
 
 		return $response;
@@ -352,7 +362,8 @@ class ClockworkSupport
 		]);
 
 		// don't collect data for Clockwork requests
-		$this->app['clockwork']->shouldCollect()->except('/__clockwork(?:/.*)?');
+		$webPath = $this->webPaths()[0];
+		$this->app['clockwork']->shouldCollect()->except([ '/__clockwork(?:/.*)?', "/{$webPath}(?:/.*)?" ]);
 
 		return $this;
 	}
@@ -440,7 +451,12 @@ class ClockworkSupport
 
 	public function isCollectingClientMetrics()
 	{
-		return $this->getConfig('performance.client_metrics', true);
+		return $this->getConfig('features.performance.client_metrics', true);
+	}
+
+	public function isToolbarEnabled()
+	{
+		return $this->getConfig('toolbar', false);
 	}
 
 	public function isWebEnabled()
