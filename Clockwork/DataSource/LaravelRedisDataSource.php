@@ -79,9 +79,7 @@ class LaravelRedisDataSource extends DataSource
 		$trace = StackTrace::get()->resolveViewName();
 
 		$command = array_merge($command, [
-			'trace' => $shortTrace = (new Serializer)->trace($trace),
-			'file'  => isset($shortTrace[0]) ? $shortTrace[0]['file'] : null,
-			'line'  => isset($shortTrace[0]) ? $shortTrace[0]['line'] : null
+			'trace' => (new Serializer)->trace($trace)
 		]);
 
 		if ($this->passesFilters([ $command, $trace ])) {

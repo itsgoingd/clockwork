@@ -131,9 +131,7 @@ class EloquentDataSource extends DataSource
 			'duration'   => $event->time,
 			'connection' => $event->connectionName,
 			'time'       => microtime(true) - $event->time / 1000,
-			'trace'      => $shortTrace = (new Serializer)->trace($trace),
-			'file'       => isset($shortTrace[0]) ? $shortTrace[0]['file'] : null,
-			'line'       => isset($shortTrace[0]) ? $shortTrace[0]['line'] : null,
+			'trace'      => (new Serializer)->trace($trace),
 			'model'      => $this->nextQueryModel,
 			'tags'       => $this->slowThreshold !== null && $event->time > $this->slowThreshold ? [ 'slow' ] : []
 		];
@@ -179,9 +177,7 @@ class EloquentDataSource extends DataSource
 			'query'      => $lastQuery ? $lastQuery['query'] : null,
 			'duration'   => $lastQuery ? $lastQuery['duration'] : null,
 			'connection' => $lastQuery ? $lastQuery['connection'] : null,
-			'trace'      => $shortTrace = (new Serializer)->trace($trace),
-			'file'       => isset($shortTrace[0]) ? $shortTrace[0]['file'] : null,
-			'line'       => isset($shortTrace[0]) ? $shortTrace[0]['line'] : null,
+			'trace'      => (new Serializer)->trace($trace),
 			'tags'       => []
 		];
 

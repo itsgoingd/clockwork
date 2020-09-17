@@ -71,9 +71,7 @@ class LaravelNotificationsDataSource extends DataSource
 				'mailable' => (new Serializer)->normalize($mailable)
 			],
 			'time'    => microtime(true),
-			'trace'   => $shortTrace = (new Serializer)->trace($trace),
-			'file'    => isset($shortTrace[0]) ? $shortTrace[0]['file'] : null,
-			'line'    => isset($shortTrace[0]) ? $shortTrace[0]['line'] : null
+			'trace'   => (new Serializer)->trace($trace)
 		];
 
 		if ($this->updateLastNotification($notification)) return;
@@ -110,9 +108,7 @@ class LaravelNotificationsDataSource extends DataSource
 				'notifiable'   => $event->notifiable
 			])),
 			'time'    => microtime(true),
-			'trace'   => $shortTrace = (new Serializer)->trace($trace),
-			'file'    => isset($shortTrace[0]) ? $shortTrace[0]['file'] : null,
-			'line'    => isset($shortTrace[0]) ? $shortTrace[0]['line'] : null
+			'trace'   => (new Serializer)->trace($trace)
 		];
 
 		if ($this->passesFilters([ $notification ])) {

@@ -337,17 +337,17 @@ return [
 	|--------------------------------------------------------------------------
 	|
 	| This setting controls, whether log messages and certain data sources, like
-	/ the database or cache data sources, should collect stack traces.
-	/ You might want to disable this if you are collecting 100s of queries or
-	/ log messages, as the stack traces can considerably increase the metadata size.
-	/ You can force collecting of stack trace for a single log call by passing
-	/ [ 'trace' => true ] as $context.
+	| the database or cache data sources, should collect stack traces.
+	| You might want to disable this if you are collecting 100s of queries or
+	| log messages, as the stack traces can considerably increase the metadata size.
+	| You can force collecting of stack trace for a single log call by passing
+	| [ 'trace' => true ] as $context.
 	| Default: true
 	|
 	*/
 
 	'stack_traces' => [
-		// Enable or disable collecting of stack traces, when disabled only caller file and line number is collected
+		// Enable or disable collecting of stack traces
 		'enabled' => env('CLOCKWORK_STACK_TRACES_ENABLED', true),
 
 		// List of vendor names to skip when determining caller, common vendor are automatically added
