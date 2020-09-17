@@ -1,3 +1,7 @@
+4.1.8
+
+- fixed handling of index file locking failures in file storage (reported by mahagr, thanks!)
+
 4.1.7
 
 - fixed a rare crash in Eloquent duplicate queries detection (reported by mstaack, thanks!)

@@ -293,7 +293,7 @@ class FileStorage extends Storage
 
 		if (! $handle) return;
 
-		flock($handle, LOCK_EX);
+		if (! flock($handle, LOCK_EX)) return fclose($handle);
 
 		if ($request->type == 'command') {
 			$nameField = 'commandName';
