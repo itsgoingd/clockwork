@@ -266,25 +266,22 @@ class ClockworkSupport
 			->storeRequest();
 	}
 
-	public function process($request, $response)
+	public function processRequest($request, $response)
 	{
-		$this->app['clockwork']->event('Controller')->end();
+		$clockwork = $this->app['clockwork'];
+		$clockworkRequest = $clockwork->getRequest();
+
+		$clockwork->event('Controller')->end();
 
 		$this->setResponse($response);
 
-		$this->app['clockwork']->resolveRequest();
+		$clockwork->resolveRequest();
 
-		if (! $this->isRecording($this->app['clockwork']->getRequest())) {
-			return $response; // Collecting data is disabled, return immediately
+		if (! $this->isEnabled() || ! $this->isRecording($clockworkRequest)) {
+			return $response; // Clockwork is disabled or we are not recording this request
 		}
 
-		$this->app['clockwork']->storeRequest();
-
-		if (! $this->isEnabled()) {
-			return $response; // Clockwork is disabled, don't set the headers
-		}
-
-		$response->headers->set('X-Clockwork-Id', $this->app['clockwork']->getRequest()->id, true);
+		$response->headers->set('X-Clockwork-Id', $clockworkRequest->id, true);
 		$response->headers->set('X-Clockwork-Version', Clockwork::VERSION, true);
 
 		if ($request->getBasePath()) {
@@ -295,22 +292,20 @@ class ClockworkSupport
 			$response->headers->set("X-Clockwork-Header-{$headerName}", $headerValue);
 		}
 
-		foreach ($this->app['clockwork']->getRequest()->subrequests as $subrequest) {
+		foreach ($clockwork->getRequest()->subrequests as $subrequest) {
 			$url = urlencode($subrequest['url']);
 			$path = urlencode($subrequest['path']);
 
 			$response->headers->set('X-Clockwork-Subrequest', "{$subrequest['id']};{$url};{$path}", false);
 		}
 
-		$this->appendServerTimingHeader($response, $this->app['clockwork']->getRequest());
+		$this->appendServerTimingHeader($response, $clockworkRequest);
 
 		if (! ($response instanceof Response)) {
 			return $response;
 		}
 
 		if ($this->isCollectingClientMetrics() || $this->isToolbarEnabled()) {
-			$clockworkRequest = $this->app['clockwork']->getRequest();
-
 			$clockworkBrowser = [
 				'requestId' => $clockworkRequest->id,
 				'version'   => Clockwork::VERSION,
@@ -324,6 +319,17 @@ class ClockworkSupport
 		}
 
 		return $response;
+	}
+
+	public function recordRequest()
+	{
+		$clockwork = $this->app['clockwork'];
+
+		if (! $this->isRecording($clockwork->getRequest())) {
+			return $response; // Collecting data is disabled, return immediately
+		}
+
+		$clockwork->storeRequest();
 	}
 
 	protected function setResponse($response)
