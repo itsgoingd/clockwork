@@ -32,6 +32,11 @@ class ClockworkMiddleware
 			$response = $this->app[ExceptionHandler::class]->render($request, $e);
 		}
 
-		return $this->app['clockwork.support']->process($request, $response);
+		return $this->app['clockwork.support']->processRequest($request, $response);
+	}
+
+	public function terminate()
+	{
+		$this->app['clockwork.support']->recordRequest();
 	}
 }
