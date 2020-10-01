@@ -22,7 +22,7 @@ class StackFrame
 		$this->call = $this->formatCall();
 		$this->shortPath = str_replace($basePath, '', $this->file);
 		$this->vendor = strpos($this->file, $vendorPath) === 0
-			? explode('/', str_replace($vendorPath, '', $this->file))[0] : null;
+			? explode(DIRECTORY_SEPARATOR, str_replace($vendorPath, '', $this->file))[0] : null;
 	}
 
 	protected function formatCall()
