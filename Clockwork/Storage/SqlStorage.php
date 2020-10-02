@@ -258,8 +258,8 @@ class SqlStorage extends Storage
 	{
 		try {
 			if ($stmt = $this->pdo->prepare($query)) {
-				$stmt->execute($bindings);
-				return $stmt;
+				if ($stmt->execute($bindings)) return $stmt;
+				throw new \PDOException;
 			}
 		} catch (\PDOException $e) {
 			$stmt = false;
