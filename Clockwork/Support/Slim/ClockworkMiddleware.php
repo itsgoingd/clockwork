@@ -6,52 +6,55 @@ use Clockwork\DataSource\PsrMessageDataSource;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Helpers\ServerTiming;
 
-use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
+// Slim 4 middleware
 class ClockworkMiddleware
 {
+	protected $app;
 	protected $clockwork;
 	protected $startTime;
 
-	public function __construct($storagePathOrClockwork, $startTime = null)
+	public function __construct($app, $storagePathOrClockwork, $startTime = null)
 	{
+		$this->app = $app;
 		$this->clockwork = $storagePathOrClockwork instanceof Clockwork
 			? $storagePathOrClockwork : $this->createDefaultClockwork($storagePathOrClockwork);
 		$this->startTime = $startTime ?: microtime(true);
 	}
 
-	public function __invoke(Request $request, Response $response, callable $next)
+	public function __invoke(Request $request, RequestHandler $handler)
 	{
-		return $this->process($request, $response, $next);
+		return $this->process($request, $handler);
 	}
 
-	public function process(Request $request, Response $response, callable $next)
+	public function process(Request $request, RequestHandler $handler)
 	{
 		$authUri = '#/__clockwork/auth#';
 		if (preg_match($authUri, $request->getUri()->getPath(), $matches)) {
-			return $this->authenticate($response, $request);
+			return $this->authenticate($request);
 		}
 
 		$clockworkDataUri = '#/__clockwork(?:/(?<id>[0-9-]+))?(?:/(?<direction>(?:previous|next)))?(?:/(?<count>\d+))?#';
 		if (preg_match($clockworkDataUri, $request->getUri()->getPath(), $matches)) {
 			$matches = array_merge([ 'id' => null, 'direction' => null, 'count' => null ], $matches);
-			return $this->retrieveRequest($response, $request, $matches['id'], $matches['direction'], $matches['count']);
+			return $this->retrieveRequest($request, $matches['id'], $matches['direction'], $matches['count']);
 		}
 
-		$response = $next($request, $response);
+		$response = $handler->handle($request);
 
 		return $this->logRequest($request, $response);
 	}
 
-	protected function authenticate(Response $response, Request $request)
+	protected function authenticate(Request $request)
 	{
 		$token = $this->clockwork->getAuthenticator()->attempt($request->getParsedBody());
 
-		return $response->withJson([ 'token' => $token ])->withStatus($token ? 200 : 403);
+		return $this->jsonResponse([ 'token' => $token ], $token ? 200 : 403);
 	}
 
-	protected function retrieveRequest(Response $response, Request $request, $id, $direction, $count)
+	protected function retrieveRequest(Request $request, $id, $direction, $count)
 	{
 		$authenticator = $this->clockwork->getAuthenticator();
 		$storage = $this->clockwork->getStorage();
@@ -59,9 +62,7 @@ class ClockworkMiddleware
 		$authenticated = $authenticator->check(current($request->getHeader('X-Clockwork-Auth')));
 
 		if ($authenticated !== true) {
-			return $response
-				->withJson([ 'message' => $authenticated, 'requires' => $authenticator->requires() ])
-				->withStatus(403);
+			return $this->jsonResponse([ 'message' => $authenticated, 'requires' => $authenticator->requires() ], 403);
 		}
 
 		if ($direction == 'previous') {
@@ -74,12 +75,10 @@ class ClockworkMiddleware
 			$data = $storage->find($id);
 		}
 
-		return $response
-			->withHeader('Content-Type', 'application/json')
-			->withJson($data);
+		return $this->jsonResponse($data);
 	}
 
-	protected function logRequest(Request $request, Response $response)
+	protected function logRequest(Request $request, $response)
 	{
 		$this->clockwork->getTimeline()->finalize($this->startTime);
 		$this->clockwork->addDataSource(new PsrMessageDataSource($request, $response));
@@ -93,7 +92,7 @@ class ClockworkMiddleware
 			->withHeader('X-Clockwork-Id', $clockworkRequest->id)
 			->withHeader('X-Clockwork-Version', Clockwork::VERSION);
 
-		if ($basePath = $request->getUri()->getBasePath()) {
+		if ($basePath = $this->app->getBasePath()) {
 			$response = $response->withHeader('X-Clockwork-Path', $basePath);
 		}
 
@@ -108,5 +107,16 @@ class ClockworkMiddleware
 		$clockwork->setAuthenticator(new NullAuthenticator);
 
 		return $clockwork;
+	}
+
+	protected function jsonResponse($data, $status = 200)
+	{
+		$response = $this->app->getResponseFactory()
+			->createResponse($status)
+			->withHeader('Content-Type', 'application/json');
+
+		$response->getBody()->write(json_encode($data));
+
+		return $response;
 	}
 }
