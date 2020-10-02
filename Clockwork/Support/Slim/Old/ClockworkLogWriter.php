@@ -1,4 +1,4 @@
-<?php namespace Clockwork\Support\Slim\Legacy;
+<?php namespace Clockwork\Support\Slim\Old;
 
 use Clockwork\Clockwork;
 
