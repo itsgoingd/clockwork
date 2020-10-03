@@ -268,6 +268,10 @@ class ClockworkSupport
 
 	public function processRequest($request, $response)
 	{
+		if (! $this->isCollectingRequests()) {
+			return $response; // Clockwork is not collecting data, additional check when the middleware is enabled manually
+		}
+
 		$clockwork = $this->app['clockwork'];
 		$clockworkRequest = $clockwork->getRequest();
 
@@ -323,6 +327,10 @@ class ClockworkSupport
 
 	public function recordRequest()
 	{
+		if (! $this->isCollectingRequests()) {
+			return $response; // Clockwork is not collecting data, additional check when the middleware is enabled manually
+		}
+
 		$clockwork = $this->app['clockwork'];
 
 		if (! $this->isRecording($clockwork->getRequest())) {
