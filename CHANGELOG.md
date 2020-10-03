@@ -1,3 +1,39 @@
+5.0 (unreleased)
+
+- added collecting of client-metrics and web-vitals
+- added collecting of Eloquent models actions and retrieved, created, updated and deleted models counts
+- added collecting of Laravel notifications
+- added reworked timeline api
+- added configurable web ui path (default changed to /clockwork)
+- added toolbar support
+- added on-demand mode (with optional secret)
+- added option to collect error requests only (requests with 4xx and 5xx responses)
+- added option to specify slow threshold and collect slow requests only
+- added option to sample collected requests (collect only 1 in x requests)
+- added option to collect only specified urls
+- added option to not collect pre-flight requests (enabled by default)
+- added option to filter collected and recorded requests by closure
+- added Laravel controller timeline event
+- added support for updating existing requests
+- added Slim 4 support
+- updated to Clockwork App 5.0
+- improved requests recording to use a terminate callback
+- improved global timeline instance to live on the request instance
+- improved Symfony routes registration to register web ui paths only when enabled
+- improved SQL storage to be more compatible with different PDO error modes
+- improved Clockwork rest api with only/except filters
+- removed Laravel total, initalization, boot and run timeline events
+- removed duplicate file/line information from collected metadata
+- fixed authentication route not being registered when web ui is disabled
+- fixed StackFrame not processing Windows paths correctly
+
+*BREAKING*
+
+- multiple changes to the Laravel config file, please review and re-publish
+- minimal required PHP version is now 5.6 (previously 5.5)
+- the timeline api was reworked, please see documentation for details
+- changed Slim middleware namespaces
+
 4.1.8
 
 - fixed handling of index file locking failures in file storage (reported by mahagr, thanks!)
