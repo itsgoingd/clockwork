@@ -116,17 +116,12 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->singleton('clockwork', function ($app) {
 			return (new Clockwork)
 				->setAuthenticator($app['clockwork.authenticator'])
-				->setLog($app['clockwork.log'])
 				->setRequest($app['clockwork.request'])
 				->setStorage($app['clockwork.storage']);
 		});
 
 		$this->app->singleton('clockwork.authenticator', function ($app) {
 			return $app['clockwork.support']->getAuthenticator();
-		});
-
-		$this->app->singleton('clockwork.log', function ($app) {
-			return new Log;
 		});
 
 		$this->app->singleton('clockwork.request', function ($app) {
@@ -218,8 +213,7 @@ class ClockworkServiceProvider extends ServiceProvider
 				$app,
 				$app['clockwork.support']->isFeatureEnabled('log'),
 				$app['clockwork.support']->isFeatureEnabled('routes')
-			))
-				->setLog($app['clockwork.log']);
+			));
 		});
 
 		$this->app->singleton('clockwork.notifications', function ($app) {
@@ -274,7 +268,6 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->alias('clockwork', Clockwork::class);
 
 		$this->app->alias('clockwork.authenticator', AuthenticatorInterface::class);
-		$this->app->alias('clockwork.log', Log::class);
 		$this->app->alias('clockwork.storage', StorageInterface::class);
 		$this->app->alias('clockwork.support', ClockworkSupport::class);
 

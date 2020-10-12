@@ -17,6 +17,12 @@ class Log extends AbstractLogger
 	 */
 	public $data = [];
 
+	// Create a new timeline, optionally with existing events
+	public function __construct($data = [])
+	{
+		$this->data = $data;
+	}
+
 	/**
 	 * Add a new timestamped message, with a level and context, context can be used to override serializer defaults
 	 * $context['trace'] = true can be used to force collecting a stack trace
@@ -33,6 +39,20 @@ class Log extends AbstractLogger
 			'time'      => microtime(true),
 			'trace'     => (new Serializer(! empty($context['trace']) ? [ 'traces' => true ] : []))->trace($trace)
 		];
+	}
+
+	// Merge another log instance into the current log
+	public function merge(Log $log)
+	{
+		$this->data = array_merge($this->data, $log->data);
+
+		return $this;
+	}
+
+	// Sort the log messages by start time
+	public function sort()
+	{
+		uasort($this->data, function ($a, $b) { return $a['time'] * 1000 - $b['time'] * 1000; });
 	}
 
 	/**

@@ -27,7 +27,7 @@ trait EloquentDetectDuplicateQueries
 			);
 		}
 
-		$request->log = array_merge($request->log, $log->toArray());
+		$request->log()->merge($log);
 	}
 
 	protected function detectDuplicateQuery(StackTrace $trace)

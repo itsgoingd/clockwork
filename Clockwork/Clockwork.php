@@ -43,11 +43,6 @@ class Clockwork implements LoggerInterface
 	// Authenticator implementation, authenticates requests for clockwork metadata
 	protected $authenticator;
 
-	/**
-	 * Request\Log instance, data structure which stores data for the log view
-	 */
-	protected $log;
-
 	// Callback to filter whether the request should be collected
 	protected $shouldCollect;
 
@@ -60,7 +55,6 @@ class Clockwork implements LoggerInterface
 	public function __construct()
 	{
 		$this->request = new Request;
-		$this->log = new Log;
 		$this->authenticator = new NullAuthenticator;
 
 		$this->shouldCollect = new ShouldCollect;
@@ -112,15 +106,7 @@ class Clockwork implements LoggerInterface
 			$dataSource->resolve($this->request);
 		}
 
-		// merge global log with data collected from data sources
-		$this->request->log = array_merge($this->request->log, $this->log->toArray());
-
-		// sort log data by time
-		uasort($this->request->log, function($a, $b) {
-			if ($a['time'] == $b['time']) return 0;
-			return $a['time'] < $b['time'] ? -1 : 1;
-		});
-
+		$this->request->log()->sort();
 		$this->request->timeline()->finalize($this->request->time);
 
 		return $this;
@@ -196,14 +182,12 @@ class Clockwork implements LoggerInterface
 		return $this->storage->store($this->request);
 	}
 
-	// Reset the log, timeline and all data sources to an empty state, clearing any collected data
+	// Reset all data sources to an empty state, clearing any collected data
 	public function reset()
 	{
 		foreach ($this->dataSources as $dataSource) {
 			$dataSource->reset();
 		}
-
-		$this->log = new Log;
 
 		return $this;
 	}
@@ -263,70 +247,52 @@ class Clockwork implements LoggerInterface
 	}
 
 	/**
-	 * Return the log instance
-	 */
-	public function getLog()
-	{
-		return $this->log;
-	}
-
-	/**
-	 * Set a custom log instance
-	 */
-	public function setLog(Log $log)
-	{
-		$this->log = $log;
-
-		return $this;
-	}
-
-	/**
 	 * Shortcut methods for the current log instance
 	 */
 
 	public function log($level = LogLevel::INFO, $message, array $context = [])
 	{
-		return $this->getLog()->log($level, $message, $context);
+		return $this->request->log()->log($level, $message, $context);
 	}
 
 	public function emergency($message, array $context = [])
 	{
-		return $this->getLog()->log(LogLevel::EMERGENCY, $message, $context);
+		return $this->request->log()->log(LogLevel::EMERGENCY, $message, $context);
 	}
 
 	public function alert($message, array $context = [])
 	{
-		return $this->getLog()->log(LogLevel::ALERT, $message, $context);
+		return $this->request->log()->log(LogLevel::ALERT, $message, $context);
 	}
 
 	public function critical($message, array $context = [])
 	{
-		return $this->getLog()->log(LogLevel::CRITICAL, $message, $context);
+		return $this->request->log()->log(LogLevel::CRITICAL, $message, $context);
 	}
 
 	public function error($message, array $context = [])
 	{
-		return $this->getLog()->log(LogLevel::ERROR, $message, $context);
+		return $this->request->log()->log(LogLevel::ERROR, $message, $context);
 	}
 
 	public function warning($message, array $context = [])
 	{
-		return $this->getLog()->log(LogLevel::WARNING, $message, $context);
+		return $this->request->log()->log(LogLevel::WARNING, $message, $context);
 	}
 
 	public function notice($message, array $context = [])
 	{
-		return $this->getLog()->log(LogLevel::NOTICE, $message, $context);
+		return $this->request->log()->log(LogLevel::NOTICE, $message, $context);
 	}
 
 	public function info($message, array $context = [])
 	{
-		return $this->getLog()->log(LogLevel::INFO, $message, $context);
+		return $this->request->log()->log(LogLevel::INFO, $message, $context);
 	}
 
 	public function debug($message, array $context = [])
 	{
-		return $this->getLog()->log(LogLevel::DEBUG, $message, $context);
+		return $this->request->log()->log(LogLevel::DEBUG, $message, $context);
 	}
 
 	// Shortcut methods for the current timeline instance

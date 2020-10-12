@@ -266,6 +266,9 @@ class Request
 	// Token to update this request data
 	public $updateToken;
 
+	// Log instance for the current request
+	protected $currentLog;
+
 	// Timeline instance for the current request
 	protected $currentTimeline;
 
@@ -283,6 +286,7 @@ class Request
 			$this->$key = $val;
 		}
 
+		$this->currentLog = new Log($this->log);
 		$this->currentTimeline = new Timeline\Timeline($this->timelineData);
 	}
 
@@ -353,7 +357,7 @@ class Request
 			'redisCommands'            => $this->redisCommands,
 			'queueJobs'                => $this->queueJobs,
 			'timelineData'             => $this->timeline()->toArray(),
-			'log'                      => array_values($this->log),
+			'log'                      => $this->log()->toArray(),
 			'events'                   => $this->events,
 			'routes'                   => $this->routes,
 			'notifications'            => $this->notifications,
@@ -411,6 +415,12 @@ class Request
 		return array_filter($this->toArray(), function ($value, $key) use ($keys) {
 			return in_array($key, $keys);
 		}, ARRAY_FILTER_USE_BOTH);
+	}
+
+	// Return log instance for the current request
+	public function log()
+	{
+		return $this->currentLog;
 	}
 
 	// Return timeline instance for the current request

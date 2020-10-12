@@ -49,6 +49,7 @@ class LumenDataSource extends DataSource
 		$this->collectLog = $collectLog;
 		$this->collectRoutes = $collectRoutes;
 
+		$this->log = new Log;
 		$this->timeline = new Timeline();
 	}
 
@@ -67,6 +68,7 @@ class LumenDataSource extends DataSource
 
 		$this->resolveAuthenticatedUser($request);
 
+		$request->log()->merge($this->log);
 		$request->timeline()->merge($this->timeline);
 
 		return $request;
@@ -76,13 +78,6 @@ class LumenDataSource extends DataSource
 	public function reset()
 	{
 		$this->timeline = new Timeline;
-	}
-
-	// Set a log instance
-	public function setLog(Log $log)
-	{
-		$this->log = $log;
-		return $this;
 	}
 
 	/**

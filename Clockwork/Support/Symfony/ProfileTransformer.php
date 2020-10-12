@@ -1,6 +1,7 @@
 <?php namespace Clockwork\Support\Symfony;
 
 use Clockwork\Helpers\Serializer;
+use Clockwork\Request\Log;
 use Clockwork\Request\Request;
 use Clockwork\Request\Timeline\Timeline;
 
@@ -150,12 +151,12 @@ class ProfileTransformer
 
 		$data = $profile->getCollector('logger');
 
-		$request->log = $this->getLog($data);
+		$request->log()->merge($this->getLog($data));
 	}
 
 	protected function getLog($data)
 	{
-		return array_map(function ($log) {
+		$messages = array_map(function ($log) {
 			$context = isset($log['context']) ? $log['context'] : [];
 			$replacements = array_filter($context, function ($v) { return ! is_array($v) && ! is_object($v) && ! is_resource($v); });
 
@@ -170,6 +171,8 @@ class ProfileTransformer
 				'time'    => $log['timestamp']
 			];
 		}, $this->unwrap($data->getLogs()));
+
+		return new Log($messages);
 	}
 
 	// Request collector

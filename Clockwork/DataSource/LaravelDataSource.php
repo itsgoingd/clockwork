@@ -49,6 +49,7 @@ class LaravelDataSource extends DataSource
 		$this->collectLog = $collectLog;
 		$this->collectRoutes = $collectRoutes;
 
+		$this->log = new Log;
 		$this->timeline = new Timeline();
 	}
 
@@ -69,6 +70,7 @@ class LaravelDataSource extends DataSource
 
 		$this->resolveAuthenticatedUser($request);
 
+		$request->log()->merge($this->log);
 		$request->timeline()->merge($this->timeline);
 
 		return $request;
@@ -79,13 +81,6 @@ class LaravelDataSource extends DataSource
 	{
 		$this->timeline = new Timeline;
 		$this->views    = new Timeline;
-	}
-
-	// Set a log instance
-	public function setLog(Log $log)
-	{
-		$this->log = $log;
-		return $this;
 	}
 
 	/**
