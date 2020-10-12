@@ -1,76 +1,28 @@
 <?php namespace Clockwork\Support\Lumen;
 
-use Clockwork\Clockwork;
 use Clockwork\DataSource\LumenDataSource;
-use Clockwork\DataSource\PhpDataSource;
-use Clockwork\Request\Log;
-use Clockwork\Request\Request;
 use Clockwork\Support\Laravel\ClockworkServiceProvider as LaravelServiceProvider;
 
 use Illuminate\Support\Facades\Facade;
 
 class ClockworkServiceProvider extends LaravelServiceProvider
 {
-	protected function listenToFrameworkEvents()
-	{
-		$this->app['clockwork.lumen']->listenToEvents();
-	}
-
-	public function register()
+	protected function registerConfiguration()
 	{
 		$this->app->configure('clockwork');
 		$this->mergeConfigFrom(__DIR__ . '/../Laravel/config/clockwork.php', 'clockwork');
+	}
 
-		$this->app->singleton('clockwork', function ($app) {
-			$support = $app['clockwork.support'];
-
-			$clockwork = (new Clockwork)
-				->setAuthenticator($app['clockwork.authenticator'])
-				->setRequest($app['clockwork.request'])
-				->setStorage($app['clockwork.storage'])
-				->addDataSource(new PhpDataSource())
-				->addDataSource($app['clockwork.lumen']);
-
-			if ($support->isFeatureEnabled('database')) $clockwork->addDataSource($app['clockwork.eloquent']);
-			if ($support->isFeatureEnabled('cache')) $clockwork->addDataSource($app['clockwork.cache']);
-			if ($support->isFeatureEnabled('redis')) $clockwork->addDataSource($app['clockwork.redis']);
-			if ($support->isFeatureEnabled('queue')) $clockwork->addDataSource($app['clockwork.queue']);
-			if ($support->isFeatureEnabled('events')) $clockwork->addDataSource($app['clockwork.events']);
-			if ($support->isFeatureEnabled('emails')) $clockwork->addDataSource($app['clockwork.swift']);
-			if ($support->isFeatureAvailable('xdebug')) $clockwork->addDataSource($app['clockwork.xdebug']);
-
-			return $clockwork;
-		});
-
-		$this->app->singleton('clockwork.authenticator', function ($app) {
-			return $app['clockwork.support']->getAuthenticator();
-		});
-
-		$this->app->singleton('clockwork.request', function ($app) {
- 			return new Request;
- 		});
-
-		$this->app->singleton('clockwork.storage', function ($app) {
-			return $app['clockwork.support']->getStorage();
-		});
+	protected function registerClockwork()
+	{
+		parent::registerClockwork();
 
 		$this->app->singleton('clockwork.support', function ($app) {
 			return new ClockworkSupport($app);
 		});
 
-		$this->registerCommands();
-		$this->registerDataSources();
-		$this->registerAliases();
-
-		$this->app->make('clockwork.request'); // instantiate the request to have id and time available as early as possible
-		$this->app['clockwork.support']->configureSerializer();
-
 		if ($this->isRunningWithFacades() && ! class_exists('Clockwork')) {
 			class_alias(\Clockwork\Support\Laravel\Facade::class, 'Clockwork');
-		}
-
-		if ($this->app['clockwork.support']->getConfig('register_helpers', true)) {
-			require __DIR__ . '/../Laravel/helpers.php';
 		}
 	}
 
@@ -86,6 +38,13 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 				$app['clockwork.support']->isFeatureEnabled('routes')
 			));
 		});
+	}
+
+	protected function registerAliases()
+	{
+		parent::registerAliases();
+
+		$this->app->alias('clockwork.lumen', LumenDataSource::class);
 	}
 
 	public function registerMiddleware()
@@ -107,18 +66,20 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 	{
 		$router = isset($this->app->router) ? $this->app->router : $this->app;
 
-		$router->get('/__clockwork', 'Clockwork\Support\Lumen\Controller@webRedirect');
-		$router->get('/__clockwork/app', 'Clockwork\Support\Lumen\Controller@webIndex');
-		$router->get('/__clockwork/{path:.+}', 'Clockwork\Support\Lumen\Controller@webAsset');
+		$this->app['clockwork.support']->webPaths()->each(function ($path) use ($router) {
+			$router->get("{$path}", 'Clockwork\Support\Lumen\Controller@webRedirect');
+			$router->get("{$path}/app", 'Clockwork\Support\Lumen\Controller@webIndex');
+			$router->get("{$path}/{path:.+}", 'Clockwork\Support\Lumen\Controller@webAsset');
+		});
+	}
+
+	protected function frameworkDataSource()
+	{
+		return $this->app['clockwork.lumen'];
 	}
 
 	protected function isRunningWithFacades()
 	{
 		return Facade::getFacadeApplication() !== null;
-	}
-
-	public function provides()
-	{
-		return [ 'clockwork' ];
 	}
 }

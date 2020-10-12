@@ -87,9 +87,17 @@ class LumenDataSource extends DataSource
 	public function listenToEvents()
 	{
 		if ($this->collectLog) {
-			$this->app['events']->listen('illuminate.log', function ($level, $message, $context) {
-				$this->log->log($level, $message, $context);
-			});
+			if (class_exists(\Illuminate\Log\Events\MessageLogged::class)) {
+				// Lumen 5.4
+				$this->app['events']->listen(\Illuminate\Log\Events\MessageLogged::class, function ($event) {
+					$this->log->log($event->level, $event->message, $event->context);
+				});
+			} else {
+				// Lumen 5.0 to 5.3
+				$this->app['events']->listen('illuminate.log', function ($level, $message, $context) {
+					$this->log->log($level, $message, $context);
+				});
+			}
 		}
 	}
 

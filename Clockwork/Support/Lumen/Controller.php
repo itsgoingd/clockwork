@@ -70,11 +70,11 @@ class Controller extends LumenController
 		return $this->clockworkSupport->getWebAsset($path);
 	}
 
-	public function webRedirect()
+	public function webRedirect(Request $request)
 	{
 		$this->ensureClockworkIsEnabled();
 
-		return new RedirectResponse('/__clockwork/app');
+		return new RedirectResponse($request->path() . '/app');
 	}
 
 	protected function ensureClockworkIsEnabled()

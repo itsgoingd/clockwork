@@ -18,6 +18,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
 use Illuminate\Http\{JsonResponse, Response};
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ClockworkSupport
@@ -319,7 +320,7 @@ class ClockworkSupport
 				'toolbar'   => $this->isToolbarEnabled()
 			];
 
-			$response->cookie('x-clockwork', json_encode($clockworkBrowser), 60, null, null, null, false);
+			$response->cookie(new Cookie('x-clockwork', json_encode($clockworkBrowser), 60, null, null, null, false));
 		}
 
 		return $response;

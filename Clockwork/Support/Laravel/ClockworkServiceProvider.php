@@ -51,7 +51,7 @@ class ClockworkServiceProvider extends ServiceProvider
 
 		$clockwork
 			->addDataSource(new PhpDataSource)
-			->addDataSource($this->app['clockwork.laravel']);
+			->addDataSource($this->frameworkDataSource());
 
 		if ($support->isFeatureEnabled('database')) $clockwork->addDataSource($this->app['clockwork.eloquent']);
 		if ($support->isFeatureEnabled('cache')) $clockwork->addDataSource($this->app['clockwork.cache']);
@@ -77,7 +77,7 @@ class ClockworkServiceProvider extends ServiceProvider
 	{
 		$support = $this->app['clockwork.support'];
 
-		$this->listenToFrameworkEvents();
+		$this->frameworkDataSource()->listenToEvents();
 
 		if ($support->isFeatureEnabled('cache')) $this->app['clockwork.cache']->listenToEvents();
 		if ($support->isFeatureEnabled('database')) $this->app['clockwork.eloquent']->listenToEvents();
@@ -103,16 +103,36 @@ class ClockworkServiceProvider extends ServiceProvider
 		if ($support->isCollectingQueueJobs()) $support->collectQueueJobs();
 	}
 
-	protected function listenToFrameworkEvents()
+	public function register()
 	{
-		$this->app['clockwork.laravel']->listenToEvents();
+		$this->registerConfiguration();
+		$this->registerClockwork();
+		$this->registerCommands();
+		$this->registerDataSources();
+		$this->registerAliases();
+
+		$this->app->make('clockwork.request'); // instantiate the request to have id and time available as early as possible
+
+		$this->app['clockwork.support']
+			->configureSerializer()
+			->configureShouldCollect()
+			->configureShouldRecord();
+
+		if ($this->app['clockwork.support']->getConfig('register_helpers', true)) {
+			require __DIR__ . '/helpers.php';
+		}
 	}
 
-	public function register()
+	// Register the configuration file
+	protected function registerConfiguration()
 	{
 		$this->publishes([ __DIR__ . '/config/clockwork.php' => config_path('clockwork.php') ]);
 		$this->mergeConfigFrom(__DIR__ . '/config/clockwork.php', 'clockwork');
+	}
 
+	// Register core Clockwork components
+	protected function registerClockwork()
+	{
 		$this->app->singleton('clockwork', function ($app) {
 			return (new Clockwork)
 				->setAuthenticator($app['clockwork.authenticator'])
@@ -135,21 +155,6 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->singleton('clockwork.support', function ($app) {
 			return new ClockworkSupport($app);
 		});
-
-		$this->registerCommands();
-		$this->registerDataSources();
-		$this->registerAliases();
-
-		$this->app->make('clockwork.request'); // instantiate the request to have id and time available as early as possible
-
-		$this->app['clockwork.support']
-			->configureSerializer()
-			->configureShouldCollect()
-			->configureShouldRecord();
-
-		if ($this->app['clockwork.support']->getConfig('register_helpers', true)) {
-			require __DIR__ . '/helpers.php';
-		}
 	}
 
 	// Register the artisan commands
@@ -307,6 +312,11 @@ class ClockworkServiceProvider extends ServiceProvider
 			$this->app['router']->get("{$path}/{path}", 'Clockwork\Support\Laravel\ClockworkController@webAsset')
 				->where('path', '.+');
 		});
+	}
+
+	protected function frameworkDataSource()
+	{
+		return $this->app['clockwork.laravel'];
 	}
 
 	public function provides()
