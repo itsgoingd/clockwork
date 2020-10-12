@@ -79,6 +79,7 @@ class LaravelDataSource extends DataSource
 	// Reset the data source to an empty state, clearing any collected data
 	public function reset()
 	{
+		$this->log      = new Log;
 		$this->timeline = new Timeline;
 		$this->views    = new Timeline;
 	}
