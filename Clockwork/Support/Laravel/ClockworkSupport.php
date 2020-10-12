@@ -328,13 +328,13 @@ class ClockworkSupport
 	public function recordRequest()
 	{
 		if (! $this->isCollectingRequests()) {
-			return $response; // Clockwork is not collecting data, additional check when the middleware is enabled manually
+			return; // Clockwork is not collecting data, additional check when the middleware is enabled manually
 		}
 
 		$clockwork = $this->app['clockwork'];
 
 		if (! $this->isRecording($clockwork->getRequest())) {
-			return $response; // Collecting data is disabled, return immediately
+			return; // Collecting data is disabled, return immediately
 		}
 
 		$clockwork->storeRequest();
