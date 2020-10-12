@@ -4,13 +4,12 @@ use Clockwork\DataSource\DataSource;
 use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
-use Clockwork\Request\Timeline\Timeline;
 
 use Illuminate\Contracts\Foundation\Application;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Data source for Laravel framework, provides application log, timeline, request and response information
+ * Data source for Laravel framework, provides application log, request and response information
  */
 class LaravelDataSource extends DataSource
 {
@@ -29,11 +28,6 @@ class LaravelDataSource extends DataSource
 	 */
 	protected $log;
 
-	/**
-	 * Timeline data structure
-	 */
-	protected $timeline;
-
 	// Whether we should collect log messages
 	protected $collectLog = true;
 
@@ -49,11 +43,11 @@ class LaravelDataSource extends DataSource
 		$this->collectLog = $collectLog;
 		$this->collectRoutes = $collectRoutes;
 
-		$this->timeline = new Timeline();
+		$this->log = new Log;
 	}
 
 	/**
-	 * Adds request method, uri, controller, headers, response status, timeline data and log entries to the request
+	 * Adds request method, uri, controller, headers, response status and log entries to the request
 	 */
 	public function resolve(Request $request)
 	{
@@ -69,7 +63,7 @@ class LaravelDataSource extends DataSource
 
 		$this->resolveAuthenticatedUser($request);
 
-		$request->timeline()->merge($this->timeline);
+		$request->log()->merge($this->log);
 
 		return $request;
 	}
@@ -77,15 +71,7 @@ class LaravelDataSource extends DataSource
 	// Reset the data source to an empty state, clearing any collected data
 	public function reset()
 	{
-		$this->timeline = new Timeline;
-		$this->views    = new Timeline;
-	}
-
-	// Set a log instance
-	public function setLog(Log $log)
-	{
-		$this->log = $log;
-		return $this;
+		$this->log = new Log;
 	}
 
 	/**
@@ -98,17 +84,10 @@ class LaravelDataSource extends DataSource
 	}
 
 	/**
-	 * Hook up callbacks for various Laravel events, providing information for timeline and log entries
+	 * Hook up callbacks for various Laravel events, providing information for log entries
 	 */
 	public function listenToEvents()
 	{
-		$this->app['events']->listen('clockwork.controller.start', function () {
-			$this->timeline->event('Controller')->begin();
-		});
-		$this->app['events']->listen('clockwork.controller.end', function () {
-			$this->timeline->event('Controller')->end();
-		});
-
 		if ($this->collectLog) {
 			if (class_exists(\Illuminate\Log\Events\MessageLogged::class)) {
 				// Laravel 5.4

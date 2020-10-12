@@ -26,7 +26,6 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 
 			$clockwork = (new Clockwork)
 				->setAuthenticator($app['clockwork.authenticator'])
-				->setLog($app['clockwork.log'])
 				->setRequest($app['clockwork.request'])
 				->setStorage($app['clockwork.storage'])
 				->addDataSource(new PhpDataSource())
@@ -45,10 +44,6 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 
 		$this->app->singleton('clockwork.authenticator', function ($app) {
 			return $app['clockwork.support']->getAuthenticator();
-		});
-
-		$this->app->singleton('clockwork.log', function ($app) {
-			return new Log;
 		});
 
 		$this->app->singleton('clockwork.request', function ($app) {
@@ -89,8 +84,7 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 				$app['clockwork.support']->isFeatureEnabled('log'),
 				$app['clockwork.support']->isFeatureEnabled('views'),
 				$app['clockwork.support']->isFeatureEnabled('routes')
-			))
-				->setLog($app['clockwork.log']);
+			));
 		});
 	}
 

@@ -32,7 +32,7 @@ class MonologDataSource extends DataSource
 	 */
 	public function resolve(Request $request)
 	{
-		$request->log = array_merge($request->log, $this->log->toArray());
+		$request->log()->merge($this->log);
 
 		return $request;
 	}

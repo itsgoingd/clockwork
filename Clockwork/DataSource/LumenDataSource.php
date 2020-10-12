@@ -4,13 +4,12 @@ use Clockwork\DataSource\DataSource;
 use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
-use Clockwork\Request\Timeline\Timeline;
 
 use Laravel\Lumen\Application;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Data source for Lumen framework, provides application log, timeline, request and response information
+ * Data source for Lumen framework, provides application log, request and response information
  */
 class LumenDataSource extends DataSource
 {
@@ -29,11 +28,6 @@ class LumenDataSource extends DataSource
 	 */
 	protected $log;
 
-	/**
-	 * Timeline data structure
-	 */
-	protected $timeline;
-
 	// Whether we should collect log messages
 	protected $collectLog = true;
 
@@ -49,11 +43,11 @@ class LumenDataSource extends DataSource
 		$this->collectLog = $collectLog;
 		$this->collectRoutes = $collectRoutes;
 
-		$this->timeline = new Timeline();
+		$this->log = new Log;
 	}
 
 	/**
-	 * Adds request method, uri, controller, headers, response status, timeline data and log entries to the request
+	 * Adds request method, uri, controller, headers, response status and log entries to the request
 	 */
 	public function resolve(Request $request)
 	{
@@ -67,7 +61,7 @@ class LumenDataSource extends DataSource
 
 		$this->resolveAuthenticatedUser($request);
 
-		$request->timeline()->merge($this->timeline);
+		$request->log()->merge($this->log);
 
 		return $request;
 	}
@@ -75,14 +69,7 @@ class LumenDataSource extends DataSource
 	// Reset the data source to an empty state, clearing any collected data
 	public function reset()
 	{
-		$this->timeline = new Timeline;
-	}
-
-	// Set a log instance
-	public function setLog(Log $log)
-	{
-		$this->log = $log;
-		return $this;
+		$this->log = new Log;
 	}
 
 	/**
@@ -95,17 +82,10 @@ class LumenDataSource extends DataSource
 	}
 
 	/**
-	 * Hook up callbacks for various Laravel events, providing information for timeline and log entries
+	 * Hook up callbacks for various Laravel events, providing information for log entries
 	 */
 	public function listenToEvents()
 	{
-		$this->app['events']->listen('clockwork.controller.start', function () {
-			$this->timeline->event('Controller')->begin();
-		});
-		$this->app['events']->listen('clockwork.controller.end', function () {
-			$this->timeline->event('Controller')->end();
-		});
-
 		if ($this->collectLog) {
 			$this->app['events']->listen('illuminate.log', function ($level, $message, $context) {
 				$this->log->log($level, $message, $context);
