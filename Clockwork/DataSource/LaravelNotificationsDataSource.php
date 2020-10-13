@@ -1,20 +1,17 @@
 <?php namespace Clockwork\DataSource;
 
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\StackTrace;
+use Clockwork\Helpers\{Serializer, StackTrace};
 use Clockwork\Request\Request;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Events\MessageSending;
-use Illuminate\Mail\Events\MessageSent;
-use Illuminate\Notifications\Events\NotificationSending;
-use Illuminate\Notifications\Events\NotificationSent;
+use Illuminate\Mail\Events\{MessageSending, MessageSent};
+use Illuminate\Notifications\Events\{NotificationSending, NotificationSent};
 
 // Data source for Laravel notifications and mail components, provides sent notifications and emails
 class LaravelNotificationsDataSource extends DataSource
 {
-	// Event dispatcher
+	// Event dispatcher instance
 	protected $dispatcher;
 
 	// Sent notifications
@@ -24,16 +21,6 @@ class LaravelNotificationsDataSource extends DataSource
 	public function __construct(Dispatcher $dispatcher)
 	{
 		$this->dispatcher = $dispatcher;
-	}
-
-	// Start listening to the events
-	public function listenToEvents()
-	{
-		$this->dispatcher->listen(MessageSending::class, function ($event) { $this->sendingMessage($event); });
-		$this->dispatcher->listen(MessageSent::class, function ($event) { $this->sentMessage($event); });
-
-		$this->dispatcher->listen(NotificationSending::class, function ($event) { $this->sendingNotification($event); });
-		$this->dispatcher->listen(NotificationSent::class, function ($event) { $this->sentNotification($event); });
 	}
 
 	// Add sent notifications to the request
@@ -50,7 +37,17 @@ class LaravelNotificationsDataSource extends DataSource
 		$this->notifications = [];
 	}
 
-	// Register a sent email
+	// Listen to the email and notification events
+	public function listenToEvents()
+	{
+		$this->dispatcher->listen(MessageSending::class, function ($event) { $this->sendingMessage($event); });
+		$this->dispatcher->listen(MessageSent::class, function ($event) { $this->sentMessage($event); });
+
+		$this->dispatcher->listen(NotificationSending::class, function ($event) { $this->sendingNotification($event); });
+		$this->dispatcher->listen(NotificationSent::class, function ($event) { $this->sentNotification($event); });
+	}
+
+	// Collect a sent email
 	protected function sendingMessage($event)
 	{
 		$trace = StackTrace::get()->resolveViewName();
@@ -90,7 +87,7 @@ class LaravelNotificationsDataSource extends DataSource
 		$this->notifications[$lastIndex]['duration'] = (microtime(true) - $lastNotification['time']) * 1000;
 	}
 
-	// Register a sent notification
+	// Collect a sent notification
 	protected function sendingNotification($event)
 	{
 		$trace = StackTrace::get()->resolveViewName();

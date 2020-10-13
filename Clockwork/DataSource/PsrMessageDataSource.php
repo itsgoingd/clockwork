@@ -7,19 +7,21 @@ use Clockwork\Request\Request;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Message\ResponseInterface as PsrResponse;
 
-// Data source providing data obtainable fromt the PSR-7 request and response interfaces
+// Data source providing data obtainable from the PSR-7 request and response interfaces
 class PsrMessageDataSource extends DataSource
 {
 	// PSR Messages
 	protected $psrRequest;
 	protected $psrResponse;
 
-	public function __construct(PsrRequest $psrRequest = null, PsrResponse $psrResponse = null) {
+	// Create a new data source, takes PSR-7 request and response as arguments
+	public function __construct(PsrRequest $psrRequest = null, PsrResponse $psrResponse = null)
+	{
 		$this->psrRequest  = $psrRequest;
 		$this->psrResponse = $psrResponse;
 	}
 
-	// Add request time, method, URI, headers, get and post data, session data, response status and time to the request
+	// Adds request and response information to the request
 	public function resolve(Request $request)
 	{
 		if ($this->psrRequest) {
@@ -40,13 +42,13 @@ class PsrMessageDataSource extends DataSource
 		return $request;
 	}
 
-	// Replace unserializable items in array, attempt to remove passwords
+	// Normalize items in the array and remove passwords
 	protected function sanitize($data)
 	{
 		return is_array($data) ? $this->removePasswords((new Serializer)->normalizeEach($data)) : $data;
 	}
 
-	// Return response time in most precise form, fetching it from ServerParams
+	// Get the response time, fetching it from ServerParams
 	protected function getRequestTime()
 	{
 		$env = $this->psrRequest->getServerParams();
@@ -56,13 +58,13 @@ class PsrMessageDataSource extends DataSource
 		}
 	}
 
-	// Return response time (current time, assuming most application scripts have already run at this point)
+	// Get the response time (current time, assuming most of the application code has already run at this point)
 	protected function getResponseTime()
 	{
 		return microtime(true);
 	}
 
-	// Return headers
+	// Get the request headers
 	protected function getRequestHeaders()
 	{
 		$headers = [];
@@ -84,7 +86,7 @@ class PsrMessageDataSource extends DataSource
 		return $headers;
 	}
 
-	// Return request URI
+	// Get the request URI
 	protected function getRequestUri()
 	{
 		$uri = $this->psrRequest->getUri();

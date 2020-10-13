@@ -1,17 +1,14 @@
 <?php namespace Clockwork\DataSource;
 
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\StackTrace;
+use Clockwork\Helpers\{Serializer, StackTrace};
 use Clockwork\Request\Request;
 
 use Illuminate\Contracts\Events\Dispatcher;
 
-/**
- * Data source for Laravel events component, provides fired events
- */
+// Data source for Laravel events component, provides fired events
 class LaravelEventsDataSource extends DataSource
 {
-	// Event dispatcher
+	// Event dispatcher instance
 	protected $dispatcher;
 
 	// Fired events
@@ -20,25 +17,13 @@ class LaravelEventsDataSource extends DataSource
 	// Whether framework events should be collected
 	protected $ignoredEvents = false;
 
-	// Create a new data source instance, takes an event dispatcher as argument
+	// Create a new data source instance, takes an event dispatcher and additional options as arguments
 	public function __construct(Dispatcher $dispatcher, $ignoredEvents = [])
 	{
 		$this->dispatcher = $dispatcher;
+
 		$this->ignoredEvents = is_array($ignoredEvents)
 			? array_merge($ignoredEvents, $this->defaultIgnoredEvents()) : [];
-	}
-
-	// Start listening to the events
-	public function listenToEvents()
-	{
-		$this->dispatcher->listen('*', function ($event = null, $data = null) {
-			if (method_exists($this->dispatcher, 'firing')) { // Laravel 5.0 - 5.3
-				$data = func_get_args();
-				$event = $this->dispatcher->firing();
-			}
-
-			$this->registerEvent($event, $data);
-		});
 	}
 
 	// Adds fired events to the request
@@ -55,7 +40,20 @@ class LaravelEventsDataSource extends DataSource
 		$this->events = [];
 	}
 
-	// Registers a new event, prepares data for serialization and resolves registered listeners
+	// Start listening to the events
+	public function listenToEvents()
+	{
+		$this->dispatcher->listen('*', function ($event = null, $data = null) {
+			if (method_exists($this->dispatcher, 'firing')) { // Laravel 5.0 - 5.3
+				$data = func_get_args();
+				$event = $this->dispatcher->firing();
+			}
+
+			$this->registerEvent($event, $data);
+		});
+	}
+
+	// Collect a fired event, prepares data for serialization and resolves registered listeners
 	protected function registerEvent($event, array $data)
 	{
 		if (! $this->shouldCollect($event)) return;

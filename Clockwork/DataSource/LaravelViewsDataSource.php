@@ -7,9 +7,7 @@ use Clockwork\Request\Timeline\Timeline;
 
 use Illuminate\Contracts\Events\Dispatcher;
 
-/**
- * Data source for Laravel views component, provides rendered views
- */
+// Data source for Laravel views component, provides rendered views
 class LaravelViewsDataSource extends DataSource
 {
 	// Event dispatcher
@@ -25,6 +23,7 @@ class LaravelViewsDataSource extends DataSource
 	public function __construct(Dispatcher $dispatcher, $collectData = false)
 	{
 		$this->dispatcher = $dispatcher;
+
 		$this->collectData = $collectData;
 
 		$this->views = new Timeline;
@@ -38,7 +37,13 @@ class LaravelViewsDataSource extends DataSource
 		return $request;
 	}
 
-	// Start listening to the events
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
+	{
+		$this->views = new Timeline;
+	}
+
+	// Listen to the views events
 	public function listenToEvents()
 	{
 		$this->dispatcher->listen('composing:*', function ($view, $data = null) {

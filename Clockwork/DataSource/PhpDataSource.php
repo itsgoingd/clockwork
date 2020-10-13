@@ -4,15 +4,10 @@ use Clockwork\DataSource\DataSource;
 use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Request;
 
-/**
- * Data source providing data obtainable from plain PHP
- */
+// Data source providing data obtainable in vanilla PHP
 class PhpDataSource extends DataSource
 {
-	/**
-	 * Add request time, method, URI, headers, get and post data, session data, cookies, response status, response time
-	 * and peak memory usage to the request
-	 */
+	// Adds request, response information, session data and peak memory usage to the request
 	public function resolve(Request $request)
 	{
 		$request->time           = PHP_SAPI !== 'cli' ? $this->getRequestTime() : $request->time;
@@ -32,31 +27,25 @@ class PhpDataSource extends DataSource
 		return $request;
 	}
 
-	/**
-	 * Return cookies (replace unserializable items, attempt to remove passwords)
-	 */
+	// Get the request cookies (normalized with passwords removed)
 	protected function getCookies()
 	{
 		return $this->removePasswords((new Serializer)->normalizeEach($_COOKIE));
 	}
 
-	/**
-	 * Return GET data (replace unserializable items, attempt to remove passwords)
-	 */
+	// Get the request GET data (normalized with passwords removed)
 	protected function getGetData()
 	{
 		return $this->removePasswords((new Serializer)->normalizeEach($_GET));
 	}
 
-	/**
-	 * Return POST data (replace unserializable items, attempt to remove passwords)
-	 */
+	// Get the request POST data (normalized with passwords removed)
 	protected function getPostData()
 	{
 		return $this->removePasswords((new Serializer)->normalizeEach($_POST));
 	}
 
-	// Return request body data (attempt to parse as json, replace unserializable items, attempt to remove passwords)
+	// Get the request body data (attempt to parse as json, normalized with passwords removed)
 	protected function getRequestData()
 	{
 		$requestData = file_get_contents('php://input');
@@ -67,9 +56,7 @@ class PhpDataSource extends DataSource
 			: $requestData;
 	}
 
-	/**
-	 * Return headers
-	 */
+	// Get the request headers
 	protected function getRequestHeaders()
 	{
 		$headers = [];
@@ -94,9 +81,7 @@ class PhpDataSource extends DataSource
 		return $headers;
 	}
 
-	/**
-	 * Return request method
-	 */
+	// Get the request method
 	protected function getRequestMethod()
 	{
 		if (isset($_SERVER['REQUEST_METHOD'])) {
@@ -104,9 +89,7 @@ class PhpDataSource extends DataSource
 		}
 	}
 
-	/**
-	 * Return response time in most precise form
-	 */
+	// Get the response time
 	protected function getRequestTime()
 	{
 		if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
@@ -114,9 +97,7 @@ class PhpDataSource extends DataSource
 		}
 	}
 
-	/**
-	 * Return request URL
-	 */
+	// Get the request URL
 	protected function getRequestUrl()
 	{
 		$https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on';
@@ -132,9 +113,7 @@ class PhpDataSource extends DataSource
 		return "{$scheme}://{$host}{$port}{$uri}";
 	}
 
-	/**
-	 * Return request URI
-	 */
+	// Get the request URI
 	protected function getRequestUri()
 	{
 		if (isset($_SERVER['REQUEST_URI'])) {
@@ -142,35 +121,27 @@ class PhpDataSource extends DataSource
 		}
 	}
 
-	/**
-	 * Return response status code
-	 */
+	// Get the response status code
 	protected function getResponseStatus()
 	{
 		return http_response_code();
 	}
 
-	/**
-	 * Return response time (current time, assuming most application scripts have already run at this point)
-	 */
+	// Get the response time (current time, assuming most of the application code has already run at this point)
 	protected function getResponseTime()
 	{
 		return microtime(true);
 	}
 
-	/**
-	 * Return session data (replace unserializable items, attempt to remove passwords)
-	 */
+	// Get the session data (normalized with passwords removed)
 	protected function getSessionData()
 	{
-		if (! isset($_SESSION)) {
-			return [];
-		}
+		if (! isset($_SESSION)) return [];
 
 		return $this->removePasswords((new Serializer)->normalizeEach($_SESSION));
 	}
 
-	// Return peak memory usage in bytes
+	// Get the peak memory usage in bytes
 	protected function getMemoryUsage()
 	{
 		return memory_get_peak_usage(true);

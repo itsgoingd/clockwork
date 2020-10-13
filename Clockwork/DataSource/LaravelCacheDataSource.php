@@ -1,24 +1,17 @@
 <?php namespace Clockwork\DataSource;
 
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\StackTrace;
+use Clockwork\Helpers\{Serializer, StackTrace};
 use Clockwork\Request\Request;
 
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 
-/**
- * Data source for Laravel cache component, provides cache queries and stats
- */
+// Data source for Laravel cache component, provides cache queries and stats
 class LaravelCacheDataSource extends DataSource
 {
-	/**
-	 * Event dispatcher
-	 */
+	// Event dispatcher instance
 	protected $eventDispatcher;
 
-	/**
-	 * Executed cache queries
-	 */
+	// Executed cache queries
 	protected $queries = [];
 
 	// Query counts by type
@@ -29,21 +22,57 @@ class LaravelCacheDataSource extends DataSource
 	// Whether we are collecting cache queries or stats only
 	protected $collectQueries = true;
 
-	/**
-	 * Create a new data source instance, takes an event dispatcher as argument
-	 */
+	// Create a new data source instance, takes an event dispatcher and additional options as argument
 	public function __construct(EventDispatcher $eventDispatcher, $collectQueries = true)
 	{
 		$this->eventDispatcher = $eventDispatcher;
+
 		$this->collectQueries = $collectQueries;
 	}
 
-	/**
-	 * Start listening to cache events
-	 */
+	// Adds cache queries and stats to the request
+	public function resolve(Request $request)
+	{
+		$request->cacheQueries = array_merge($request->cacheQueries, $this->queries);
+
+		$request->cacheReads   += $this->count['read'];
+		$request->cacheHits    += $this->count['hit'];
+		$request->cacheWrites  += $this->count['write'];
+		$request->cacheDeletes += $this->count['delete'];
+
+		return $request;
+	}
+
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
+	{
+		$this->queries = [];
+
+		$this->count = [
+			'read' => 0, 'hit' => 0, 'write' => 0, 'delete' => 0
+		];
+	}
+
+	// Start listening to cache events
 	public function listenToEvents()
 	{
-		if (! class_exists(\Illuminate\Cache\Events\CacheHit::class)) {
+		if (class_exists(\Illuminate\Cache\Events\CacheHit::class)) {
+			$this->eventDispatcher->listen(\Illuminate\Cache\Events\CacheHit::class, function ($event) {
+				$this->registerQuery([ 'type' => 'hit', 'key' => $event->key, 'value' => $event->value ]);
+			});
+			$this->eventDispatcher->listen(\Illuminate\Cache\Events\CacheMissed::class, function ($event) {
+				$this->registerQuery([ 'type' => 'miss', 'key' => $event->key ]);
+			});
+			$this->eventDispatcher->listen(\Illuminate\Cache\Events\KeyWritten::class, function ($event) {
+				$this->registerQuery([
+					'type' => 'write', 'key' => $event->key, 'value' => $event->value,
+					'expiration' => property_exists($event, 'seconds') ? $event->seconds : $event->minutes * 60
+				]);
+			});
+			$this->eventDispatcher->listen(\Illuminate\Cache\Events\KeyForgotten::class, function ($event) {
+				$this->registerQuery([ 'type' => 'delete', 'key' => $event->key ]);
+			});
+		} else {
 			// legacy Laravel 5.1 style events
 			$this->eventDispatcher->listen('cache.hit', function ($key, $value) {
 				$this->registerQuery([ 'type' => 'hit', 'key' => $key, 'value' => $value ]);
@@ -59,55 +88,11 @@ class LaravelCacheDataSource extends DataSource
 			$this->eventDispatcher->listen('cache.delete', function ($key) {
 				$this->registerQuery([ 'type' => 'delete', 'key' => $key ]);
 			});
-
-			return;
 		}
-
-		$this->eventDispatcher->listen(\Illuminate\Cache\Events\CacheHit::class, function ($event) {
-			$this->registerQuery([ 'type' => 'hit', 'key' => $event->key, 'value' => $event->value ]);
-		});
-		$this->eventDispatcher->listen(\Illuminate\Cache\Events\CacheMissed::class, function ($event) {
-			$this->registerQuery([ 'type' => 'miss', 'key' => $event->key ]);
-		});
-		$this->eventDispatcher->listen(\Illuminate\Cache\Events\KeyWritten::class, function ($event) {
-			$this->registerQuery([
-				'type' => 'write', 'key' => $event->key, 'value' => $event->value,
-				'expiration' => property_exists($event, 'seconds') ? $event->seconds : $event->minutes * 60
-			]);
-		});
-		$this->eventDispatcher->listen(\Illuminate\Cache\Events\KeyForgotten::class, function ($event) {
-			$this->registerQuery([ 'type' => 'delete', 'key' => $event->key ]);
-		});
 	}
 
-	/**
-	 * Adds cache queries and stats to the request
-	 */
-	public function resolve(Request $request)
-	{
-		$request->cacheQueries = array_merge($request->cacheQueries, $this->queries);
-		$request->cacheReads = $request->cacheReads + $this->count['read'];
-		$request->cacheHits = $request->cacheHits + $this->count['hit'];
-		$request->cacheWrites = $request->cacheWrites + $this->count['write'];
-		$request->cacheDeletes = $request->cacheDeletes + $this->count['delete'];
-
-		return $request;
-	}
-
-	// Reset the data source to an empty state, clearing any collected data
-	public function reset()
-	{
-		$this->queries = [];
-
-		$this->count = [
-			'read' => 0, 'hit' => 0, 'write' => 0, 'delete' => 0
-		];
-	}
-
-	/**
-	 * Registers a new query, resolves caller file and line no
-	 */
-	public function registerQuery(array $query)
+	// Collect an executed query
+	protected function registerQuery(array $query)
 	{
 		$trace = StackTrace::get()->resolveViewName();
 
@@ -127,7 +112,7 @@ class LaravelCacheDataSource extends DataSource
 		}
 	}
 
-	// Increase query counts for collected query
+	// Increment query counts for collected query
 	protected function incrementQueryCount($query)
 	{
 		if ($query['type'] == 'write') {

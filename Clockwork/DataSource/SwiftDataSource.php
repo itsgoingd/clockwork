@@ -6,36 +6,30 @@ use Clockwork\Support\Swift\SwiftPluginClockworkTimeline;
 
 use Swift_Mailer;
 
-/**
- * Data source for Swift, provides mail log
- */
+// Data source for Swift mailer, provides sent emails
 class SwiftDataSource extends DataSource
 {
+	// Swift instance
 	protected $swift;
 
-	/**
-	 * Timeline data structure
-	 */
+	// Clockwork timeline instance
 	protected $timeline;
 
-	/**
-	 * Create a new data source, takes Swift_Mailer instance as an argument
-	 */
+	// Create a new data source, takes a Swift instance as an argument
 	public function __construct(Swift_Mailer $swift)
 	{
 		$this->swift = $swift;
+
 		$this->timeline = new Timeline;
 	}
 
-	// Start listening to the events
+	// Listen to the email events
 	public function listenToEvents()
 	{
 		$this->swift->registerPlugin(new SwiftPluginClockworkTimeline($this->timeline));
 	}
 
-	/**
-	 * Adds email data to the request
-	 */
+	// Adds send emails to the request
 	public function resolve(Request $request)
 	{
 		$request->emailsData = array_merge($request->emailsData, $this->timeline->finalize());
