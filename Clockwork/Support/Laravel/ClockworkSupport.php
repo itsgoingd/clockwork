@@ -481,37 +481,37 @@ class ClockworkSupport
 
 	protected function isCommandFiltered($command)
 	{
-		$whitelist = $this->getConfig('artisan.only', []);
+		$only = $this->getConfig('artisan.only', []);
 
-		if (count($whitelist)) return ! in_array($command, $whitelist);
+		if (count($only)) return ! in_array($command, $only);
 
-		$blacklist = $this->getConfig('artisan.except', []);
+		$except = $this->getConfig('artisan.except', []);
 
 		if ($this->getConfig('artisan.except_laravel_commands', true)) {
-			$blacklist = array_merge($blacklist, $this->builtinLaravelCommands());
+			$except = array_merge($except, $this->builtinLaravelCommands());
 		}
 
-		$blacklist = array_merge($blacklist, $this->builtinClockworkCommands());
+		$except = array_merge($except, $this->builtinClockworkCommands());
 
-		return in_array($command, $blacklist);
+		return in_array($command, $except);
 	}
 
 	protected function isQueueJobFiltered($queueJob)
 	{
-		$whitelist = $this->getConfig('queue.only', []);
+		$only = $this->getConfig('queue.only', []);
 
-		if (count($whitelist)) return ! in_array($queueJob, $whitelist);
+		if (count($only)) return ! in_array($queueJob, $only);
 
-		$blacklist = $this->getConfig('queue.except', []);
+		$except = $this->getConfig('queue.except', []);
 
-		return in_array($queueJob, $blacklist);
+		return in_array($queueJob, $except);
 	}
 
 	public function isTestFiltered($test)
 	{
-		$blacklist = $this->getConfig('tests.except', []);
+		$except = $this->getConfig('tests.except', []);
 
-		return in_array($test, $blacklist);
+		return in_array($test, $except);
 	}
 
 	protected function appendServerTimingHeader($response, $request)
