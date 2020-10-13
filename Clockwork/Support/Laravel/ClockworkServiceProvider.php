@@ -135,9 +135,9 @@ class ClockworkServiceProvider extends ServiceProvider
 	{
 		$this->app->singleton('clockwork', function ($app) {
 			return (new Clockwork)
-				->setAuthenticator($app['clockwork.authenticator'])
-				->setRequest($app['clockwork.request'])
-				->setStorage($app['clockwork.storage']);
+				->authenticator($app['clockwork.authenticator'])
+				->request($app['clockwork.request'])
+				->storage($app['clockwork.storage']);
 		});
 
 		$this->app->singleton('clockwork.authenticator', function ($app) {

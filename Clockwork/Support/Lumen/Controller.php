@@ -24,7 +24,7 @@ class Controller extends LumenController
 	{
 		$this->ensureClockworkIsEnabled();
 
-		$token = $this->clockwork->getAuthenticator()->attempt(
+		$token = $this->clockwork->authenticator()->attempt(
 			$request->only([ 'username', 'password' ])
 		);
 

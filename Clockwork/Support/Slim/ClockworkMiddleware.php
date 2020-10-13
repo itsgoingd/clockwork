@@ -49,15 +49,15 @@ class ClockworkMiddleware
 
 	protected function authenticate(Request $request)
 	{
-		$token = $this->clockwork->getAuthenticator()->attempt($request->getParsedBody());
+		$token = $this->clockwork->authenticator()->attempt($request->getParsedBody());
 
 		return $this->jsonResponse([ 'token' => $token ], $token ? 200 : 403);
 	}
 
 	protected function retrieveRequest(Request $request, $id, $direction, $count)
 	{
-		$authenticator = $this->clockwork->getAuthenticator();
-		$storage = $this->clockwork->getStorage();
+		$authenticator = $this->clockwork->authenticator();
+		$storage = $this->clockwork->storage();
 
 		$authenticated = $authenticator->check(current($request->getHeader('X-Clockwork-Auth')));
 
@@ -86,7 +86,7 @@ class ClockworkMiddleware
 		$this->clockwork->resolveRequest();
 		$this->clockwork->storeRequest();
 
-		$clockworkRequest = $this->clockwork->getRequest();
+		$clockworkRequest = $this->clockwork->request();
 
 		$response = $response
 			->withHeader('X-Clockwork-Id', $clockworkRequest->id)
@@ -103,8 +103,8 @@ class ClockworkMiddleware
 	{
 		$clockwork = new Clockwork();
 
-		$clockwork->setStorage(new FileStorage($storagePath));
-		$clockwork->setAuthenticator(new NullAuthenticator);
+		$clockwork->storage(new FileStorage($storagePath));
+		$clockwork->authenticator(new NullAuthenticator);
 
 		return $clockwork;
 	}

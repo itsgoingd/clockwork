@@ -19,7 +19,7 @@ class ClockworkController extends Controller
 	{
 		$this->ensureClockworkIsEnabled();
 
-		$token = $this->app['clockwork']->getAuthenticator()->attempt(
+		$token = $this->app['clockwork']->authenticator()->attempt(
 			$this->app['request']->only([ 'username', 'password' ])
 		);
 

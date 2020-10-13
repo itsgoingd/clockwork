@@ -39,8 +39,8 @@ class ClockworkSupport
 	{
 		if (isset($this->app['session'])) $this->app['session.store']->reflash();
 
-		$authenticator = $this->app['clockwork']->getAuthenticator();
-		$storage = $this->app['clockwork']->getStorage();
+		$authenticator = $this->app['clockwork']->authenticator();
+		$storage = $this->app['clockwork']->storage();
 
 		$authenticated = $authenticator->check($this->app['request']->header('X-Clockwork-Auth'));
 
@@ -89,7 +89,7 @@ class ClockworkSupport
 			throw new NotFoundHttpException;
 		}
 
-		$storage = $this->app['clockwork']->getStorage();
+		$storage = $this->app['clockwork']->storage();
 
 		$request = $storage->find($id);
 
@@ -220,7 +220,7 @@ class ClockworkSupport
 			$request = new Request([ 'id' => $payload['clockwork_id'] ]);
 			if (isset($payload['clockwork_parent_id'])) $request->setParent($payload['clockwork_parent_id']);
 
-			$this->app->make('clockwork')->reset()->setRequest($request);
+			$this->app->make('clockwork')->reset()->request($request);
 		});
 
 		$this->app['events']->listen(\Illuminate\Queue\Events\JobProcessed::class, function ($event) {
@@ -274,7 +274,7 @@ class ClockworkSupport
 		}
 
 		$clockwork = $this->app['clockwork'];
-		$clockworkRequest = $clockwork->getRequest();
+		$clockworkRequest = $clockwork->request();
 
 		$clockwork->event('Controller')->end();
 
@@ -297,7 +297,7 @@ class ClockworkSupport
 			$response->headers->set("X-Clockwork-Header-{$headerName}", $headerValue);
 		}
 
-		foreach ($clockwork->getRequest()->subrequests as $subrequest) {
+		foreach ($clockwork->request()->subrequests as $subrequest) {
 			$url = urlencode($subrequest['url']);
 			$path = urlencode($subrequest['path']);
 
@@ -334,7 +334,7 @@ class ClockworkSupport
 
 		$clockwork = $this->app['clockwork'];
 
-		if (! $this->isRecording($clockwork->getRequest())) {
+		if (! $this->isRecording($clockwork->request())) {
 			return; // Collecting data is disabled, return immediately
 		}
 

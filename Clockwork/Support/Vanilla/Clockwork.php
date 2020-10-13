@@ -34,7 +34,7 @@ class Clockwork
 		$this->clockwork = new BaseClockwork;
 
 		$this->clockwork->addDataSource(new PhpDataSource);
-		$this->clockwork->setStorage($this->resolveStorage());
+		$this->clockwork->storage($this->resolveStorage());
 
 		$this->configureSerializer();
 		$this->configureShouldCollect();
@@ -58,7 +58,7 @@ class Clockwork
 		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
 
 		if (! $this->clockwork->shouldCollect()->filter($this->incomingRequest())) return;
-		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->getRequest())) return;
+		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->request())) return;
 
 		$this->clockwork->resolveRequest()->storeRequest();
 
@@ -67,7 +67,7 @@ class Clockwork
 		$this->sendHeaders();
 
 		if (($eventsCount = $this->config['server_timing']) !== false) {
-			$this->setHeader('Server-Timing', ServerTiming::fromRequest($this->clockwork->getRequest(), $eventsCount)->value());
+			$this->setHeader('Server-Timing', ServerTiming::fromRequest($this->clockwork->request(), $eventsCount)->value());
 		}
 
 		return $this->psrResponse;
@@ -77,7 +77,7 @@ class Clockwork
 	{
 		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
 
-		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->getRequest())) return;
+		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->request())) return;
 
 		$this->clockwork
 			->resolveAsCommand($name, $exitCode, $arguments, $options, $argumentsDefaults, $optionsDefaults, $output)
@@ -88,7 +88,7 @@ class Clockwork
 	{
 		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
 
-		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->getRequest())) return;
+		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->request())) return;
 
 		$this->clockwork
 			->resolveAsQueueJob($name, $description, $status, $payload, $queue, $connection, $options)
@@ -101,7 +101,7 @@ class Clockwork
 
 		$this->headersSent = true;
 
-		$this->setHeader('X-Clockwork-Id', $this->getRequest()->id);
+		$this->setHeader('X-Clockwork-Id', $this->request()->id);
 		$this->setHeader('X-Clockwork-Version', BaseClockwork::VERSION);
 
 		if ($this->config['api'] != '/__clockwork/') {
@@ -135,13 +135,13 @@ class Clockwork
 		$count = isset($matches['count']) ? $matches['count'] : null;
 
 		if ($direction == 'previous') {
-			$data = $this->clockwork->getStorage()->previous($id, $count, Search::fromRequest($_GET));
+			$data = $this->clockwork->storage()->previous($id, $count, Search::fromRequest($_GET));
 		} elseif ($direction == 'next') {
-			$data = $this->clockwork->getStorage()->next($id, $count, Search::fromRequest($_GET));
+			$data = $this->clockwork->storage()->next($id, $count, Search::fromRequest($_GET));
 		} elseif ($id == 'latest') {
-			$data = $this->clockwork->getStorage()->latest(Search::fromRequest($_GET));
+			$data = $this->clockwork->storage()->latest(Search::fromRequest($_GET));
 		} else {
-			$data = $this->clockwork->getStorage()->find($id);
+			$data = $this->clockwork->storage()->find($id);
 		}
 
 		if (preg_match('#(?<id>[0-9-]+|latest)/extended#', $request)) {
