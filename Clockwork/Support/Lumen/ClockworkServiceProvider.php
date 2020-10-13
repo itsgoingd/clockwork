@@ -1,4 +1,6 @@
-<?php namespace Clockwork\Support\Lumen;
+<?php
+
+namespace Clockwork\Support\Lumen;
 
 use Clockwork\DataSource\LumenDataSource;
 use Clockwork\Support\Laravel\ClockworkServiceProvider as LaravelServiceProvider;
@@ -49,7 +51,7 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 
 	public function registerMiddleware()
 	{
-		$this->app->middleware([ ClockworkMiddleware::class ]);
+		$this->app->middleware([ClockworkMiddleware::class]);
 	}
 
 	public function registerRoutes()
