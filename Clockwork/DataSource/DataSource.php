@@ -52,7 +52,7 @@ class DataSource implements DataSourceInterface
 		$filters = isset($this->filters[$type]) ? $this->filters[$type] : [];
 
 		foreach ($filters as $filter) {
-			if (! call_user_func_array($filter, $args)) return false;
+			if (! $filter(...$args)) return false;
 		}
 
 		return true;

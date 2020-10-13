@@ -60,7 +60,7 @@ class CapturingFormatter implements OutputFormatterInterface
 
 	public function __call($method, $args)
 	{
-		return call_user_func_array([ $this->formatter, $method ], $args);
+		return $this->formatter->$method(...$args);
 	}
 
 	public function __clone()

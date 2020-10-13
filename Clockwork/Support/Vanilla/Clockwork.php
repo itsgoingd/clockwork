@@ -256,11 +256,11 @@ class Clockwork
 
 	public function __call($method, $args = [])
 	{
-		return call_user_func_array([ $this->getClockwork(), $method ], $args);
+		return $this->getClockwork()->$method(...$args);
 	}
 
 	public static function __callStatic($method, $args = [])
 	{
-		return call_user_func_array([ static::instance(), $method ], $args);
+		return static::instance()->$method(...$args);
 	}
 }
