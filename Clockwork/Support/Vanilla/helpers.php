@@ -6,10 +6,8 @@ if (! function_exists('clock')) {
 	/**
 	 * Log a message to Clockwork, returns Clockwork instance when called with no arguments.
 	 */
-	function clock()
+	function clock(...$arguments)
 	{
-		$arguments = func_get_args();
-
 		if (empty($arguments)) {
 			return Clockwork::instance();
 		}
