@@ -35,8 +35,8 @@ class ClockworkCleanCommand extends Command
 	}
 
 	// Compatibility for old Laravel versions
-    public function fire()
-    {
-        return $this->handle();
-    }
+	public function fire()
+	{
+		return $this->handle();
+	}
 }

@@ -47,12 +47,12 @@ class ShouldRecord
 	}
 
 	// Fluent API
- 	public function __call($method, $parameters)
- 	{
- 		if (! count($parameters)) return $this->$method;
+	public function __call($method, $parameters)
+	{
+		if (! count($parameters)) return $this->$method;
 
- 		$this->$method = count($parameters) ? $parameters[0] : true;
+		$this->$method = count($parameters) ? $parameters[0] : true;
 
- 		return $this;
- 	}
+		return $this;
+	}
 }
