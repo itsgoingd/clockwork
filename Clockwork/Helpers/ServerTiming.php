@@ -2,10 +2,13 @@
 
 use Clockwork\Request\Request;
 
+// Generates Server-Timing header value
 class ServerTiming
 {
-	protected $metricsevents = [];
+	// Performance metrics to include
+	protected $metrics = [];
 
+	// Add a performance metric
 	public function add($metric, $value, $description)
 	{
 		$this->metrics[] = [ 'metric' => $metric, 'value' => $value, 'description' => $description ];
@@ -13,6 +16,7 @@ class ServerTiming
 		return $this;
 	}
 
+	// Generate the header value
 	public function value()
 	{
 		return implode(', ', array_map(function ($metric) {
@@ -20,6 +24,7 @@ class ServerTiming
 		}, $this->metrics));
 	}
 
+	// Create a new instance from a Clockwork request
 	public static function fromRequest(Request $request, $eventsCount = 10)
 	{
 		$header = new static;

@@ -2,6 +2,8 @@
 
 use Clockwork\Helpers\StackFrame;
 
+// Replaces the first stack frame rendering a Laravel view with a duplicate with a resolved original view path (instead
+// of the compiled view path)
 trait ResolvesViewName
 {
 	public function resolveViewName()
