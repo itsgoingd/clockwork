@@ -23,8 +23,10 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 			return new ClockworkSupport($app);
 		});
 
-		if ($this->isRunningWithFacades() && ! class_exists('Clockwork')) {
-			class_alias(\Clockwork\Support\Laravel\Facade::class, 'Clockwork');
+		if ($this->isRunningWithFacades() && !class_exists('Clockwork')) {
+			$this->app->withAliases([
+				\Clockwork\Support\Laravel\Facade::class => 'Clockwork',
+			]);
 		}
 	}
 
