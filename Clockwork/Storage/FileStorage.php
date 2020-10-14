@@ -3,9 +3,7 @@
 use Clockwork\Request\Request;
 use Clockwork\Storage\Storage;
 
-/**
- * Simple file based storage for requests
- */
+// File based storage for requests
 class FileStorage extends Storage
 {
 	// Path where files are stored
@@ -125,6 +123,7 @@ class FileStorage extends Storage
 		}
 	}
 
+	// Load a single request by id from filesystem
 	protected function loadRequest($id)
 	{
 		$path = "{$this->path}/{$id}.json";
@@ -136,6 +135,7 @@ class FileStorage extends Storage
 		return new Request(json_decode($this->compress ? gzuncompress($data) : $data, true));
 	}
 
+	// Load multiple requests by ids from filesystem
 	protected function loadRequests($ids)
 	{
 		return array_filter(array_map(function ($id) { return $this->loadRequest($id); }, $ids));
@@ -273,6 +273,7 @@ class FileStorage extends Storage
 		file_put_contents("{$this->path}/index", $trimmed);
 	}
 
+	// Create an incomplete request from index data
 	protected function makeRequestFromIndex($record)
 	{
 		$type = isset($record[7]) ? $record[7] : 'response';

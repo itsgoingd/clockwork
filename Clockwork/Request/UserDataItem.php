@@ -1,12 +1,12 @@
 <?php namespace Clockwork\Request;
 
-// Data structure representing custom user data item (shown as counters or table in the official app)
+// Data structure representing custom user data item (shown as counters or table)
 class UserDataItem
 {
-	// Data contents (labels and values or table rows in the official app)
+	// Data contents (labels and values or table rows)
 	protected $data;
 
-	// Describes how the data should be presented ("counters" or "table" in the official app)
+	// Describes how the data should be presented ("counters" or "table")
 	protected $showAs;
 
 	// Data title (shown as table title in the official app)
@@ -20,7 +20,7 @@ class UserDataItem
 		$this->data = $data;
 	}
 
-	// Set how the item should be presented ("counters" or "table" in the official app)
+	// Set how the item should be presented ("counters" or "table")
 	public function showAs($showAs)
 	{
 		$this->showAs = $showAs;

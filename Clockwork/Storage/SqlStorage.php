@@ -5,9 +5,7 @@ use Clockwork\Request\Request;
 
 use PDO;
 
-/**
- * SQL storage for requests using PDO
- */
+// SQL storage for requests using PDO
 class SqlStorage extends Storage
 {
 	// PDO instance
