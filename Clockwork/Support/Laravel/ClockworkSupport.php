@@ -320,7 +320,9 @@ class ClockworkSupport
 				'toolbar'   => $this->isToolbarEnabled()
 			];
 
-			$response->cookie(new Cookie('x-clockwork', json_encode($clockworkBrowser), 60, null, null, null, false));
+			$response->cookie(
+				new Cookie('x-clockwork', json_encode($clockworkBrowser), time() + 60, null, null, null, false)
+			);
 		}
 
 		return $response;
