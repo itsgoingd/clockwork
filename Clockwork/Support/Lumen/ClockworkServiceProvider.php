@@ -5,14 +5,17 @@ use Clockwork\Support\Laravel\ClockworkServiceProvider as LaravelServiceProvider
 
 use Illuminate\Support\Facades\Facade;
 
+// Clockwork Lumen service provider
 class ClockworkServiceProvider extends LaravelServiceProvider
 {
+	// Register Clockwork configuration
 	protected function registerConfiguration()
 	{
 		$this->app->configure('clockwork');
 		$this->mergeConfigFrom(__DIR__ . '/../Laravel/config/clockwork.php', 'clockwork');
 	}
 
+	// Register Clockwork components
 	protected function registerClockwork()
 	{
 		parent::registerClockwork();
@@ -26,6 +29,7 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 		}
 	}
 
+	// Register Clockwork data sources
 	protected function registerDataSources()
 	{
 		parent::registerDataSources();
@@ -40,6 +44,7 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 		});
 	}
 
+	// Register Clockwork components aliases for type hinting
 	protected function registerAliases()
 	{
 		parent::registerAliases();
@@ -47,11 +52,13 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 		$this->app->alias('clockwork.lumen', LumenDataSource::class);
 	}
 
+	// Register Clockwork middleware
 	public function registerMiddleware()
 	{
 		$this->app->middleware([ ClockworkMiddleware::class ]);
 	}
 
+	// Register Clockwork REST api routes
 	public function registerRoutes()
 	{
 		$router = isset($this->app->router) ? $this->app->router : $this->app;
@@ -62,6 +69,7 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 		$router->post('/__clockwork/auth', 'Clockwork\Support\Lumen\Controller@authenticate');
 	}
 
+	// Register Clockwork app routes
 	public function registerWebRoutes()
 	{
 		$router = isset($this->app->router) ? $this->app->router : $this->app;
@@ -73,11 +81,13 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 		});
 	}
 
+	// Resolves the framework data source from the container
 	protected function frameworkDataSource()
 	{
 		return $this->app['clockwork.lumen'];
 	}
 
+	// Check whether we are running with facades enabled
 	protected function isRunningWithFacades()
 	{
 		return Facade::getFacadeApplication() !== null;

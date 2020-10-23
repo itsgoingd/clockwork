@@ -66,7 +66,7 @@ class ClockworkSupport
 		}
 	}
 
-	public function getAuthenticator()
+	public function makeAuthenticator()
 	{
 		$authenticator = $this->getConfig('authentication');
 

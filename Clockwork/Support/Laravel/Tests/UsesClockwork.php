@@ -1,18 +1,19 @@
 <?php namespace Clockwork\Support\Laravel\Tests;
 
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\StackFilter;
-use Clockwork\Helpers\StackTrace;
+use Clockwork\Helpers\{Serializer, StackFilter, StackTrace};
 
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Runner\BaseTestRunner;
 
+// Trait to include in PHPUnit tests to collect executed tests
 trait UsesClockwork
 {
+	// Clockwork phpunit metadata collected while executing tests
 	protected static $clockwork = [
 		'asserts' => []
 	];
 
+	// Set up Clockwork in this test case, should be called from the PHPUnit setUp method
 	protected function setUpClockwork()
 	{
 		$this->beforeApplicationDestroyed(function () {
@@ -29,6 +30,7 @@ trait UsesClockwork
 		});
 	}
 
+	// Resolve Clockwork test status
 	protected function resolveClockworkStatus()
 	{
 		$status = $this->getStatus();
@@ -47,6 +49,7 @@ trait UsesClockwork
 		return isset($statuses[$status]) ? $statuses[$status] : null;
 	}
 
+	// Resolve executed asserts
 	protected function resolveClockworkAsserts()
 	{
 		$asserts = static::$clockwork['asserts'];
@@ -60,6 +63,7 @@ trait UsesClockwork
 		return $asserts;
 	}
 
+	// Overload the main PHPUnit assert method to collect executed asserts
 	public static function assertThat($value, Constraint $constraint, string $message = ''): void
 	{
 		$trace = StackTrace::get([ 'arguments' => true, 'limit' => 10 ]);

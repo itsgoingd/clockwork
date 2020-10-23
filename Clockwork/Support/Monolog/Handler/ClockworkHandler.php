@@ -5,9 +5,7 @@ use Clockwork\Request\Log as ClockworkLog;
 use Monolog\Logger;
 use Monolog\Handler\AbstractProcessingHandler;
 
-/**
- * Stores messages to Clockwork Log instance
- */
+// Stores messages in a Clockwork log instance
 class ClockworkHandler extends AbstractProcessingHandler
 {
 	protected $clockworkLog;

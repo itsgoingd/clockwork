@@ -21,7 +21,7 @@ class ClockworkFactory
 
 	public function clockworkAuthenticator()
 	{
-		return $this->container->get('clockwork.support')->getAuthenticator();
+		return $this->container->get('clockwork.support')->makeAuthenticator();
 	}
 
 	public function clockworkStorage()

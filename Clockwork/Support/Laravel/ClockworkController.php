@@ -1,13 +1,14 @@
 <?php namespace Clockwork\Support\Laravel;
 
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\{JsonResponse, RedirectResponse};
 use Illuminate\Routing\Controller;
 use Laravel\Telescope\Telescope;
 
+// Clockwork api and app controller
 class ClockworkController extends Controller
 {
+	// Laravel app instance
 	protected $app;
 
 	public function __construct(Application $app)
@@ -15,6 +16,7 @@ class ClockworkController extends Controller
 		$this->app = $app;
 	}
 
+	// Authantication endpoint
 	public function authenticate()
 	{
 		$this->ensureClockworkIsEnabled();
@@ -26,6 +28,7 @@ class ClockworkController extends Controller
 		return new JsonResponse([ 'token' => $token ], $token ? 200 : 403);
 	}
 
+	// Metadata retrieving endpoint
 	public function getData($id = null, $direction = null, $count = null)
 	{
 		$this->ensureClockworkIsEnabled();
@@ -35,6 +38,7 @@ class ClockworkController extends Controller
 		);
 	}
 
+	// Extended metadata retrieving endpoint
 	public function getExtendedData($id = null)
 	{
 		$this->ensureClockworkIsEnabled();
@@ -44,6 +48,7 @@ class ClockworkController extends Controller
 		);
 	}
 
+	// Metadata updating endpoint
 	public function updateData($id = null)
 	{
 		$this->ensureClockworkIsEnabled();
@@ -51,6 +56,7 @@ class ClockworkController extends Controller
 		return $this->app['clockwork.support']->updateData($id, $this->app['request']->json()->all());
 	}
 
+	// App index
 	public function webIndex()
 	{
 		$this->ensureClockworkIsEnabled();
@@ -58,6 +64,7 @@ class ClockworkController extends Controller
 		return $this->app['clockwork.support']->getWebAsset('index.html');
 	}
 
+	// App assets serving
 	public function webAsset($path)
 	{
 		$this->ensureClockworkIsEnabled();
@@ -65,6 +72,7 @@ class ClockworkController extends Controller
 		return $this->app['clockwork.support']->getWebAsset($path);
 	}
 
+	// App redirect (/clockwork -> /clockwork/app)
 	public function webRedirect()
 	{
 		$this->ensureClockworkIsEnabled();
@@ -72,6 +80,7 @@ class ClockworkController extends Controller
 		return new RedirectResponse($this->app['request']->path() . '/app');
 	}
 
+	// Ensure Clockwork is still enabled at this point and stop Telescope recording if present
 	protected function ensureClockworkIsEnabled()
 	{
 		if (class_exists(Telescope::class)) Telescope::stopRecording();

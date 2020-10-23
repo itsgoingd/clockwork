@@ -5,8 +5,10 @@ use Clockwork\Support\Laravel\ClockworkSupport as LaravelSupport;
 use Laravel\Lumen\Application;
 use Symfony\Component\HttpFoundation\Response;
 
+// Support class for the Lumen integration
 class ClockworkSupport extends LaravelSupport
 {
+	// Lumen application instance
 	protected $app;
 
 	public function __construct(Application $app)
@@ -14,6 +16,7 @@ class ClockworkSupport extends LaravelSupport
 		$this->app = $app;
 	}
 
+	// Process an http request and response, resolves the request, sets Clockwork headers and cookies
 	public function process($request, $response)
 	{
 		if (! $response instanceof Response) {
@@ -23,17 +26,20 @@ class ClockworkSupport extends LaravelSupport
 		return parent::process($request, $response);
 	}
 
+	// Set response on the framework data source
 	protected function setResponse($response)
 	{
 		$this->app['clockwork.lumen']->setResponse($response);
 	}
 
+	// Check whether Clockwork is enabled
 	public function isEnabled()
 	{
 		return $this->getConfig('enable')
 			|| $this->getConfig('enable') === null && env('APP_DEBUG', false);
 	}
 
+	// Check whether a particular feature is available
 	public function isFeatureAvailable($feature)
 	{
 		if ($feature == 'database') {
