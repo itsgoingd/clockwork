@@ -3,28 +3,24 @@
 return [
 
 	/*
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	| Enable Clockwork
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| You can explicitly enable or disable Clockwork here. When enabled, special
-	| headers for communication with the Clockwork Chrome extension will be
-	| included in your application responses and requests data will be available
-	| at /__clockwork url.
-	| When set to null, Clockwork behavior is controlled by app.debug setting.
-	| Default: null
+	| Clockwork is enabled by default only when your application is in debug mode. Here you can explicitly enable or
+	| disable Clockwork. When disabled, no data is collected and the api and web ui are inactive.
 	|
 	*/
 
 	'enable' => env('CLOCKWORK_ENABLE', null),
 
 	/*
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	| Features
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| You can enable or disable various Clockwork features here. Some features
-	| accept additional configuration (eg. slow query threshold for database).
+	| You can enable or disable various Clockwork features here. Some features have additional settings (eg. slow query
+	| threshold for database queries).
 	|
 	*/
 
@@ -118,36 +114,35 @@ return [
 	],
 
 	/*
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	| Enable web UI
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| Enable or disable the Clockwork web UI available at  http://your.app/__clockwork.
-	| Default: true
+	| Clockwork comes with a web UI accessibla via http://your.app/clockwork. Here you can enable or disable this
+	| feature. You can also set a custom path for the web UI.
 	|
 	*/
 
 	'web' => env('CLOCKWORK_WEB', true),
 
 	/*
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	| Enable toolbar
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| Enable or disable the Clockwork toolbar. Requires a separate clockwork-browser npm package.
-	| Default: false
+	| Clockwork can show a toolbar with basic metrics on all responses. Here you can enable or disable this feature.
+	| Requires a separate clockwork-browser npm library.
 	|
 	*/
 
 	'toolbar' => env('CLOCKWORK_TOOLBAR', false),
 
 	/*
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	| HTTP requests collection
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| You can enable or disable and configure collection of received HTTP
-	| requests here.
+	| Clockwork collects data about HTTP requests to your app. Here you can choose which requests should be collected.
 	|
 	*/
 
@@ -185,12 +180,12 @@ return [
 	],
 
 	/*
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	| Artisan commands collection
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| You can enable or disable and configure collection of executed Artisan
-	| commands here.
+	| Clockwork can collect data about executed artisan commands. Here you can enable and configure which commands
+	| should be collected.
 	|
 	*/
 
@@ -216,12 +211,12 @@ return [
 	],
 
 	/*
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	| Queue jobs collection
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| You can enable or disable and configure collection of executed queue jobs
-	| here.
+	| Clockwork can collect data about executed queue jobs. Here you can enable and configure which queue jobs should
+	| be collected.
 	|
 	*/
 
@@ -241,11 +236,12 @@ return [
 	],
 
 	/*
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	| Tests collection
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| You can enable or disable and configure collection of ran tests here.
+	| Clockwork can collect data about executed tests. Here you can enable and configure which tests should be
+	| collected.
 	|
 	*/
 
@@ -260,89 +256,68 @@ return [
 	],
 
 	/*
-	|--------------------------------------------------------------------------
-	| Enable data collection, when Clockwork is disabled
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
+	| Enable data collection when Clockwork is disabled
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| This setting controls, whether data about application requests will be
-	| recorded even when Clockwork is disabled (useful for later analysis).
-	| Default: false
+	| You can enable this setting to collect data even when Clockwork is disabled. Eg. for future analysis.
 	|
 	*/
 
 	'collect_data_always' => env('CLOCKWORK_COLLECT_DATA_ALWAYS', false),
 
 	/*
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	| Metadata storage
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| You can configure how are the metadata collected by Clockwork stored.
-	| Valid options are: files or sql.
-	| Files storage stores the metadata in one-per-request files in a specified
-	| directory.
-	| Sql storage stores the metadata as rows in a sql database. You can specify
-	| the database by name if defined in database.php or by path to Sqlite
-	| database. Database table will be automatically created.
-	| Sql storage requires PDO.
+	| Configure how is the metadata collected by Clockwork stored. Two options are available:
+	|   - files - A simple fast storage implementation storing data in one-per-request files.
+	|   - sql - Stores requests in a sql database. Supports MySQL, Postgresql, Sqlite and requires PDO.
 	|
 	*/
 
 	'storage' => env('CLOCKWORK_STORAGE', 'files'),
 
+	// Path where the Clockwork metadata is stored
 	'storage_files_path' => env('CLOCKWORK_STORAGE_FILES_PATH', storage_path('clockwork')),
 
 	// Compress the metadata files using gzip, trading a little bit of performance for lower disk usage
 	'storage_files_compress' => env('CLOCKWORK_STORAGE_FILES_COMPRESS', false),
 
+	// SQL database to use, can be a name of database configured in database.php or a path to a sqlite file
 	'storage_sql_database' => env('CLOCKWORK_STORAGE_SQL_DATABASE', storage_path('clockwork.sqlite')),
-	'storage_sql_table'    => env('CLOCKWORK_STORAGE_SQL_TABLE', 'clockwork'),
 
-	/*
-	|--------------------------------------------------------------------------
-	| Metadata expiration
-	|--------------------------------------------------------------------------
-	|
-	| Maximum lifetime of the metadata in minutes, metadata for older requests
-	| will automatically be deleted when storing new requests.
-	| When set to false, metadata will never be deleted.
-	| Default: 1 week
-	|
-	*/
+	// SQL table name to use, the table is automatically created and udpated when needed
+	'storage_sql_table' => env('CLOCKWORK_STORAGE_SQL_TABLE', 'clockwork'),
 
+	// Maximum lifetime of collected metadata in minutes, older requests will automatically be deleted, false to disable
 	'storage_expiration' => env('CLOCKWORK_STORAGE_EXPIRATION', 60 * 24 * 7),
 
 	/*
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	| Authentication
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| Clockwork can be configured to require authentication before allowing
-	/ access to the collected data. This is recommended when the application
-	/ is publicly accessible, as the metadata might contain sensitive information.
-	/ Setting to "true" enables authentication with a single password set below,
-	/ "false" disables authentication.
-	/ You can also pass a class name of a custom authentication implementation.
-	/ Default: false
+	| Clockwork can be configured to require authentication before allowing access to the collected data. This might be
+	| useful when the application is publicly accessible. Setting to true will enable a simple authentication with a
+	| pre-configured password. You can also pass a class name of a custom implementation.
 	|
 	*/
 
 	'authentication' => env('CLOCKWORK_AUTHENTICATION', false),
 
+	// Password for the simple authentication
 	'authentication_password' => env('CLOCKWORK_AUTHENTICATION_PASSWORD', 'VerySecretPassword'),
 
 	/*
-	|--------------------------------------------------------------------------
-	| Enable collecting of stack traces
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
+	| Stack traces collection
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| This setting controls, whether log messages and certain data sources, like
-	| the database or cache data sources, should collect stack traces.
-	| You might want to disable this if you are collecting 100s of queries or
-	| log messages, as the stack traces can considerably increase the metadata size.
-	| You can force collecting of stack trace for a single log call by passing
-	| [ 'trace' => true ] as $context.
-	| Default: true
+	| Clockwork can collect stack traces for log messages and certain data like database queries. Here you can set
+	| whether to collect stack traces, limit the number of collected frames and set further configuration. Collecting
+	| long stack traces considerably increases metadata size.
 	|
 	*/
 
@@ -350,7 +325,10 @@ return [
 		// Enable or disable collecting of stack traces
 		'enabled' => env('CLOCKWORK_STACK_TRACES_ENABLED', true),
 
-		// List of vendor names to skip when determining caller, common vendor are automatically added
+		// Limit the number of frames to be collected
+		'limit' => env('CLOCKWORK_STACK_TRACES_LIMIT', 10),
+
+		// List of vendor names to skip when determining caller, common vendors are automatically added
 		'skip_vendors' => [
 			// 'phpunit'
 		],
@@ -363,29 +341,24 @@ return [
 		// List of class names to skip when determining caller
 		'skip_classes' => [
 			// App\CustomLog::class
-		],
+		]
 
-		// Limit of frames to be collected
-		'limit' => env('CLOCKWORK_STACK_TRACES_LIMIT', 10)
 	],
 
 	/*
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	| Serialization
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| Configure how Clockwork serializes the collected data.
-	| Depth limits how many levels of multi-level arrays and objects have
-	| extended serialization (rest uses simple serialization).
-	| Blackbox allows you to specify classes which contents should be never
-	| serialized (eg. a service container class).
-	| Lowering depth limit and adding classes to blackbox lowers the memory
-	| usage and processing time.
+	| Clockwork serializes the collected data to json for storage and transfer. Here you can configure certain aspects
+	| of serialization. Serialization has a large effect on the cpu time and memory usage.
 	|
 	*/
 
+	// Maximum depth of serialized multi-level arrays and objects
 	'serialization_depth' => env('CLOCKWORK_SERIALIZATION_DEPTH', 10),
 
+	// A list of classes that will never be serialized (eg. a common service container class)
 	'serialization_blackbox' => [
 		\Illuminate\Container\Container::class,
 		\Illuminate\Foundation\Application::class,
@@ -393,26 +366,24 @@ return [
 	],
 
 	/*
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	| Register helpers
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| This setting controls whether the "clock" helper function will be registered. You can use the "clock" function to
-	| quickly log something to Clockwork or access the Clockwork instance.
+	| Clockwork comes with a "clock" global helper function. You can use this helper to quickly log something and to
+	| access the Clockwork instance.
 	|
 	*/
 
 	'register_helpers' => env('CLOCKWORK_REGISTER_HELPERS', true),
 
 	/*
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	| Send Headers for AJAX request
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| When trying to collect data the AJAX method can sometimes fail if it is
-	| missing required headers. For example, an API might require a version
-	| number using Accept headers to route the HTTP request to the correct
-	| codebase.
+	| When trying to collect data the AJAX method can sometimes fail if it is missing required headers. For example, an
+	| API might require a version number using Accept headers to route the HTTP request to the correct codebase.
 	|
 	*/
 
@@ -421,17 +392,14 @@ return [
 	],
 
 	/*
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	| Server-Timing
-	|--------------------------------------------------------------------------
+	|------------------------------------------------------------------------------------------------------------------
 	|
-	| Clockwork supports the W3C Server Timing specification, which allows for
-	/ collecting a simple performance metrics in a cross-browser way. Eg. in
-	/ Chrome, your app, database and timeline event timings will be shown
-	/ in the Dev Tools network tab.
-	/ This setting specifies the max number of timeline events that will be sent.
-	| When set to false, Server-Timing headers will not be set.
-	| Default: 10
+	| Clockwork supports the W3C Server Timing specification, which allows for collecting a simple performance metrics
+	| in a cross-browser way. Eg. in Chrome, your app, database and timeline event timings will be shown in the Dev
+	| Tools network tab. This setting specifies the max number of timeline events that will be sent. Setting to false
+	| will disable the feature.
 	|
 	*/
 
