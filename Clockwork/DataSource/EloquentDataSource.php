@@ -267,16 +267,17 @@ class EloquentDataSource extends DataSource
 	// Increment query counts for collected query
 	protected function incrementQueryCount($query)
 	{
-		$this->count['total']++;
 		$sql = ltrim($query['query']);
 
-		if (preg_match('/^select\s/i', $sql)) {
+		$this->count['total']++;
+
+		if (preg_match('/^select\b/i', $sql)) {
 			$this->count['select']++;
-		} elseif (preg_match('/^insert\s/i', $sql)) {
+		} elseif (preg_match('/^insert\b/i', $sql)) {
 			$this->count['insert']++;
-		} elseif (preg_match('/^update\s/i', $sql)) {
+		} elseif (preg_match('/^update\b/i', $sql)) {
 			$this->count['update']++;
-		} elseif (preg_match('/^delete\s/i', $sql)) {
+		} elseif (preg_match('/^delete\b/i', $sql)) {
 			$this->count['delete']++;
 		} else {
 			$this->count['other']++;
