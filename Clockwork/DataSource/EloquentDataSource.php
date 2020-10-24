@@ -1,29 +1,21 @@
 <?php namespace Clockwork\DataSource;
 
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\StackTrace;
+use Clockwork\Helpers\{Serializer, StackTrace};
 use Clockwork\Request\Request;
-use Clockwork\Support\Laravel\Eloquent\ResolveModelScope;
-use Clockwork\Support\Laravel\Eloquent\ResolveModelLegacyScope;
+use Clockwork\Support\Laravel\Eloquent\{ResolveModelScope, ResolveModelLegacyScope};
 
 use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 
-/**
- * Data source for Eloquent (Laravel ORM), provides database queries
- */
+// Data source for Eloquent (Laravel ORM), provides database queries, stats, model actions and counts
 class EloquentDataSource extends DataSource
 {
 	use Concerns\EloquentDetectDuplicateQueries;
 
-	/**
-	 * Database manager
-	 */
+	// Database manager instance
 	protected $databaseManager;
 
-	/**
-	 * Internal array where queries are stored
-	 */
+	// Array of collected queries
 	protected $queries = [];
 
 	// Query counts by type
@@ -54,30 +46,67 @@ class EloquentDataSource extends DataSource
 	// Enable duplicate queries detection
 	protected $detectDuplicateQueries = false;
 
-	/**
-	 * Model name to associate with the next executed query, used to map queries to models
-	 */
+	// Model name to associate with the next executed query, used to map queries to models
 	public $nextQueryModel;
 
-	/**
-	 * Create a new data source instance, takes a database manager and an event dispatcher as arguments
-	 */
+	// Create a new data source instance, takes a database manager, an event dispatcher as arguments and additional
+	// options as arguments
 	public function __construct(ConnectionResolverInterface $databaseManager, EventDispatcher $eventDispatcher, $collectQueries = true, $slowThreshold = null, $slowOnly = false, $detectDuplicateQueries = false, $collectModelsActions = true, $collectModelsRetrieved = false)
 	{
 		$this->databaseManager = $databaseManager;
 		$this->eventDispatcher = $eventDispatcher;
-		$this->collectQueries = $collectQueries;
-		$this->slowThreshold = $slowThreshold;
+
+		$this->collectQueries         = $collectQueries;
+		$this->slowThreshold          = $slowThreshold;
 		$this->detectDuplicateQueries = $detectDuplicateQueries;
-		$this->collectModelsActions = $collectModelsActions;
+		$this->collectModelsActions   = $collectModelsActions;
 		$this->collectModelsRetrieved = $collectModelsRetrieved;
 
 		if ($slowOnly) $this->addFilter(function ($query) { return $query['duration'] > $this->slowThreshold; });
 	}
 
-	/**
-	 * Start listening to eloquent queries
-	 */
+	// Adds ran database queries, query counts, models actions and models counts to the request
+	public function resolve(Request $request)
+	{
+		$request->databaseQueries = array_merge($request->databaseQueries, $this->queries);
+
+		$request->databaseQueriesCount += $this->count['total'];
+		$request->databaseSlowQueries  += $this->count['slow'];
+		$request->databaseSelects      += $this->count['select'];
+		$request->databaseInserts      += $this->count['insert'];
+		$request->databaseUpdates      += $this->count['update'];
+		$request->databaseDeletes      += $this->count['delete'];
+		$request->databaseOthers       += $this->count['other'];
+
+		$request->modelsActions = array_merge($request->modelsActions, $this->modelsActions);
+
+		$request->modelsRetrieved = $this->modelsCount['retrieved'];
+		$request->modelsCreated   = $this->modelsCount['created'];
+		$request->modelsUpdated   = $this->modelsCount['updated'];
+		$request->modelsDeleted   = $this->modelsCount['deleted'];
+
+		$this->appendDuplicateQueriesWarnings($request);
+
+		return $request;
+	}
+
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
+	{
+		$this->queries = [];
+		$this->count = [
+			'total' => 0, 'slow' => 0, 'select' => 0, 'insert' => 0, 'update' => 0, 'delete' => 0, 'other' => 0
+		];
+
+		$this->modelsActions = [];
+		$this->modelsCount = [
+			'retrieved' => [], 'created' => [], 'updated' => [], 'deleted' => []
+		];
+
+		$this->nextQueryModel = null;
+	}
+
+	// Start listening to Eloquent events
 	public function listenToEvents()
 	{
 		if ($scope = $this->getModelResolvingScope()) {
@@ -92,10 +121,14 @@ class EloquentDataSource extends DataSource
 
 		if (class_exists(\Illuminate\Database\Events\QueryExecuted::class)) {
 			// Laravel 5.2 and up
-			$this->eventDispatcher->listen(\Illuminate\Database\Events\QueryExecuted::class, [ $this, 'registerQuery' ]);
+			$this->eventDispatcher->listen(\Illuminate\Database\Events\QueryExecuted::class, function ($event) {
+				$this->registerQuery($event);
+			});
 		} else {
 			// Laravel 5.0 to 5.1
-			$this->eventDispatcher->listen('illuminate.query', [ $this, 'registerLegacyQuery' ]);
+			$this->eventDispatcher->listen('illuminate.query', function ($event) {
+				$this->registerLegacyQuery($event);
+			});
 		}
 
 		// register all event listeners individually so we don't have to regex the event type and support Laravel <5.4
@@ -117,10 +150,8 @@ class EloquentDataSource extends DataSource
 		});
 	}
 
-	/**
-	 * Log the query into the internal store
-	 */
-	public function registerQuery($event)
+	// Collect an executed database query
+	protected function registerQuery($event)
 	{
 		$trace = StackTrace::get([ 'arguments' => $this->detectDuplicateQueries ])->resolveViewName();
 
@@ -147,10 +178,8 @@ class EloquentDataSource extends DataSource
 		$this->queries[] = $query;
 	}
 
-	/**
-	 * Log a legacy (pre Laravel 5.2) query into the internal store
-	 */
-	public function registerLegacyQuery($sql, $bindings, $time, $connection)
+	// Collect an executed database query (pre Laravel 5.2)
+	protected function registerLegacyQuery($sql, $bindings, $time, $connection)
 	{
 		return $this->registerQuery((object) [
 			'sql'            => $sql,
@@ -194,48 +223,7 @@ class EloquentDataSource extends DataSource
 		$this->modelsActions[] = $action;
 	}
 
-	/**
-	 * Adds ran database queries to the request
-	 */
-	public function resolve(Request $request)
-	{
-		$request->databaseQueries = array_merge($request->databaseQueries, $this->queries);
-
-		$request->databaseQueriesCount += $this->count['total'];
-		$request->databaseSlowQueries  += $this->count['slow'];
-		$request->databaseSelects      += $this->count['select'];
-		$request->databaseInserts      += $this->count['insert'];
-		$request->databaseUpdates      += $this->count['update'];
-		$request->databaseDeletes      += $this->count['delete'];
-		$request->databaseOthers       += $this->count['other'];
-
-		$request->modelsActions = array_merge($request->modelsActions, $this->modelsActions);
-
-		$request->modelsRetrieved = $this->modelsCount['retrieved'];
-		$request->modelsCreated   = $this->modelsCount['created'];
-		$request->modelsUpdated   = $this->modelsCount['updated'];
-		$request->modelsDeleted   = $this->modelsCount['deleted'];
-
-		$this->appendDuplicateQueriesWarnings($request);
-
-		return $request;
-	}
-
-	// Reset the data source to an empty state, clearing any collected data
-	public function reset()
-	{
-		$this->queries = [];
-
-		$this->count = [
-			'total' => 0, 'slow' => 0, 'select' => 0, 'insert' => 0, 'update' => 0, 'delete' => 0, 'other' => 0
-		];
-
-		$this->nextQueryModel = null;
-	}
-
-	/**
-	 * Takes a query, an array of bindings and the connection as arguments, returns runnable query with upper-cased keywords
-	 */
+	// Takes a query, an array of bindings and the connection as arguments, returns runnable query with upper-cased keywords
 	protected function createRunnableQuery($query, $bindings, $connection)
 	{
 		// add bindings to query
@@ -260,14 +248,10 @@ class EloquentDataSource extends DataSource
 		];
 		$regexp = '/\b' . implode('\b|\b', $keywords) . '\b/i';
 
-		$query = preg_replace_callback($regexp, function ($match) { return strtoupper($match[0]); }, $query);
-
-		return $query;
+		return preg_replace_callback($regexp, function ($match) { return strtoupper($match[0]); }, $query);
 	}
 
-	/**
-	 * Takes a query binding and a connection name, returns a quoted binding value
-	 */
+	// Takes a query binding and a connection name, returns a quoted binding value
 	protected function quoteBinding($binding, $connection)
 	{
 		$connection = $this->databaseManager->connection($connection);
@@ -312,9 +296,7 @@ class EloquentDataSource extends DataSource
 		$this->modelsCount[$action][$model]++;
 	}
 
-	/**
-	 * Returns model resolving scope for the installed Laravel version
-	 */
+	// Returns model resolving scope for the installed Laravel version
 	protected function getModelResolvingScope()
 	{
 		if (interface_exists(\Illuminate\Database\Eloquent\ScopeInterface::class)) {

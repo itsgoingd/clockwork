@@ -1,26 +1,27 @@
 <?php namespace Clockwork\Support\Laravel;
 
 use Illuminate\Console\Command;
-
 use Symfony\Component\Console\Input\InputOption;
 
+// Console command for cleaning old requests metadata
 class ClockworkCleanCommand extends Command
 {
-	// The console command name.
+	// Command name
 	protected $name = 'clockwork:clean';
 
-	// The console command description.
+	// Command description
 	protected $description = 'Cleans Clockwork request metadata';
 
+	// Command options
 	public function getOptions()
 	{
 		return [
 			[ 'all', 'a', InputOption::VALUE_NONE, 'cleans all data' ],
-			[ 'expiration', 'e', InputOption::VALUE_REQUIRED, 'cleans data older then specified value in minutes' ]
+			[ 'expiration', 'e', InputOption::VALUE_REQUIRED, 'cleans data older than specified value in minutes' ]
 		];
 	}
 
-	// Execute the console command.
+	// Execute the console command
 	public function handle()
 	{
 		if ($this->option('all')) {
@@ -29,14 +30,14 @@ class ClockworkCleanCommand extends Command
 			$this->laravel['config']->set('clockwork.storage_expiration', $expiration);
 		}
 
-		$this->laravel['clockwork.support']->getStorage()->cleanup($force = true);
+		$this->laravel['clockwork.support']->makeStorage()->cleanup($force = true);
 
 		$this->info('Metadata cleaned successfully.');
 	}
 
-	// Compatibility for old Laravel versions
-    public function fire()
-    {
-        return $this->handle();
-    }
+	// Compatibility for the old Laravel versions
+	public function fire()
+	{
+		return $this->handle();
+	}
 }

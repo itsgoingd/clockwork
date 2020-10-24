@@ -1,12 +1,12 @@
 <?php namespace Clockwork\Request;
 
-// Data structure representing custom user data (shown as extra tab in the official app)
+// Data structure representing custom user data
 class UserData
 {
-	// Data items (tab contents in the official app)
+	// Data items
 	protected $data = [];
 
-	// Data title (tab name in the official app)
+	// Data title
 	protected $title;
 
 	// Add generic user data
@@ -19,14 +19,14 @@ class UserData
 		return $this->data[] = new UserDataItem($data);
 	}
 
-	// Add user data shown as counters in the official app
+	// Add user data shown as counters
 	public function counters(array $data)
 	{
 		return $this->data($data)
 			->showAs('counters');
 	}
 
-	// Add user data shown as table in the official app
+	// Add user data shown as table
 	public function table($title, array $data)
 	{
 		return $this->data($data)
@@ -34,7 +34,7 @@ class UserData
 			->title($title);
 	}
 
-	// Set data title (shown as tab name in the official app)
+	// Set data title
 	public function title($title)
 	{
 		$this->title = $title;

@@ -1,10 +1,15 @@
 <?php namespace Clockwork\Helpers;
 
+// Prepares various types of data for serialization
 class Serializer
 {
+	// Serialized objects cache by object hash
 	protected $cache = [];
+
+	// Options for the current instance
 	protected $options = [];
 
+	// Default options for new instances
 	protected static $defaults = [
 		'blackbox' => [
 			\Illuminate\Container\Container::class,
@@ -22,18 +27,20 @@ class Serializer
 		'tracesLimit' => null
 	];
 
+	// Create a new instance optionally with options overriding defaults
 	public function __construct(array $options = [])
 	{
 		$this->options = $options + static::$defaults;
 	}
 
-	// set default options for all new serializers
+	// Set default options for all new instances
 	public static function defaults(array $defaults)
 	{
 		static::$defaults = $defaults + static::$defaults;
 	}
 
-	// prepares the passed data to be ready for serialization
+	// Prepares the passed data to be ready for serialization, takes any kind of data to normalize as the first
+	// argument, other arguments are used internally in recursion
 	public function normalize($data, $context = null, $limit = null)
 	{
 		if ($context === null) $context = [ 'references' => [] ];
@@ -90,13 +97,14 @@ class Serializer
 		return $data;
 	}
 
-	// normalize each member of an array (doesn't add metadata for top level)
+	// Normalize each member of an array (doesn't add metadata for top level)
 	public function normalizeEach($data, $context = null, $limit = null) {
 		return array_map(function ($item) use ($context, $limit) {
 			return $this->normalize($item, $context, $limit);
 		}, $data);
 	}
 
+	// Normalize a stack trace instance
 	public function trace(StackTrace $trace)
 	{
 		if (! $this->options['traces']) return null;
@@ -115,6 +123,7 @@ class Serializer
 		}, $trace->frames());
 	}
 
+	// Normalize an exception instance
 	public function exception(/* Throwable */ $exception)
 	{
 		return [

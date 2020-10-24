@@ -1,28 +1,22 @@
 <?php namespace Clockwork\Support\Laravel;
 
 use Clockwork\Clockwork;
-use Clockwork\Authentication\NullAuthenticator;
-use Clockwork\Authentication\SimpleAuthenticator;
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\ServerTiming;
-use Clockwork\Helpers\StackFilter;
-use Clockwork\Helpers\StackTrace;
-use Clockwork\Request\IncomingRequest;
-use Clockwork\Request\Request;
-use Clockwork\Storage\FileStorage;
-use Clockwork\Storage\Search;
-use Clockwork\Storage\SqlStorage;
+use Clockwork\Authentication\{NullAuthenticator, SimpleAuthenticator};
+use Clockwork\Helpers\{Serializer, ServerTiming, StackFilter, StackTrace};
+use Clockwork\Request\{IncomingRequest, Request};
+use Clockwork\Storage\{FileStorage, Search, SqlStorage};
 use Clockwork\Web\Web;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
 use Illuminate\Http\{JsonResponse, Response};
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\{BinaryFileResponse, Cookie};
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+// Support class for the Laravel integration
 class ClockworkSupport
 {
+	// Laravel application instance
 	protected $app;
 
 	public function __construct(Application $app)
@@ -30,17 +24,19 @@ class ClockworkSupport
 		$this->app = $app;
 	}
 
+	// Get a value form the Clockwork config
 	public function getConfig($key, $default = null)
 	{
 		return $this->app['config']->get("clockwork.{$key}", $default);
 	}
 
+	// Retrieve metadata
 	public function getData($id = null, $direction = null, $count = null, $filter = [], $extended = false)
 	{
 		if (isset($this->app['session'])) $this->app['session.store']->reflash();
 
-		$authenticator = $this->app['clockwork']->getAuthenticator();
-		$storage = $this->app['clockwork']->getStorage();
+		$authenticator = $this->app['clockwork']->authenticator();
+		$storage = $this->app['clockwork']->storage();
 
 		$authenticated = $authenticator->check($this->app['request']->header('X-Clockwork-Auth'));
 
@@ -76,11 +72,13 @@ class ClockworkSupport
 		return new JsonResponse($data);
 	}
 
+	// Retrieve extended metadata
 	public function getExtendedData($id, $filter = [])
 	{
 		return $this->getData($id, null, null, $filter, true);
 	}
 
+	// Update metadata
 	public function updateData($id, $input = [])
 	{
 		if (isset($this->app['session'])) $this->app['session.store']->reflash();
@@ -89,7 +87,7 @@ class ClockworkSupport
 			throw new NotFoundHttpException;
 		}
 
-		$storage = $this->app['clockwork']->getStorage();
+		$storage = $this->app['clockwork']->storage();
 
 		$request = $storage->find($id);
 
@@ -112,7 +110,19 @@ class ClockworkSupport
 		$storage->update($request);
 	}
 
-	public function getStorage()
+	// Return an asset for web ui based on it's path, resolves correct mime-type and protectes from accessing files
+	// outside of Clockwork public dir
+	public function getWebAsset($path)
+	{
+		$asset = (new Web)->asset($path);
+
+		if (! $asset) throw new NotFoundHttpException;
+
+		return new BinaryFileResponse($asset['path'], 200, [ 'Content-Type' => $asset['mime'] ]);
+	}
+
+	// Make a storage instance based on the current configuration
+	public function makeStorage()
 	{
 		$expiration = $this->getConfig('storage_expiration');
 
@@ -126,20 +136,19 @@ class ClockworkSupport
 				$database = "sqlite:{$database}";
 			}
 
-			$storage = new SqlStorage($database, $table, null, null, $expiration);
+			return new SqlStorage($database, $table, null, null, $expiration);
 		} else {
-			$storage = new FileStorage(
+			return new FileStorage(
 				$this->getConfig('storage_files_path', storage_path('clockwork')),
 				0700,
 				$expiration,
 				$this->getConfig('storage_files_compress', false)
 			);
 		}
-
-		return $storage;
 	}
 
-	public function getAuthenticator()
+	// Make an authenticator instance based on the current configuration
+	public function makeAuthenticator()
 	{
 		$authenticator = $this->getConfig('authentication');
 
@@ -149,17 +158,6 @@ class ClockworkSupport
 			return new SimpleAuthenticator($this->getConfig('authentication_password'));
 		} else {
 			return new NullAuthenticator;
-		}
-	}
-
-	public function getWebAsset($path)
-	{
-		$web = new Web;
-
-		if ($asset = $web->asset($path)) {
-			return new BinaryFileResponse($asset['path'], 200, [ 'Content-Type' => $asset['mime'] ]);
-		} else {
-			throw new NotFoundHttpException;
 		}
 	}
 
@@ -220,7 +218,7 @@ class ClockworkSupport
 			$request = new Request([ 'id' => $payload['clockwork_id'] ]);
 			if (isset($payload['clockwork_parent_id'])) $request->setParent($payload['clockwork_parent_id']);
 
-			$this->app->make('clockwork')->reset()->setRequest($request);
+			$this->app->make('clockwork')->reset()->request($request);
 		});
 
 		$this->app['events']->listen(\Illuminate\Queue\Events\JobProcessed::class, function ($event) {
@@ -232,6 +230,7 @@ class ClockworkSupport
 		});
 	}
 
+	// Process an executed queue job, resolves and records the current request
 	protected function processQueueJob($job, $exception = null)
 	{
 		// sync jobs are recorded as part of the parent request
@@ -267,6 +266,7 @@ class ClockworkSupport
 			->storeRequest();
 	}
 
+	// Process an executed http request, resolves the current request, sets Clockwork headers and cookies
 	public function processRequest($request, $response)
 	{
 		if (! $this->isCollectingRequests()) {
@@ -274,7 +274,7 @@ class ClockworkSupport
 		}
 
 		$clockwork = $this->app['clockwork'];
-		$clockworkRequest = $clockwork->getRequest();
+		$clockworkRequest = $clockwork->request();
 
 		$clockwork->event('Controller')->end();
 
@@ -297,7 +297,7 @@ class ClockworkSupport
 			$response->headers->set("X-Clockwork-Header-{$headerName}", $headerValue);
 		}
 
-		foreach ($clockwork->getRequest()->subrequests as $subrequest) {
+		foreach ($clockwork->request()->subrequests as $subrequest) {
 			$url = urlencode($subrequest['url']);
 			$path = urlencode($subrequest['path']);
 
@@ -320,12 +320,15 @@ class ClockworkSupport
 				'toolbar'   => $this->isToolbarEnabled()
 			];
 
-			$response->cookie(new Cookie('x-clockwork', json_encode($clockworkBrowser), 60, null, null, null, false));
+			$response->cookie(
+				new Cookie('x-clockwork', json_encode($clockworkBrowser), time() + 60, null, null, null, false)
+			);
 		}
 
 		return $response;
 	}
 
+	// Records the current http request
 	public function recordRequest()
 	{
 		if (! $this->isCollectingRequests()) {
@@ -334,18 +337,20 @@ class ClockworkSupport
 
 		$clockwork = $this->app['clockwork'];
 
-		if (! $this->isRecording($clockwork->getRequest())) {
+		if (! $this->isRecording($clockwork->request())) {
 			return; // Collecting data is disabled, return immediately
 		}
 
 		$clockwork->storeRequest();
 	}
 
+	// Set current http response on the framework data source
 	protected function setResponse($response)
 	{
 		$this->app['clockwork.laravel']->setResponse($response);
 	}
 
+	// Configure serializer defaults
 	public function configureSerializer()
 	{
 		Serializer::defaults([
@@ -366,6 +371,7 @@ class ClockworkSupport
 		return $this;
 	}
 
+	// Configure should collect rules
 	public function configureShouldCollect()
 	{
 		$this->app['clockwork']->shouldCollect([
@@ -383,6 +389,7 @@ class ClockworkSupport
 		return $this;
 	}
 
+	// Configure should record rules
 	public function configureShouldRecord()
 	{
 		$this->app['clockwork']->shouldRecord([
@@ -393,12 +400,14 @@ class ClockworkSupport
 		return $this;
 	}
 
+	// Check whether Clockwork is enabled at all
 	public function isEnabled()
 	{
 		return $this->getConfig('enable')
 			|| $this->getConfig('enable') === null && $this->app['config']->get('app.debug');
 	}
 
+	// Check whether we are collecting data
 	public function isCollectingData()
 	{
 		return $this->isCollectingCommands()
@@ -407,6 +416,7 @@ class ClockworkSupport
 			|| $this->isCollectingTests();
 	}
 
+	// Check whether we are collecting artisan commands
 	public function isCollectingCommands()
 	{
 		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
@@ -414,6 +424,7 @@ class ClockworkSupport
 			&& $this->getConfig('artisan.collect', false);
 	}
 
+	// Check whether we are collecting queue jobs
 	public function isCollectingQueueJobs()
 	{
 		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
@@ -421,6 +432,7 @@ class ClockworkSupport
 			&& $this->getConfig('queue.collect', false);
 	}
 
+	// Check whether we are collecting http requests
 	public function isCollectingRequests()
 	{
 		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
@@ -428,6 +440,7 @@ class ClockworkSupport
 			&& $this->app['clockwork']->shouldCollect()->filter($this->incomingRequest());
 	}
 
+	// Check whether we are collecting tests
 	public function isCollectingTests()
 	{
 		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
@@ -435,17 +448,20 @@ class ClockworkSupport
 			&& $this->getConfig('tests.collect', false);
 	}
 
+	// Check whether we are recording the passed request
 	public function isRecording($incomingRequest)
 	{
 		return ($this->isEnabled() || $this->getConfig('collect_data_always', false))
 			&& $this->app['clockwork']->shouldRecord()->filter($incomingRequest);
 	}
 
+	// Check whether a feature is enabled
 	public function isFeatureEnabled($feature)
 	{
 		return $this->getConfig("features.{$feature}.enabled") && $this->isFeatureAvailable($feature);
 	}
 
+	// Check whether a feature is available
 	public function isFeatureAvailable($feature)
 	{
 		if ($feature == 'database') {
@@ -464,56 +480,63 @@ class ClockworkSupport
 		return true;
 	}
 
+	// Check whether we are collecting client metrics
 	public function isCollectingClientMetrics()
 	{
 		return $this->getConfig('features.performance.client_metrics', true);
 	}
 
+	// Check whether the toolbar is enabled
 	public function isToolbarEnabled()
 	{
 		return $this->getConfig('toolbar', false);
 	}
 
+	// Check whether the web ui is enabled
 	public function isWebEnabled()
 	{
 		return $this->getConfig('web', true);
 	}
 
+	// Check whether a command should not be collected
 	protected function isCommandFiltered($command)
 	{
-		$whitelist = $this->getConfig('artisan.only', []);
+		$only = $this->getConfig('artisan.only', []);
 
-		if (count($whitelist)) return ! in_array($command, $whitelist);
+		if (count($only)) return ! in_array($command, $only);
 
-		$blacklist = $this->getConfig('artisan.except', []);
+		$except = $this->getConfig('artisan.except', []);
 
 		if ($this->getConfig('artisan.except_laravel_commands', true)) {
-			$blacklist = array_merge($blacklist, $this->builtinLaravelCommands());
+			$except = array_merge($except, $this->builtinLaravelCommands());
 		}
 
-		$blacklist = array_merge($blacklist, $this->builtinClockworkCommands());
+		$except = array_merge($except, $this->builtinClockworkCommands());
 
-		return in_array($command, $blacklist);
+		return in_array($command, $except);
 	}
 
+	// Check whether a queue job should not be collected
 	protected function isQueueJobFiltered($queueJob)
 	{
-		$whitelist = $this->getConfig('queue.only', []);
+		$only = $this->getConfig('queue.only', []);
 
-		if (count($whitelist)) return ! in_array($queueJob, $whitelist);
+		if (count($only)) return ! in_array($queueJob, $only);
 
-		$blacklist = $this->getConfig('queue.except', []);
+		$except = $this->getConfig('queue.except', []);
 
-		return in_array($queueJob, $blacklist);
+		return in_array($queueJob, $except);
 	}
 
+	// Check whether a test should not be collected
 	public function isTestFiltered($test)
 	{
-		$blacklist = $this->getConfig('tests.except', []);
+		$except = $this->getConfig('tests.except', []);
 
-		return in_array($test, $blacklist);
+		return in_array($test, $except);
 	}
 
+	// Append server timing headers from a Clockwork request to a http response
 	protected function appendServerTimingHeader($response, $request)
 	{
 		if (($eventsCount = $this->getConfig('server_timing', 10)) !== false) {
@@ -521,6 +544,7 @@ class ClockworkSupport
 		}
 	}
 
+	// Make an incoming request instance
 	protected function incomingRequest()
 	{
 		return new IncomingRequest([
@@ -531,6 +555,7 @@ class ClockworkSupport
 		]);
 	}
 
+	// Return an array of web ui paths
 	public function webPaths()
 	{
 		$path = $this->getConfig('web', true);
@@ -540,6 +565,7 @@ class ClockworkSupport
 		return collect([ 'clockwork', '__clockwork' ]);
 	}
 
+	// Return an array of built-in Laravel commands
 	protected function builtinLaravelCommands()
 	{
 		return [
@@ -572,6 +598,7 @@ class ClockworkSupport
 		];
 	}
 
+	// Return an array of built-in Clockwork commands
 	protected function builtinClockworkCommands()
 	{
 		return [

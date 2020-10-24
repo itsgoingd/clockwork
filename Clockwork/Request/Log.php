@@ -1,37 +1,29 @@
 <?php namespace Clockwork\Request;
 
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\StackTrace;
-use Clockwork\Helpers\StackFilter;
+use Clockwork\Helpers\{Serializer, StackTrace, StackFilter};
 
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 
-/**
- * Data structure representing application log
- */
+// Data structure representing a log with timestamped messages
 class Log extends AbstractLogger
 {
-	/**
-	 * Array of log messages, with level and timestamp
-	 */
-	public $data = [];
+	// Array of logged messages
+	public $messages = [];
 
-	// Create a new timeline, optionally with existing events
-	public function __construct($data = [])
+	// Create a new log, optionally with existing messages
+	public function __construct($messages = [])
 	{
-		$this->data = $data;
+		$this->messages = $messages;
 	}
 
-	/**
-	 * Add a new timestamped message, with a level and context, context can be used to override serializer defaults
-	 * $context['trace'] = true can be used to force collecting a stack trace
-	 */
+	// Log a new message, with a level and context, context can be used to override serializer defaults,
+	// $context['trace'] = true can be used to force collecting a stack trace
 	public function log($level = LogLevel::INFO, $message, array $context = [])
 	{
 		$trace = $this->hasTrace($context) ? $context['trace'] : StackTrace::get()->resolveViewName();
 
-		$this->data[] = [
+		$this->messages[] = [
 			'message'   => (new Serializer($context))->normalize($message),
 			'exception' => $this->formatException($context),
 			'context'   => $this->formatContext($context),
@@ -44,26 +36,24 @@ class Log extends AbstractLogger
 	// Merge another log instance into the current log
 	public function merge(Log $log)
 	{
-		$this->data = array_merge($this->data, $log->data);
+		$this->messages = array_merge($this->messages, $log->messages);
 
 		return $this;
 	}
 
-	// Sort the log messages by start time
+	// Sort the log messages by timestamp
 	public function sort()
 	{
-		uasort($this->data, function ($a, $b) { return $a['time'] * 1000 - $b['time'] * 1000; });
+		uasort($this->messages, function ($a, $b) { return $a['time'] * 1000 - $b['time'] * 1000; });
 	}
 
-	/**
-	 * Return log data as an array
-	 */
+	// Get all messages as an array
 	public function toArray()
 	{
-		return $this->data;
+		return $this->messages;
 	}
 
-	// format message context, removes exception and trace if we are serializing them
+	// Format message context, removes exception and trace if we are serializing them
 	protected function formatContext($context)
 	{
 		if ($this->hasException($context)) unset($context['exception']);
@@ -72,7 +62,7 @@ class Log extends AbstractLogger
 		return (new Serializer)->normalize($context);
 	}
 
-	// format exception if present in the context
+	// Format exception if present in the context
 	protected function formatException($context)
 	{
 		if ($this->hasException($context)) {
@@ -80,13 +70,13 @@ class Log extends AbstractLogger
 		}
 	}
 
-	// check if context has serializable trace
+	// Check if context has serializable trace
 	protected function hasTrace($context)
 	{
 		return ! empty($context['trace']) && $context['trace'] instanceof StackTrace && empty($context['raw']);
 	}
 
-	// check if context has serializable exception
+	// Check if context has serializable exception
 	protected function hasException($context)
 	{
 		return ! empty($context['exception']) && $context['exception'] instanceof \Exception && empty($context['raw']);

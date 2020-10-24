@@ -13,7 +13,7 @@ class XdebugDataSource extends DataSource
 		return $request;
 	}
 
-	// Extends rhw request with full profiling data
+	// Extends the request with full profiling data
 	public function extend(Request $request)
 	{
 		$profile = isset($request->xdebug['profile']) ? $request->xdebug['profile'] : null;

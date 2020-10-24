@@ -5,27 +5,19 @@ use Clockwork\Request\Request;
 
 use Slim\Slim;
 
-/**
- * Data source for Slim 2 framework, provides controller, request and response information
- */
+// Data source for Slim 2 framework, provides controller, request and response information
 class SlimDataSource extends DataSource
 {
-	/**
-	 * Slim instance from which data is retrieved
-	 */
+	// Slim instance
 	protected $slim;
 
-	/**
-	 * Create a new data source, takes Slim instance as an argument
-	 */
+	// Create a new data source, takes Slim instance as an argument
 	public function __construct(Slim $slim)
 	{
 		$this->slim = $slim;
 	}
 
-	/**
-	 * Add request method, URI, controller, headers and response status data to the request
-	 */
+	// Adds request and response information to the request
 	public function resolve(Request $request)
 	{
 		$request->method         = $this->getRequestMethod();
@@ -37,18 +29,14 @@ class SlimDataSource extends DataSource
 		return $request;
 	}
 
-	/**
-	 * Return textual representation of current route's controller
-	 */
+	// Get a textual representation of current route's controller
 	protected function getController()
 	{
 		$matchedRoutes = $this->slim->router()->getMatchedRoutes(
 			$this->slim->request()->getMethod(), $this->slim->request()->getResourceUri()
 		);
 
-		if (! count($matchedRoutes)) {
-			return null;
-		}
+		if (! count($matchedRoutes)) return;
 
 		$controller = end($matchedRoutes)->getCallable();
 
@@ -69,9 +57,7 @@ class SlimDataSource extends DataSource
 		return $controller;
 	}
 
-	/**
-	 * Return headers
-	 */
+	// Get the request headers
 	protected function getRequestHeaders()
 	{
 		$headers = [];
@@ -98,25 +84,19 @@ class SlimDataSource extends DataSource
 		return $headers;
 	}
 
-	/**
-	 * Return request method
-	 */
+	// Get the request method
 	protected function getRequestMethod()
 	{
 		return $this->slim->request()->getMethod();
 	}
 
-	/**
-	 * Return request URI
-	 */
+	// Get the request URI
 	protected function getRequestUri()
 	{
 		return $this->slim->request()->getPathInfo();
 	}
 
-	/**
-	 * Return response status code
-	 */
+	// Get the response status code
 	protected function getResponseStatus()
 	{
 		return $this->slim->response()->status();

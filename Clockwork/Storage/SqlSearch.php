@@ -2,13 +2,17 @@
 
 use Clockwork\Request\Request;
 
+// Rules for searching requests using SQL storage, builds the SQL query conditions
 class SqlSearch extends Search
 {
+	// Generated SQL query and bindings
 	public $query;
 	public $bindings;
 
+	// Internal representation of the SQL where conditions
 	protected $conditions;
 
+	// Create a new instance, takes search parameters
 	public function __construct($search = [])
 	{
 		parent::__construct($search);
@@ -18,11 +22,13 @@ class SqlSearch extends Search
 		$this->buildQuery();
 	}
 
+	// Creates a new isntance from a base Search class instance
 	public static function fromBase(Search $search)
 	{
 		return new static((array) $search);
 	}
 
+	// Add an additional where condition, takes the SQL condition and array of bindings
 	public function addCondition($condition, $bindings = [])
 	{
 		$this->conditions = array_merge([ $condition ], $this->conditions);
@@ -32,6 +38,7 @@ class SqlSearch extends Search
 		return $this;
 	}
 
+	// Resolve SQL conditions and bindings based on the search parameters
 	protected function resolveConditions()
 	{
 		if ($this->isEmpty()) return [ [], [] ];
@@ -54,6 +61,7 @@ class SqlSearch extends Search
 		return [ $sql, $bindings ];
 	}
 
+	// Resolve a date type condition and bindings
 	protected function resolveDateCondition($fields, $inputs)
 	{
 		if (! count($inputs)) return null;
@@ -74,6 +82,7 @@ class SqlSearch extends Search
 		return [ "({$conditions})", $bindings ];
 	}
 
+	// Resolve an exact type condition and bindings
 	protected function resolveExactCondition($fields, $inputs)
 	{
 		if (! count($inputs)) return null;
@@ -89,6 +98,7 @@ class SqlSearch extends Search
 		return [ "{$field} IN ({$values})", $bindings ];
 	}
 
+	// Resolve a number type condition and bindings
 	protected function resolveNumberCondition($fields, $inputs)
 	{
 		if (! count($inputs)) return null;
@@ -116,6 +126,7 @@ class SqlSearch extends Search
 		return [ "({$conditions})", $bindings ];
 	}
 
+	// Resolve a string type condition and bindings
 	protected function resolveStringCondition($fields, $inputs)
 	{
 		if (! count($inputs)) return null;
@@ -131,6 +142,7 @@ class SqlSearch extends Search
 		return [ "({$conditions})", $bindings ];
 	}
 
+	// Build the where part of the SQL query
 	protected function buildQuery()
 	{
 		$this->query = count($this->conditions) ? 'WHERE ' . implode(' AND ', $this->conditions) : '';

@@ -2,9 +2,7 @@
 
 use Clockwork\Request\Request;
 
-/**
- * Interface for requests storage implementations
- */
+// Interface for requests storage implementations
 interface StorageInterface
 {
 	// Returns all requests

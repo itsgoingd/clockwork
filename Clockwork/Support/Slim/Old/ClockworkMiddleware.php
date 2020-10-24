@@ -29,7 +29,7 @@ class ClockworkMiddleware extends Middleware
 
 			$clockwork->addDataSource(new PhpDataSource())
 				->addDataSource(new SlimDataSource($this->app))
-				->setStorage(new FileStorage($this->storagePathOrClockwork));
+				->storage(new FileStorage($this->storagePathOrClockwork));
 
 			return $clockwork;
 		});
@@ -56,7 +56,7 @@ class ClockworkMiddleware extends Middleware
 
 	public function retrieveRequest($id = null, $direction = null, $count = null)
 	{
-		$storage = $this->app->clockwork->getStorage();
+		$storage = $this->app->clockwork->storage();
 
 		if ($direction == 'previous') {
 			$data = $storage->previous($id, $count);
@@ -77,7 +77,7 @@ class ClockworkMiddleware extends Middleware
 		$this->app->clockwork->storeRequest();
 
 		if ($this->app->config('debug')) {
-			$this->app->response()->header('X-Clockwork-Id', $this->app->clockwork->getRequest()->id);
+			$this->app->response()->header('X-Clockwork-Id', $this->app->clockwork->request()->id);
 			$this->app->response()->header('X-Clockwork-Version', Clockwork::VERSION);
 
 			$env = $this->app->environment();
@@ -85,7 +85,7 @@ class ClockworkMiddleware extends Middleware
 				$this->app->response()->header('X-Clockwork-Path', $env['SCRIPT_NAME'] . '/__clockwork/');
 			}
 
-			$request = $this->app->clockwork->getRequest();
+			$request = $this->app->clockwork->request();
 			$this->app->response()->header('Server-Timing', ServerTiming::fromRequest($request)->value());
 		}
 	}

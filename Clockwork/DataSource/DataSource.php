@@ -2,23 +2,19 @@
 
 use Clockwork\Request\Request;
 
-/**
- * Base data source class
- */
+// Base data source class
 class DataSource implements DataSourceInterface
 {
 	// Array of filter functions
 	protected $filters = [];
 
-	/**
-	 * Adds data to the request and returns it, custom implementation should be provided in child classes
-	 */
+	// Adds collected data to the request and returns it, to be implemented by extending classes
 	public function resolve(Request $request)
 	{
 		return $request;
 	}
 
-	// Extends the request with additional data when being shown in the Clockwork app
+	// Extends the request with an additional data, which is not required for normal use
 	public function extend(Request $request)
 	{
 		return $request;
@@ -52,15 +48,13 @@ class DataSource implements DataSourceInterface
 		$filters = isset($this->filters[$type]) ? $this->filters[$type] : [];
 
 		foreach ($filters as $filter) {
-			if (! call_user_func_array($filter, $args)) return false;
+			if (! $filter(...$args)) return false;
 		}
 
 		return true;
 	}
 
-	/**
-	 * Censors passwords in an array, identified by key containing "pass" substring
-	 */
+	// Censors passwords in an array, identified by key containing "pass" substring
 	public function removePasswords(array $data)
 	{
 		$keys = array_keys($data);

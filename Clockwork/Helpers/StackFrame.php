@@ -1,5 +1,6 @@
 <?php namespace Clockwork\Helpers;
 
+// A single frame of a stack trace
 class StackFrame
 {
 	public $call;

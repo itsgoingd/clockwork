@@ -2,35 +2,25 @@
 
 use Clockwork\Request\Request;
 
-use Doctrine\DBAL\Logging\SQLLogger;
-use Doctrine\DBAL\Logging\LoggerChain;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Logging\{LoggerChain, SQLLogger};
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Connection;
 
+// Data source for DBAL, provides database queries
 class DBALDataSource extends DataSource implements SQLLogger
 {
-	/**
-	 * Internal array where queries are stored
-	 */
+	// Array of collected queries
 	protected $queries = [];
 
-	/**
-	 * For timing queries:
-	 */
-	public $start = null;
+	// Current running query
+	protected $query = null;
 
-	/**
-	 * Current recorded query
-	 */
-	public $query = null;
-
-	/**
-	 * Doctrine connection
-	 */
+	// DBAL connection
 	protected $connection;
 
-	public function __construct(Connection $connection, $options = [])
+	// Create a new data source instance, takes a DBAL connection instance as an argument
+	public function __construct(Connection $connection)
 	{
 		$this->connection = $connection;
 
@@ -40,7 +30,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 		if ($currentLogger === null) {
 			$configuration->setSQLLogger($this);
 		} else {
-			$loggerChain = new LoggerChain();
+			$loggerChain = new LoggerChain;
 			$loggerChain->addLogger($currentLogger);
 			$loggerChain->addLogger($this);
 
@@ -48,30 +38,69 @@ class DBALDataSource extends DataSource implements SQLLogger
 		}
 	}
 
-	/**
-	 * From SQLLogger Doctrine Interface
-	 */
-	public function startQuery($sql, array $params = null, array $types = null)
+	// Adds executed database queries to the request
+	public function resolve(Request $request)
 	{
-		$this->start = microtime(true);
+		$request->databaseQueries = array_merge($request->databaseQueries, $this->queries);
 
-		$sql = $this->replaceParams($this->connection->getDatabasePlatform(), $sql, $params, $types);
-		$sql = $this->formatQuery($sql);
-
-		$this->query = [ 'sql' => $sql, 'params' => $params, 'types' => $types ];
+		return $request;
 	}
 
-	protected function formatQuery($sql)
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
 	{
+		$this->queries = [];
+		$this->query = null;
+	}
+
+	// DBAL SQLLogger event
+	public function startQuery($sql, array $params = null, array $types = null)
+	{
+		$this->query = [
+			'query'  => $sql,
+			'params' => $params,
+			'types'  => $types,
+			'time'   => microtime(true)
+		];
+	}
+
+	// DBAL SQLLogger event
+	public function stopQuery()
+	{
+		$this->registerQuery($this->query);
+		$this->query = null;
+	}
+
+	// Collect an executed database query
+	protected function registerQuery($query)
+	{
+		$query = [
+			'query'      => $this->createRunnableQuery($query['query']),
+			'bindings'   => $query['params'],
+			'duration'   => (microtime(true) - $query['time']) * 1000,
+			'connection' => $this->connection->getDatabase(),
+			'time'       => $query['time']
+		];
+
+		if ($this->passesFilters([ $query ])) {
+			$this->queries[] = $query;
+		}
+	}
+
+	// Takes a query, an array of params and types as arguments, returns runnable query with upper-cased keywords
+	protected function createRunnableQuery($query, $params, $types)
+	{
+		// add params to query
+		$query = $this->replaceParams($this->connection->getDatabasePlatform(), $query, $params, $types);
+
+		// highlight keywords
 		$keywords = [
-			'select', 'insert', 'update', 'delete', 'where', 'from', 'limit', 'is', 'null', 'having', 'group by',
-			'order by', 'asc', 'desc'
+			'select', 'insert', 'update', 'delete', 'into', 'values', 'set', 'where', 'from', 'limit', 'is', 'null',
+			'having', 'group by', 'order by', 'asc', 'desc'
 		];
 		$regexp = '/\b' . implode('\b|\b', $keywords) . '\b/i';
 
-		return preg_replace_callback($regexp, function ($match) {
-			return strtoupper($match[0]);
-		}, $sql);
+		return preg_replace_callback($regexp, function ($match) { return strtoupper($match[0]); }, $query);
 	}
 
 	/**
@@ -153,52 +182,5 @@ class DBALDataSource extends DataSource implements SQLLogger
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * From SQLLogger Doctrine Interface
-	 */
-	public function stopQuery()
-	{
-		$duration = (microtime(true) - $this->start) * 1000;
-
-		$this->registerQuery($this->query['sql'], $this->query['params'], $duration, $this->connection->getDatabase(), $this->start);
-	}
-
-	/**
-	 * Log the query into the internal store
-	 */
-	public function registerQuery($query, $bindings, $duration, $connection, $time)
-	{
-		$query = [
-			'query'      => $query,
-			'bindings'   => $bindings,
-			'duration'   => $duration,
-			'connection' => $connection,
-			'time'       => $time
-		];
-
-		if ($this->passesFilters([ $query ])) {
-			$this->queries[] = $query;
-		}
-	}
-
-	/**
-	 * Adds ran database queries to the request
-	 */
-	public function resolve(Request $request)
-	{
-		$request->databaseQueries = array_merge($request->databaseQueries, $this->queries);
-
-		return $request;
-	}
-
-	// Reset the data source to an empty state, clearing any collected data
-	public function reset()
-	{
-		$this->queries = [];
-
-		$this->start = null;
-		$this->query = null;
 	}
 }

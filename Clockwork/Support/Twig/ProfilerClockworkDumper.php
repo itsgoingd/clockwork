@@ -4,10 +4,12 @@ use Clockwork\Request\Timeline\Timeline;
 
 use Twig\Profiler\Profile;
 
+// Converts Twig profiles to a Clockwork rendered views timelines
 class ProfilerClockworkDumper
 {
 	protected $lastId = 1;
 
+	// Dumps a profile into a new rendered views timeline
 	public function dump(Profile $profile)
 	{
 		$timeline = new Timeline;

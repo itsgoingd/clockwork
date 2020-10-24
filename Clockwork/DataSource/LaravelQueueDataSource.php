@@ -1,40 +1,43 @@
 <?php namespace Clockwork\DataSource;
 
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\StackTrace;
+use Clockwork\Helpers\{Serializer, StackTrace};
 use Clockwork\Request\Request;
 
 use Illuminate\Queue\Queue;
 
-/**
- * Data source for Laravel queue component, provides dispatched queue jobs
- */
+// Data source for Laravel queue component, provides dispatched queue jobs
 class LaravelQueueDataSource extends DataSource
 {
-	/**
-	 * Queue instance
-	 */
+	// Queue instance
 	protected $queue;
 
-	/**
-	 * Dispatched queue commands
-	 */
+	// Dispatched queue jobs
 	protected $jobs = [];
 
 	// Clockwork ID of the current request
 	protected $currentRequestId;
 
-	/**
-	 * Create a new data source instance, takes an event dispatcher as argument
-	 */
+	// Create a new data source instance, takes a queue as an argument
 	public function __construct(Queue $queue)
 	{
 		$this->queue = $queue;
 	}
 
-	/**
-	 * Start listening to queue events
-	 */
+	// Adds dispatched queue jobs to the request
+	public function resolve(Request $request)
+	{
+		$request->queueJobs = array_merge($request->queueJobs, $this->getJobs());
+
+		return $request;
+	}
+
+	// Reset the data source to an empty state, clearing any collected data
+	public function reset()
+	{
+		$this->jobs = [];
+	}
+
+	// Listen to the queue events
 	public function listenToEvents()
 	{
 		$this->queue->createPayloadUsing(function ($connection, $queue, $payload) {
@@ -53,22 +56,6 @@ class LaravelQueueDataSource extends DataSource
 		});
 	}
 
-	/**
-	 * Adds dispatched queue jobs to the request
-	 */
-	public function resolve(Request $request)
-	{
-		$request->queueJobs = array_merge($request->queueJobs, $this->getJobs());
-
-		return $request;
-	}
-
-	// Reset the data source to an empty state, clearing any collected data
-	public function reset()
-	{
-		$this->jobs = [];
-	}
-
 	// Set Clockwork ID of the current request
 	public function setCurrentRequestId($requestId)
 	{
@@ -76,10 +63,8 @@ class LaravelQueueDataSource extends DataSource
 		return $this;
 	}
 
-	/**
-	 * Registers a new queue job, resolves caller file and line no
-	 */
-	public function registerJob(array $job)
+	// Collect a dispatched queue job
+	protected function registerJob(array $job)
 	{
 		$trace = StackTrace::get()->resolveViewName();
 
@@ -92,9 +77,7 @@ class LaravelQueueDataSource extends DataSource
 		}
 	}
 
-	/**
-	 * Returns an array of dispatched queue jobs commands in Clockwork metadata format
-	 */
+	// Get an array of dispatched queue jobs commands
 	protected function getJobs()
 	{
 		return array_map(function ($query) {

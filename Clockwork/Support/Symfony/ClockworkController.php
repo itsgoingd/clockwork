@@ -21,7 +21,7 @@ class ClockworkController extends AbstractController
 	{
 		$this->ensureClockworkIsEnabled();
 
-		$token = $this->clockwork->getAuthenticator()->attempt($request->request->all());
+		$token = $this->clockwork->authenticator()->attempt($request->request->all());
 
 		return new JsonResponse([ 'token' => $token ], $token ? 200 : 403);
 	}

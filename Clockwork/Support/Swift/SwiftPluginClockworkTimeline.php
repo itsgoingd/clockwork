@@ -5,14 +5,10 @@ use Clockwork\Request\Timeline\Timeline as ClockworkTimeline;
 use Swift_Events_SendEvent;
 use Swift_Events_SendListener;
 
-/**
- * Adds records of sent email to the Clockwork timeline
- */
+// Adds records of sent email to the Clockwork timeline
 class SwiftPluginClockworkTimeline implements Swift_Events_SendListener
 {
-	/**
-	 * Clockwork Timeline data structure
-	 */
+	// Clockwork timeline instance
 	protected $timeline;
 
 	public function __construct(ClockworkTimeline $timeline)
@@ -20,9 +16,7 @@ class SwiftPluginClockworkTimeline implements Swift_Events_SendListener
 		$this->timeline = $timeline;
 	}
 
-	/**
-	 * Invoked immediately before the Message is sent.
-	 */
+	// Invoked immediately before a message is sent
 	public function beforeSendPerformed(Swift_Events_SendEvent $evt)
 	{
 		$message = $evt->getMessage();
@@ -44,9 +38,7 @@ class SwiftPluginClockworkTimeline implements Swift_Events_SendListener
 		]);
 	}
 
-	/**
-	 * Invoked immediately after the Message is sent.
-	 */
+	// Invoked immediately after a message is sent
 	public function sendPerformed(Swift_Events_SendEvent $evt)
 	{
 		$message = $evt->getMessage();
@@ -56,16 +48,10 @@ class SwiftPluginClockworkTimeline implements Swift_Events_SendListener
 
 	protected function addressToString($address)
 	{
-		if (! $address) {
-			return;
-		}
+		if (! $address) return;
 
 		foreach ($address as $email => $name) {
-			if ($name) {
-				$address[$email] = "$name <$email>";
-			} else {
-				$address[$email] = $email;
-			}
+			$address[$email] = $name ? "$name <$email>" : $email;
 		}
 
 		return implode(', ', $address);

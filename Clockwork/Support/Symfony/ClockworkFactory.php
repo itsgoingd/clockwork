@@ -15,13 +15,13 @@ class ClockworkFactory
 	public function clockwork()
 	{
 		return (new Clockwork)
-			->setAuthenticator($this->container->get('clockwork.authenticator'))
-			->setStorage($this->container->get('clockwork.storage'));
+			->authenticator($this->container->get('clockwork.authenticator'))
+			->storage($this->container->get('clockwork.storage'));
 	}
 
 	public function clockworkAuthenticator()
 	{
-		return $this->container->get('clockwork.support')->getAuthenticator();
+		return $this->container->get('clockwork.support')->makeAuthenticator();
 	}
 
 	public function clockworkStorage()

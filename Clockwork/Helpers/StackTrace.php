@@ -1,5 +1,6 @@
 <?php namespace Clockwork\Helpers;
 
+// A stack trace
 class StackTrace
 {
 	use Concerns\ResolvesViewName;
@@ -9,6 +10,8 @@ class StackTrace
 	protected $basePath;
 	protected $vendorPath;
 
+	// Capture a new stack trace, accepts an array of options, "arguments" to include arguments in the trace and "limit"
+	// to limit the trace length
 	public static function get($options = [])
 	{
 		$backtraceOptions = isset($options['arguments'])
@@ -18,6 +21,7 @@ class StackTrace
 		return static::from(debug_backtrace($backtraceOptions, $limit));
 	}
 
+	// Create a stack trace from an existing debug_backtrace output
 	public static function from(array $trace)
 	{
 		$basePath = static::resolveBasePath();
@@ -37,11 +41,13 @@ class StackTrace
 		$this->vendorPath = $vendorPath;
 	}
 
+	// Get all frames
 	public function frames()
 	{
 		return $this->frames;
 	}
 
+	// Get the first frame, optionally filtered by a stack filter or a closure
 	public function first($filter = null)
 	{
 		if (! $filter) return reset($this->frames);
@@ -53,6 +59,7 @@ class StackTrace
 		}
 	}
 
+	// Get the last frame, optionally filtered by a stack filter or a closure
 	public function last($filter = null)
 	{
 		if (! $filter) return $this->frames[count($this->frames) - 1];
@@ -64,6 +71,7 @@ class StackTrace
 		}
 	}
 
+	// Get trace filtered by a stack filter or a closure
 	public function filter($filter = null)
 	{
 		if ($filter instanceof StackFilter) $filter = $filter->closure();
@@ -71,6 +79,7 @@ class StackTrace
 		return $this->copy(array_values(array_filter($this->frames, $filter)));
 	}
 
+	// Get trace skipping a number of frames or frames matching a stack filter or a closure
 	public function skip($count = null)
 	{
 		if ($count instanceof StackFilter) $count = $count->closure();
@@ -79,11 +88,13 @@ class StackTrace
 		return $this->copy(array_slice($this->frames, $count));
 	}
 
+	// Get trace with a number of frames from the top
 	public function limit($count = null)
 	{
 		return $this->copy(array_slice($this->frames, 0, $count));
 	}
 
+	// Get a copy of the trace
 	public function copy($frames = null)
 	{
 		return new static($frames ?: $this->frames, $this->basePath, $this->vendorPath);
@@ -99,6 +110,7 @@ class StackTrace
 		return static::resolveBasePath() . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR;
 	}
 
+	// Fixes call_user_func stack frames missing file and line
 	protected static function fixCallUserFuncFrame($frame, array $trace, $index)
 	{
 		if (isset($frame['file'])) return $frame;

@@ -29,8 +29,8 @@ class ClockworkSupport
 
 	public function getData(Request $request, $id = null, $direction = null, $count = null)
 	{
-		$authenticator = $this->container->get('clockwork')->getAuthenticator();
-		$storage = $this->container->get('clockwork')->getStorage();
+		$authenticator = $this->container->get('clockwork')->authenticator();
+		$storage = $this->container->get('clockwork')->storage();
 
 		$authenticated = $authenticator->check($request->headers->get('X-Clockwork-Auth'));
 
@@ -66,7 +66,7 @@ class ClockworkSupport
 		}
 	}
 
-	public function getAuthenticator()
+	public function makeAuthenticator()
 	{
 		$authenticator = $this->getConfig('authentication');
 

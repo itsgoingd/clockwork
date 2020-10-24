@@ -5,8 +5,6 @@ use Clockwork\Helpers\StackTrace;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
 
-use Psr\Log\LogLevel;
-
 // Duplicate (N+1) queries detection for EloquentDataSource, inspired by the beyondcode/laravel-query-detector package
 // by Marcel Pociot (https://github.com/beyondcode/laravel-query-detector)
 trait EloquentDetectDuplicateQueries
@@ -20,8 +18,7 @@ trait EloquentDetectDuplicateQueries
 		foreach ($this->duplicateQueries as $query) {
 			if ($query['count'] <= 1) continue;
 
-			$log->log(
-				LogLevel::WARNING,
+			$log->warning(
 				"N+1 queries: {$query['model']}::{$query['relation']} loaded {$query['count']} times.",
 				[ 'performance' => true, 'trace' => $query['trace'] ]
 			);

@@ -1,35 +1,27 @@
 <?php namespace Clockwork\DataSource;
 
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\StackTrace;
+use Clockwork\Helpers\{Serializer, StackTrace};
 use Clockwork\Request\Request;
 
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 
-/**
- * Data source for Laravel redis component, provides redis queries
- */
+// Data source for Laravel redis component, provides redis commands
 class LaravelRedisDataSource extends DataSource
 {
-	/**
-	 * Event dispatcher
-	 */
+	// Event dispatcher instance
 	protected $eventDispatcher;
 
-	/**
-	 * Executed redis commands
-	 */
+	// Executed redis commands
 	protected $commands = [];
 
 	// Whether to skip Redis commands originating from Laravel cache Redis store
 	protected $skipCacheCommands = true;
 
-	/**
-	 * Create a new data source instance, takes an event dispatcher as argument
-	 */
+	// Create a new data source instance, takes an event dispatcher and additional options as arguments
 	public function __construct(EventDispatcher $eventDispatcher, $skipCacheCommands = true)
 	{
 		$this->eventDispatcher = $eventDispatcher;
+
 		$this->skipCacheCommands = $skipCacheCommands;
 
 		if ($this->skipCacheCommands) {
@@ -39,25 +31,7 @@ class LaravelRedisDataSource extends DataSource
 		}
 	}
 
-	/**
-	 * Start listening to redis events
-	 */
-	public function listenToEvents()
-	{
-		$this->eventDispatcher->listen(\Illuminate\Redis\Events\CommandExecuted::class, function ($event) {
-			$this->registerCommand([
-				'command'    => $event->command,
-				'parameters' => $event->parameters,
-				'duration'   => $event->time,
-				'connection' => $event->connectionName,
-				'time'       => microtime(true) - $event->time / 1000
-			]);
-		});
-	}
-
-	/**
-	 * Adds redis commands to the request
-	 */
+	// Adds redis commands to the request
 	public function resolve(Request $request)
 	{
 		$request->redisCommands = array_merge($request->redisCommands, $this->getCommands());
@@ -71,10 +45,22 @@ class LaravelRedisDataSource extends DataSource
 		$this->commands = [];
 	}
 
-	/**
-	 * Registers a new command, resolves caller file and line no
-	 */
-	public function registerCommand(array $command)
+	// Listen to the cache events
+	public function listenToEvents()
+	{
+		$this->eventDispatcher->listen(\Illuminate\Redis\Events\CommandExecuted::class, function ($event) {
+			$this->registerCommand([
+				'command'    => $event->command,
+				'parameters' => $event->parameters,
+				'duration'   => $event->time,
+				'connection' => $event->connectionName,
+				'time'       => microtime(true) - $event->time / 1000
+			]);
+		});
+	}
+
+	// Collect an executed command
+	protected function registerCommand(array $command)
 	{
 		$trace = StackTrace::get()->resolveViewName();
 
@@ -87,9 +73,7 @@ class LaravelRedisDataSource extends DataSource
 		}
 	}
 
-	/**
-	 * Returns an array of redis commands in Clockwork metadata format
-	 */
+	// Get an array of executed redis commands
 	protected function getCommands()
 	{
 		return array_map(function ($query) {
