@@ -290,7 +290,7 @@ class FileStorage extends Storage
 
 		return new Request(array_combine(
 			[ 'id', 'time', 'method', $nameField, 'controller', 'responseStatus', 'responseDuration', 'type' ],
-			$record + [ null, null, null, null, null, null, null, 'response' ]
+			array_slice($record, 0, 8) + [ null, null, null, null, null, null, null, 'response' ]
 		));
 	}
 
