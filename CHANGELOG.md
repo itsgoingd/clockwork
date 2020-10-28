@@ -17,14 +17,21 @@
 - added support for updating existing requests
 - added Slim 4 support
 - updated to Clockwork App 5.0
+- improved reworked the central Clockwork class api
 - improved requests recording to use a terminate callback
+- improved global log instance to live on the request instance
 - improved global timeline instance to live on the request instance
 - improved Symfony routes registration to register web ui paths only when enabled
 - improved SQL storage to be more compatible with different PDO error modes
 - improved Clockwork rest api with only/except filters
+- improved handling of corrupted index records in file storage
+- improved cleaned up the code-base, added and improved comments, use modern php features
 - removed Laravel total, initalization, boot and run timeline events
+- remvoed legacy clockwork.controller events
 - removed duplicate file/line information from collected metadata
 - fixed authentication route not being registered when web ui is disabled
+- fixed database queries not being collected for queue jobs
+- fixed multi-line database queries not being counted properly (implemented by edgardmessias, thanks!)
 - fixed StackFrame not processing Windows paths correctly
 
 *BREAKING*
@@ -32,6 +39,8 @@
 - multiple changes to the Laravel config file, please review and re-publish
 - minimal required PHP version is now 5.6 (previously 5.5)
 - the timeline api was reworked, please see documentation for details
+- the global log instance was moved to request instance, please see documentation for details
+- the central Clockwork class api was reworked, old api is available but deprecated
 - changed Slim middleware namespaces
 
 4.1.8
