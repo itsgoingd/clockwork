@@ -28,27 +28,27 @@
 	<a href="https://underground.works/clockwork">
 		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-6.png">
 	</a>
+	<a href="https://underground.works/clockwork">
+		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-7.png">
+	</a>
+	<a href="https://underground.works/clockwork">
+		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-8.png">
+	</a>
 </p>
 
 ### Installation
 
-Install the Clockwork library via Composer.
+Install the Clockwork library via [Composer](https://getcomposer.org/).
 
 ```
 $ composer require itsgoingd/clockwork
-```
-
-Alternative installation as a dev-dependency:
-
-```
-$ composer require itsgoingd/clockwork --dev
 ```
 
 Congratulations, you are done! To enable more features like commands or queue jobs profiling, publish the configuration file via the `vendor:publish` Artisan command.
 
 **Note:** If you are using the Laravel route cache, you will need to refresh it using the route:cache Artisan command.
 
-Read more about other integrations on the [Clockwork website](https://underground.works/clockwork).
+Read [full installation instructions](https://underground.works/clockwork/#docs-installation) on the Clockwork website.
 
 ### Features
 
@@ -62,18 +62,36 @@ We collect a whole bunch of useful data by default, but you can enable more feat
 
 Some features might allow for advanced options, eg. for database queries you can set a slow query threshold or enable detecting of duplicate (N+1) queries. Check out the config file to see all what Clockwork can do.
 
+There are several options that allow you to choose for which requests Clockwork is active.
+
+On-demand mode will collect data only when Clockwork app is open. You can even specify a secret to be set in the app settings to collect request. Errors only will record only requests ending with 4xx and 5xx responses. Slow only will collect only requests with responses above the set slow threshold. You can also filter the collected and recorded requests by a custom closure. CORS pre-flight requests will not be collected by default.
+
 New in Clockwork 4.1, artisan commands, queue jobs and tests can now also be collected, you need to enable this in the config file.
 
 Clockwork also collects stack traces for data like log messages or database queries. Last 10 frames of the trace are collected by default. You can change the frames limit or disable this feature in the configuration file.
 
 #### Viewing data
 
-Clockwork app is available as a browser extension:
+##### Web interface
 
-- [Chrome](https://chrome.google.com/webstore/detail/clockwork/dmggabnehkmmfmdffgajcflpdjlnoemp)
-- [Firefox](https://addons.mozilla.org/en-US/firefox/addon/clockwork-dev-tools/)
+Open `your.app/clockwork` to view and interact with the collected data.
 
-The server-side component also includes a full copy of the Clockwork app available at `your.app/__clockwork`.
+The app will show all executed requests, which is useful when the request is not made by browser, but for example a mobile application you are developing an API for.
+
+##### Browser extension
+
+A browser dev tools extension is also available for Chrome and Firefox:
+
+- [Chrome Web Store](https://chrome.google.com/webstore/detail/clockwork/dmggabnehkmmfmdffgajcflpdjlnoemp)
+- [Firefox Addons](https://addons.mozilla.org/en-US/firefox/addon/clockwork-dev-tools/)
+
+##### Toolbar
+
+Clockwork now gives you an option to show basic request information in the form of a toolbar in your app.
+
+The toolbar is fully rendered client-side and requires installing a tiny javascript library.
+
+[Learn more](https://underground.works/clockwork/#docs-viewing-data) on the Clockwork website.
 
 #### Logging
 
@@ -99,26 +117,22 @@ clock()->info("User {$username} logged in!")
 
 Timeline gives you a visual representation of your application runtime.
 
-Clockwork will automatically add some default events, but you can also add custom ones.
-
-To add a custom event to the timeline, you'll need to start an event first:
+To add an event to the timeline - start it with a description, execute the tracked code and finish the event. A fluent api is available to further configure the event.
 
 ```php
-clock()->event("Loading user's latest tweets via Twitter API")->begin()
+// using timeline api with begin/end and fluent configuration
+clock()->event('Importing tweets')->color('purple')->begin();
+    ...
+clock()->event('Importing tweets')->end();
 ```
 
-After executing the traced block of code, you can end the event, using it's unique name.
+Alternatively you can execute the tracked code block as a closure. You can also choose to use an array based configuration instead of the fluent api.
 
 ```php
-clock()->event("Loading user's latest tweets via Twitter API")->end()
-```
-
-Or simply wrap the traced code into a closure:
-
-```php
-clock()->event("Loading user's latest tweets via Twitter API")->run(function () {
-	...
-})
+// using timeline api with run and array-based configuration
+clock()->event('Updating cache', [ 'color' => 'green' ])->run(function () {
+    ...
+});
 ```
 
 Read more about available features on the [Clockwork website](https://underground.works/clockwork).

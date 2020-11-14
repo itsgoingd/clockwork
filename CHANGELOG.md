@@ -27,7 +27,7 @@
 - improved handling of corrupted index records in file storage
 - improved cleaned up the code-base, added and improved comments, use modern php features
 - removed Laravel total, initalization, boot and run timeline events
-- remvoed legacy clockwork.controller events
+- removed legacy clockwork.controller events
 - removed duplicate file/line information from collected metadata
 - fixed authentication route not being registered when web ui is disabled
 - fixed database queries not being collected for queue jobs
