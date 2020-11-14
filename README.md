@@ -38,6 +38,12 @@ Install the Clockwork library via Composer.
 $ composer require itsgoingd/clockwork
 ```
 
+Alternative installation as a dev-dependency:
+
+```
+$ composer require itsgoingd/clockwork --dev
+```
+
 Congratulations, you are done! To enable more features like commands or queue jobs profiling, publish the configuration file via the `vendor:publish` Artisan command.
 
 **Note:** If you are using the Laravel route cache, you will need to refresh it using the route:cache Artisan command.
