@@ -1,4 +1,4 @@
-5.0 (unreleased)
+5.0
 
 - added collecting of client-metrics and web-vitals
 - added collecting of Eloquent models actions and retrieved, created, updated and deleted models counts
