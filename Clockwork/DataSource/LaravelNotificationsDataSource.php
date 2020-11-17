@@ -157,7 +157,7 @@ class LaravelNotificationsDataSource extends DataSource
 		} elseif (method_exists($event->notification, 'toBroadcast')) {
 			$channelSpecific = [ 'data' => $event->notification->toBroadcast($event->notifiable)->data ];
 		} else {
-			$channelSpecific = [ 'data' => $event->notification->toArray() ];
+			$channelSpecific = [ 'data' => $event->notification->toArray($event->notifiable) ];
 		}
 
 		return array_merge(
