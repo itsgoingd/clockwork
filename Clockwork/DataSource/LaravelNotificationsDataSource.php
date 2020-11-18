@@ -156,9 +156,11 @@ class LaravelNotificationsDataSource extends DataSource
 			$channelSpecific = $this->resolveNexmoChannelSpecific($event, $event->notification->toNexmo($event->notifiable));
 		} elseif (method_exists($event->notification, 'toBroadcast')) {
 			$channelSpecific = [ 'data' => $event->notification->toBroadcast($event->notifiable)->data ];
-		} else {
+		} elseif (method_exists($event->notification, 'toArray')) {
 			$channelSpecific = [ 'data' => $event->notification->toArray($event->notifiable) ];
-		}
+		} else {
+			$channelSpecific = [];
+		}	
 
 		return array_merge(
 			[ 'subject' => null, 'from' => null, 'to' => null, 'content' => null, 'data' => [] ], $channelSpecific
