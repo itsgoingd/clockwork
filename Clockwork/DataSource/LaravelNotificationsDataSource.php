@@ -160,7 +160,7 @@ class LaravelNotificationsDataSource extends DataSource
 			$channelSpecific = [ 'data' => $event->notification->toArray($event->notifiable) ];
 		} else {
 			$channelSpecific = [];
-		}	
+		}
 
 		return array_merge(
 			[ 'subject' => null, 'from' => null, 'to' => null, 'content' => null, 'data' => [] ], $channelSpecific
