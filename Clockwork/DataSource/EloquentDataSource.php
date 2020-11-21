@@ -192,8 +192,6 @@ class EloquentDataSource extends DataSource
 	// Collect a model event and update stats
 	protected function collectModelEvent($event, $model)
 	{
-		$trace = StackTrace::get()->resolveViewName();
-
 		$lastQuery = ($queryCount = count($this->queries)) ? $this->queries[$queryCount - 1] : null;
 
 		$action = [
@@ -206,19 +204,21 @@ class EloquentDataSource extends DataSource
 			'query'      => $lastQuery ? $lastQuery['query'] : null,
 			'duration'   => $lastQuery ? $lastQuery['duration'] : null,
 			'connection' => $lastQuery ? $lastQuery['connection'] : null,
-			'trace'      => (new Serializer)->trace($trace),
+			'trace'      => null,
 			'tags'       => []
 		];
 
 		if ($lastQuery) $this->queries[$queryCount - 1]['model'] = $modelClass;
 
-		if (! $this->passesFilters([ $action, $trace ], 'models-early')) return;
+		if (! $this->passesFilters([ $action ], 'models-early')) return;
 
 		$this->incrementModelsCount($action['action'], $action['model']);
 
 		if (! $this->collectModelsActions) return;
 		if (! $this->collectModelsRetrieved && $event == 'retrieved') return;
-		if (! $this->passesFilters([ $action, $trace ], 'models')) return;
+		if (! $this->passesFilters([ $action ], 'models')) return;
+
+		$action['trace'] = (new Serializer)->trace(StackTrace::get()->resolveViewName());
 
 		$this->modelsActions[] = $action;
 	}
