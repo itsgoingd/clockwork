@@ -44,7 +44,7 @@ class Log extends AbstractLogger
 	// Sort the log messages by timestamp
 	public function sort()
 	{
-		uasort($this->messages, function ($a, $b) { return $a['time'] * 1000 - $b['time'] * 1000; });
+		usort($this->messages, function ($a, $b) { return $a['time'] * 1000 - $b['time'] * 1000; });
 	}
 
 	// Get all messages as an array

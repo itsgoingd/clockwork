@@ -61,7 +61,7 @@ class Timeline
 	// Sort the timeline events by start time
 	public function sort()
 	{
-		uasort($this->events, function ($a, $b) { return $a->start * 1000 - $b->start * 1000; });
+		usort($this->events, function ($a, $b) { return $a->start * 1000 - $b->start * 1000; });
 	}
 
 	// Return events as an array
