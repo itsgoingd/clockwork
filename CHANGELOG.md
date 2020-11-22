@@ -1,3 +1,10 @@
+5.0.1
+
+- fixed performance issues related to collecting stack traces for Eloquent models actions (reported by mstaack, thanks!)
+- fixed collecting database and unsupported Laravel notifications (implemented by YannikFirre, thanks!)
+- fixed log and timeline sorting leading to invalid metadata format
+- updated Clockwork App (5.0.1)
+
 5.0
 
 - added collecting of client-metrics and web-vitals
