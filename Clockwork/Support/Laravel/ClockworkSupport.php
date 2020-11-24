@@ -2,6 +2,7 @@
 
 use Clockwork\Clockwork;
 use Clockwork\Authentication\{NullAuthenticator, SimpleAuthenticator};
+use Clockwork\DataSource\PhpDataSource;
 use Clockwork\Helpers\{Serializer, ServerTiming, StackFilter, StackTrace};
 use Clockwork\Request\{IncomingRequest, Request};
 use Clockwork\Storage\{FileStorage, Search, SqlStorage};
@@ -10,6 +11,7 @@ use Clockwork\Web\Web;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
 use Illuminate\Http\{JsonResponse, Response};
+use Illuminate\Redis\RedisManager;
 use Symfony\Component\HttpFoundation\{BinaryFileResponse, Cookie};
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -119,6 +121,74 @@ class ClockworkSupport
 		if (! $asset) throw new NotFoundHttpException;
 
 		return new BinaryFileResponse($asset['path'], 200, [ 'Content-Type' => $asset['mime'] ]);
+	}
+
+	// Add enabled data sources
+	public function addDataSources()
+	{
+		$clockwork = $this->app['clockwork'];
+
+		$clockwork
+			->addDataSource(new PhpDataSource)
+			->addDataSource($this->frameworkDataSource());
+
+		if ($this->isFeatureEnabled('database')) $clockwork->addDataSource($this->app['clockwork.eloquent']);
+		if ($this->isFeatureEnabled('cache')) $clockwork->addDataSource($this->app['clockwork.cache']);
+		if ($this->isFeatureEnabled('redis')) $clockwork->addDataSource($this->app['clockwork.redis']);
+		if ($this->isFeatureEnabled('queue')) $clockwork->addDataSource($this->app['clockwork.queue']);
+		if ($this->isFeatureEnabled('events')) $clockwork->addDataSource($this->app['clockwork.events']);
+		if ($this->isFeatureEnabled('notifications')) {
+			$clockwork->addDataSource(
+				$this->isFeatureAvailable('notifications-events')
+					? $this->app['clockwork.notifications'] : $this->app['clockwork.swift']
+			);
+		}
+		if ($this->isFeatureAvailable('xdebug')) $clockwork->addDataSource($this->app['clockwork.xdebug']);
+		if ($this->isFeatureEnabled('views')) {
+			$clockwork->addDataSource(
+				$this->getConfig('features.views.use_twig_profiler', false)
+					? $this->app['clockwork.twig'] : $this->app['clockwork.views']
+			);
+		}
+
+		return $this;
+	}
+
+	// Start listening to events
+	public function listenToEvents()
+	{
+		$this->frameworkDataSource()->listenToEvents();
+
+		if ($this->isFeatureEnabled('cache')) $this->app['clockwork.cache']->listenToEvents();
+		if ($this->isFeatureEnabled('database')) $this->app['clockwork.eloquent']->listenToEvents();
+		if ($this->isFeatureEnabled('events')) $this->app['clockwork.events']->listenToEvents();
+		if ($this->isFeatureEnabled('notifications')) {
+			$this->isFeatureAvailable('notifications-events')
+				? $this->app['clockwork.notifications']->listenToEvents() : $this->app['clockwork.swift']->listenToEvents();
+		}
+		if ($this->isFeatureEnabled('queue')) {
+			$this->app['clockwork.queue']->listenToEvents();
+			$this->app['clockwork.queue']->setCurrentRequestId($this->app['clockwork.request']->id);
+		}
+		if ($this->isFeatureEnabled('redis')) {
+			$this->app[RedisManager::class]->enableEvents();
+			$this->app['clockwork.redis']->listenToEvents();
+		}
+		if ($this->isFeatureEnabled('views')) {
+			$this->getConfig('features.views.use_twig_profiler', false)
+				? $this->app['clockwork.twig']->listenToEvents() : $this->app['clockwork.views']->listenToEvents();
+		}
+
+		if ($this->isCollectingCommands()) $this->collectCommands();
+		if ($this->isCollectingQueueJobs()) $this->collectQueueJobs();
+
+		return $this;
+	}
+
+	// Resolves the framework data source from the container
+	protected function frameworkDataSource()
+	{
+		return $this->app['clockwork.laravel'];
 	}
 
 	// Make a storage instance based on the current configuration

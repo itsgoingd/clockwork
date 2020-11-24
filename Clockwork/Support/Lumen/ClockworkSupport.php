@@ -16,6 +16,12 @@ class ClockworkSupport extends LaravelSupport
 		$this->app = $app;
 	}
 
+	// Resolves the framework data source from the container
+	protected function frameworkDataSource()
+	{
+		return $this->app['clockwork.lumen'];
+	}
+
 	// Process an http request and response, resolves the request, sets Clockwork headers and cookies
 	public function process($request, $response)
 	{
