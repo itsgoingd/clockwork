@@ -57,6 +57,7 @@ class ClockworkSupport
 		}
 
 		if ($extended) {
+			$this->addDataSources();
 			$this->app['clockwork']->extendRequest($data);
 		}
 
