@@ -19,7 +19,7 @@ class Log extends AbstractLogger
 
 	// Log a new message, with a level and context, context can be used to override serializer defaults,
 	// $context['trace'] = true can be used to force collecting a stack trace
-	public function log($level = LogLevel::INFO, $message, array $context = [])
+	public function log($level = LogLevel::INFO, $message = null, array $context = [])
 	{
 		$trace = $this->hasTrace($context) ? $context['trace'] : StackTrace::get()->resolveViewName();
 
