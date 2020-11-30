@@ -1,3 +1,9 @@
+5.0.2
+
+- fixed data sources not being initialized for extended data requests (reported by tmishutin, thanks!)
+- fixed inconsistent handling of time and duration arguments in various Request::add* methods (reported by mahagr, thanks!)
+- updated Clockwork App (5.0.2)
+
 5.0.1
 
 - fixed performance issues related to collecting stack traces for Eloquent models actions (reported by mstaack, thanks!)

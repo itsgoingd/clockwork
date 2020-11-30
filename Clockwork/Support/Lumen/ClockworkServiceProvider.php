@@ -81,12 +81,6 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 		});
 	}
 
-	// Resolves the framework data source from the container
-	protected function frameworkDataSource()
-	{
-		return $this->app['clockwork.lumen'];
-	}
-
 	// Check whether we are running with facades enabled
 	protected function isRunningWithFacades()
 	{

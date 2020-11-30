@@ -365,7 +365,7 @@ class Request
 			'bindings'   => (new Serializer)->normalize($bindings),
 			'duration'   => $duration,
 			'connection' => isset($data['connection']) ? $data['connection'] : null,
-			'time'       => isset($data['time']) ? $data['time'] : microtime(true) - $duration / 1000,
+			'time'       => isset($data['time']) ? $data['time'] : microtime(true) - ($duration ?: 0) / 1000,
 			'file'       => isset($data['file']) ? $data['file'] : null,
 			'line'       => isset($data['line']) ? $data['line'] : null,
 			'trace'      => isset($data['trace']) ? $data['trace'] : null,
@@ -387,9 +387,9 @@ class Request
 			'action'     => $action,
 			'attributes' => isset($data['attributes']) ? $data['attributes'] : [],
 			'changes'    => isset($data['changes']) ? $data['changes'] : [],
-			'time'       => isset($data['time']) ? $data['time'] : microtime(true) / 1000,
+			'duration'   => $duration = isset($data['duration']) ? $data['duration'] : null,
+			'time'       => isset($data['time']) ? $data['time'] : microtime(true) - ($duration ?: 0) / 1000,
 			'query'      => isset($data['query']) ? $data['query'] : null,
-			'duration'   => isset($data['duration']) ? $data['duration'] : null,
 			'connection' => isset($data['connection']) ? $data['connection'] : null,
 			'trace'      => isset($data['trace']) ? $data['trace'] : null,
 			'file'       => isset($data['file']) ? $data['file'] : null,
@@ -409,7 +409,7 @@ class Request
 			'value'      => (new Serializer)->normalize($value),
 			'duration'   => $duration,
 			'connection' => isset($data['connection']) ? $data['connection'] : null,
-			'time'       => isset($data['time']) ? $data['time'] : microtime(true) - $duration / 1000,
+			'time'       => isset($data['time']) ? $data['time'] : microtime(true) - ($duration ?: 0) / 1000,
 			'file'       => isset($data['file']) ? $data['file'] : null,
 			'line'       => isset($data['line']) ? $data['line'] : null,
 			'trace'      => isset($data['trace']) ? $data['trace'] : null,
@@ -417,14 +417,15 @@ class Request
 		];
 	}
 
-	// Add event, takes event name, data, time and additional data - listeners, file (caller file name), line (caller
-	// line number), trace (serialized trace)
+	// Add event, takes event name, data, time and additional data - listeners, duration (in ms), file (caller file
+	// name), line (caller line number), trace (serialized trace)
 	public function addEvent($event, $eventData = null, $time = null, $data = [])
 	{
 		$this->events[] = [
 			'event'     => $event,
 			'data'      => (new Serializer)->normalize($eventData),
-			'time'      => $time ?: microtime(true),
+			'duration'  => $duration = isset($data['duration']) ? $data['duration'] : null,
+			'time'      => $time ? $time : microtime(true) - ($duration ?: 0) / 1000,
 			'listeners' => isset($data['listeners']) ? $data['listeners'] : null,
 			'file'      => isset($data['file']) ? $data['file'] : null,
 			'line'      => isset($data['line']) ? $data['line'] : null,
@@ -451,16 +452,17 @@ class Request
 	public function addNotification($subject, $to, $from = null, $data = [])
 	{
 		$this->notifications[] = [
-			'subject' => $subject,
-			'from'    => $from,
-			'to'      => $to,
-			'content' => isset($data['content']) ? $data['content'] : null,
-			'type'    => isset($data['type']) ? $data['type'] : null,
-			'data'    => isset($data['data']) ? $data['data'] : [],
-			'time'    => isset($data['time']) ? $data['time'] : microtime(true),
-			'trace'   => isset($data['trace']) ? $data['trace'] : null,
-			'file'    => isset($data['file']) ? $data['file'] : null,
-			'line'    => isset($data['line']) ? $data['line'] : null
+			'subject'  => $subject,
+			'from'     => $from,
+			'to'       => $to,
+			'content'  => isset($data['content']) ? $data['content'] : null,
+			'type'     => isset($data['type']) ? $data['type'] : null,
+			'data'     => isset($data['data']) ? $data['data'] : [],
+			'duration' => $duration = isset($data['duration']) ? $data['duration'] : null,
+			'time'     => isset($data['time']) ? $data['time'] : microtime(true) - ($duration ?: 0) / 1000,
+			'trace'    => isset($data['trace']) ? $data['trace'] : null,
+			'file'     => isset($data['file']) ? $data['file'] : null,
+			'line'     => isset($data['line']) ? $data['line'] : null
 		];
 	}
 

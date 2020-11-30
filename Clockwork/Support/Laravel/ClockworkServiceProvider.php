@@ -2,25 +2,15 @@
 
 use Clockwork\Clockwork;
 use Clockwork\Authentication\AuthenticatorInterface;
-use Clockwork\DataSource\EloquentDataSource;
-use Clockwork\DataSource\LaravelDataSource;
-use Clockwork\DataSource\LaravelCacheDataSource;
-use Clockwork\DataSource\LaravelEventsDataSource;
-use Clockwork\DataSource\LaravelNotificationsDataSource;
-use Clockwork\DataSource\LaravelRedisDataSource;
-use Clockwork\DataSource\LaravelQueueDataSource;
-use Clockwork\DataSource\LaravelTwigDataSource;
-use Clockwork\DataSource\LaravelViewsDataSource;
-use Clockwork\DataSource\PhpDataSource;
-use Clockwork\DataSource\SwiftDataSource;
-use Clockwork\DataSource\TwigDataSource;
-use Clockwork\DataSource\XdebugDataSource;
+use Clockwork\DataSource\{
+	EloquentDataSource, LaravelDataSource, LaravelCacheDataSource, LaravelEventsDataSource,
+	LaravelNotificationsDataSource, LaravelRedisDataSource, LaravelQueueDataSource, LaravelTwigDataSource,
+	LaravelViewsDataSource, SwiftDataSource, TwigDataSource, XdebugDataSource
+};
 use Clockwork\Helpers\StackFilter;
-use Clockwork\Request\Log;
 use Clockwork\Request\Request;
 use Clockwork\Storage\StorageInterface;
 
-use Illuminate\Redis\RedisManager;
 use Illuminate\Support\ServiceProvider;
 
 class ClockworkServiceProvider extends ServiceProvider
@@ -28,8 +18,7 @@ class ClockworkServiceProvider extends ServiceProvider
 	public function boot()
 	{
 		if ($this->app['clockwork.support']->isCollectingData()) {
-			$this->addDataSources();
-			$this->listenToEvents();
+			$this->app['clockwork.support']->addDataSources()->listenToEvents();
 			$this->registerMiddleware();
 		}
 
@@ -42,65 +31,6 @@ class ClockworkServiceProvider extends ServiceProvider
 		if ($this->app['clockwork.support']->isWebEnabled()) {
 			$this->registerWebRoutes();
 		}
-	}
-
-	protected function addDataSources()
-	{
-		$clockwork = $this->app['clockwork'];
-		$support = $this->app['clockwork.support'];
-
-		$clockwork
-			->addDataSource(new PhpDataSource)
-			->addDataSource($this->frameworkDataSource());
-
-		if ($support->isFeatureEnabled('database')) $clockwork->addDataSource($this->app['clockwork.eloquent']);
-		if ($support->isFeatureEnabled('cache')) $clockwork->addDataSource($this->app['clockwork.cache']);
-		if ($support->isFeatureEnabled('redis')) $clockwork->addDataSource($this->app['clockwork.redis']);
-		if ($support->isFeatureEnabled('queue')) $clockwork->addDataSource($this->app['clockwork.queue']);
-		if ($support->isFeatureEnabled('events')) $clockwork->addDataSource($this->app['clockwork.events']);
-		if ($support->isFeatureEnabled('notifications')) {
-			$clockwork->addDataSource(
-				$support->isFeatureAvailable('notifications-events')
-					? $this->app['clockwork.notifications'] : $this->app['clockwork.swift']
-			);
-		}
-		if ($support->isFeatureAvailable('xdebug')) $clockwork->addDataSource($this->app['clockwork.xdebug']);
-		if ($support->isFeatureEnabled('views')) {
-			$clockwork->addDataSource(
-				$support->getConfig('features.views.use_twig_profiler', false)
-					? $this->app['clockwork.twig'] : $this->app['clockwork.views']
-			);
-		}
-	}
-
-	protected function listenToEvents()
-	{
-		$support = $this->app['clockwork.support'];
-
-		$this->frameworkDataSource()->listenToEvents();
-
-		if ($support->isFeatureEnabled('cache')) $this->app['clockwork.cache']->listenToEvents();
-		if ($support->isFeatureEnabled('database')) $this->app['clockwork.eloquent']->listenToEvents();
-		if ($support->isFeatureEnabled('events')) $this->app['clockwork.events']->listenToEvents();
-		if ($support->isFeatureEnabled('notifications')) {
-			$support->isFeatureAvailable('notifications-events')
-				? $this->app['clockwork.notifications']->listenToEvents() : $this->app['clockwork.swift']->listenToEvents();
-		}
-		if ($support->isFeatureEnabled('queue')) {
-			$this->app['clockwork.queue']->listenToEvents();
-			$this->app['clockwork.queue']->setCurrentRequestId($this->app['clockwork.request']->id);
-		}
-		if ($support->isFeatureEnabled('redis')) {
-			$this->app[RedisManager::class]->enableEvents();
-			$this->app['clockwork.redis']->listenToEvents();
-		}
-		if ($support->isFeatureEnabled('views')) {
-			$support->getConfig('features.views.use_twig_profiler', false)
-				? $this->app['clockwork.twig']->listenToEvents() : $this->app['clockwork.views']->listenToEvents();
-		}
-
-		if ($support->isCollectingCommands()) $support->collectCommands();
-		if ($support->isCollectingQueueJobs()) $support->collectQueueJobs();
 	}
 
 	public function register()
@@ -312,11 +242,6 @@ class ClockworkServiceProvider extends ServiceProvider
 			$this->app['router']->get("{$path}/{path}", 'Clockwork\Support\Laravel\ClockworkController@webAsset')
 				->where('path', '.+');
 		});
-	}
-
-	protected function frameworkDataSource()
-	{
-		return $this->app['clockwork.laravel'];
 	}
 
 	public function provides()
