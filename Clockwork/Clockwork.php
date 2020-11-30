@@ -10,7 +10,7 @@ use Clockwork\Storage\StorageInterface;
 class Clockwork
 {
 	// Clockwork library version
-	const VERSION = '5.0.2';
+	const VERSION = '5.0.3';
 
 	// Array of data sources, these objects collect metadata for the current application run
 	protected $dataSources = [];

@@ -1,3 +1,7 @@
+5.0.3
+
+- fixed PHP 8.0 incompatibility in log (implemented by mtorromeo, thanks!)
+
 5.0.2
 
 - fixed data sources not being initialized for extended data requests (reported by tmishutin, thanks!)
