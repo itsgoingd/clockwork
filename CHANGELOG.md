@@ -1,3 +1,8 @@
+5.0.4
+
+- fixed Lumen integration crash (implemented by alexbegoon, thanks!)
+- fixed PHP 5.6 incompatibility (implemented by sanis, thanks!)
+
 5.0.3
 
 - fixed PHP 8.0 incompatibility in log (implemented by mtorromeo, thanks!)
