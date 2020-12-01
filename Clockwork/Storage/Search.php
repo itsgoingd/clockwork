@@ -1,6 +1,7 @@
 <?php namespace Clockwork\Storage;
 
-use Clockwork\Request\{Request, RequestType};
+use Clockwork\Request\Request;
+use Clockwork\Request\RequestType;
 
 // Rules for searching requests
 class Search

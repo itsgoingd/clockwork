@@ -1,18 +1,27 @@
 <?php namespace Clockwork\Support\Laravel;
 
 use Clockwork\Clockwork;
-use Clockwork\Authentication\{NullAuthenticator, SimpleAuthenticator};
+use Clockwork\Authentication\NullAuthenticator;
+use Clockwork\Authentication\SimpleAuthenticator;
 use Clockwork\DataSource\PhpDataSource;
-use Clockwork\Helpers\{Serializer, ServerTiming, StackFilter, StackTrace};
-use Clockwork\Request\{IncomingRequest, Request};
-use Clockwork\Storage\{FileStorage, Search, SqlStorage};
+use Clockwork\Helpers\Serializer;
+use Clockwork\Helpers\ServerTiming;
+use Clockwork\Helpers\StackFilter;
+use Clockwork\Helpers\StackTrace;
+use Clockwork\Request\IncomingRequest;
+use Clockwork\Request\Request;
+use Clockwork\Storage\FileStorage;
+use Clockwork\Storage\Search;
+use Clockwork\Storage\SqlStorage;
 use Clockwork\Web\Web;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
-use Illuminate\Http\{JsonResponse, Response};
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Redis\RedisManager;
-use Symfony\Component\HttpFoundation\{BinaryFileResponse, Cookie};
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 // Support class for the Laravel integration

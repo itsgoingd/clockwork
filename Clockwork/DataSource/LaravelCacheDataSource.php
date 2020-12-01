@@ -1,6 +1,7 @@
 <?php namespace Clockwork\DataSource;
 
-use Clockwork\Helpers\{Serializer, StackTrace};
+use Clockwork\Helpers\Serializer;
+use Clockwork\Helpers\StackTrace;
 use Clockwork\Request\Request;
 
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;

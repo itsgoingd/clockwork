@@ -1,6 +1,8 @@
 <?php namespace Clockwork\Support\Laravel\Tests;
 
-use Clockwork\Helpers\{Serializer, StackFilter, StackTrace};
+use Clockwork\Helpers\Serializer;
+use Clockwork\Helpers\StackFilter;
+use Clockwork\Helpers\StackTrace;
 
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Runner\BaseTestRunner;
