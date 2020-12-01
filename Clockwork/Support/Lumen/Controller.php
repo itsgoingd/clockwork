@@ -3,7 +3,9 @@
 use Clockwork\Clockwork;
 use Clockwork\Support\Lumen\ClockworkSupport;
 
-use Illuminate\Http\{JsonResponse, RedirectResponse, Request};
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as LumenController;
 use Laravel\Telescope\Telescope;
 

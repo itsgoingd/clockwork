@@ -1,12 +1,15 @@
 <?php namespace Clockwork\DataSource;
 
-use Clockwork\Helpers\{Serializer, StackTrace};
+use Clockwork\Helpers\Serializer;
+use Clockwork\Helpers\StackTrace;
 use Clockwork\Request\Request;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Events\{MessageSending, MessageSent};
-use Illuminate\Notifications\Events\{NotificationSending, NotificationSent};
+use Illuminate\Mail\Events\MessageSending;
+use Illuminate\Mail\Events\MessageSent;
+use Illuminate\Notifications\Events\NotificationSending;
+use Illuminate\Notifications\Events\NotificationSent;
 
 // Data source for Laravel notifications and mail components, provides sent notifications and emails
 class LaravelNotificationsDataSource extends DataSource

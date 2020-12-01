@@ -1,9 +1,14 @@
 <?php namespace Clockwork;
 
-use Clockwork\Authentication\{AuthenticatorInterface, NullAuthenticator};
+use Clockwork\Authentication\AuthenticatorInterface;
+use Clockwork\Authentication\NullAuthenticator;
 use Clockwork\DataSource\DataSourceInterface;
 use Clockwork\Helpers\Serializer;
-use Clockwork\Request\{Log, Request, RequestType, ShouldCollect, ShouldRecord};
+use Clockwork\Request\Log;
+use Clockwork\Request\Request;
+use Clockwork\Request\RequestType;
+use Clockwork\Request\ShouldCollect;
+use Clockwork\Request\ShouldRecord;
 use Clockwork\Storage\StorageInterface;
 
 // A central class implementing the core flow of the library

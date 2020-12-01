@@ -3,7 +3,8 @@
 use Clockwork\Request\Request;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Logging\{LoggerChain, SQLLogger};
+use Doctrine\DBAL\Logging\LoggerChain;
+use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 

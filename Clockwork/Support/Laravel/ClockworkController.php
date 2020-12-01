@@ -1,7 +1,8 @@
 <?php namespace Clockwork\Support\Laravel;
 
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Http\{JsonResponse, RedirectResponse};
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Laravel\Telescope\Telescope;
 

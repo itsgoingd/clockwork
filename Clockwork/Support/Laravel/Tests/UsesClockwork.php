@@ -1,6 +1,8 @@
 <?php namespace Clockwork\Support\Laravel\Tests;
 
-use Clockwork\Helpers\{Serializer, StackFilter, StackTrace};
+use Clockwork\Helpers\Serializer;
+use Clockwork\Helpers\StackFilter;
+use Clockwork\Helpers\StackTrace;
 
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Runner\BaseTestRunner;
@@ -64,7 +66,7 @@ trait UsesClockwork
 	}
 
 	// Overload the main PHPUnit assert method to collect executed asserts
-	public static function assertThat($value, Constraint $constraint, string $message = ''): void
+	public static function assertThat($value, Constraint $constraint, string $message = '')
 	{
 		$trace = StackTrace::get([ 'arguments' => true, 'limit' => 10 ]);
 

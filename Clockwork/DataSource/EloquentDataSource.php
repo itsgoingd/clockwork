@@ -1,8 +1,10 @@
 <?php namespace Clockwork\DataSource;
 
-use Clockwork\Helpers\{Serializer, StackTrace};
+use Clockwork\Helpers\Serializer;
+use Clockwork\Helpers\StackTrace;
 use Clockwork\Request\Request;
-use Clockwork\Support\Laravel\Eloquent\{ResolveModelScope, ResolveModelLegacyScope};
+use Clockwork\Support\Laravel\Eloquent\ResolveModelLegacyScope;
+use Clockwork\Support\Laravel\Eloquent\ResolveModelScope;
 
 use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;

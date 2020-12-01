@@ -2,7 +2,8 @@
 
 use Clockwork\DataSource\DataSource;
 use Clockwork\Helpers\Serializer;
-use Clockwork\Request\{Log, Request};
+use Clockwork\Request\Log;
+use Clockwork\Request\Request;
 
 use Illuminate\Contracts\Foundation\Application;
 use Symfony\Component\HttpFoundation\Response;

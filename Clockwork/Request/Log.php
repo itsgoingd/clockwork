@@ -1,6 +1,8 @@
 <?php namespace Clockwork\Request;
 
-use Clockwork\Helpers\{Serializer, StackTrace, StackFilter};
+use Clockwork\Helpers\Serializer;
+use Clockwork\Helpers\StackTrace;
+use Clockwork\Helpers\StackFilter;
 
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
