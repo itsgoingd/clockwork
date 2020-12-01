@@ -66,7 +66,7 @@ trait UsesClockwork
 	}
 
 	// Overload the main PHPUnit assert method to collect executed asserts
-	public static function assertThat($value, Constraint $constraint, string $message = '')
+	public static function assertThat($value, Constraint $constraint, string $message = ''): void
 	{
 		$trace = StackTrace::get([ 'arguments' => true, 'limit' => 10 ]);
 
