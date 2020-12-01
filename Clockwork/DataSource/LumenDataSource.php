@@ -90,7 +90,7 @@ class LumenDataSource extends DataSource
 	{
 		$routes = method_exists($this->app, 'getRoutes') ? $this->app->getRoutes() : [];
 
-		$method = $this->getMethod();
+		$method = $this->getRequestMethod();
 		$pathInfo = $this->getPathInfo();
 
 		if (isset($routes[$method.$pathInfo]['action']['uses'])) {
