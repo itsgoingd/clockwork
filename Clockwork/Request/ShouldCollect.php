@@ -78,7 +78,7 @@ class ShouldCollect
 		if (! count($this->except)) return true;
 
 		foreach ($this->except as $pattern) {
-			if (preg_match('#' . str_replace('#', '\#', $pattern) . '#', $request->uri)) return false;
+			if (preg_match('#' . preg_quote($pattern) . '#', $request->uri)) return false;
 		}
 
 		return true;
@@ -89,7 +89,7 @@ class ShouldCollect
 		if (! count($this->only)) return true;
 
 		foreach ($this->only as $pattern) {
-			if (preg_match('#' . str_replace('#', '\#', $pattern) . '#', $request->uri)) return true;
+			if (preg_match('#' . preg_quote($pattern) . '#', $request->uri)) return true;
 		}
 
 		return false;
