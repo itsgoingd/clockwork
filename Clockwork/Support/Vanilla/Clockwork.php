@@ -239,7 +239,7 @@ class Clockwork
 		]);
 
 		// don't collect data for Clockwork requests
-		$this->clockwork->shouldCollect()->except(rtrim($this->config['api'], '/'));
+		$this->clockwork->shouldCollect()->except(preg_quote(rtrim($this->config['api'], '/'), '#'));
 	}
 
 	// Configure should record rules based on user configuration
