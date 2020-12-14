@@ -22,7 +22,7 @@ class SymfonyStorage extends FileStorage
 	}
 
 	// Store request, no-op since this is read-only storage implementation
-	public function store(Request $request)
+	public function store(Request $request, $skipIndex = false)
 	{
 		return;
 	}
