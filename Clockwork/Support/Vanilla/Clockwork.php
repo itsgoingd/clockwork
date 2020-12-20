@@ -128,34 +128,40 @@ class Clockwork
 			$this->setHeader("X-Clockwork-Header-{$headerName}", $headerValue);
 		}
 
-		if ($this->config['toolbar']) {
+		if ($this->config['features']['performance']['client_metrics'] || $this->config['toolbar']) {
 			$clockworkBrowser = [
 				'requestId' => $clockworkRequest->id,
 				'version'   => BaseClockwork::VERSION,
 				'path'      => $this->config['api'],
 				'token'     => $clockworkRequest->updateToken,
-				'metrics'   => false,
+				'metrics'   => $this->config['features']['performance']['client_metrics'],
 				'toolbar'   => $this->config['toolbar']
 			];
 
-			setcookie('x-clockwork', json_encode($clockworkBrowser), time() + 60);
+			$this->setCookie('x-clockwork', json_encode($clockworkBrowser), time() + 60);
 		}
 	}
 
-	// Sends http response with metadata based on the passed Clockwork REST api request
+	// Handle Clockwork REST api request, retrieves or updates Clockwork metadata
+	public function handleMetadata($request = null, $method = null)
+	{
+		if (! $method) $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
+
+		return $method == 'POST' ? $this->updateMetadata($request) : $this->returnMetadata($request);
+	}
+
+	// Retrieve metadata based on the passed Clockwork REST api request and send HTTP response
 	public function returnMetadata($request = null)
 	{
 		if (! $this->config['enable']) return;
 
-		$this->setHeader('Content-Type', 'application/json');
-
-		echo json_encode($this->getMetadata($request), \JSON_PARTIAL_OUTPUT_ON_ERROR);
+		return $this->response($this->getMetadata($request));
 	}
 
 	// Returns metadata based on the passed Clockwork REST api request
 	public function getMetadata($request = null)
 	{
-		if (! $this->config['enable']) return;
+		if (! $this->config['enable']) return $this->response(null, 404);
 
 		if (! $request) $request = isset($_GET['request']) ? $_GET['request'] : '';
 
@@ -184,6 +190,42 @@ class Clockwork
 		}
 
 		return $data;
+	}
+
+	// Update metadata based on the passed Clockwork REST api request and send HTTP response
+	public function updateMetadata($request = null)
+	{
+		if (! $this->config['enable'] || ! $this->config['features']['performance']['client_metrics']) {
+			return $this->response(null, 404);
+		}
+
+		if (! $request) $request = isset($_GET['request']) ? $_GET['request'] : '';
+
+		$storage = $this->clockwork->storage();
+
+		$request = $storage->find($request);
+
+		if (! $request) {
+			return $this->response([ 'message' => 'Request not found.' ], 404);
+		}
+
+		$input = json_decode(file_get_contents('php://input'), true);
+
+		$token = isset($input['_token']) ? $input['_token'] : '';
+
+		if (! $request->updateToken || ! hash_equals($request->updateToken, $token)) {
+			return $this->response([ 'message' => 'Invalid update token.' ], 403);
+		}
+
+		foreach ($input as $key => $value) {
+			if (in_array($key, [ 'clientMetrics', 'webVitals' ])) {
+				$request->$key = $value;
+			}
+		}
+
+		$storage->update($request);
+
+		return $this->response();
 	}
 
 	// Use a PSR-7 request and response instances instead of vanilla php HTTP apis
@@ -266,6 +308,17 @@ class Clockwork
 		]);
 	}
 
+	// Set a cookie on PSR-7 response or using vanilla php
+	protected function setCookie($name, $value, $expires) {
+		if ($this->psrResponse) {
+			$this->psrResponse = $this->psrResponse->withHeader(
+				'Set-Cookie', "{$name}=" . urlencode($value) . '; expires=' . gmdate('D, d M Y H:i:s T', $expires)
+			);
+		} else {
+			setcookie($name, $value, $expires);
+		}
+	}
+
 	// Set a header on PSR-7 response or using vanilla php
 	protected function setHeader($header, $value)
 	{
@@ -273,6 +326,21 @@ class Clockwork
 			$this->psrResponse = $this->psrResponse->withHeader($header, $value);
 		} else {
 			header("{$header}: {$value}");
+		}
+	}
+
+	// Send a json response, uses the PSR-7 response if set
+	protected function response($data = null, $status = null)
+	{
+		$this->setHeader('Content-Type', 'application/json');
+
+		if ($this->psrResponse) {
+			if ($status) $this->psrResponse = $this->psrResponse->withStatus($status);
+			$this->psrResponse->getBody()->write(json_encode($data, \JSON_PARTIAL_OUTPUT_ON_ERROR));
+			return $this->psrResponse;
+		} else {
+			if ($status) http_response_code($status);
+			echo json_encode($data, \JSON_PARTIAL_OUTPUT_ON_ERROR);
 		}
 	}
 

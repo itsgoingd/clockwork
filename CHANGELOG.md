@@ -1,6 +1,8 @@
 5.0.5 (unreleased)
 
-- added support for toolbar in vanilla integration (idea by reeslo, thanks!)
+- added support for toolbar in the vanilla integration (idea by reeslo, thanks!)
+- added support for client metrics in the vanilla integration
+- improved PSR-7 support in the vanilla integration
 - fixed crash collecting Slack and Nexmo notifications (reported by abalozz, thanks!)
 - fixed toolbar might not work when not collecting database models
 
