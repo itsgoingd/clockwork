@@ -82,7 +82,7 @@ class ClockworkMiddleware
 
 	protected function logRequest(Request $request, Response $response)
 	{
-		$this->clockwork->getTimeline()->finalize($this->startTime);
+		$this->clockwork->timeline()->finalize($this->startTime);
 		$this->clockwork->addDataSource(new PsrMessageDataSource($request, $response));
 
 		$this->clockwork->resolveRequest();
