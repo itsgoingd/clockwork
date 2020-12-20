@@ -189,7 +189,7 @@ class LaravelNotificationsDataSource extends DataSource
 	protected function resolveSlackChannelSpecific($event, $message)
 	{
 		return [
-			'subject' => $message->subject ?: get_class($event->notification),
+			'subject' => get_class($event->notification),
 			'from'    => $message->username,
 			'to'      => $message->channel,
 			'content' => $message->content
@@ -200,7 +200,7 @@ class LaravelNotificationsDataSource extends DataSource
 	protected function resolveNexmoChannelSpecific($event, $message)
 	{
 		return [
-			'subject' => $message->subject ?: get_class($event->notification),
+			'subject' => get_class($event->notification),
 			'from'    => $message->from,
 			'to'      => $event->notifiable->routeNotificationFor('nexmo', $event->notification),
 			'content' => $message->content

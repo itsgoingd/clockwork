@@ -1,3 +1,7 @@
+5.0.5 (unreleased)
+
+- fixed crash collecting Slack and Nexmo notifications (reported by abalozz, thanks!)
+
 5.0.4
 
 - fixed Lumen integration crash (implemented by alexbegoon, thanks!)
