@@ -97,10 +97,10 @@ class Request
 	public $modelsActions = [];
 
 	// Model action counts by model
-	public $modelsRetrieved;
-	public $modelsCreated;
-	public $modelsUpdated;
-	public $modelsDeleted;
+	public $modelsRetrieved = [];
+	public $modelsCreated = [];
+	public $modelsUpdated = [];
+	public $modelsDeleted = [];
 
 	// Redis commands
 	public $redisCommands = [];
