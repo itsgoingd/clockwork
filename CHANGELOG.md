@@ -1,6 +1,8 @@
 5.0.5 (unreleased)
 
+- added support for toolbar in vanilla integration (idea by reeslo, thanks!)
 - fixed crash collecting Slack and Nexmo notifications (reported by abalozz, thanks!)
+- fixed toolbar might not work when not collecting database models
 
 5.0.4
 

@@ -115,7 +115,9 @@ class Clockwork
 
 		$this->headersSent = true;
 
-		$this->setHeader('X-Clockwork-Id', $this->request()->id);
+		$clockworkRequest = $this->request();
+
+		$this->setHeader('X-Clockwork-Id', $clockworkRequest->id);
 		$this->setHeader('X-Clockwork-Version', BaseClockwork::VERSION);
 
 		if ($this->config['api'] != '/__clockwork/') {
@@ -124,6 +126,19 @@ class Clockwork
 
 		foreach ($this->config['headers'] as $headerName => $headerValue) {
 			$this->setHeader("X-Clockwork-Header-{$headerName}", $headerValue);
+		}
+
+		if ($this->config['toolbar']) {
+			$clockworkBrowser = [
+				'requestId' => $clockworkRequest->id,
+				'version'   => BaseClockwork::VERSION,
+				'path'      => $this->config['api'],
+				'token'     => $clockworkRequest->updateToken,
+				'metrics'   => false,
+				'toolbar'   => $this->config['toolbar']
+			];
+
+			setcookie('x-clockwork', json_encode($clockworkBrowser), time() + 60);
 		}
 	}
 

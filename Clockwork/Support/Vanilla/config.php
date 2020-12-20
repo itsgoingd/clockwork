@@ -17,6 +17,18 @@ return [
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------
+	| Enable toolbar
+	|------------------------------------------------------------------------------------------------------------------
+	|
+	| Clockwork can show a toolbar with basic metrics on all responses. Here you can enable or disable this feature.
+	| Requires a separate clockwork-browser npm library.
+	|
+	*/
+
+	'toolbar' => isset($_ENV['CLOCKWORK_TOOLBAR']) ? $_ENV['CLOCKWORK_TOOLBAR'] : false,
+
+	/*
+	|------------------------------------------------------------------------------------------------------------------
 	| HTTP requests collection
 	|------------------------------------------------------------------------------------------------------------------
 	|
