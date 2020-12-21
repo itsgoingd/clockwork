@@ -1,10 +1,13 @@
-5.0.5 (unreleased)
+5.0.5
 
 - added support for toolbar in the vanilla integration (idea by reeslo, thanks!)
 - added support for client metrics in the vanilla integration
 - improved PSR-7 support in the vanilla integration
-- fixed crash collecting Slack and Nexmo notifications (reported by abalozz, thanks!)
 - fixed toolbar might not work when not collecting database models
+- fixed crash collecting Slack and Nexmo notifications (reported by abalozz, thanks!)
+- fixed timeline api usage not being updated in the Slim integration leading to crash (reported by jiaojie1989, implemented by seanhamlin, thanks!)
+- fixed api path being interpreted as regex in the vanilla integration (implemented by pqr, thanks!)
+- fixed Symfony storage not being updated for latest storage api (implemented by auchanhub, thanks!)
 
 5.0.4
 
