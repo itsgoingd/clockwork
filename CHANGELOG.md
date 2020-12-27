@@ -1,3 +1,7 @@
+5.0.6 (unreleased)
+
+- fixed vanilla integration overriding other cookies when used with a PSR-7 response (reported by leemason, thanks!)
+
 5.0.5
 
 - added support for toolbar in the vanilla integration (idea by reeslo, thanks!)

@@ -129,17 +129,24 @@ class Clockwork
 		}
 
 		if ($this->config['features']['performance']['client_metrics'] || $this->config['toolbar']) {
-			$clockworkBrowser = [
-				'requestId' => $clockworkRequest->id,
-				'version'   => BaseClockwork::VERSION,
-				'path'      => $this->config['api'],
-				'token'     => $clockworkRequest->updateToken,
-				'metrics'   => $this->config['features']['performance']['client_metrics'],
-				'toolbar'   => $this->config['toolbar']
-			];
-
-			$this->setCookie('x-clockwork', json_encode($clockworkBrowser), time() + 60);
+			$this->setCookie('x-clockwork', $this->getCookiePayload(), time() + 60);
 		}
+	}
+
+	// Returns the x-clockwork cookie payload in case you need to set the cookie yourself (cookie can't be http only,
+	// expiration time should be 60 seconds)
+	public function getCookiePayload()
+	{
+		$clockworkRequest = $this->request();
+
+		return json_encode([
+			'requestId' => $clockworkRequest->id,
+			'version'   => BaseClockwork::VERSION,
+			'path'      => $this->config['api'],
+			'token'     => $clockworkRequest->updateToken,
+			'metrics'   => $this->config['features']['performance']['client_metrics'],
+			'toolbar'   => $this->config['toolbar']
+		]);
 	}
 
 	// Handle Clockwork REST api request, retrieves or updates Clockwork metadata
@@ -311,7 +318,7 @@ class Clockwork
 	// Set a cookie on PSR-7 response or using vanilla php
 	protected function setCookie($name, $value, $expires) {
 		if ($this->psrResponse) {
-			$this->psrResponse = $this->psrResponse->withHeader(
+			$this->psrResponse = $this->psrResponse->withAddedHeader(
 				'Set-Cookie', "{$name}=" . urlencode($value) . '; expires=' . gmdate('D, d M Y H:i:s T', $expires)
 			);
 		} else {
