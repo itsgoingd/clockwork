@@ -1,4 +1,4 @@
-5.0.6 (unreleased)
+5.0.6
 
 - fixed vanilla integration overriding other cookies when used with a PSR-7 response (reported by leemason, thanks!)
 
