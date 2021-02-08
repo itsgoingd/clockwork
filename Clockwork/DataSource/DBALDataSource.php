@@ -89,7 +89,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 	}
 
 	// Takes a query, an array of params and types as arguments, returns runnable query with upper-cased keywords
-	protected function createRunnableQuery($query, $params, $types)
+	protected function createRunnableQuery($query, $params = null, $types = null)
 	{
 		// add params to query
 		$query = $this->replaceParams($this->connection->getDatabasePlatform(), $query, $params, $types);
