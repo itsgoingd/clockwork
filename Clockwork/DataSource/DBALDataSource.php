@@ -76,7 +76,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 	protected function registerQuery($query)
 	{
 		$query = [
-			'query'      => $this->createRunnableQuery($query['query']),
+			'query'      => $this->createRunnableQuery($query['query'], $query['params'], $query['types']),
 			'bindings'   => $query['params'],
 			'duration'   => (microtime(true) - $query['time']) * 1000,
 			'connection' => $this->connection->getDatabase(),
