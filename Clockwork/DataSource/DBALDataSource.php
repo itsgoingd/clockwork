@@ -76,7 +76,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 	protected function registerQuery($query)
 	{
 		$query = [
-			'query'      => $this->createRunnableQuery($query['query']),
+			'query'      => $this->createRunnableQuery($query['query'], $query['params'], $query['types']),
 			'bindings'   => $query['params'],
 			'duration'   => (microtime(true) - $query['time']) * 1000,
 			'connection' => $this->connection->getDatabase(),
@@ -89,7 +89,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 	}
 
 	// Takes a query, an array of params and types as arguments, returns runnable query with upper-cased keywords
-	protected function createRunnableQuery($query, $params = null, $types = null)
+	protected function createRunnableQuery($query, $params, $types)
 	{
 		// add params to query
 		$query = $this->replaceParams($this->connection->getDatabasePlatform(), $query, $params, $types);
