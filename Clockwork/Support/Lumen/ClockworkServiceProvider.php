@@ -52,6 +52,12 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 		$this->app->alias('clockwork.lumen', LumenDataSource::class);
 	}
 
+	// Register event listeners
+	protected function registerEventListeners()
+	{
+		$this->app['clockwork.support']->addDataSources()->listenToEvents();
+	}
+
 	// Register Clockwork middleware
 	public function registerMiddleware()
 	{
