@@ -45,7 +45,7 @@ return [
 	|
 	*/
 
-	'toolbar' => isset($_ENV['CLOCKWORK_TOOLBAR']) ? $_ENV['CLOCKWORK_TOOLBAR'] : false,
+	'toolbar' => isset($_ENV['CLOCKWORK_TOOLBAR']) ? $_ENV['CLOCKWORK_TOOLBAR'] : true,
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------
