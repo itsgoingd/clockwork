@@ -47,7 +47,7 @@ class Event
 	}
 
 	// Begin the event, execute the passed in closure and end the event
-	public function run(Closure $closure)
+	public function run(\Closure $closure)
 	{
 		$this->begin();
 
