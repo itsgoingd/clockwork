@@ -20,6 +20,9 @@ class LaravelNotificationsDataSource extends DataSource
 	// Sent notifications
 	protected $notifications = [];
 
+	// Last collected notification
+	protected $lastNotification;
+
 	// Create a new data source instance, takes an event dispatcher as argument
 	public function __construct(Dispatcher $dispatcher)
 	{
@@ -58,7 +61,7 @@ class LaravelNotificationsDataSource extends DataSource
 		$mailable = ($frame = $trace->first(function ($frame) { return is_subclass_of($frame->object, Mailable::class); }))
 			? $frame->object : null;
 
-		$notification = [
+		$notification = (object) [
 			'subject' => $event->message->getSubject(),
 			'from'    => $this->messageAddressToString($event->message->getFrom()),
 			'to'      => $this->messageAddressToString($event->message->getTo()),
@@ -77,17 +80,18 @@ class LaravelNotificationsDataSource extends DataSource
 		if ($this->updateLastNotification($notification)) return;
 
 		if ($this->passesFilters([ $notification ])) {
-			$this->notifications[] = $notification;
+			$this->notifications[] = $this->lastNotification = $notification;
+		} else {
+			$this->lastNotification = null;
 		}
 	}
 
 	// Update last notification with time taken to send it
 	protected function sentMessage($event)
 	{
-		$lastIndex = count($this->notifications) - 1;
-		$lastNotification = $this->notifications[$lastIndex];
-
-		$this->notifications[$lastIndex]['duration'] = (microtime(true) - $lastNotification['time']) * 1000;
+		if ($this->lastNotification) {
+			$this->lastNotification->duration = (microtime(true) - $this->lastNotification->time) * 1000;
+		}
 	}
 
 	// Collect a sent notification
@@ -97,53 +101,49 @@ class LaravelNotificationsDataSource extends DataSource
 
 		$channelSpecific = $this->resolveChannelSpecific($event);
 
-		$notification = [
+		$notification = (object) [
 			'subject' => $channelSpecific['subject'],
 			'from'    => $channelSpecific['from'],
 			'to'      => $channelSpecific['to'],
 			'content' => $channelSpecific['content'],
 			'type'    => $event->channel,
-			'data'    => (new Serializer)->normalizeEach(array_merge($channelSpecific['data'], [
-				'notification' => $event->notification,
-				'notifiable'   => $event->notifiable
-			])),
+			'data'    => array_merge($channelSpecific['data'], [
+				'notification' => (new Serializer)->normalize($event->notification),
+				'notifiable'   => (new Serializer)->normalize($event->notifiable)
+			]),
 			'time'    => microtime(true),
 			'trace'   => (new Serializer)->trace($trace)
 		];
 
 		if ($this->passesFilters([ $notification ])) {
-			$this->notifications[] = $notification;
+			$this->notifications[] = $this->lastNotification = $notification;
+		} else {
+			$this->lastNotification = null;
 		}
 	}
 
 	// Update last notification with time taken to send it and response
 	protected function sentNotification($event)
 	{
-		$lastIndex = count($this->notifications) - 1;
-		$lastNotification = $this->notifications[$lastIndex];
-
-		$this->notifications[$lastIndex]['duration'] = (microtime(true) - $lastNotification['time']) * 1000;
-		$this->notifications[$lastIndex]['data']['response'] = $event->response;
+		if ($this->lastNotification) {
+			$this->lastNotification->duration = (microtime(true) - $this->lastNotification->time) * 1000;
+			$this->lastNotification->data['response'] = $event->response;
+		}
 	}
 
 	// Update last sent email notification with additional data from the message sent event
 	protected function updateLastNotification($notification)
 	{
-		if (! count($this->notifications)) return false;
+		if (! $this->lastNotification) return false;
 
-		$lastIndex = count($this->notifications) - 1;
-		$lastNotification = $this->notifications[$lastIndex];
+		if (implode($this->lastNotification->to) != implode($notification->to)) return false;
 
-		if (implode($lastNotification['to']) != implode($notification['to'])) return false;
+		$this->lastNotification->subject = $notification->subject;
+		$this->lastNotification->from    = $notification->from;
+		$this->lastNotification->to      = $notification->to;
+		$this->lastNotification->content = $notification->content;
 
-		$this->notifications[$lastIndex] = array_merge($this->notifications[$lastIndex], [
-			'subject' => $notification['subject'],
-			'from'    => $notification['from'],
-			'to'      => $notification['to'],
-			'content' => $notification['content']
-		]);
-
-		$this->notifications[$lastIndex]['data'] = array_merge($lastNotification['data'], $notification['data']);
+		$this->lastNotification->data = array_merge($this->lastNotification->data, $notification->data);
 
 		return true;
 	}
@@ -158,9 +158,9 @@ class LaravelNotificationsDataSource extends DataSource
 		} elseif (method_exists($event->notification, 'toNexmo')) {
 			$channelSpecific = $this->resolveNexmoChannelSpecific($event, $event->notification->toNexmo($event->notifiable));
 		} elseif (method_exists($event->notification, 'toBroadcast')) {
-			$channelSpecific = [ 'data' => $event->notification->toBroadcast($event->notifiable)->data ];
+			$channelSpecific = [ 'data' => [ 'data' => (new Serializer)->normalize($event->notification->toBroadcast($event->notifiable)) ] ];
 		} elseif (method_exists($event->notification, 'toArray')) {
-			$channelSpecific = [ 'data' => $event->notification->toArray($event->notifiable) ];
+			$channelSpecific = [ 'data' => [ 'data' => (new Serializer)->normalize($event->notification->toArray($event->notifiable)) ] ];
 		} else {
 			$channelSpecific = [];
 		}
