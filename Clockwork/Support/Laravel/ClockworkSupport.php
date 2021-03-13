@@ -30,6 +30,9 @@ class ClockworkSupport
 	// Laravel application instance
 	protected $app;
 
+	// Incoming request instance
+	protected $incomingRequest;
+
 	public function __construct(Application $app)
 	{
 		$this->app = $app;
@@ -627,7 +630,9 @@ class ClockworkSupport
 	// Make an incoming request instance
 	protected function incomingRequest()
 	{
-		return new IncomingRequest([
+		if ($this->incomingRequest) return $this->incomingRequest;
+
+		return $this->incomingRequest = new IncomingRequest([
 			'method'  => $this->app['request']->getMethod(),
 			'uri'     => $this->app['request']->getRequestUri(),
 			'input'   => $this->app['request']->input(),
