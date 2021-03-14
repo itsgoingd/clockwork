@@ -1,3 +1,14 @@
+5.0.7
+
+- changed delay listening to events until the app is booted (improves comatibility with some other packages)
+- changed default settings to enable toolbar (separately installed component)
+- changed default except requests filter to include debugbar api (implemented by edgardmessias, thanks!)
+- fixed wrong type-hint for the timeline event run method (reported by hferradj, thanks!)
+- fixed on-demand mode not working in Laravel (reported by yemenifree, thanks!)
+- fixed crash when collecting Laravel notifications with recipient names (reported by iainheng, thanks!)
+- fixed possible crashes and other issues when collecting Laravel notifications (reported by beekmanbv, thanks!)
+- fixed crash when creating runnable queries in DBAL data source (implemented by N-M, thanks!)
+
 5.0.6
 
 - fixed vanilla integration overriding other cookies when used with a PSR-7 response (reported by leemason, thanks!)
