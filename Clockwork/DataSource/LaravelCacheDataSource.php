@@ -101,7 +101,7 @@ class LaravelCacheDataSource extends DataSource
 	{
 		$trace = StackTrace::get()->resolveViewName();
 
-		$query = [
+		$record = [
 			'type'       => $query['type'],
 			'key'        => $query['key'],
 			'value'      => null,
@@ -111,15 +111,15 @@ class LaravelCacheDataSource extends DataSource
 		];
 
 		if ($this->excludeResults) {
-			$query['value'] = '[excluded]';
+            $record['value'] = '[excluded]';
 		} else if (isset($query['value'])) {
-			$query['value'] = (new Serializer)->normalize($query['value']);
+            $record['value'] = (new Serializer)->normalize($query['value']);
 		}
 
-		$this->incrementQueryCount($query);
+		$this->incrementQueryCount($record);
 
-		if ($this->collectQueries && $this->passesFilters([ $query ])) {
-			$this->queries[] = $query;
+		if ($this->collectQueries && $this->passesFilters([ $record ])) {
+			$this->queries[] = $record;
 		}
 	}
 
