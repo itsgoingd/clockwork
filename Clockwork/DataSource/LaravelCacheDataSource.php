@@ -111,10 +111,10 @@ class LaravelCacheDataSource extends DataSource
 		];
 
 		if ($this->excludeResults) {
-            $query['value'] = '[excluded]';
-        } else if (isset($query['value'])) {
-            $query['value'] = (new Serializer)->normalize($query['value']);
-        }
+			$query['value'] = '[excluded]';
+		} else if (isset($query['value'])) {
+			$query['value'] = (new Serializer)->normalize($query['value']);
+		}
 
 		$this->incrementQueryCount($query);
 
