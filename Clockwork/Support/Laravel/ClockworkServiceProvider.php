@@ -108,7 +108,8 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->singleton('clockwork.cache', function ($app) {
 			return (new LaravelCacheDataSource(
 				$app['events'],
-				$app['clockwork.support']->getConfig('features.cache.collect_queries')
+				$app['clockwork.support']->getConfig('features.cache.collect_queries'),
+				$app['clockwork.support']->getConfig('features.cache.exclude_results')
 			));
 		});
 

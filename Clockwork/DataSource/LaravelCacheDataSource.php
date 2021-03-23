@@ -23,12 +23,16 @@ class LaravelCacheDataSource extends DataSource
 	// Whether we are collecting cache queries or stats only
 	protected $collectQueries = true;
 
+	// Whether we are excluding cache results
+	protected $excludeResults = true;
+
 	// Create a new data source instance, takes an event dispatcher and additional options as argument
-	public function __construct(EventDispatcher $eventDispatcher, $collectQueries = true)
+	public function __construct(EventDispatcher $eventDispatcher, $collectQueries = true, $excludeResults = true)
 	{
 		$this->eventDispatcher = $eventDispatcher;
 
 		$this->collectQueries = $collectQueries;
+		$this->excludeResults = $excludeResults;
 	}
 
 	// Adds cache queries and stats to the request
@@ -100,11 +104,17 @@ class LaravelCacheDataSource extends DataSource
 		$query = [
 			'type'       => $query['type'],
 			'key'        => $query['key'],
-			'value'      => isset($query['value']) ? (new Serializer)->normalize($query['value']) : null,
+			'value'      => null,
 			'time'       => microtime(true),
 			'connection' => null,
 			'trace'      => (new Serializer)->trace($trace)
 		];
+
+		if ($this->excludeResults) {
+            $query['value'] = '[excluded]';
+        } else if (isset($query['value'])) {
+            $query['value'] = (new Serializer)->normalize($query['value']);
+        }
 
 		$this->incrementQueryCount($query);
 
