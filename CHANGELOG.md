@@ -1,3 +1,7 @@
+unreleased
+
+- fixed crash when collecting Laravel mailables built via MailMessage (implemented by cbl, thanks!)
+
 5.0.7
 
 - changed delay listening to events until the app is booted (improves comatibility with some other packages)

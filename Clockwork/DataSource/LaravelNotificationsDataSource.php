@@ -223,12 +223,11 @@ class LaravelNotificationsDataSource extends DataSource
 
 		return array_map(function ($address) {
 			if (! is_array($address)) return $address;
-			
-			if (! array_key_exists('name', $address)) {
-                		return $address[0];
-            		}
 
-			return $address['name'] ? "{$address['name']} <{$address['address']}>" : $address['address'];
+			$email = isset($address['address']) ? $address['address'] : $address[0];
+			$name = isset($address['name']) ? $address['name'] : $address[1];
+
+			return $name ? "{$name} <{$email}>" : $email;
 		}, $address);
 	}
 }
