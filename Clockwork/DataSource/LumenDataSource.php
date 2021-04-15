@@ -140,7 +140,7 @@ class LumenDataSource extends DataSource
 	// Get the response status code
 	protected function getResponseStatus()
 	{
-		return $this->response->getStatusCode();
+		return $this->response ? $this->response->getStatusCode() : null;
 	}
 
 	// Get an array of application routes
