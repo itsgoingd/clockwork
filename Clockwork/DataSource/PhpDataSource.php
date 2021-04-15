@@ -51,7 +51,7 @@ class PhpDataSource extends DataSource
 		$requestData = file_get_contents('php://input');
 		$requestJsonData = json_decode($requestData, true);
 
-		return $requestJsonData
+		return is_array($requestJsonData)
 			? $this->removePasswords((new Serializer)->normalizeEach($requestJsonData))
 			: $requestData;
 	}
