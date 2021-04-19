@@ -257,7 +257,7 @@ class EloquentDataSource extends DataSource
 	protected function quoteBinding($binding, $connection)
 	{
 		$connection = $this->databaseManager->connection($connection);
-		if (get_class($connection) === 'DesignMyNight\Elasticsearch\Connection') {
+		if (!method_exists($connection, 'getPdo') || $connection->getPdo() === null) {
 			return;
 		}
 		if ($connection->getPdo()->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'odbc') {
