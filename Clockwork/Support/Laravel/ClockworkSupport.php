@@ -302,6 +302,8 @@ class ClockworkSupport
 			if (isset($payload['clockwork_parent_id'])) $request->setParent($payload['clockwork_parent_id']);
 
 			$this->app->make('clockwork')->reset()->request($request);
+
+			$this->app['clockwork.queue']->setCurrentRequestId($request->id);
 		});
 
 		$this->app['events']->listen(\Illuminate\Queue\Events\JobProcessed::class, function ($event) {
