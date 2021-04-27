@@ -2,6 +2,7 @@ unreleased
 
 - fixed crash when collecting Laravel mailables built via MailMessage (implemented by cbl, thanks!)
 - fixed crash when collecting artisan command in Lumen (reported by 2Attack, thanks!)
+- fixed crash when collecting database queries in Laravel with connection implementation not using PDO (implemented by lenssoft, thanks!)
 - fixed crash when HTTP request body contains valid json which does not contain array (eg. a number) (reported by Mradxz, thanks!)
 
 5.0.7
