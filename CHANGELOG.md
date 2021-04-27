@@ -1,4 +1,4 @@
-unreleased
+5.0.8
 
 - fixed crash when collecting Laravel mailables built via MailMessage (implemented by cbl, thanks!)
 - fixed crash when collecting artisan command in Lumen (reported by 2Attack, thanks!)
