@@ -257,7 +257,9 @@ class EloquentDataSource extends DataSource
 	protected function quoteBinding($binding, $connection)
 	{
 		$connection = $this->databaseManager->connection($connection);
-
+		if (!method_exists($connection, 'getPdo') || $connection->getPdo() === null) {
+			return;
+		}
 		if ($connection->getPdo()->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'odbc') {
 			// PDO_ODBC driver doesn't support the quote method, apply simple MSSQL style quoting instead
 			return "'" . str_replace("'", "''", $binding) . "'";
