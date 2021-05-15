@@ -109,7 +109,7 @@ class ClockworkServiceProvider extends ServiceProvider
 			return (new LaravelCacheDataSource(
 				$app['events'],
 				$app['clockwork.support']->getConfig('features.cache.collect_queries'),
-				$app['clockwork.support']->getConfig('features.cache.exclude_results')
+				$app['clockwork.support']->getConfig('features.cache.collect_values')
 			));
 		});
 
