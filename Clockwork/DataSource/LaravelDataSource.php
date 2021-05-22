@@ -128,7 +128,7 @@ class LaravelDataSource extends DataSource
 	// Get the request URL
 	protected function getRequestUrl()
 	{
-		return $this->app['request']->url();
+		return $this->app['request']->fullUrl();
 	}
 
 	// Get the request URI
