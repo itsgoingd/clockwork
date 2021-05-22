@@ -156,7 +156,7 @@ class FileStorage extends Storage
 	// Search index in specified direction from specified ID or last record, with optional results count limit
 	protected function searchIndex($direction, Search $search = null, $id = null, $count = null)
 	{
-		$this->openIndex($direction == 'previous' ? 'end' : 'start');
+		$this->openIndex($direction == 'previous' ? 'end' : 'start', false, true);
 
 		if ($id) {
 			while ($request = $this->readIndex($direction)) { if ($request->id == $id) break; }

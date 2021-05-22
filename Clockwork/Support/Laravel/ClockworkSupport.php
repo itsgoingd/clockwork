@@ -204,6 +204,20 @@ class ClockworkSupport
 		return $this->app['clockwork.laravel'];
 	}
 
+	public function handleOctaneEvents()
+	{
+		$this->app['events']->listen(\Laravel\Octane\Events\RequestReceived::class, function ($event) {
+			$this->app = $event->sandbox;
+			$this->incomingRequest = null;
+
+			$this->app->forgetInstance('clockwork.request');
+			$request = $this->app->make('clockwork.request')->override('requestTime', microtime(true));
+
+			$this->app['clockwork']->reset()->request($request);
+			$this->app['clockwork.laravel']->setApplication($this->app);
+		});
+	}
+
 	// Make a storage instance based on the current configuration
 	public function makeStorage()
 	{
@@ -672,6 +686,7 @@ class ClockworkSupport
 			'migrate:fresh', 'migrate:install', 'migrate:refresh', 'migrate:reset', 'migrate:rollback',
 			'migrate:status',
 			'notifications:table',
+			'octane:install', 'octane:reload', 'octane:start', 'octane:status', 'octane:stop',
 			'optimize:clear',
 			'package:discover',
 			'queue:failed', 'queue:failed-table', 'queue:flush', 'queue:forget', 'queue:listen', 'queue:restart',
