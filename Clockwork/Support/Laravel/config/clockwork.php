@@ -99,7 +99,10 @@ return [
 
 		// Routes list
 		'routes' => [
-			'enabled' => env('CLOCKWORK_ROUTES_ENABLED', false)
+			'enabled' => env('CLOCKWORK_ROUTES_ENABLED', false),
+
+			// Collect only routes from particular namespaces (only application routes by default)
+			'only_namespaces' => [ 'App' ]
 		],
 
 		// Rendered views

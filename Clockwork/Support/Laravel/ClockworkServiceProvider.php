@@ -155,7 +155,8 @@ class ClockworkServiceProvider extends ServiceProvider
 			return (new LaravelDataSource(
 				$app,
 				$app['clockwork.support']->isFeatureEnabled('log'),
-				$app['clockwork.support']->isFeatureEnabled('routes')
+				$app['clockwork.support']->isFeatureEnabled('routes'),
+				$app['clockwork.support']->getConfig('features.routes.only_namespaces', [])
 			));
 		});
 
