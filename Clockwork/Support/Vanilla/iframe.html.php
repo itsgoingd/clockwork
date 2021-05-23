@@ -23,4 +23,14 @@
 </head>
 <body>
 	<iframe src="<?= $url ?>"></iframe>
+
+	<script>
+		let clockworkData = JSON.parse(localStorage.getItem('clockwork') || '{}')
+
+		clockworkData.settings = clockworkData.settings || {}
+		clockworkData.settings.global = clockworkData.settings.global || {}
+		clockworkData.settings.global.metadataPath = '<?= $metadataPath ?>'
+
+		localStorage.setItem('clockwork', JSON.stringify(clockworkData))
+	</script>
 </html>
