@@ -10,7 +10,6 @@ use Clockwork\Request\IncomingRequest;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\Search;
 use Clockwork\Storage\SqlStorage;
-use Clockwork\Web\Web;
 
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Message\ResponseInterface as PsrResponse;

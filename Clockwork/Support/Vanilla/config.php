@@ -115,16 +115,22 @@ return [
 	|------------------------------------------------------------------------------------------------------------------
 	| Clockwork web UI
 	|------------------------------------------------------------------------------------------------------------------
+	|
+	| Clockwork comes bundled with a full Clockwork App accessible as a Web UI. Here you can enable and configure this
+	| feature.
+	| Clockwork::returnWeb api is used to expose the Web UI in your vanilla app, see the installation instructions for
+	| details.
+	|
 	*/
 
 	'web' => [
-		// enable or disable the web UI
+		// Enable or disable the Web UI
 		'enable' => isset($_ENV['CLOCKWORK_WEB_ENABLE']) ? $_ENV['CLOCKWORK_WEB_ENABLE'] : true,
 
-		// path to the clockwork app source
+		// Path where to install the Web UI assets, should be publicly accessible
 		'path' => isset($_ENV['CLOCKWORK_WEB_PATH']) ? $_ENV['CLOCKWORK_WEB_PATH'] : __DIR__ . '/../../../../../public/vendor/clockwork',
 
-		// uri of the clockwork app source
+		// Public URI where the installed Web UI assets will be accessible
 		'uri' => isset($_ENV['CLOCKWORK_WEB_URI']) ? $_ENV['CLOCKWORK_WEB_URI'] : '/vendor/clockwork'
 	],
 
