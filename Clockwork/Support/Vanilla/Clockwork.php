@@ -143,6 +143,7 @@ class Clockwork
 			'requestId' => $clockworkRequest->id,
 			'version'   => BaseClockwork::VERSION,
 			'path'      => $this->config['api'],
+			'webPath'   => $this->config['web']['enable'],
 			'token'     => $clockworkRequest->updateToken,
 			'metrics'   => $this->config['features']['performance']['client_metrics'],
 			'toolbar'   => $this->config['toolbar']

@@ -124,7 +124,7 @@ return [
 	*/
 
 	'web' => [
-		// Enable or disable the Web UI
+		// Enable or disable the Web UI, set to the public uri where Clockwork Web UI is accessible
 		'enable' => isset($_ENV['CLOCKWORK_WEB_ENABLE']) ? $_ENV['CLOCKWORK_WEB_ENABLE'] : true,
 
 		// Path where to install the Web UI assets, should be publicly accessible
