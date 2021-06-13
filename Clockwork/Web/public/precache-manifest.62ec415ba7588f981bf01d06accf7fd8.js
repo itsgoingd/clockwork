@@ -1,7 +1,7 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "04f24a4ab0f22628ffa3",
-    "url": "css/app.22031d28.css"
+    "revision": "5fe2cdc4f9a6b65ce85d",
+    "url": "css/app.65a6b11f.css"
   },
   {
     "revision": "611a8f3ac0aa856f4018f676d719c67f",
@@ -40,16 +40,16 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "img/whats-new/5.0/toolbar.png"
   },
   {
-    "revision": "1a8753e63dbeca9ab860e728c9409f80",
+    "revision": "56d7c5fe8175a701d8552fc8af70a5d5",
     "url": "index.html"
   },
   {
-    "revision": "04f24a4ab0f22628ffa3",
-    "url": "js/app.acca6230.js"
+    "revision": "5fe2cdc4f9a6b65ce85d",
+    "url": "js/app.5be2a392.js"
   },
   {
-    "revision": "43f357e6d4aa46f0dd0e",
-    "url": "js/chunk-vendors.542a76a4.js"
+    "revision": "1a6fa35b9cffe0b02932",
+    "url": "js/chunk-vendors.bf631dc2.js"
   },
   {
     "revision": "7bcaca7d628e3fabb246a02425e072dd",

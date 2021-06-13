@@ -235,6 +235,54 @@ class Clockwork
 		return $this->response();
 	}
 
+	// Returns the Clockwork Web UI as a HTTP response, installs the Web UI on the first run
+	public function returnWeb()
+	{
+		if (! $this->config['web']['enable']) return;
+
+		$this->installWeb();
+
+		$asset = function ($uri) { return "{$this->config['web']['uri']}/{$uri}"; };
+		$metadataPath = $this->config['api'];
+		$url = $this->config['web']['uri'];
+
+		if (! preg_match('#/index.html$#', $url)) {
+			$url = rtrim($url, '/') . '/index.html';
+		}
+
+		ob_start();
+
+		include __DIR__ . '/iframe.html.php';
+
+		$html = ob_get_clean();
+
+		return $this->response($html, null, false);
+	}
+
+	// Installs the Web UI by copying the assets to the public directory, no-op if already installed
+	public function installWeb()
+	{
+		$path = $this->config['web']['path'];
+		$source = __DIR__ . '/../../Web/public';
+
+		if (file_exists("{$path}/index.html")) return;
+
+		@mkdir($path, 0755, true);
+
+		$iterator = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS),
+			\RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		foreach ($iterator as $item) {
+			if ($item->isDir()) {
+				mkdir("{$path}/" . $iterator->getSubPathName());
+			} else {
+				copy($item, "{$path}/" . $iterator->getSubPathName());
+			}
+		}
+	}
+
 	// Use a PSR-7 request and response instances instead of vanilla php HTTP apis
 	public function usePsrMessage(PsrRequest $request, PsrResponse $response = null)
 	{
@@ -337,17 +385,17 @@ class Clockwork
 	}
 
 	// Send a json response, uses the PSR-7 response if set
-	protected function response($data = null, $status = null)
+	protected function response($data = null, $status = null, $json = true)
 	{
-		$this->setHeader('Content-Type', 'application/json');
+		if ($json) $this->setHeader('Content-Type', 'application/json');
 
 		if ($this->psrResponse) {
 			if ($status) $this->psrResponse = $this->psrResponse->withStatus($status);
-			$this->psrResponse->getBody()->write(json_encode($data, \JSON_PARTIAL_OUTPUT_ON_ERROR));
+			$this->psrResponse->getBody()->write($json ? json_encode($data, \JSON_PARTIAL_OUTPUT_ON_ERROR) : $data);
 			return $this->psrResponse;
 		} else {
 			if ($status) http_response_code($status);
-			echo json_encode($data, \JSON_PARTIAL_OUTPUT_ON_ERROR);
+			echo $json ? json_encode($data, \JSON_PARTIAL_OUTPUT_ON_ERROR) : $data;
 		}
 	}
 
