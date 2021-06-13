@@ -136,7 +136,7 @@ class LaravelNotificationsDataSource extends DataSource
 	{
 		if (! $this->lastNotification) return false;
 
-		if (implode($this->lastNotification->to) != implode($notification->to)) return false;
+		if ($this->lastNotification->to !== $notification->to) return false;
 
 		$this->lastNotification->subject = $notification->subject;
 		$this->lastNotification->from    = $notification->from;
