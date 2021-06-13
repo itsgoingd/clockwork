@@ -29,6 +29,8 @@ class ClockworkServiceProvider extends ServiceProvider
 			$this->registerMiddleware();
 		}
 
+		$this->app['clockwork.support']->handleOctaneEvents();
+
 		// If Clockwork is disabled, return before registering middleware or routes
 		if (! $this->app['clockwork.support']->isEnabled()) return;
 

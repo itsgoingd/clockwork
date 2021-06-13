@@ -1,91 +1,86 @@
 <?php namespace Clockwork\Support\Laravel;
 
+use Clockwork\Clockwork;
+use Clockwork\Support\Laravel\ClockworkSupport;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Laravel\Telescope\Telescope;
 
 // Clockwork api and app controller
 class ClockworkController extends Controller
 {
-	// Laravel app instance
-	protected $app;
-
-	public function __construct(Application $app)
-	{
-		$this->app = $app;
-	}
-
 	// Authantication endpoint
-	public function authenticate()
+	public function authenticate(Clockwork $clockwork, ClockworkSupport $clockworkSupport, Request $request)
 	{
-		$this->ensureClockworkIsEnabled();
+		$this->ensureClockworkIsEnabled($clockworkSupport);
 
-		$token = $this->app['clockwork']->authenticator()->attempt(
-			$this->app['request']->only([ 'username', 'password' ])
+		$token = $clockwork->authenticator()->attempt(
+			$request->only([ 'username', 'password' ])
 		);
 
 		return new JsonResponse([ 'token' => $token ], $token ? 200 : 403);
 	}
 
 	// Metadata retrieving endpoint
-	public function getData($id = null, $direction = null, $count = null)
+	public function getData(ClockworkSupport $clockworkSupport, Request $request, $id = null, $direction = null, $count = null)
 	{
-		$this->ensureClockworkIsEnabled();
+		$this->ensureClockworkIsEnabled($clockworkSupport);
 
-		return $this->app['clockwork.support']->getData(
-			$id, $direction, $count, $this->app['request']->only([ 'only', 'except' ])
+		return $clockworkSupport->getData(
+			$id, $direction, $count, $request->only([ 'only', 'except' ])
 		);
 	}
 
 	// Extended metadata retrieving endpoint
-	public function getExtendedData($id = null)
+	public function getExtendedData(ClockworkSupport $clockworkSupport, Request $request, $id = null)
 	{
-		$this->ensureClockworkIsEnabled();
+		$this->ensureClockworkIsEnabled($clockworkSupport);
 
-		return $this->app['clockwork.support']->getExtendedData(
-			$id, $this->app['request']->only([ 'only', 'except' ])
+		return $clockworkSupport->getExtendedData(
+			$id, $request->only([ 'only', 'except' ])
 		);
 	}
 
 	// Metadata updating endpoint
-	public function updateData($id = null)
+	public function updateData(ClockworkSupport $clockworkSupport, Request $request, $id = null)
 	{
-		$this->ensureClockworkIsEnabled();
+		$this->ensureClockworkIsEnabled($clockworkSupport);
 
-		return $this->app['clockwork.support']->updateData($id, $this->app['request']->json()->all());
+		return $clockworkSupport->updateData($id, $request->json()->all());
 	}
 
 	// App index
-	public function webIndex()
+	public function webIndex(ClockworkSupport $clockworkSupport)
 	{
-		$this->ensureClockworkIsEnabled();
+		$this->ensureClockworkIsEnabled($clockworkSupport);
 
-		return $this->app['clockwork.support']->getWebAsset('index.html');
+		return $clockworkSupport->getWebAsset('index.html');
 	}
 
 	// App assets serving
-	public function webAsset($path)
+	public function webAsset(ClockworkSupport $clockworkSupport, $path)
 	{
-		$this->ensureClockworkIsEnabled();
+		$this->ensureClockworkIsEnabled($clockworkSupport);
 
-		return $this->app['clockwork.support']->getWebAsset($path);
+		return $clockworkSupport->getWebAsset($path);
 	}
 
 	// App redirect (/clockwork -> /clockwork/app)
-	public function webRedirect()
+	public function webRedirect(ClockworkSupport $clockworkSupport, Request $request)
 	{
-		$this->ensureClockworkIsEnabled();
+		$this->ensureClockworkIsEnabled($clockworkSupport);
 
-		return new RedirectResponse($this->app['request']->path() . '/app');
+		return new RedirectResponse($request->path() . '/app');
 	}
 
 	// Ensure Clockwork is still enabled at this point and stop Telescope recording if present
-	protected function ensureClockworkIsEnabled()
+	protected function ensureClockworkIsEnabled(ClockworkSupport $clockworkSupport)
 	{
 		if (class_exists(Telescope::class)) Telescope::stopRecording();
 
-		if (! $this->app['clockwork.support']->isEnabled()) abort(404);
+		if (! $clockworkSupport->isEnabled()) abort(404);
 	}
 }

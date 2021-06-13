@@ -67,6 +67,13 @@ class LaravelDataSource extends DataSource
 		$this->log = new Log;
 	}
 
+	// Set Laravel application instance for the current request
+	public function setApplication(Application $app)
+	{
+		$this->app = $app;
+		return $this;
+	}
+
 	// Set Laravel response instance for the current request
 	public function setResponse(Response $response)
 	{
