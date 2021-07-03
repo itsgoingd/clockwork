@@ -48,6 +48,9 @@ class PhpDataSource extends DataSource
 	// Get the request body data (attempt to parse as json, normalized with passwords removed)
 	protected function getRequestData()
 	{
+		// The data will already be parsed into POST data by PHP in case of application/x-www-form-urlencoded requests
+		if (count($_POST)) return;
+
 		$requestData = file_get_contents('php://input');
 		$requestJsonData = json_decode($requestData, true);
 
