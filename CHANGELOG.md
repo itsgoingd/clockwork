@@ -1,3 +1,16 @@
+5.1 (unreleased)
+
+- added initial support for Laravel Octane
+- added support for Web UI in the vanilla integration
+- added support for collecting Laravel cache queries without values (implemented by akalongman, thanks!)
+- added ability to filter Laravel routes from particular namespaces (idea by hailwood, thanks!)
+- improved collecting of request URL to include full URL including the query string
+- improved Clockwork Browser payload to include Web UI path
+- updated Clockwork App (5.1)
+- fixed PHP 8 incompatibility when processing some Laravel notifications (implemented by nanaya, thanks!)
+- fixed request body being collected even when already parsed into POST data
+- fixed collecting request URLs with non-standard ports
+
 5.0.8
 
 - fixed crash when collecting Laravel mailables built via MailMessage (implemented by cbl, thanks!)
