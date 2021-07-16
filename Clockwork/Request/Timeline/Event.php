@@ -93,6 +93,7 @@ class Event
 	public function toArray()
 	{
 		return [
+			'name'        => $this->name,
 			'description' => $this->description,
 			'start'       => $this->start,
 			'end'         => $this->end,
