@@ -155,7 +155,7 @@ class Clockwork
 	// Get the log instance for the current request or log a new message
 	public function log($level = null, $message = null, array $context = [])
 	{
-		if ($level && $message) {
+		if ($level) {
 			return $this->request->log()->log($level, $message, $context);
 		}
 

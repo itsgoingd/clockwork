@@ -7,6 +7,7 @@
 - improved collecting of request URL to include full URL including the query string
 - improved Clockwork Browser payload to include Web UI path
 - updated Clockwork App (5.1)
+- fixed logging falsy values via Clockwork::log (reported by Karmalakas, thanks!)
 - fixed PHP 8 incompatibility when processing some Laravel notifications (implemented by nanaya, thanks!)
 - fixed request body being collected even when already parsed into POST data
 - fixed collecting request URLs with non-standard ports
