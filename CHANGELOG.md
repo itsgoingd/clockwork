@@ -1,4 +1,4 @@
-5.1 (unreleased)
+5.1
 
 - added initial support for Laravel Octane
 - added support for Web UI in the vanilla integration
