@@ -175,6 +175,7 @@ return [
 		'except' => [
 			'/horizon/.*', // Laravel Horizon requests
 			'/telescope/.*', // Laravel Telescope requests
+			'/_tt/.*', // Laravel Telescope toolbar
 			'/_debugbar/.*', // Laravel DebugBar requests
 		],
 
