@@ -106,7 +106,7 @@ class ShouldCollect
 	{
 		if (! $this->callback) return true;
 
-		return $this->callback($request);
+		return ($this->callback)($request);
 	}
 
 	public function __call($method, $parameters)
