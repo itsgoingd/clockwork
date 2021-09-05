@@ -5,8 +5,8 @@ use Clockwork\Request\Request;
 
 abstract class Storage implements StorageInterface
 {
-    // Update existing request
+	// Update existing request
 	public function update(Request $request)
-    {
-    }
+	{
+	}
 }
