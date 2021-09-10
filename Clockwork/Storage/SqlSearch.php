@@ -23,7 +23,7 @@ class SqlSearch extends Search
 	}
 
 	// Creates a new isntance from a base Search class instance
-	public static function fromBase(Search $search)
+	public static function fromBase(Search $search = null)
 	{
 		return new static((array) $search);
 	}
