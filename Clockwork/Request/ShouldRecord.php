@@ -43,7 +43,7 @@ class ShouldRecord
 	{
 		if (! $this->callback) return true;
 
-		return $this->callback($request);
+		return call_user_func($this->callback, $request);
 	}
 
 	// Fluent API
