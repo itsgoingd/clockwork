@@ -23,6 +23,9 @@ interface StorageInterface
 	// Store request
 	public function store(Request $request);
 
+	// Update existing request
+	public function update(Request $request);
+
 	// Cleanup old requests
 	public function cleanup();
 }
