@@ -13,6 +13,8 @@ class Web
 		switch (pathinfo($path, PATHINFO_EXTENSION)) {
 			case 'css': $mime = 'text/css'; break;
 			case 'js': $mime = 'application/javascript'; break;
+			case 'json': $mime = 'application/json'; break;
+			case 'png': $mime = 'image/png'; break;
 			default: $mime = 'text/html'; break;
 		}
 
