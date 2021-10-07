@@ -1,40 +1,20 @@
-<p align="center">
-	<img width="300px" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/title.png">
-	<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/screenshot.png">
-</p>
+![Title](.github/assets/title.png)
+![Screenshot](.github/assets/screenshot.png)
 
-> Clockwork is a development tool for PHP available right in your browser. Clockwork gives you an insight into your application runtime - including request data, performance metrics, log entries, database queries, cache queries, redis commands, dispatched events, queued jobs, rendered views and more - for HTTP requests, commands, queue jobs and tests.
+Clockwork is a development tool for PHP available right in your browser. Clockwork gives you an insight into your application runtime - including request data, performance metrics, log entries, database queries, cache queries, redis commands, dispatched events, queued jobs, rendered views and more - for HTTP requests, commands, queue jobs and tests.
 
-> *This repository contains the server-side component of Clockwork.*
+*This repository contains the server-side component of Clockwork.*
 
-> Check out on the [Clockwork website](https://underground.works/clockwork) for details.
+Check out on the [Clockwork website](https://underground.works/clockwork) for details.
 
-<p align="center">
-	<a href="https://underground.works/clockwork">
-		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-1.png">
-	</a>
-	<a href="https://underground.works/clockwork">
-		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-2.png">
-	</a>
-	<a href="https://underground.works/clockwork">
-		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-3.png">
-	</a>
-	<a href="https://underground.works/clockwork">
-		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-4.png">
-	</a>
-	<a href="https://underground.works/clockwork">
-		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-5.png">
-	</a>
-	<a href="https://underground.works/clockwork">
-		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-6.png">
-	</a>
-	<a href="https://underground.works/clockwork">
-		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-7.png">
-	</a>
-	<a href="https://underground.works/clockwork">
-		<img width="100%" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/features-8.png">
-	</a>
-</p>
+![Features 1](.github/assets/features-1.png)
+![Features 2](.github/assets/features-2.png)
+![Features 3](.github/assets/features-3.png)
+![Features 4](.github/assets/features-4.png)
+![Features 5](.github/assets/features-5.png)
+![Features 6](.github/assets/features-6.png)
+![Features 7](.github/assets/features-7.png)
+![Features 8](.github/assets/features-8.png)
 
 ### Installation
 
