@@ -62,7 +62,8 @@ class FileStorage extends Storage
 	// Return the latest request
 	public function latest(Search $search = null)
 	{
-		return $this->loadRequests($this->searchIndexBackward($search, null, 1));
+		$requests = $this->loadRequests($this->searchIndexBackward($search, null, 1));
+		return reset($requests);
 	}
 
 	// Return requests received before specified id, optionally limited to specified count
