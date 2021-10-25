@@ -22,11 +22,11 @@ class StackFrame
 
         $this->call = $this->formatCall();
 
-        if ($this->file === null) {
-            $this->shortPath = null;
-            $this->vendor = null;
-            return;
-        }
+		if ($this->file === null) {
+			$this->shortPath = null;
+			$this->vendor = null;
+			return;
+		}
 
 		$this->shortPath = str_replace($basePath, '', $this->file);
 		$this->vendor = strpos($this->file, $vendorPath) === 0
