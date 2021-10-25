@@ -168,13 +168,11 @@ class FileStorage extends Storage
 			if (! $search || $search->matches($request)) {
 				$found[] = $request->id;
 			} elseif ($search->stopOnFirstMismatch) {
-				return $found;
+				break;
 			}
 
-			if ($count && count($found) == $count) return $found;
+			if ($count && count($found) == $count) break;
 		}
-
-		if ($count == 1) return reset($found);
 
 		return $direction == 'next' ? $found : array_reverse($found);
 	}
