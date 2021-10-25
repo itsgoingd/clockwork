@@ -9,7 +9,7 @@ trait ResolvesViewName
 	public function resolveViewName()
 	{
 		$viewFrame = $this->first(function ($frame) {
-			return $frame->shortPath ? preg_match('#^/storage/framework/views/[a-z0-9]+\.php$#', $frame->shortPath) : null;
+			return $frame->shortPath ? preg_match('#^/storage/framework/views/[a-z0-9]+\.php$#', $frame->shortPath) : false;
 		});
 
 		if (! $viewFrame) return $this;
