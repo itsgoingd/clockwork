@@ -20,7 +20,14 @@ class StackFrame
 			$this->$key = $value;
 		}
 
-		$this->call = $this->formatCall();
+        $this->call = $this->formatCall();
+
+		if ($this->file === null) {
+			$this->shortPath = null;
+			$this->vendor = null;
+			return;
+		}
+
 		$this->shortPath = str_replace($basePath, '', $this->file);
 		$this->vendor = strpos($this->file, $vendorPath) === 0
 			? explode(DIRECTORY_SEPARATOR, str_replace($vendorPath, '', $this->file))[0] : null;
