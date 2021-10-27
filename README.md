@@ -44,7 +44,11 @@ Install the Clockwork library via [Composer](https://getcomposer.org/).
 $ composer require itsgoingd/clockwork
 ```
 
-Congratulations, you are done! To enable more features like commands or queue jobs profiling, publish the configuration file via the `vendor:publish` Artisan command.
+Congratulations, you are done! To enable more features like commands or queue jobs profiling, publish the configuration file via the `vendor:publish` Artisan command:
+
+```
+php artisan vendor:publish --provider='Clockwork\Support\Laravel\ClockworkServiceProvider'
+```
 
 **Note:** If you are using the Laravel route cache, you will need to refresh it using the route:cache Artisan command.
 
