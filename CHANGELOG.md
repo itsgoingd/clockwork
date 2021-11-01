@@ -1,3 +1,20 @@
+5.1.1
+
+- added support for psr/log 2.0 (used in recent Laravel versions) (implemented by byGits, thanks!)
+- improved timeline api event run method to return the return value of passed closure
+- improved collecting Laravel database queries to not quote integers (implemented by thisiskj, thanks!)
+- improved toolbar details link to always be absolute and work with subdirectories (reported by superDuperCyberTechno, thanks!)
+- fixed some depecation warnings on PHP 8.1 (implemented by gharlan, thanks!)
+- fixed collecting Laravel database queries to produce correct queries when bindings contain question marks (reported by woshixiaobai, thanks!)
+- fixed filtering collected and recorded requests by closure (implemented by ssnepenthe, thanks!)
+- fixed some inconsistencies in the Clockwork metadata api
+- fixed some web UI assets being server with wrong mime-types (implemented by ssnepenthe, thanks!)
+- fixed missing method on storage interface and missing default parameter value in sql storage (implemented by ssnepenthe, thanks!)
+
+*BREAKING*
+
+- timeline api event run method now returns the return value of passed closure instead of the event instance
+
 5.1
 
 - added initial support for Laravel Octane
