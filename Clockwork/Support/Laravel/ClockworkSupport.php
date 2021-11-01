@@ -414,7 +414,7 @@ class ClockworkSupport
 				'requestId' => $clockworkRequest->id,
 				'version'   => Clockwork::VERSION,
 				'path'      => $request->getBasePath() . '/__clockwork/',
-				'webPath'   => $this->webPaths()[0] . '/app',
+				'webPath'   => $request->getBasePath() . '/' . $this->webPaths()[0] . '/app',
 				'token'     => $clockworkRequest->updateToken,
 				'metrics'   => $this->isCollectingClientMetrics(),
 				'toolbar'   => $this->isToolbarEnabled()
