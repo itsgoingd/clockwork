@@ -268,7 +268,7 @@ class EloquentDataSource extends DataSource
 			return "'" . str_replace("'", "''", $binding) . "'";
 		}
 
-		return is_int($binding) ? $binding : $pdo->quote($binding);
+		return is_string($binding) ? $pdo->quote($binding) : $binding;
 	}
 
 	// Increment query counts for collected query
