@@ -1,3 +1,7 @@
+5.1.2
+
+- fixed some depecation warnings on PHP 8.1 (reported by Codomic, thanks!)
+
 5.1.1
 
 - added support for psr/log 2.0 (used in recent Laravel versions) (implemented by byGits, thanks!)
