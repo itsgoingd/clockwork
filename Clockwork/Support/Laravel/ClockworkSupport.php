@@ -78,10 +78,10 @@ class ClockworkSupport
 
 		if (is_array($data)) {
 			$data = array_map(function ($request) use ($except, $only) {
-				return $only ? $request->only($only) : $request->except(array_merge($except, [ 'updateToken' ]));
+				return $only ? $request->only(array_diff($only, [ 'updateToken' ])) : $request->except(array_merge($except, [ 'updateToken' ]));
 			}, $data);
 		} elseif ($data) {
-			$data = $only ? $data->only($only) : $data->except(array_merge($except, [ 'updateToken' ]));
+			$data = $only ? $data->only(array_diff($only, [ 'updateToken' ])) : $data->except(array_merge($except, [ 'updateToken' ]));
 		}
 
 		return new JsonResponse($data);
