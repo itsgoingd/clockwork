@@ -460,7 +460,7 @@ class ClockworkSupport
 			'tracesSkip'  => StackFilter::make()
 				->isNotVendor(array_merge(
 					$this->getConfig('stack_traces.skip_vendors', []),
-					[ 'itsgoingd', 'laravel', 'illuminate' ]
+					[ 'itsgoingd', 'laravel', 'illuminate', 'psr' ]
 				))
 				->isNotNamespace($this->getConfig('stack_traces.skip_namespaces', []))
 				->isNotFunction([ 'call_user_func', 'call_user_func_array' ])
