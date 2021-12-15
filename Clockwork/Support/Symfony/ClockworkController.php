@@ -54,7 +54,7 @@ class ClockworkController extends AbstractController
 		$this->ensureClockworkIsEnabled();
 		$this->ensureClockworkWebIsEnabled();
 
-		return $this->redirect($request->getPathInfo() . '/app');
+		return $this->redirect('/' . $request->getPathInfo() . '/app');
 	}
 
 	protected function ensureClockworkIsEnabled()

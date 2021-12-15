@@ -73,7 +73,7 @@ class ClockworkController extends Controller
 	{
 		$this->ensureClockworkIsEnabled($clockworkSupport);
 
-		return new RedirectResponse($request->path() . '/app');
+		return new RedirectResponse('/' . $request->path() . '/app');
 	}
 
 	// Ensure Clockwork is still enabled at this point and stop Telescope recording if present
