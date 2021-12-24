@@ -236,10 +236,10 @@ class EloquentDataSource extends DataSource
 			$binding = $this->quoteBinding($bindings[$index++], $connection);
 
 			// convert binary bindings to hexadecimal representation
-			if (! preg_match('//u', $binding)) $binding = '0x' . bin2hex($binding);
+			if (! preg_match('//u', (string) $binding)) $binding = '0x' . bin2hex($binding);
 
 			// escape backslashes in the binding (preg_replace requires to do so)
-			return str_replace('\\', '\\\\', $binding);
+			return str_replace('\\', '\\\\', (string) $binding);
 		}, $query, count($bindings));
 
 		// highlight keywords
