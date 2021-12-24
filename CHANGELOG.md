@@ -1,3 +1,11 @@
+5.1.3
+
+- added PSR to the default filtered namespaces from stack traces in the Laravel integration
+- fixed not being able to log non-string values when using psr/log >=2.0 (reported by Wit3, thanks!)
+- fixed some depecation warnings on PHP 8.1 (reported by Pinnokkio, thanks!)
+- fixed wrong redirect when accessing web ui with an url including a trailing slash (implemented by ssnepenthe, thanks!)
+- fixed update-token could be leaked via the Clockwork rest api (implemented by ssnepenthe, thanks!)
+
 5.1.2
 
 - fixed some depecation warnings on PHP 8.1 (reported by Codomic, thanks!)
