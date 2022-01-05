@@ -126,13 +126,13 @@ class StackFilter
 	protected function matchesNamespace(StackFrame $frame)
 	{
 		foreach ($this->notNamespaces as $namespace) {
-			if (strpos($frame->class, "{$namespace}\\") !== false) return false;
+			if ($frame->class !== null && strpos($frame->class, "{$namespace}\\") !== false) return false;
 		}
 
 		if (! count($this->namespaces)) return true;
 
 		foreach ($this->namespaces as $namespace) {
-			if (strpos($frame->class, "{$namespace}\\") !== false) return true;
+			if ($frame->class !== null && strpos($frame->class, "{$namespace}\\") !== false) return true;
 		}
 
 		return false;
