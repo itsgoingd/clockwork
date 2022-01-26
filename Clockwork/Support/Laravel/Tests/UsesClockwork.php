@@ -56,7 +56,7 @@ trait UsesClockwork
 	{
 		$asserts = static::$clockwork['asserts'];
 
-		if ($this->getStatus() == BaseTestRunner::STATUS_FAILURE) {
+		if ($this->getStatus() == BaseTestRunner::STATUS_FAILURE && count($asserts)) {
 			$asserts[count($asserts) - 1]['passed'] = false;
 		}
 
