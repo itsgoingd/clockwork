@@ -65,7 +65,7 @@ class LaravelNotificationsDataSource extends DataSource
 			'subject' => $event->message->getSubject(),
 			'from'    => $this->messageAddressToString($event->message->getFrom()),
 			'to'      => $this->messageAddressToString($event->message->getTo()),
-			'content' => $event->message->getBody(),
+			'content' => $this->messageBody($event->message),
 			'type'    => 'mail',
 			'data'    => [
 				'cc'       => $this->messageAddressToString($event->message->getCc()),
@@ -211,9 +211,26 @@ class LaravelNotificationsDataSource extends DataSource
 	{
 		if (! $address) return;
 
-		return array_map(function ($name, $email) {
-			return $name ? "{$name} <{$email}>" : $email;
+		return array_map(function ($address, $key) {
+			// Laravel 8 or earlier
+			if (! ($address instanceof \Symfony\Component\Mime\Address)) {
+				return $address ? "{$address} <{$key}>" : $key;
+			}
+
+			// Laravel 9 or later
+			return $address->toString();
 		}, $address, array_keys($address));
+	}
+
+	protected function messageBody($message)
+	{
+		// Laravel 8 or earlier
+		if (! ($message instanceof \Symfony\Component\Mime\Email)) {
+			return $message->getBody();
+		}
+
+		// Laravel 9 or later
+		return $message->getHtmlBody() ?: $message->getTextBody();
 	}
 
 	protected function notificationAddressToString($address)
