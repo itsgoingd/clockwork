@@ -239,8 +239,11 @@ class ClockworkServiceProvider extends ServiceProvider
 	// Register middleware
 	protected function registerMiddleware()
 	{
-		$this->app[\Illuminate\Contracts\Http\Kernel::class]
-			->prependMiddleware(ClockworkMiddleware::class);
+		$kernel = $this->app[\Illuminate\Contracts\Http\Kernel::class];
+
+		if (method_exists($kernel, 'hasMiddleware') && $kernel->hasMiddleware(ClockworkMiddleware::class)) return;
+
+		$kernel->prependMiddleware(ClockworkMiddleware::class);
 	}
 
 	protected function registerRoutes()
