@@ -18,6 +18,8 @@ trait UsesClockwork
 	// Set up Clockwork in this test case, should be called from the PHPUnit setUp method
 	protected function setUpClockwork()
 	{
+		if (! $this->app->make('clockwork.support')->isCollectingTests()) return;
+
 		$this->beforeApplicationDestroyed(function () {
 			if ($this->app->make('clockwork.support')->isTestFiltered($this->toString())) return;
 
