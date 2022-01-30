@@ -1,14 +1,22 @@
+5.1.4
+
+- added Laravel 9 support
+- added support for manually registering Clockwork middleware in Laravel
+- fixed some failing tests might not been collected in Laravel (reported by ajcastro, thanks!)
+- fixed not respecting the collect tests setting in Laravel (reported by SimBig, thanks!)
+- fixed some deprecation warnings on PHP 8.1 (implemented by usernotnull, thanks!)
+
 5.1.3
 
 - added PSR to the default filtered namespaces from stack traces in the Laravel integration
 - fixed not being able to log non-string values when using psr/log >=2.0 (reported by Wit3, thanks!)
-- fixed some depecation warnings on PHP 8.1 (reported by Pinnokkio, thanks!)
+- fixed some deprecation warnings on PHP 8.1 (reported by Pinnokkio, thanks!)
 - fixed wrong redirect when accessing web ui with an url including a trailing slash (implemented by ssnepenthe, thanks!)
 - fixed update-token could be leaked via the Clockwork rest api (implemented by ssnepenthe, thanks!)
 
 5.1.2
 
-- fixed some depecation warnings on PHP 8.1 (reported by Codomic, thanks!)
+- fixed some deprecation warnings on PHP 8.1 (reported by Codomic, thanks!)
 
 5.1.1
 
@@ -16,7 +24,7 @@
 - improved timeline api event run method to return the return value of passed closure
 - improved collecting Laravel database queries to not quote integers (implemented by thisiskj, thanks!)
 - improved toolbar details link to always be absolute and work with subdirectories (reported by superDuperCyberTechno, thanks!)
-- fixed some depecation warnings on PHP 8.1 (implemented by gharlan, thanks!)
+- fixed some deprecation warnings on PHP 8.1 (implemented by gharlan, thanks!)
 - fixed collecting Laravel database queries to produce correct queries when bindings contain question marks (reported by woshixiaobai, thanks!)
 - fixed filtering collected and recorded requests by closure (implemented by ssnepenthe, thanks!)
 - fixed some inconsistencies in the Clockwork metadata api
