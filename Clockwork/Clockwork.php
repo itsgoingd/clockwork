@@ -267,7 +267,7 @@ class Clockwork
 		return $this;
 	}
 
-	// Get an authenitcator implementation
+	// Get an authenticator implementation
 	public function getAuthenticator()
 	{
 		return $this->authenticator;

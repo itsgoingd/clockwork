@@ -148,7 +148,7 @@ class LaravelNotificationsDataSource extends DataSource
 		return true;
 	}
 
-	// Resolve notification channnel specific data
+	// Resolve notification channel specific data
 	protected function resolveChannelSpecific($event)
 	{
 		if (method_exists($event->notification, 'toMail')) {

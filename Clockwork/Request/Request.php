@@ -358,7 +358,7 @@ class Request
 		return $this->currentTimeline;
 	}
 
-	// Add a new overriden property
+	// Add a new overridden property
 	public function override($property, $value)
 	{
 		$this->overrides[$property] = $value;

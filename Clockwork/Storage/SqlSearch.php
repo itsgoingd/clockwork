@@ -22,7 +22,7 @@ class SqlSearch extends Search
 		$this->buildQuery();
 	}
 
-	// Creates a new isntance from a base Search class instance
+	// Creates a new instance from a base Search class instance
 	public static function fromBase(Search $search = null)
 	{
 		return new static((array) $search);
