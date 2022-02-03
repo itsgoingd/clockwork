@@ -411,19 +411,19 @@ class Clockwork
 		]);
 	}
 
-	// Return the underlaying Clockwork instance
+	// Return the underlying Clockwork instance
 	public function getClockwork()
 	{
 		return $this->clockwork;
 	}
 
-	// Pass any method calls to the underlaying Clockwork instance
+	// Pass any method calls to the underlying Clockwork instance
 	public function __call($method, $args = [])
 	{
 		return $this->clockwork->$method(...$args);
 	}
 
-	// Pass any static method calls to the underlaying Clockwork instance
+	// Pass any static method calls to the underlying Clockwork instance
 	public static function __callStatic($method, $args = [])
 	{
 		return static::instance()->$method(...$args);

@@ -65,7 +65,7 @@ return [
 		// Collect only errors (requests with HTTP 4xx and 5xx responses)
 		'errors_only' => isset($_ENV['CLOCKWORK_REQUESTS_ERRORS_ONLY']) ? $_ENV['CLOCKWORK_REQUESTS_ERRORS_ONLY'] : false,
 
-		// Response time threshold in miliseconds after which the request will be marked as slow
+		// Response time threshold in milliseconds after which the request will be marked as slow
 		'slow_threshold' => isset($_ENV['CLOCKWORK_REQUESTS_SLOW_THRESHOLD']) ? $_ENV['CLOCKWORK_REQUESTS_SLOW_THRESHOLD'] : null,
 
 		// Collect only slow requests
@@ -158,7 +158,7 @@ return [
 	'storage_sql_username' => isset($_ENV['CLOCKWORK_STORAGE_SQL_USERNAME']) ? $_ENV['CLOCKWORK_STORAGE_SQL_USERNAME'] : null,
 	'storage_sql_password' => isset($_ENV['CLOCKWORK_STORAGE_SQL_PASSWORD']) ? $_ENV['CLOCKWORK_STORAGE_SQL_PASSWORD'] : null,
 
-	// SQL table name to use, the table is automatically created and udpated when needed
+	// SQL table name to use, the table is automatically created and updated when needed
 	'storage_sql_table' => isset($_ENV['CLOCKWORK_STORAGE_SQL_TABLE']) ? $_ENV['CLOCKWORK_STORAGE_SQL_TABLE'] : 'clockwork',
 
 	// Maximum lifetime of collected metadata in minutes, older requests will automatically be deleted, false to disable

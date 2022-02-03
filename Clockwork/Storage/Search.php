@@ -16,7 +16,7 @@ class Search
 	public $name = [];
 	public $type = [];
 
-	// Whether to stop search on the first not mathcing request
+	// Whether to stop search on the first not matching request
 	public $stopOnFirstMismatch = false;
 
 	// Create a new instance, takes search parameters and additional options
