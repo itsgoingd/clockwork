@@ -1,3 +1,12 @@
+5.1.5
+
+- removed support for psr/log
+- fixed some typos (implemented by fridzema, thanks!)
+
+*BREAKING*
+
+- `Clockwork\Request\Log` no longer implements the PSR log interface, it is unlikely you are using this class directly
+
 5.1.4
 
 - added Laravel 9 support
