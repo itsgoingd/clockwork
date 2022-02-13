@@ -4,11 +4,8 @@ use Clockwork\Helpers\Serializer;
 use Clockwork\Helpers\StackTrace;
 use Clockwork\Helpers\StackFilter;
 
-use Psr\Log\LogLevel;
-use Psr\Log\LoggerInterface;
-
 // Data structure representing a log with timestamped messages
-class Log implements LoggerInterface
+class Log
 {
 	// Array of logged messages
 	public $messages = [];

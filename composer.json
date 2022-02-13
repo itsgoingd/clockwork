@@ -13,8 +13,7 @@
     ],
     "require": {
         "php": ">=5.6",
-        "ext-json": "*",
-        "psr/log": "1.* || ^2.0"
+        "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
