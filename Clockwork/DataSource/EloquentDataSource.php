@@ -48,12 +48,15 @@ class EloquentDataSource extends DataSource
 	// Enable duplicate queries detection
 	protected $detectDuplicateQueries = false;
 
+	// Enable explanation of queries
+	protected $explain = false;
+
 	// Model name to associate with the next executed query, used to map queries to models
 	public $nextQueryModel;
 
 	// Create a new data source instance, takes a database manager, an event dispatcher as arguments and additional
 	// options as arguments
-	public function __construct(ConnectionResolverInterface $databaseManager, EventDispatcher $eventDispatcher, $collectQueries = true, $slowThreshold = null, $slowOnly = false, $detectDuplicateQueries = false, $collectModelsActions = true, $collectModelsRetrieved = false)
+	public function __construct(ConnectionResolverInterface $databaseManager, EventDispatcher $eventDispatcher, $collectQueries = true, $slowThreshold = null, $slowOnly = false, $detectDuplicateQueries = false, $collectModelsActions = true, $collectModelsRetrieved = false, $explain = false)
 	{
 		$this->databaseManager = $databaseManager;
 		$this->eventDispatcher = $eventDispatcher;
@@ -63,6 +66,7 @@ class EloquentDataSource extends DataSource
 		$this->detectDuplicateQueries = $detectDuplicateQueries;
 		$this->collectModelsActions   = $collectModelsActions;
 		$this->collectModelsRetrieved = $collectModelsRetrieved;
+		$this->explain                = $explain;
 
 		if ($slowOnly) $this->addFilter(function ($query) { return $query['duration'] > $this->slowThreshold; });
 	}
@@ -166,7 +170,8 @@ class EloquentDataSource extends DataSource
 			'time'       => microtime(true) - $event->time / 1000,
 			'trace'      => (new Serializer)->trace($trace),
 			'model'      => $this->nextQueryModel,
-			'tags'       => $this->slowThreshold !== null && $event->time > $this->slowThreshold ? [ 'slow' ] : []
+			'tags'       => $this->slowThreshold !== null && $event->time > $this->slowThreshold ? [ 'slow' ] : [],
+			'explanation'=> $this->explain && !str_starts_with($event->sql, 'EXPLAIN') ? array_map(fn ($row) => $row->{'QUERY PLAN'}, $this->databaseManager->connection($event->connectionName)->select('EXPLAIN ' . $event->sql, $event->bindings)) : null
 		];
 
 		$this->nextQueryModel = null;
