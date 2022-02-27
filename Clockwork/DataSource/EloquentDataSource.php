@@ -171,7 +171,7 @@ class EloquentDataSource extends DataSource
 			'trace'      => (new Serializer)->trace($trace),
 			'model'      => $this->nextQueryModel,
 			'tags'       => $this->slowThreshold !== null && $event->time > $this->slowThreshold ? [ 'slow' ] : [],
-			'explanation'=> $this->explain && !str_starts_with($event->sql, 'EXPLAIN') ? array_map(fn ($row) => $row->{'QUERY PLAN'}, $this->databaseManager->connection($event->connectionName)->select('EXPLAIN ' . $event->sql, $event->bindings)) : null
+			'explanation'=> $this->explain && str_starts_with($event->sql, 'SELECT') ? array_map(fn ($row) => $row->{'QUERY PLAN'}, $this->databaseManager->connection($event->connectionName)->select('EXPLAIN ANALYZE ' . $event->sql, $event->bindings)) : null
 		];
 
 		$this->nextQueryModel = null;
