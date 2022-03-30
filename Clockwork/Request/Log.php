@@ -118,6 +118,8 @@ class Log
 	// Check if context has serializable exception
 	protected function hasException($context)
 	{
-		return ! empty($context['exception']) && $context['exception'] instanceof \Exception && empty($context['raw']);
+		return ! empty($context['exception'])
+			&& ($context['exception'] instanceof \Throwable || $context['exception'] instanceof \Exception)
+			&& empty($context['raw']);
 	}
 }
