@@ -269,7 +269,9 @@ class ClockworkSupport
 			if (! $event->command || $this->isCommandFiltered($event->command)) return;
 
 			$event->output->setFormatter(
-				new Console\CapturingFormatter($event->output->getFormatter())
+				version_compare(\Illuminate\Foundation\Application::VERSION, '9.0.0', '<')
+					? new Console\CapturingLegacyFormatter($event->output->getFormatter())
+					: new Console\CapturingFormatter($event->output->getFormatter())
 			);
 		});
 

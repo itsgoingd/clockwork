@@ -3,8 +3,8 @@
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Formatter\OutputFormatterStyleInterface;
 
-// Formatter wrapping around a "real" formatter, capturing the formatted output (Symfony 6.x and later)
-class CapturingFormatter implements OutputFormatterInterface
+// Formatter wrapping around a "real" formatter, capturing the formatted output (Symfony 5.x and earlier)
+class CapturingLegacyFormatter implements OutputFormatterInterface
 {
 	protected $formatter;
 
@@ -24,32 +24,32 @@ class CapturingFormatter implements OutputFormatterInterface
 		return $capturedOutput;
 	}
 
-	public function setDecorated(bool $decorated)
+	public function setDecorated($decorated)
 	{
 		return $this->formatter->setDecorated($decorated);
 	}
 
-	public function isDecorated(): bool
+	public function isDecorated()
 	{
 		return $this->formatter->isDecorated();
 	}
 
-	public function setStyle(string $name, OutputFormatterStyleInterface $style)
+	public function setStyle($name, OutputFormatterStyleInterface $style)
 	{
 		return $this->formatter->setStyle($name, $style);
 	}
 
-	public function hasStyle(string $name): bool
+	public function hasStyle($name)
 	{
 		return $this->formatter->hasStyle($name);
 	}
 
-	public function getStyle(string $name): OutputFormatterStyleInterface
+	public function getStyle($name)
 	{
 		return $this->formatter->getStyle($name);
 	}
 
-	public function format(?string $message): ?string
+	public function format($message)
 	{
 		$formatted = $this->formatter->format($message);
 
