@@ -1,3 +1,9 @@
+5.1.6
+
+- added Monolog 2.x compatible handler (idea by mahagr, thanks!)
+- improved log to handle all Throwable classes as exceptions (idea by EdmondDantes, thanks!)
+- fixed support for capturing console output in Laravel 9 (reported by mikerockett, thanks!)
+
 5.1.5
 
 - removed support for psr/log
