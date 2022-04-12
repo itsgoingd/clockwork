@@ -1,12 +1,11 @@
-<?php namespace Clockwork\Support\Monolog\Handler;
+<?php namespace Clockwork\Support\Monolog\Monolog;
 
 use Clockwork\Request\Log as ClockworkLog;
 
 use Monolog\Logger;
 use Monolog\Handler\AbstractProcessingHandler;
 
-// Stores messages in a Clockwork log instance
-// DEPRECATED Moved to Clockwork\Support\Monolog\Monolog\ClockworkHandler, will be removed in Clockwork 6
+// Stores messages in a Clockwork log instance (compatible with Monolog 1.x)
 class ClockworkHandler extends AbstractProcessingHandler
 {
 	protected $clockworkLog;
