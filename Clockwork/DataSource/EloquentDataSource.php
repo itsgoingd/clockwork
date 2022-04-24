@@ -239,7 +239,7 @@ class EloquentDataSource extends DataSource
 			if (! preg_match('//u', (string) $binding)) $binding = '0x' . bin2hex($binding);
 
 			// escape backslashes in the binding (preg_replace requires to do so)
-			return str_replace('\\', '\\\\', (string) $binding);
+			return (string) $binding;
 		}, $query, count($bindings));
 
 		// highlight keywords
