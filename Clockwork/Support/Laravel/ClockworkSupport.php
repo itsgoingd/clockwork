@@ -204,6 +204,13 @@ class ClockworkSupport
 		return $this->app['clockwork.laravel'];
 	}
 
+	public function handleArtisanEvents()
+	{
+		$this->app['events']->listen(\Illuminate\Console\Events\ArtisanStarting::class, function ($event) {
+			$this->app['clockwork.artisan'] = $event->artisan;
+		});
+	}
+
 	public function handleOctaneEvents()
 	{
 		$this->app['events']->listen(\Laravel\Octane\Events\RequestReceived::class, function ($event) {
@@ -281,7 +288,9 @@ class ClockworkSupport
 
 			if (! $event->command || $this->isCommandFiltered($event->command)) return;
 
-			$command = $this->app->make(ConsoleKernel::class)->all()[$event->command];
+			$command = $this->app->has('clockwork.artisan')
+				? $this->app['clockwork.artisan']->find($event->command)
+				: $this->app->make(ConsoleKernel::class)->all()[$event->command];
 
 			$allArguments = $event->input->getArguments();
 			$allOptions = $event->input->getOptions();
