@@ -30,6 +30,9 @@ class ClockworkSupport
 	// Laravel application instance
 	protected $app;
 
+	// Laravel artisan (console application) instance
+	protected $artisan;
+
 	// Incoming request instance
 	protected $incomingRequest;
 
@@ -206,9 +209,11 @@ class ClockworkSupport
 
 	public function handleArtisanEvents()
 	{
-		$this->app['events']->listen(\Illuminate\Console\Events\ArtisanStarting::class, function ($event) {
-			$this->app['clockwork.artisan'] = $event->artisan;
-		});
+		if (class_exists(\Illuminate\Console\Events\ArtisanStarting::class)) {
+			$this->app['events']->listen(\Illuminate\Console\Events\ArtisanStarting::class, function ($event) {
+				$this->artisan = $event->artisan;
+			});
+		}
 	}
 
 	public function handleOctaneEvents()
@@ -288,9 +293,7 @@ class ClockworkSupport
 
 			if (! $event->command || $this->isCommandFiltered($event->command)) return;
 
-			$command = $this->app->has('clockwork.artisan')
-				? $this->app['clockwork.artisan']->find($event->command)
-				: $this->app->make(ConsoleKernel::class)->all()[$event->command];
+			$command = $this->artisan->find($event->command);
 
 			$allArguments = $event->input->getArguments();
 			$allOptions = $event->input->getOptions();
