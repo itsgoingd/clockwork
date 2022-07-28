@@ -76,10 +76,6 @@ class Clockwork
 
 		$this->sendHeaders();
 
-		if (($eventsCount = $this->config['server_timing']) !== false) {
-			$this->setHeader('Server-Timing', ServerTiming::fromRequest($this->clockwork->request(), $eventsCount)->value());
-		}
-
 		return $this->psrResponse;
 	}
 
@@ -130,6 +126,10 @@ class Clockwork
 
 		if ($this->config['features']['performance']['client_metrics'] || $this->config['toolbar']) {
 			$this->setCookie('x-clockwork', $this->getCookiePayload(), time() + 60);
+		}
+
+		if (($eventsCount = $this->config['server_timing']) !== false) {
+			$this->setHeader('Server-Timing', ServerTiming::fromRequest($this->clockwork->request(), $eventsCount)->value());
 		}
 	}
 
