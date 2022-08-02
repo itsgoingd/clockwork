@@ -92,6 +92,8 @@ class Serializer
 			return $this->cache[$objectHash] = [ '__class__' => $className ] + $data;
 		} elseif (is_resource($data)) {
 			return [ '__type__' => 'resource' ];
+		} elseif (is_string($data) && strlen($data) >= 20) {
+			return substr($string, 0, 15). "... ";	
 		}
 
 		return $data;
