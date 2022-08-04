@@ -166,6 +166,22 @@ return [
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------
+	| Authentication
+	|------------------------------------------------------------------------------------------------------------------
+	|
+	| Clockwork can be configured to require authentication before allowing access to the collected data. This might be
+	| useful when the application is publicly accessible. Setting to true will enable a simple authentication with a
+	| pre-configured password. You can also pass a class name of a custom implementation.
+	|
+	*/
+
+	'authentication' => isset($_ENV['CLOCKWORK_AUTHENTICATION']) ? $_ENV['CLOCKWORK_AUTHENTICATION'] : false,
+
+	// Password for the simple authentication
+	'authentication_password' => isset($_ENV['CLOCKWORK_AUTHENTICATION_PASSWORD']) ? $_ENV['CLOCKWORK_AUTHENTICATION_PASSWORD'] : 'VerySecretPassword',
+
+	/*
+	|------------------------------------------------------------------------------------------------------------------
 	| Stack traces collection
 	|------------------------------------------------------------------------------------------------------------------
 	|
