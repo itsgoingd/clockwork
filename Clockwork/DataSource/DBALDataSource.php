@@ -79,7 +79,9 @@ class DBALDataSource extends DataSource implements SQLLogger
 			'query'      => $this->createRunnableQuery($query['query'], $query['params'], $query['types']),
 			'bindings'   => $query['params'],
 			'duration'   => (microtime(true) - $query['time']) * 1000,
-			'connection' => $this->connection->getDatabase(),
+			// Resolve connection only on DBAL versions older that 3.0, as resolving connection on newer DBAL always
+			// executes an additional SQL query, effectively doubling the number of executed queries
+			'connection' => class_exists(Doctrine\DBAL\DBALException::class) ? $this->connection->getDatabase() : null,
 			'time'       => $query['time']
 		];
 
