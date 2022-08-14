@@ -4,7 +4,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class ClockworkBundle extends Bundle
 {
-	protected function getContainerExtensionClass(): string
+	protected function getContainerExtensionClass()
 	{
 		return ClockworkExtension::class;
 	}
