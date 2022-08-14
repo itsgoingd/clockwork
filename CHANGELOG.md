@@ -1,3 +1,13 @@
+5.1.7
+
+- added support for authentiaction in the Vanilla integration
+- added support for compressed Xdebug profiles
+- improved collecting of Laravel Artisan commands to support abbreviated commands (implemented by mike-peters90, thanks!)
+- fixed doubled backslashes in collected Laravel database query bindings (reported by pys1992, thanks!)
+- fixed compatibility with PostgreSQL in SQL storage (implemented by screw, thanks!)
+- fixed possible crash during file storage cleanup when used with Laravel Octane (reported by flexchar, thanks!)
+- fixed infinite loop when collecting queries in Doctrine 3.x (reported by N-M, thanks!)
+
 5.1.6
 
 - added Monolog 2.x compatible handler (idea by mahagr, thanks!)
