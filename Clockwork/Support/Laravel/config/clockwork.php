@@ -16,6 +16,17 @@ return [
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------
+	| Enable Resolve Authenticated User
+	|------------------------------------------------------------------------------------------------------------------
+	|
+	| Resolve Authenticated User is enabled by default. Here you can explicitly enable or disable authenticated user
+	| data. When disabled, no user data is collected.
+	|
+	*/
+	'enable_resolve_authenticated_user' => env('CLOCKWORK_ENABLE_RESOLVE_AUTHENTICATED_USER', true),
+
+	/*
+	|------------------------------------------------------------------------------------------------------------------
 	| Features
 	|------------------------------------------------------------------------------------------------------------------
 	|
