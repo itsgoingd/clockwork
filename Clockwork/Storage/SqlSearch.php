@@ -2,6 +2,8 @@
 
 use Clockwork\Request\Request;
 
+use PDO;
+
 // Rules for searching requests using SQL storage, builds the SQL query conditions
 class SqlSearch extends Search
 {
@@ -12,10 +14,15 @@ class SqlSearch extends Search
 	// Internal representation of the SQL where conditions
 	protected $conditions;
 
+	// PDO instance
+	protected $pdo;
+
 	// Create a new instance, takes search parameters
-	public function __construct($search = [])
+	public function __construct($search = [], PDO $pdo = null)
 	{
 		parent::__construct($search);
+
+		$this->pdo = $pdo;
 
 		list($this->conditions, $this->bindings) = $this->resolveConditions();
 
@@ -23,9 +30,9 @@ class SqlSearch extends Search
 	}
 
 	// Creates a new instance from a base Search class instance
-	public static function fromBase(Search $search = null)
+	public static function fromBase(Search $search = null, PDO $pdo = null)
 	{
-		return new static((array) $search);
+		return new static((array) $search, $pdo);
 	}
 
 	// Add an additional where condition, takes the SQL condition and array of bindings
@@ -71,10 +78,10 @@ class SqlSearch extends Search
 			return implode(' OR ', array_map(function ($input, $index) use ($field, &$bindings) {
 				if (preg_match('/^<(.+)$/', $input, $match)) {
 					$bindings["{$field}{$index}"] = $match[1];
-					return "{$field} < :{$field}{$index}";
+					return $this->quote($field) . " < :{$field}{$index}";
 				} elseif (preg_match('/^>(.+)$/', $input, $match)) {
 					$bindings["{$field}{$index}"] = $match[1];
-					return "{$field} > :{$field}{$index}";
+					return $this->quote($field). " > :{$field}{$index}";
 				}
 			}, $inputs, array_keys($inputs)));
 		}, $fields));
@@ -95,7 +102,7 @@ class SqlSearch extends Search
 			}, $inputs, array_keys($inputs)));
 		}, $fields));
 
-		return [ "{$field} IN ({$values})", $bindings ];
+		return [ $this->quote($field) . " IN ({$values})", $bindings ];
 	}
 
 	// Resolve a number type condition and bindings
@@ -108,17 +115,18 @@ class SqlSearch extends Search
 			return implode(' OR ', array_map(function ($input, $index) use ($field, &$bindings) {
 				if (preg_match('/^<(\d+(?:\.\d+)?)$/', $input, $match)) {
 					$bindings["{$field}{$index}"] = $match[1];
-					return "{$field} < :{$field}{$index}";
+					return $this->quote($field) . " < :{$field}{$index}";
 				} elseif (preg_match('/^>(\d+(?:\.\d+)?)$/', $input, $match)) {
 					$bindings["{$field}{$index}"] = $match[1];
-					return "{$field} > :{$field}{$index}";
+					return $this->quote($field) . " > :{$field}{$index}";
 				} elseif (preg_match('/^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/', $input, $match)) {
 					$bindings["{$field}{$index}from"] = $match[1];
 					$bindings["{$field}{$index}to"] = $match[2];
-					return "({$field} > :{$field}{$index}from AND {$field} < :{$field}{$index}to)";
+					$quotedField = $this->quote($field);
+					return "({$quotedField} > :{$field}{$index}from AND {$quotedField} < :{$field}{$index}to)";
 				} else {
 					$bindings["{$field}{$index}"] = $input;
-					return "{$field} = :{$field}{$index}";
+					return $this->quote($field) . " = :{$field}{$index}";
 				}
 			}, $inputs, array_keys($inputs)));
 		}, $fields));
@@ -135,7 +143,7 @@ class SqlSearch extends Search
 		$conditions = implode(' OR ', array_map(function ($field) use ($inputs, &$bindings) {
 			return implode(' OR ', array_map(function ($input, $index) use ($field, &$bindings) {
 				$bindings["{$field}{$index}"] = $input;
-				return "{$field} LIKE :{$field}{$index}";
+				return $this->quote($field) . " LIKE :{$field}{$index}";
 			}, $inputs, array_keys($inputs)));
 		}, $fields));
 
@@ -146,5 +154,11 @@ class SqlSearch extends Search
 	protected function buildQuery()
 	{
 		$this->query = count($this->conditions) ? 'WHERE ' . implode(' AND ', $this->conditions) : '';
+	}
+
+	// Quotes SQL identifier name properly for the current database
+	protected function quote($identifier)
+	{
+		return $this->pdo && $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql' ? "`{$identifier}`" : "\"{$identifier}\"";
 	}
 }

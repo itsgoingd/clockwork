@@ -197,6 +197,8 @@ class FileStorage extends Storage
 	{
 		if ($lock) flock($this->indexHandle, LOCK_UN);
 		fclose($this->indexHandle);
+
+		$this->indexHandle = null;
 	}
 
 	// Read a line from index in the specified direction (next or previous)

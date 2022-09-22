@@ -20,6 +20,10 @@ class XdebugDataSource extends DataSource
 
 		if ($profile && ! preg_match('/\.php$/', $profile) && is_readable($profile)) {
 			$request->xdebug['profileData'] = file_get_contents($profile);
+
+			if (preg_match('/\.gz$/', $profile)) {
+				$request->xdebug['profileData'] = gzdecode($request->xdebug['profileData']);
+			}
 		}
 
 		return $request;

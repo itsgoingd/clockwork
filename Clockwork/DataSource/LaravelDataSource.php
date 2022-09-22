@@ -207,7 +207,7 @@ class LaravelDataSource extends DataSource
 
 		$request->setAuthenticatedUser($user->email, $user->id, [
 			'email' => $user->email,
-			'name'  => isset($user->name) ? $user->name : null
+			'name'  => !method_exists($user, 'name') && isset($user->name) ? $user->name : null
 		]);
 	}
 }
