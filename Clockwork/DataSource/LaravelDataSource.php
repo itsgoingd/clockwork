@@ -54,7 +54,7 @@ class LaravelDataSource extends DataSource
 		$request->routes         = $this->getRoutes();
 		$request->sessionData    = $this->getSessionData();
 
-		$is_enable_resolve_authenticated_user = $this->app['request']->get('clockwork.enable_resolve_authenticated_user');
+		$is_enable_resolve_authenticated_user = $this->app['config']->get('clockwork.enable_resolve_authenticated_user');
 		if($is_enable_resolve_authenticated_user){
 			$this->resolveAuthenticatedUser($request);
 		}
