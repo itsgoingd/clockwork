@@ -1,3 +1,9 @@
+5.1.8
+
+- updated list of built-in Laravel commands to ignore when collecting commands and included Horizon commands
+- fixed collecting of Laravel queue jobs when used with Horizon
+- fixed collecting of authanticated user name when the User model includes name() method (implemented by devfrey, thanks!)
+
 5.1.7
 
 - added support for authentiaction in the Vanilla integration
