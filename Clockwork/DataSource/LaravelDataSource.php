@@ -202,8 +202,8 @@ class LaravelDataSource extends DataSource
 		if (! ($user = $this->app['auth']->user())) return;
 
 		// retrieve attributes in this awkward way to make sure we don't trigger exceptions with Eloquent strict mode on
-		$user = $user->getAttributes();
 		$keyName = $user->getKeyName();
+		$user = $user->getAttributes();
 
 		if (! isset($user['email']) || ! isset($user[$keyName])) return;
 
