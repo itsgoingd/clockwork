@@ -1,3 +1,7 @@
+5.1.9
+
+- added support for Eloquent strict mode (reported by Sergiobop, thanks!)
+
 5.1.8
 
 - updated list of built-in Laravel commands to ignore when collecting commands and included Horizon commands

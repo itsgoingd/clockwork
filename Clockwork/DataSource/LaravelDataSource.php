@@ -200,11 +200,16 @@ class LaravelDataSource extends DataSource
 	{
 		if (! isset($this->app['auth'])) return;
 		if (! ($user = $this->app['auth']->user())) return;
-		if (! isset($user->email) || ! isset($user->id)) return;
 
-		$request->setAuthenticatedUser($user->email, $user->id, [
-			'email' => $user->email,
-			'name'  => !method_exists($user, 'name') && isset($user->name) ? $user->name : null
+		// retrieve attributes in this awkward way to make sure we don't trigger exceptions with Eloquent strict mode on
+		$user = $user->getAttributes();
+		$keyName = $user->getKeyName();
+
+		if (! isset($user['email']) || ! isset($user[$keyName])) return;
+
+		$request->setAuthenticatedUser($user['email'], $user[$keyName], [
+			'email' => $user['email'],
+			'name'  => isset($user['name']) ? $user['name'] : null
 		]);
 	}
 }
