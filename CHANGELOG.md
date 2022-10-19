@@ -1,3 +1,7 @@
+5.1.10
+
+- fixed crash when resolving authenticated user in Laravel (reported by LucaRed, thanks!)
+
 5.1.9
 
 - added support for Eloquent strict mode (reported by Sergiobop, thanks!)
