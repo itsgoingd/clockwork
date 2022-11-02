@@ -47,11 +47,11 @@ class Event
 	}
 
 	// Begin the event, execute the passed in closure and end the event, returns the closure return value
-	public function run(\Closure $closure)
+	public function run(\Closure $closure, ...$args)
 	{
 		$this->begin();
 		try {
-			return $closure();
+			return $closure(...$args);
 		} finally {
 			$this->end();
 		}
