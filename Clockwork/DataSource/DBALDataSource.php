@@ -168,7 +168,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 				return '(' . $param . ')';
 			}
 		} else {
-			$param = htmlspecialchars($param); // Originally used the e() Laravel helper
+			$param = htmlspecialchars((string) $param); // Originally used the e() Laravel helper
 		}
 		return '"' . (string) $param . '"';
 	}
