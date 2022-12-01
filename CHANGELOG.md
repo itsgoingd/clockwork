@@ -1,3 +1,7 @@
+5.1.11
+
+- fixed crash when resolving authenticated user in Laravel without using Eloquent (reported by m-thalmann-athesia, thanks!)
+
 5.1.10
 
 - fixed crash when resolving authenticated user in Laravel (reported by LucaRed, thanks!)
