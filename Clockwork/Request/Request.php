@@ -80,6 +80,7 @@ class Request
 	public $databaseUpdates;
 	public $databaseDeletes;
 	public $databaseOthers;
+	public $databaseDuration;
 
 	// Cache queries
 	public $cacheQueries = [];
