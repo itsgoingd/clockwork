@@ -1,3 +1,9 @@
+5.1.12
+
+- improved Timeline event run method to stop the event in case of an exception (implemented by UlrichEckhardt, thanks!)
+- fixed some deprecation warnings on PHP 8.2 (implemented by faytekin, thanks!)
+- fixed some deprecation warnings on PHP 8.1 (implemented by villermen, thanks!)
+
 5.1.11
 
 - fixed crash when resolving authenticated user in Laravel without using Eloquent (reported by m-thalmann-athesia, thanks!)
