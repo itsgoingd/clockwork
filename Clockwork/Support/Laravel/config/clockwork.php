@@ -280,10 +280,10 @@ return [
 	| Metadata storage
 	|------------------------------------------------------------------------------------------------------------------
 	|
-	| Configure how is the metadata collected by Clockwork stored. Two options are available:
+	| Configure how is the metadata collected by Clockwork stored. Three options are available:
 	|   - files - A simple fast storage implementation storing data in one-per-request files.
 	|   - sql - Stores requests in a sql database. Supports MySQL, PostgreSQL and SQLite. Requires PDO.
-	|
+	|   - redis - Stores requests in redis. Requires phpredis.
 	*/
 
 	'storage' => env('CLOCKWORK_STORAGE', 'files'),
