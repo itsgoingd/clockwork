@@ -11,6 +11,7 @@ use Clockwork\Helpers\StackTrace;
 use Clockwork\Request\IncomingRequest;
 use Clockwork\Request\Request;
 use Clockwork\Storage\FileStorage;
+use Clockwork\Storage\RedisStorage;
 use Clockwork\Storage\Search;
 use Clockwork\Storage\SqlStorage;
 use Clockwork\Web\Web;
@@ -235,7 +236,8 @@ class ClockworkSupport
 	{
 		$expiration = $this->getConfig('storage_expiration');
 
-		if ($this->getConfig('storage', 'files') == 'sql') {
+		$storage = $this->getConfig('storage', 'files');
+		if ($storage == 'sql') {
 			$database = $this->getConfig('storage_sql_database', storage_path('clockwork.sqlite'));
 			$table = $this->getConfig('storage_sql_table', 'clockwork');
 
@@ -246,6 +248,8 @@ class ClockworkSupport
 			}
 
 			return new SqlStorage($database, $table, null, null, $expiration);
+		} elseif ($storage == 'redis') {
+			return new RedisStorage('redis', null, 6379, $expiration);
 		} else {
 			return new FileStorage(
 				$this->getConfig('storage_files_path', storage_path('clockwork')),

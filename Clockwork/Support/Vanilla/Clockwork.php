@@ -10,6 +10,7 @@ use Clockwork\Helpers\ServerTiming;
 use Clockwork\Helpers\StackFilter;
 use Clockwork\Request\IncomingRequest;
 use Clockwork\Storage\FileStorage;
+use Clockwork\Storage\RedisStorage;
 use Clockwork\Storage\Search;
 use Clockwork\Storage\SqlStorage;
 
@@ -331,7 +332,8 @@ class Clockwork
 	// Make a storage implementation based on user configuration
 	protected function makeStorage()
 	{
-		if ($this->config['storage'] == 'sql') {
+		$storageImplementation = $this->config['storage'];
+		if ($storageImplementation == 'sql') {
 			$database = $this->config['storage_sql_database'];
 			$table = $this->config['storage_sql_table'];
 
@@ -340,6 +342,13 @@ class Clockwork
 				$this->config['storage_sql_table'],
 				$this->config['storage_sql_username'],
 				$this->config['storage_sql_password'],
+				$this->config['storage_expiration']
+			);
+		} elseif ($storageImplementation == 'redis') {
+			$storage = new RedisStorage(
+				$this->config['storage_redis_host'],
+				$this->config['storage_redis_password'],
+				$this->config['storage_redis_port'],
 				$this->config['storage_expiration']
 			);
 		} else {
