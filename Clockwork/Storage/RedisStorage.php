@@ -120,7 +120,7 @@ class RedisStorage extends Storage
 		$requestIndex = $this->redis->zRank(self::REQUEST_KEY, $id) - 1;
 
 		if ($search->isNotEmpty()) {
-			return $this->search($search, $count, $requestIndex);
+			return $this->search($search, $count, $requestIndex, true, true);
 		}
 		
 		$startIndex = $count === null ? 0 : $requestIndex - $count;
@@ -264,6 +264,10 @@ class RedisStorage extends Storage
 			],
 			count($requestIds)
 		);
+
+		if ($searchReversed) {
+			$scriptResults = array_reverse($scriptResults);
+		}
 		
 		return $this->getRequestsFromScriptResults($scriptResults);
 	}
