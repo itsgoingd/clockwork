@@ -21,6 +21,7 @@ class RedisStorage extends Storage
 
 		local searchTerm = ARGV[1]
 		local resultsLimit = tonumber(ARGV[2])
+		local prefix = ARGV[3]
 		local requestIds = KEYS
 
 		local keysToSearch = {
@@ -46,7 +47,7 @@ class RedisStorage extends Storage
 		end
 		
 		for i, requestId in pairs(requestIds) do
-			local request = redis.call('hgetall', requestId)
+			local request = redis.call('hgetall', prefix .. ':' .. requestId)
 			if (search(request, searchTerm, keysToSearch)) then
 				searchResults[resultNumber] = request
 				resultNumber = resultNumber + 1
@@ -149,7 +150,7 @@ class RedisStorage extends Storage
 	// Return a single request by id
 	public function find($id)
     {
-		return $this->createRequest($this->redis->hGetAll($id));
+		return $this->createRequest($this->redis->hGetAll(self::REQUEST_KEY . ':' . $id));
     }
 
 	// Return the latest request
@@ -165,8 +166,7 @@ class RedisStorage extends Storage
 			return [];
 		}
 
-		$data = $this->redis->hGetAll($latestId[0]);
-		return $this->createRequest($data);
+		return $this->find($latestId[0]);
     }
 
 	// Return requests received before specified id, optionally limited to specified count
@@ -232,10 +232,10 @@ class RedisStorage extends Storage
 
 		$this->redis->multi();
 		$this->redis->zAdd(self::REQUEST_KEY, $data['time'], $data['id']);
-		$this->redis->hMSet($data['id'], $data);
+		$this->redis->hMSet(self::REQUEST_KEY . ':' . $data['id'], $data);
 		
 		if ($this->expiration) {
-			$this->redis->expire($data['id'], $this->expiration * 60);
+			$this->redis->expire(self::REQUEST_KEY . ':' . $data['id'], $this->expiration * 60);
 		}
 		$this->redis->exec();
 
@@ -251,7 +251,7 @@ class RedisStorage extends Storage
 		}
 
 		$this->redis->multi();
-		$this->redis->hMSet($data['id'], $data);
+		$this->redis->hMSet(self::REQUEST_KEY . ':' . $data['id'], $data);
 
 		if ($this->expiration) {
 			$this->redis->expire($data['id'], $this->expiration * 60);
@@ -316,6 +316,7 @@ class RedisStorage extends Storage
 				...$requestIds,
 				$searchTerm,
 				$count,
+				self::REQUEST_KEY,
 			],
 			count($requestIds)
 		);
