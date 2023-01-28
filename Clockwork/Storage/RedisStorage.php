@@ -14,6 +14,49 @@ class RedisStorage extends Storage
 
 	const REQUEST_KEY = '{Requests}';
 
+	const SEARCH_SCRIPT = "#!lua flags=no-writes
+		local searchResults = {}
+		local resultNumber = 1
+
+		local searchTerm = ARGV[1]
+		local resultsLimit = tonumber(ARGV[2])
+		local requestIds = KEYS
+
+		local keysToSearch = {
+			['uri'] = true,
+			['commandName'] = true,
+			['jobName'] = true,
+			['testName'] = true,
+		}
+
+		local function search (request, search, ...)
+			local keysToSearch = (...)
+			for index, value in pairs(request) do
+				if (keysToSearch[value]) then
+					local actualValue = request[index+1]
+					local search = string.find(actualValue, search, 1, true)
+
+					if (search ~= nil) then
+						return true
+					end
+				end
+			end
+			return false
+		end
+		
+		for i, requestId in pairs(requestIds) do
+			local request = redis.call('hgetall', requestId)
+			if (search(request, searchTerm, keysToSearch)) then
+				searchResults[resultNumber] = request
+				resultNumber = resultNumber + 1
+
+				if (resultsLimit ~= nil and resultNumber > resultsLimit) then
+					return searchResults
+				end
+			end
+		end
+		return searchResults";
+
 	// List of Request keys that need to be serialized before they can be stored in database
 	protected $needsSerialization = [
 		'headers', 'getData', 'postData', 'requestData', 'sessionData', 'authenticatedUser', 'cookies', 'middleware',
@@ -35,6 +78,10 @@ class RedisStorage extends Storage
 	// Returns all requests
 	public function all(Search $search = null)
     {
+		if ($search->isNotEmpty()) {
+			return $this->search($search);
+		}
+
 		$requestIds = $this->redis->zRange(self::REQUEST_KEY, 0, -1);
 
 		$requests = [];
@@ -53,7 +100,16 @@ class RedisStorage extends Storage
 	// Return the latest request
 	public function latest(Search $search = null)
     {
+		if ($search->isNotEmpty()) {
+			return $this->search($search, 1, null, true, true);
+		}
+		
 		$latestId = $this->redis->zRange(self::REQUEST_KEY, -1, -1);
+		
+		if (count($latestId) == 0) {
+			return [];
+		}
+
 		$data = $this->redis->hGetAll($latestId[0]);
 		return $this->createRequest($data);
     }
@@ -61,14 +117,19 @@ class RedisStorage extends Storage
 	// Return requests received before specified id, optionally limited to specified count
 	public function previous($id, $count = null, Search $search = null)
     {
-		$endIndex = $this->redis->zRank(self::REQUEST_KEY, $id);
-		$startIndex = $count === null ? 0 : $endIndex - $count;
+		$requestIndex = $this->redis->zRank(self::REQUEST_KEY, $id) - 1;
+
+		if ($search->isNotEmpty()) {
+			return $this->search($search, $count, $requestIndex);
+		}
+		
+		$startIndex = $count === null ? 0 : $requestIndex - $count;
 
 		if ($startIndex < 0) {
 			$startIndex = 0;
 		}
 
-		$requestIds = $this->redis->zRange(self::REQUEST_KEY, $startIndex, $endIndex);
+		$requestIds = $this->redis->zRange(self::REQUEST_KEY, $startIndex, $requestIndex);
 
 		$requests = [];
 		foreach ($requestIds as $requestId) {
@@ -80,15 +141,24 @@ class RedisStorage extends Storage
 	// Return requests received after specified id, optionally limited to specified count
 	public function next($id, $count = null, Search $search = null)
     {
-		$startIndex = $this->redis->zRank(self::REQUEST_KEY, $id);
-		$endIndex = $count === null ? -1 : $startIndex + $count;
-
-		$finalIndex = $this->redis->zCard(self::REQUEST_KEY);
-		if ($endIndex > $finalIndex) {
-			$endIndex = $finalIndex;
+		$requestIndex = $this->redis->zRank(self::REQUEST_KEY, $id);
+		$indexLength = $this->redis->zCard(self::REQUEST_KEY);
+		
+		if ($requestIndex + 1 == $indexLength) {
+			return [];
 		}
 
-		$requestIds = $this->redis->zRange(self::REQUEST_KEY, $startIndex, $endIndex);
+		if ($search->isNotEmpty()) {
+			return $this->search($search, $count, $requestIndex + 1, false);
+		}
+		
+		$endIndex = $count === null ? -1 : $requestIndex + $count;
+
+		if ($endIndex > $indexLength) {
+			$endIndex = $indexLength;
+		}
+
+		$requestIds = $this->redis->zRange(self::REQUEST_KEY, $requestIndex + 1, $endIndex);
 
 		$requests = [];
 		foreach ($requestIds as $requestId) {
@@ -160,5 +230,58 @@ class RedisStorage extends Storage
 		}
 
 		return new Request($data);
+	}
+	
+	private function search(
+		Search $search,
+		?int $count = null,
+		$requestIndex = null,
+		bool $searchBefore = true,
+		bool $searchReversed = false
+	)
+	{
+		$searchTerm = array_unique(array_merge($search->uri, $search->name))[0];
+
+		if ($requestIndex !== null) {
+			$requestIds = $searchBefore ?
+				$this->redis->zRange(self::REQUEST_KEY, 0, $requestIndex) :
+				$this->redis->zRange(self::REQUEST_KEY, $requestIndex, -1);
+		} else {
+			$requestIds = $this->redis->zRange(self::REQUEST_KEY, 0, -1);
+		}
+
+		if ($searchReversed) {
+			$requestIds = array_reverse($requestIds);
+		}
+
+		$scriptSha = $this->redis->script('load', self::SEARCH_SCRIPT);
+		$scriptResults = $this->redis->evalSha(
+			$scriptSha,
+			[
+				...$requestIds,
+				$searchTerm,
+				$count,
+			],
+			count($requestIds)
+		);
+		
+		return $this->getRequestsFromScriptResults($scriptResults);
+	}
+
+	private function getRequestsFromScriptResults($scriptResults)
+	{
+		if (!$scriptResults) {
+			return [];
+		}
+
+		$results = [];
+		foreach ($scriptResults as $scriptResult) {
+			$result = [];
+			for ($index = 0; $index < count($scriptResult); $index += 2) {
+				$result[$scriptResult[$index]] = $scriptResult[$index+1];
+			}
+			$results[] = $this->createRequest($result);
+		}
+		return $results;
 	}
 }
