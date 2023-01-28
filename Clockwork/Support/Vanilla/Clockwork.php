@@ -346,9 +346,7 @@ class Clockwork
 			);
 		} elseif ($storageImplementation == 'redis') {
 			$storage = new RedisStorage(
-				$this->config['storage_redis_host'],
-				$this->config['storage_redis_password'],
-				$this->config['storage_redis_port'],
+				$this->config['redis'],
 				$this->config['storage_expiration']
 			);
 		} else {

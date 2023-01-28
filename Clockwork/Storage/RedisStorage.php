@@ -67,13 +67,32 @@ class RedisStorage extends Storage
 		'clientMetrics', 'webVitals'
 	];
 
-    public function __construct(string $host, ?string $password = null, int $port = 6379, $expiration = null)
+    public function __construct(array $config, ?int $expiration)
     {
-		$this->redis = new Redis();
-		$this->redis->connect($host, $port);
-		$this->redis->auth($password);
 		$this->expiration = $expiration === null ? 60 * 24 * 7 : $expiration;
+
+		$defaultConnectionConfig = $config['default'];
+
+		$this->redis = new Redis();
+		$this->redis->connect($defaultConnectionConfig['host'], $defaultConnectionConfig['port']);
+		$this->redis->auth($this->getCredentials($defaultConnectionConfig));
+		$this->redis->select($defaultConnectionConfig['db']);
     }
+
+	private function getCredentials(array $connectionConfig)
+	{
+		$credentials = [];
+		
+		if (array_key_exists('username', $connectionConfig)) {
+			$credentials['user'] = $connectionConfig['username'];
+		}
+
+		if (array_key_exists('password', $connectionConfig)) {
+			$credentials['pass'] = $connectionConfig['password'];
+		}
+
+		return $credentials;
+	}
 
 	// Returns all requests
 	public function all(Search $search = null)
