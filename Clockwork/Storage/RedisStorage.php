@@ -3,6 +3,7 @@
 namespace Clockwork\Storage;
 
 use Redis;
+use RedisCluster;
 use Clockwork\Request\Request;
 
 class RedisStorage extends Storage
@@ -71,13 +72,48 @@ class RedisStorage extends Storage
     {
 		$this->expiration = $expiration === null ? 60 * 24 * 7 : $expiration;
 
-		$defaultConnectionConfig = $config['default'];
-
-		$this->redis = new Redis();
-		$this->redis->connect($defaultConnectionConfig['host'], $defaultConnectionConfig['port']);
-		$this->redis->auth($this->getCredentials($defaultConnectionConfig));
-		$this->redis->select($defaultConnectionConfig['db']);
+		array_key_exists('clusters', $config) ?
+			$this->createClusteredRedisClient($config['clusters']['default']):
+			$this->createRedisClient($config['default']);
     }
+
+	private function createRedisClient(array $connectionConfig)
+	{
+		$this->redis = new Redis();
+		$this->redis->connect($connectionConfig['host'], $connectionConfig['port']);
+		$this->redis->auth($this->getCredentials($connectionConfig));
+		$this->redis->select($connectionConfig['database']);
+	}
+
+	private function createClusteredRedisClient(array $hostsConfig)
+	{
+		$hosts = [];
+		foreach ($hostsConfig as $hostConfig) {
+			$hosts[] = $this->formatHost($hostConfig);
+		}
+    
+		$this->redis = new RedisCluster(null, $hosts);
+	}
+
+	private function formatHost(array $hostConfig)
+	{
+		$host = $hostConfig['host'] . ':' . $hostConfig['port'];
+
+		$query = [];
+		if (array_key_exists('database', $hostConfig)) {
+			$query['database'] = $hostConfig['database'];
+		}
+
+		if (array_key_exists('pasword', $hostConfig)) {
+			$query['password'] = $hostConfig['password'];
+		}
+
+		if (count($query) > 0) {
+			$host .= '?' . http_build_query($query, '', '&', PHP_QUERY_RFC3986);
+		}
+
+		return $host;
+	}
 
 	private function getCredentials(array $connectionConfig)
 	{
