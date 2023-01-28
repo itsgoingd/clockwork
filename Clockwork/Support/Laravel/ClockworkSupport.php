@@ -249,7 +249,8 @@ class ClockworkSupport
 
 			return new SqlStorage($database, $table, null, null, $expiration);
 		} elseif ($storage == 'redis') {
-			return new RedisStorage('redis', null, 6379, $expiration);
+			$redisConfig = $this->app['config']->get("database.redis");
+			return new RedisStorage($redisConfig, $expiration);
 		} else {
 			return new FileStorage(
 				$this->getConfig('storage_files_path', storage_path('clockwork')),
