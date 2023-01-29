@@ -71,15 +71,15 @@ class RedisStorage extends Storage
 
 	private $requestsKey;
 
-    public function __construct(array $config, ?int $expiration)
-    {
+	public function __construct(array $config, ?int $expiration)
+	{
 		$this->expiration = $expiration === null ? 60 * 24 * 7 : $expiration;
 		$this->requestsKey =  self::REQUESTS_KEY . self::REQUEST_HASHTAG;
 
 		array_key_exists('clusters', $config) ?
 			$this->createClusteredRedisClient($config['clusters']['default']):
 			$this->createRedisClient($config['default']);
-    }
+	}
 
 	private function createRedisClient(array $connectionConfig)
 	{
@@ -95,8 +95,7 @@ class RedisStorage extends Storage
 		foreach ($hostsConfig as $hostConfig) {
 			$hosts[] = $this->formatHost($hostConfig);
 		}
-    
-		\Log::debug(json_encode($hosts, JSON_PRETTY_PRINT));
+	
 		$this->redis = new RedisCluster(null, $hosts);
 	}
 
@@ -137,7 +136,7 @@ class RedisStorage extends Storage
 
 	// Returns all requests
 	public function all(Search $search = null)
-    {
+	{
 		if ($search->isNotEmpty()) {
 			return $this->search($search);
 		}
@@ -149,13 +148,13 @@ class RedisStorage extends Storage
 			$requests[] = $this->findWithHashtag($requestId);
 		}
 		return $requests;
-    }
+	}
 
 	// Return a single request by id
 	public function find($id)
-    {
+	{
 		return $this->findWithHashtag($id . self::REQUEST_HASHTAG);
-    }
+	}
 
 	private function findWithHashtag($idWithHashtag)
 	{
@@ -164,7 +163,7 @@ class RedisStorage extends Storage
 
 	// Return the latest request
 	public function latest(Search $search = null)
-    {
+	{
 		if ($search->isNotEmpty()) {
 			return $this->search($search, 1, null, true, true);
 		}
@@ -176,11 +175,11 @@ class RedisStorage extends Storage
 		}
 
 		return $this->findWithHashtag($latestId[0]);
-    }
+	}
 
 	// Return requests received before specified id, optionally limited to specified count
 	public function previous($id, $count = null, Search $search = null)
-    {
+	{
 		$requestIndex = $this->redis->zRank($this->requestsKey, $id . self::REQUEST_HASHTAG) - 1;
 		
 		if ($requestIndex < 0) {
@@ -204,11 +203,11 @@ class RedisStorage extends Storage
 			$requests[] = $this->findWithHashtag($requestId);
 		}
 		return $requests;
-    }
+	}
 
 	// Return requests received after specified id, optionally limited to specified count
 	public function next($id, $count = null, Search $search = null)
-    {
+	{
 		$requestIndex = $this->redis->zRank($this->requestsKey, $id . self::REQUEST_HASHTAG);
 		$indexLength = $this->redis->zCard($this->requestsKey);
 		
@@ -233,11 +232,11 @@ class RedisStorage extends Storage
 			$requests[] = $this->findWithHashtag($requestId);
 		}
 		return $requests;
-    }
+	}
 
 	// Store request
 	public function store(Request $request)
-    {
+	{
 		$data = $request->toArray();
 		foreach ($this->needsSerialization as $key) {
 			$data[$key] = @json_encode($data[$key], \JSON_PARTIAL_OUTPUT_ON_ERROR);
@@ -253,11 +252,11 @@ class RedisStorage extends Storage
 		$this->redis->exec();
 
 		$this->cleanup();
-    }
+	}
 
 	// Update existing request
 	public function update(Request $request)
-    {
+	{
 		$data = $request->toArray();
 		foreach ($this->needsSerialization as $key) {
 			$data[$key] = @json_encode($data[$key], \JSON_PARTIAL_OUTPUT_ON_ERROR);
@@ -274,18 +273,18 @@ class RedisStorage extends Storage
 
 		$this->redis->exec();
 		$this->cleanup();
-    }
+	}
 
 	// Cleanup old requests
 	public function cleanup()
-    {
+	{
 		if ($this->expiration === false) {
 			return;
 		}
 
 		$endTimeRange = time() - ($this->expiration * 60);
 		$this->redis->zRemRangeByScore($this->requestsKey, 0, $endTimeRange);
-    }
+	}
 
 	private function createRequest(?array $data)
 	{
