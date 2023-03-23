@@ -266,8 +266,8 @@ class EloquentDataSource extends DataSource
 
 		if ($pdo === null) return;
 
-		if ($pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'odbc') {
-			// PDO_ODBC driver doesn't support the quote method, apply simple MSSQL style quoting instead
+		if ($pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'odbc' || $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'crate') {
+			// PDO_ODBC and PDO Crate driver doesn't support the quote method, apply simple MSSQL style quoting instead
 			return "'" . str_replace("'", "''", $binding) . "'";
 		}
 
