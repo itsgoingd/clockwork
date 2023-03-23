@@ -10,6 +10,7 @@ use Clockwork\Request\RequestType;
 use Clockwork\Request\ShouldCollect;
 use Clockwork\Request\ShouldRecord;
 use Clockwork\Storage\StorageInterface;
+use Closure;
 
 // A central class implementing the core flow of the library
 class Clockwork
