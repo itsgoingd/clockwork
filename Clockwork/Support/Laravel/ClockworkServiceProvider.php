@@ -66,7 +66,7 @@ class ClockworkServiceProvider extends ServiceProvider
 	// Register the configuration file
 	protected function registerConfiguration()
 	{
-		$this->publishes([ __DIR__ . '/config/clockwork.php' => config_path('clockwork.php') ]);
+		$this->publishes([ __DIR__ . '/config/clockwork.php' => config_path('clockwork.php') ], 'clockwork');
 		$this->mergeConfigFrom(__DIR__ . '/config/clockwork.php', 'clockwork');
 	}
 
