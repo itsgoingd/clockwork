@@ -12,40 +12,40 @@ use PHPUnit\TextUI;
 class ClockworkExtension implements Runner\Extension\Extension
 {
 	public static $asserts = [];
-    
-    public function bootstrap(
-        TextUI\Configuration\Configuration $configuration,
-        Runner\Extension\Facade $facade,
-        Runner\Extension\ParameterCollection $parameters
-    ): void {
+
+	public function bootstrap(
+		TextUI\Configuration\Configuration $configuration,
+		Runner\Extension\Facade $facade,
+		Runner\Extension\ParameterCollection $parameters
+	): void {
 		$facade->registerSubscribers(
 			new class implements Event\Test\PreparedSubscriber {
-				public function notify($event): void { ClockworkExtension::$asserts = []; }                        
+				public function notify($event): void { ClockworkExtension::$asserts = []; }
 			},
 			new class implements Event\Test\ErroredSubscriber {
-				public function notify($event): void { ClockworkExtension::recordTest('error', $event->throwable()->message()); }                        
+				public function notify($event): void { ClockworkExtension::recordTest('error', $event->throwable()->message()); }
 			},
 			new class implements Event\Test\FailedSubscriber {
-				public function notify($event): void { ClockworkExtension::recordTest('failed', $event->throwable()->message()); }                        
+				public function notify($event): void { ClockworkExtension::recordTest('failed', $event->throwable()->message()); }
 			},
 			new class implements Event\Test\MarkedIncompleteSubscriber {
-				public function notify($event): void { ClockworkExtension::recordTest('incomplete', $event->throwable()->message()); }                        
+				public function notify($event): void { ClockworkExtension::recordTest('incomplete', $event->throwable()->message()); }
 			},
 			new class implements Event\Test\PassedSubscriber {
-				public function notify($event): void { ClockworkExtension::recordTest('passed'); }                        
+				public function notify($event): void { ClockworkExtension::recordTest('passed'); }
 			},
 			new class implements Event\Test\SkippedSubscriber {
-				public function notify($event): void { ClockworkExtension::recordTest('skipped', $event->message()); }                        
+				public function notify($event): void { ClockworkExtension::recordTest('skipped', $event->message()); }
 			},
 			new class implements Event\Test\AssertionSucceededSubscriber {
-				public function notify($event): void { ClockworkExtension::recordAssertion(true); }                        
+				public function notify($event): void { ClockworkExtension::recordAssertion(true); }
 			},
 			new class implements Event\Test\AssertionFailedSubscriber {
-				public function notify($event): void { ClockworkExtension::recordAssertion(false); }                        
+				public function notify($event): void { ClockworkExtension::recordAssertion(false); }
 			}
 		);
-    }
-	
+	}
+
 	public static function recordTest($status, $message = null)
 	{
 		$trace = StackTrace::get([ 'arguments' => false, 'limit' => 10 ]);
@@ -66,12 +66,12 @@ class ClockworkExtension implements Runner\Extension\Extension
 
 		if (! $app->make('clockwork.support')->isCollectingTests()) return;
 		if ($app->make('clockwork.support')->isTestFiltered($testInstance->toString())) return;
-			
+
 		$app->make('clockwork')
 			->resolveAsTest(
 				str_replace('__pest_evaluable_', '', $testInstance->toString()),
 				$status,
-	        	$message,
+				$message,
 				ClockworkExtension::$asserts
 			)
 			->storeRequest();
