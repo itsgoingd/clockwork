@@ -227,6 +227,10 @@ class SqlStorage extends Storage
 			$table = $this->quote($this->table);
 			$backupTableName = $this->quote("{$this->table}_backup_" . date('Ymd'));
 			$this->pdo->exec("ALTER TABLE {$table} RENAME TO {$backupTableName};");
+
+			$indexName = $this->quote("{$this->table}_time_index");
+			$this->pdo->exec("DROP INDEX {$indexName};"); // most sql implementations use global index names
+			$this->pdo->exec("DROP INDEX {$indexName} ON {$backupTableName};"); // mysql uses table-specific index names
 		} catch (\PDOException $e) {
 			// this just means the table doesn't yet exist, nothing to do here
 		}
