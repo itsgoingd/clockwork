@@ -3,9 +3,10 @@
 use Clockwork\Request\Request;
 use Clockwork\Support\Twig\ProfilerClockworkDumper;
 
-use Twig_Environment;
 use Twig_Extension_Profiler;
 use Twig_Profiler_Profile;
+use Twig\Extension\ProfilerExtension;
+use Twig\Profiler\Profile;
 
 // Data source for Twig, provides rendered views
 class TwigDataSource extends DataSource
@@ -16,8 +17,8 @@ class TwigDataSource extends DataSource
 	// Twig profile instance
 	protected $profile;
 
-	// Create a new data source, takes Twig instance as an argument
-	public function __construct(Twig_Environment $twig)
+	// Create a new data source, takes Twig environment instance as an argument
+	public function __construct($twig)
 	{
 		$this->twig = $twig;
 	}
@@ -25,7 +26,11 @@ class TwigDataSource extends DataSource
 	// Register the Twig profiler extension
 	public function listenToEvents()
 	{
-		$this->twig->addExtension(new Twig_Extension_Profiler($this->profile = new Twig_Profiler_Profile));
+		if (class_exists(ProfilerExtension::class)) {
+			$this->twig->addExtension(new ProfilerExtension(($this->profile = new Profile())));
+		} else {
+			$this->twig->addExtension(new Twig_Extension_Profiler($this->profile = new Twig_Profiler_Profile));
+		}
 	}
 
 	// Adds rendered views to the request
