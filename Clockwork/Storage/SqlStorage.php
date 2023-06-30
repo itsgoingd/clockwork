@@ -264,7 +264,7 @@ class SqlStorage extends Storage
 				throw new \PDOException;
 			}
 		} catch (\PDOException $e) {
-			$stmt = false;
+			$stmt = strpos($e->getMessage(), 'Integrity constraint violation') !== false;
 		}
 
 		// the query failed to execute, assume it's caused by missing or old schema, try to reinitialize database
