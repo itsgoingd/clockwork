@@ -9,6 +9,7 @@ return [
 	|
 	| Clockwork is enabled by default only when your application is in debug mode. Here you can explicitly enable or
 	| disable Clockwork. When disabled, no data is collected and the api and web ui are inactive.
+	| Unless explicitly enabled, Clockwork only runs on localhost, *.local, *.test and *.wip domains.
 	|
 	*/
 

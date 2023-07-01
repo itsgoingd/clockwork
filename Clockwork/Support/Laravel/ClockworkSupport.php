@@ -518,7 +518,7 @@ class ClockworkSupport
 	public function isEnabled()
 	{
 		return $this->getConfig('enable')
-			|| $this->getConfig('enable') === null && $this->app['config']->get('app.debug');
+			|| $this->getConfig('enable') === null && $this->app['config']->get('app.debug') && $this->incomingRequest()->hasLocalHost();
 	}
 
 	// Check whether we are collecting data
@@ -667,7 +667,8 @@ class ClockworkSupport
 			'method'  => $this->app['request']->getMethod(),
 			'uri'     => $this->app['request']->getRequestUri(),
 			'input'   => $this->app['request']->input(),
-			'cookies' => $this->app['request']->cookie()
+			'cookies' => $this->app['request']->cookie(),
+			'host'    => $this->app['request']->host()
 		]);
 	}
 
