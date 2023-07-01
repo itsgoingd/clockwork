@@ -204,7 +204,7 @@ class EloquentDataSource extends DataSource
 			'key'        => $this->getModelKey($model),
 			'action'     => $event,
 			'attributes' => $this->collectModelsRetrieved && $event == 'retrieved' ? $model->getOriginal() : [],
-			'changes'    => $this->collectModelsActions ? $model->getChanges() : [],
+			'changes'    => $this->collectModelsActions && method_exists($model, 'getChanges') ? $model->getChanges() : [],
 			'time'       => microtime(true) / 1000,
 			'query'      => $lastQuery ? $lastQuery['query'] : null,
 			'duration'   => $lastQuery ? $lastQuery['duration'] : null,
