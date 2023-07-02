@@ -299,6 +299,12 @@ return [
 	// SQL table name to use, the table is automatically created and updated when needed
 	'storage_sql_table' => env('CLOCKWORK_STORAGE_SQL_TABLE', 'clockwork'),
 
+	// Redis connection, name of redis connection or cluster configured in database.php
+	'storage_redis' => env('CLOCKWORK_STORAGE_REDIS', 'default'),
+
+	// Redis prefix for Clockwork keys ("clockwork" if not set)
+	'storage_redis_prefix' => env('CLOCKWORK_STORAGE_REDIS_PREFIX', 'clockwork'),
+
 	// Maximum lifetime of collected metadata in minutes, older requests will automatically be deleted, false to disable
 	'storage_expiration' => env('CLOCKWORK_STORAGE_EXPIRATION', 60 * 24 * 7),
 

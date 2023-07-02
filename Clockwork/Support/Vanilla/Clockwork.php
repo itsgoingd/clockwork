@@ -332,11 +332,9 @@ class Clockwork
 	// Make a storage implementation based on user configuration
 	protected function makeStorage()
 	{
-		$storageImplementation = $this->config['storage'];
-		if ($storageImplementation == 'sql') {
-			$database = $this->config['storage_sql_database'];
-			$table = $this->config['storage_sql_table'];
+		$storage = $this->config['storage'];
 
+		if ($storage == 'sql') {
 			$storage = new SqlStorage(
 				$this->config['storage_sql_database'],
 				$this->config['storage_sql_table'],
@@ -344,10 +342,11 @@ class Clockwork
 				$this->config['storage_sql_password'],
 				$this->config['storage_expiration']
 			);
-		} elseif ($storageImplementation == 'redis') {
+		} elseif ($storage == 'redis') {
 			$storage = new RedisStorage(
-				$this->config['redis'],
-				$this->config['storage_expiration']
+				$this->config['storage_redis'],
+				$this->config['storage_expiration'],
+				$this->config['storage_redis_prefix']
 			);
 		} else {
 			$storage = new FileStorage(
