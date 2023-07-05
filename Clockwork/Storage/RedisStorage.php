@@ -185,8 +185,6 @@ class RedisStorage extends Storage
 	// Search for requests based on the requests sorted set
 	protected function search($direction, Search $search = null, $requestIndex = null, $count = null)
 	{
-		$searchTerm = array_unique(array_merge($search->uri, $search->name))[0];
-
 		if ($requestIndex) {
 			$ids = $direction == 'previous'
 				? $this->redis->zRange($this->prefix('requests'), 0, $requestIndex)
@@ -197,7 +195,22 @@ class RedisStorage extends Storage
 
 		if ($direction == 'previous') $ids = array_reverse($ids);
 
-		$results = $this->redis->eval(static::SEARCH_SCRIPT, array_merge($ids, [ $searchTerm, $count ]));
+		$keys = array_map(function ($id) { return $this->prefix($id); }, $ids);
+		$args = array_map(
+			function ($value) { return implode(',', $value); },
+			[
+				$search->type,
+				$search->uri,
+				$search->name,
+				$search->controller,
+				$search->method,
+				$search->status,
+				$search->time,
+				array_map(function ($value) { return $value[0] . strtotime(substr($value, 1)); }, $search->received)
+			]
+		);
+
+		$results = $this->redis->eval(static::SEARCH_SCRIPT, array_merge($keys, $args, [ $count ]), count($keys));
 
 		if ($direction == 'previous') $results = array_reverse($results);
 
@@ -239,51 +252,123 @@ class RedisStorage extends Storage
 	// Retusna Requests instances from search results
 	protected function resultsToRequests($results)
 	{
-		return array_map(function($result) {
-			return $this->dataToRequest(array_combine(array_column($result, 0), array_column($result, 1)));
-		}, array_chunk($results, 2));
+		return array_map(function ($result) {
+			return $this->dataToRequest(array_combine(array_column(array_chunk($result, 2), 0), array_column(array_chunk($result, 2), 1)));
+		}, $results);
 	}
 
-	const SEARCH_SCRIPT = "#!lua flags=no-writes
-		local searchResults = {}
-		local resultNumber = 1
+		const SEARCH_SCRIPT = <<<'SCRIPT'
+#!lua flags=no-writes
+local function splitInput(input)
+	if not input then return {} end
 
-		local searchTerm = ARGV[1]
-		local resultsLimit = tonumber(ARGV[2])
-		local requestIds = KEYS
+	local result = {}
+	for token in string.gmatch(input, "[^,]+") do
+		table.insert(result, token)
+	end
 
-		local keysToSearch = {
-			['uri'] = true,
-			['commandName'] = true,
-			['jobName'] = true,
-			['testName'] = true,
-		}
+	return result
+end
 
-		local function search (request, search, ...)
-			local keysToSearch = (...)
-			for index, value in pairs(request) do
-				if (keysToSearch[value]) then
-					local actualValue = request[index+1]
-					local search = string.find(actualValue, search, 1, true)
+local function mergeArrays(a, b)
+	local merged = {}
 
-					if (search ~= nil) then
-						return true
-					end
-				end
-			end
-			return false
+	for _, value in ipairs(a) do
+		table.insert(merged, value)
+	end
+
+	for _, value in ipairs(b) do
+		table.insert(merged, value)
+	end
+
+	return merged
+end
+
+local function isEmpty (array)
+	for _, value in ipairs(array) do
+		if value ~= '' then return false end
+	end
+
+	return true
+end
+
+local function checkStringCondition (request, fields, inputs, exact)
+	if isEmpty(inputs) then return true end
+
+	for _, field in ipairs(fields) do
+		local value = request[field]
+
+		for _, input in ipairs(inputs) do
+			if (not exact and string.find(string.lower(value), string.lower(input))) then return true end
+			if (exact and string.lower(value) == string.lower(input)) then return true end
 		end
+	end
 
-		for i, requestId in pairs(requestIds) do
-			local request = redis.call('hgetall', requestId)
-			if (search(request, searchTerm, keysToSearch)) then
-				searchResults[resultNumber] = request
-				resultNumber = resultNumber + 1
+	return false
+end
 
-				if (resultsLimit ~= nil and resultNumber > resultsLimit) then
-					return searchResults
-				end
-			end
+local function checkNumberCondition (request, fields, inputs)
+	if isEmpty(inputs) then return true end
+
+	for _, field in ipairs(fields) do
+		local value = tonumber(request[field])
+
+		for _, input in ipairs(inputs) do
+			if value == tonumber(input) then return true end
+
+			local lowerLimit = tonumber(string.match(input, '^>(%d+%.?%d*)$'))
+			if lowerLimit and value > lowerLimit then return true end
+
+			local upperLimit = tonumber(string.match(input, '^<(%d+%.?%d*)$'))
+			if upperLimit and value < upperLimit then return true end
+
+			local rangeStart, rangeEnd = string.match(input, '^(%d+%.?%d*)-(%d+%.?%d*)$')
+			if rangeStart and rangeEnd and tonumber(rangeStart) < value and value < tonumber(rangeEnd) then return true end
 		end
-		return searchResults";
+	end
+
+	return false
+end
+
+local results = {}
+
+local input = {
+	type = splitInput(ARGV[1]),
+	uri = splitInput(ARGV[2]),
+	name = splitInput(ARGV[3]),
+	controller = splitInput(ARGV[4]),
+	method = splitInput(ARGV[5]),
+	status = splitInput(ARGV[6]),
+	time = splitInput(ARGV[7]),
+	received = splitInput(ARGV[8])
+}
+local limit = tonumber(ARGV[9])
+local requestIds = KEYS
+
+for _, requestId in ipairs(requestIds) do
+	local requestData = redis.call('hgetall', requestId)
+	local request = {}
+
+	for i = 1, #requestData, 2 do request[requestData[i]] = requestData[i + 1] end
+
+	if (
+		checkStringCondition(request, {'type'}, input['type']) and
+		checkStringCondition(request, {'uri', 'commandName', 'jobName', 'testName'}, mergeArrays(input['uri'], input['name'])) and
+		checkStringCondition(request, {'controller'}, input['controller']) and
+		checkStringCondition(request, {'method'}, input['method'], true) and
+		checkNumberCondition(request, {'responseStatus', 'commandExitCode', 'jobStatus', 'testStatus'}, input['status']) and
+		checkNumberCondition(request, {'responseDuration'}, input['time']) and
+		checkNumberCondition(request, {'time'}, input['received'])
+	)
+	then
+		table.insert(results, requestData)
+	end
+
+	if (limit ~= nil and #results >= limit) then
+		return results
+	end
+end
+
+return results
+SCRIPT;
 }
