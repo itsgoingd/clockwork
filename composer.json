@@ -15,6 +15,13 @@
         "php": ">=5.6",
         "ext-json": "*"
     },
+    "suggest": {
+		"ext-pdo": "Needed in order to use a SQL database for metadata storage",
+		"ext-pdo_sqlite": "Needed in order to use a SQLite for metadata storage",
+		"ext-pdo_mysql": "Needed in order to use MySQL for metadata storage",
+		"ext-pdo_postgres": "Needed in order to use Postgres for metadata storage",
+		"ext-redis": "Needed in order to use Redis for metadata storage"
+    },
     "autoload": {
         "psr-4": {
             "Clockwork\\": "Clockwork/"

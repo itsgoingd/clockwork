@@ -139,10 +139,10 @@ return [
 	| Metadata storage
 	|------------------------------------------------------------------------------------------------------------------
 	|
-	| Configure how is the metadata collected by Clockwork stored. Two options are available:
+	| Configure how is the metadata collected by Clockwork stored. Three options are available:
 	|   - files - A simple fast storage implementation storing data in one-per-request files.
 	|   - sql - Stores requests in a sql database. Supports MySQL, Postgresql, Sqlite and requires PDO.
-	|
+	|   - redis - Stores requests in redis. Requires phpredis.
 	*/
 
 	'storage' => isset($_ENV['CLOCKWORK_STORAGE']) ? $_ENV['CLOCKWORK_STORAGE'] : 'files',
@@ -160,6 +160,18 @@ return [
 
 	// SQL table name to use, the table is automatically created and updated when needed
 	'storage_sql_table' => isset($_ENV['CLOCKWORK_STORAGE_SQL_TABLE']) ? $_ENV['CLOCKWORK_STORAGE_SQL_TABLE'] : 'clockwork',
+
+	// Configuration for the Redis storage
+	'storage_redis' => [
+		'host' => isset($_ENV['CLOCKWORK_STORAGE_REDIS_HOST']) ? $_ENV['CLOCKWORK_STORAGE_REDIS_HOST'] : '127.0.0.1',
+		'username' => isset($_ENV['CLOCKWORK_STORAGE_REDIS_USERNAME']) ? $_ENV['CLOCKWORK_STORAGE_REDIS_USERNAME'] : null,
+		'password' => isset($_ENV['CLOCKWORK_STORAGE_REDIS_PASSWORD']) ? $_ENV['CLOCKWORK_STORAGE_REDIS_PASSWORD'] : null,
+		'port' => isset($_ENV['CLOCKWORK_STORAGE_REDIS_PORT']) ? $_ENV['CLOCKWORK_STORAGE_REDIS_PORT'] : 6379,
+		'database' => isset($_ENV['CLOCKWORK_STORAGE_REDIS_DB']) ? $_ENV['CLOCKWORK_STORAGE_REDIS_DB'] : 0
+	],
+
+	// Redis prefix for Clockwork keys ("clockwork" if not set)
+	'storage_redis_prefix' => isset($_ENV['CLOCKWORK_STORAGE_REDIS_PREFIX']) ? $_ENV['CLOCKWORK_STORAGE_REDIS_PREFIX'] : 'clockwork',
 
 	// Maximum lifetime of collected metadata in minutes, older requests will automatically be deleted, false to disable
 	'storage_expiration' => isset($_ENV['CLOCKWORK_STORAGE_EXPIRATION']) ? $_ENV['CLOCKWORK_STORAGE_EXPIRATION'] : 60 * 24 * 7,
