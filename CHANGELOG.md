@@ -1,3 +1,22 @@
+5.1.13
+
+- added new security protection - running Clockwork is now restricted to local domains unless explicitly enabled
+- added Redis storage implementation (implemented by christopherh0rn, thanks!)
+- added support for collecting tests with Pest 2 and PHPUnit 10 (reported by CadenP, idea by kdevan, thanks!)
+- added support for all Twig versions in the Twig profiler integration (idea by ericktucto, thanks!)
+- improved Laravel installation process to be able to use "clockwork" tag for publishing the config file
+- improved default Laravel config to ignore Telescope Toolbar requests by default (implemented by lloricode, thanks!)
+- improved Eloquent data source to support Crate PDO (implemented by JulianMar, thanks!)
+- fixed compatibility with Laravel <5.5 when collecting database queries (reported by sbahr001, thanks!)
+- fixed checking of notification type when collecting Laravel notifications (reported by faraweilyas, idea by jameshulse, thanks!)
+- fixed ability to use custom should-collect and should-record callbacks (implemented by thattomperson, thanks!)
+- fixed a possible crash with SQL storage when creating backup table or inserting duplicate ids (reported by davidp-celtra, thanks!)
+
+*BREAKING*
+
+- Running Clockwork is now restricted to local domains - localhost, local, test, wip and 127.0.0.1 - unless explicitly enabled.
+  If you want to use Clockwork on a different domain, please explicitly enable it by setting CLOCKWORK_ENABLE to true. 
+
 5.1.12
 
 - improved Timeline event run method to stop the event in case of an exception (implemented by UlrichEckhardt, thanks!)
