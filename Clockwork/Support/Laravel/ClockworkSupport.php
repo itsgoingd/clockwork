@@ -524,7 +524,8 @@ class ClockworkSupport
 	public function isEnabled()
 	{
 		return $this->getConfig('enable')
-			|| $this->getConfig('enable') === null && $this->app['config']->get('app.debug') && $this->incomingRequest()->hasLocalHost();
+			|| $this->getConfig('enable') === null && $this->app['config']->get('app.debug')
+				&& ($this->incomingRequest()->hasLocalHost() || $this->app->runningInConsole());
 	}
 
 	// Check whether we are collecting data
