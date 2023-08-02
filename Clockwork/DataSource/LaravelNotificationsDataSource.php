@@ -192,13 +192,17 @@ class LaravelNotificationsDataSource extends DataSource
 			$data = [
 				'from'    => $message->toArray()['username'] ?? null,
 				'to'      => $message->toArray()['channel'] ?? null,
-				'content' => json_encode($message->toArray()['blocks'] ?? $message->toArray()['attachments'])
+				'data' => [
+					'content' => $message->toArray()
+				],
 			];
 		} else {
 			$data = [
 				'from'    => $message->username,
 				'to'      => $message->channel,
-				'content' => $message->content
+				'data' => [
+					'content' => $message->content
+				],
 			];
 		}
 
