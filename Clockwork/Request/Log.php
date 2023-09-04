@@ -19,8 +19,10 @@ class Log extends AbstractLogger
 	/**
 	 * Add a new timestamped message, with an optional level
 	 */
-	public function log($level = LogLevel::INFO, $message, array $context = [])
+	public function log($level, $message, array $context = [])
 	{
+		$level = isset($level) ? $level : LogLevel::INFO;
+
 		$caller = StackTrace::get()->firstNonVendor([ 'itsgoingd', 'laravel', 'slim', 'monolog' ]);
 
 		$this->data[] = [

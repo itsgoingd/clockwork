@@ -1,2 +1,4 @@
 # osx noise
 .DS_Store
+/.idea
+/vendor
