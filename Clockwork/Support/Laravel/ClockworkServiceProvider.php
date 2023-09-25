@@ -73,7 +73,13 @@ class ClockworkServiceProvider extends ServiceProvider
 	protected function registerClockwork()
 	{
 		$this->app->singleton('clockwork', function ($app) {
-			return (new Clockwork)
+			$clockwork = new Clockwork;
+
+			if ($app['clockwork.support']->isEnabled()) {
+				return $clockwork;
+			}
+
+			return $clockwork
 				->authenticator($app['clockwork.authenticator'])
 				->request($app['clockwork.request'])
 				->storage($app['clockwork.storage']);
