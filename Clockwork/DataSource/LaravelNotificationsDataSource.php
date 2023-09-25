@@ -188,12 +188,27 @@ class LaravelNotificationsDataSource extends DataSource
 	// Resolve Slack notification channel specific data
 	protected function resolveSlackChannelSpecific($event, $message)
 	{
-		return [
-			'subject' => get_class($event->notification),
-			'from'    => $message->username,
-			'to'      => $message->channel,
-			'content' => $message->content
-		];
+		if (get_class($message) == 'Illuminate\Notifications\Slack\SlackMessage') {
+			$data = [
+				'from'    => $message->toArray()['username'] ?? null,
+				'to'      => $message->toArray()['channel'] ?? null,
+				'data' => [
+					'content' => $message->toArray()
+				],
+			];
+		} else {
+			$data = [
+				'from'    => $message->username,
+				'to'      => $message->channel,
+				'data' => [
+					'content' => $message->content
+				],
+			];
+		}
+
+		$data['subject'] = get_class($event->notification);
+
+		return $data;
 	}
 
 	// Resolve Nexmo notification channel specific data
