@@ -86,7 +86,7 @@ class FileStorage extends Storage
 
 		$this->compress
 			? file_put_contents("{$path}.gz", gzcompress($data))
-			: file_put_contents($path, $data);
+			: file_put_contents($path, $data . PHP_EOL);
 
 		if (! $skipIndex) $this->updateIndex($request);
 
