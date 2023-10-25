@@ -23,6 +23,8 @@ class RedisStorage extends Storage
 	// Metadata expiration time in minutes
 	protected $expiration;
 
+	private $prefix;
+
 	public function __construct($connection, $expiration = null, $prefix = 'clockwork')
 	{
 		$this->redis = is_array($connection) ? $this->createClient($connection) : $connection;
@@ -97,7 +99,7 @@ class RedisStorage extends Storage
 		if ($search->isNotEmpty()) {
 			return $this->search('previous', $search, -1, 1);
 		}
-		
+
 		$requests = $this->loadRequests($this->redis->zRange($this->prefix('requests'), -1, -1));
 		return reset($requests);
 	}
@@ -106,7 +108,7 @@ class RedisStorage extends Storage
 	public function previous($id, $count = null, Search $search = null)
 	{
 		$requestIndex = $this->redis->zRank($this->prefix('requests'), $id) - 1;
-		
+
 		if ($requestIndex < 0) return [];
 
 		if ($search->isNotEmpty()) {
@@ -123,7 +125,7 @@ class RedisStorage extends Storage
 	{
 		$requestIndex = $this->redis->zRank($this->prefix('requests'), $id);
 		$indexLength = $this->redis->zCard($this->prefix('requests'));
-		
+
 		if ($requestIndex + 1 == $indexLength) return [];
 
 		if ($search->isNotEmpty()) {
@@ -145,7 +147,7 @@ class RedisStorage extends Storage
 		}
 
 		$this->redis->multi();
-		
+
 		$this->redis->zAdd($this->prefix('requests'), $data['time'], $data['id']);
 		$this->redis->hMSet($this->prefix($data['id']), $data);
 		if ($this->expiration) $this->redis->expire($this->prefix($data['id']), $this->expiration * 60);
