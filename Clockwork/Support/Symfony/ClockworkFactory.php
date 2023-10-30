@@ -7,6 +7,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ClockworkFactory
 {
+	protected $container;
+
 	public function __construct(ContainerInterface $container)
 	{
 		$this->container = $container;
