@@ -126,7 +126,7 @@ class ProfileTransformer
 
 	protected function getEvents($data)
 	{
-		$handledEvents = array_values(array_reduce($this->unwrap($data->getCalledListeners()), function ($events, $listener) {
+		$handledEvents = array_values(array_reduce($this->unwrap($data->getCalledListeners('event_dispatcher')), function ($events, $listener) {
 			if (! isset($events[$listener['event']])) {
 				$events[$listener['event']] = [ 'event' => $listener['event'], 'listeners' => [] ];
 			}
@@ -138,7 +138,7 @@ class ProfileTransformer
 
 		$orphanedEvents = array_map(function ($event) {
 			return [ 'event' => $event ];
-		}, $this->unwrap($data->getOrphanedEvents()));
+		}, $this->unwrap($data->getOrphanedEvents('event_dispatcher')));
 
 		return array_merge($handledEvents, $orphanedEvents);
 	}

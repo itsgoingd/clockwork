@@ -8,10 +8,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ClockworkFactory
 {
 	protected $container;
+	protected $profiler;
 
-	public function __construct(ContainerInterface $container)
+	public function __construct(ContainerInterface $container, Profiler $profiler)
 	{
 		$this->container = $container;
+		$this->profiler = $profiler;
 	}
 
 	public function clockwork()
@@ -29,7 +31,7 @@ class ClockworkFactory
 	public function clockworkStorage()
 	{
 		return new SymfonyStorage(
-			$this->container->get('profiler'), substr($this->container->getParameter('profiler.storage.dsn'), 5)
+			$this->profiler, substr($this->container->getParameter('profiler.storage.dsn'), 5)
 		);
 	}
 
