@@ -104,6 +104,7 @@ class LaravelCacheDataSource extends DataSource
 		$record = [
 			'type'       => $query['type'],
 			'key'        => $query['key'],
+			'expiration' => $query['expiration'] ?? null,
 			'time'       => microtime(true),
 			'connection' => null,
 			'trace'      => (new Serializer)->trace($trace)
