@@ -4,13 +4,17 @@
 - added Redis storage implementation (implemented by christopherh0rn, thanks!)
 - added support for collecting tests with Pest 2 and PHPUnit 10 (reported by CadenP, idea by kdevan, thanks!)
 - added support for all Twig versions in the Twig profiler integration (idea by ericktucto, thanks!)
+- improved collecting of notifications in Laravel to support latest version of laravel/slack-notification-channel (implemented by maximepvrt, thanks!)
 - improved Laravel installation process to be able to use "clockwork" tag for publishing the config file
 - improved default Laravel config to ignore Telescope Toolbar requests by default (implemented by lloricode, thanks!)
 - improved Eloquent data source to support Crate PDO (implemented by JulianMar, thanks!)
 - fixed compatibility with Laravel <5.5 when collecting database queries (reported by sbahr001, thanks!)
 - fixed checking of notification type when collecting Laravel notifications (reported by faraweilyas, idea by jameshulse, thanks!)
+- fixed collecting of Slack notifications content in Laravel (implemented by maximepvrt, thanks!)
+- fixed collecting of Laravel cache expiration times (implemented by FeBe95, thanks!)
 - fixed ability to use custom should-collect and should-record callbacks (implemented by thattomperson, thanks!)
 - fixed a possible crash with SQL storage when creating backup table or inserting duplicate ids (reported by davidp-celtra, thanks!)
+- fixed compatibility with using Filebeat to collect Clockwork metadata (implemented by JConseil, thanks!)
 
 *BREAKING*
 
