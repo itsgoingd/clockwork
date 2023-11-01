@@ -188,21 +188,21 @@ class LaravelNotificationsDataSource extends DataSource
 	// Resolve Slack notification channel specific data
 	protected function resolveSlackChannelSpecific($event, $message)
 	{
-		if (get_class($message) == 'Illuminate\Notifications\Slack\SlackMessage') {
+		// laravel/slack-notification-channel 2 or earlier
+		if (! ($message instanceof \Illuminate\Notifications\Slack\SlackMessage)) {
 			$data = [
-				'from'    => $message->toArray()['username'] ?? null,
-				'to'      => $message->toArray()['channel'] ?? null,
-				'data' => [
-					'content' => $message->toArray()
-				],
+				'from' => $message->username,
+				'to'   => $message->channel,
+				'data' => [ 'content' => $message->content ]
 			];
+		// laravel/slack-notification-channel 3 or later
 		} else {
+			$message = $message->toArray();
+
 			$data = [
-				'from'    => $message->username,
-				'to'      => $message->channel,
-				'data' => [
-					'content' => $message->content
-				],
+				'from' => isset($message['username']) ? $message['username'] : null,
+				'to'   => isset($message['channel']) ? $message['channel'] : null,
+				'data' => [ 'content' => $message ]
 			];
 		}
 

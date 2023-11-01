@@ -23,7 +23,8 @@ class RedisStorage extends Storage
 	// Metadata expiration time in minutes
 	protected $expiration;
 
-	private $prefix;
+	// Metedata keys prefix
+	protected $prefix;
 
 	public function __construct($connection, $expiration = null, $prefix = 'clockwork')
 	{
