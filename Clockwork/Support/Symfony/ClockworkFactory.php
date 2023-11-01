@@ -4,6 +4,7 @@ use Clockwork\Clockwork;
 use Clockwork\Storage\SymfonyStorage;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Profiler\Profiler;
 
 class ClockworkFactory
 {
