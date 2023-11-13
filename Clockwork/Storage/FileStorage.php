@@ -9,6 +9,9 @@ class FileStorage extends Storage
 	// Path where files are stored
 	protected $path;
 
+	// Path permissions
+	protected $pathPermissions;
+
 	// Metadata expiration time in minutes
 	protected $expiration;
 
@@ -21,28 +24,11 @@ class FileStorage extends Storage
 	// Index file handle
 	protected $indexHandle;
 
-	// Return new storage, takes path where to store files as argument, throws exception if path is not writable
-	public function __construct($path, $dirPermissions = 0700, $expiration = null, $compress = false)
+	// Return new storage, takes path where to store files as argument
+	public function __construct($path, $pathPermissions = 0700, $expiration = null, $compress = false)
 	{
-		if (! file_exists($path)) {
-			// directory doesn't exist, try to create one
-			if (! @mkdir($path, $dirPermissions, true)) {
-				throw new \Exception("Directory \"{$path}\" does not exist.");
-			}
-
-			// create default .gitignore, to ignore stored json files
-			file_put_contents("{$path}/.gitignore", "*.json\n*.json.gz\nindex\n");
-		} elseif (! is_writable($path)) {
-			throw new \Exception("Path \"{$path}\" is not writable.");
-		}
-
-		if (! file_exists($indexFile = "{$path}/index")) {
-			file_put_contents($indexFile, '');
-		} elseif (! is_writable($indexFile)) {
-			throw new \Exception("Path \"{$indexFile}\" is not writable.");
-		}
-
 		$this->path = $path;
+		$this->pathPermissions = $pathPermissions;
 		$this->expiration = $expiration === null ? 60 * 24 * 7 : $expiration;
 		$this->compress = $compress;
 	}
@@ -78,9 +64,12 @@ class FileStorage extends Storage
 		return $this->loadRequests($this->searchIndexForward($search, $id, $count));
 	}
 
-	// Store request, requests are stored in JSON representation in files named <request id>.json in storage path
+	// Store request, requests are stored in JSON representation in files named <request id>.json in storage path,
+	// throws exception if path is not writable
 	public function store(Request $request, $skipIndex = false)
 	{
+		$this->ensurePathIsWritable();
+
 		$path = "{$this->path}/{$request->id}.json";
 		$data = @json_encode($request->toArray(), \JSON_PARTIAL_OUTPUT_ON_ERROR);
 
@@ -327,5 +316,27 @@ class FileStorage extends Storage
 
 		flock($handle, LOCK_UN);
 		fclose($handle);
+	}
+
+	// Ensure the metadata path is writable and initialize it if it doesn't exist, throws exception if it is not writable 
+	protected function ensurePathIsWritable()
+	{
+		if (! file_exists($this->path)) {
+			// directory doesn't exist, try to create one
+			if (! @mkdir($this->path, $this->pathPermissions, true)) {
+				throw new \Exception("Directory \"{$this->path}\" does not exist.");
+			}
+
+			// create default .gitignore, to ignore stored json files
+			file_put_contents("{$this->path}/.gitignore", "*.json\n*.json.gz\nindex\n");
+		} elseif (! is_writable($this->path)) {
+			throw new \Exception("Path \"{$this->path}\" is not writable.");
+		}
+
+		if (! file_exists($indexFile = "{$this->path}/index")) {
+			file_put_contents($indexFile, '');
+		} elseif (! is_writable($indexFile)) {
+			throw new \Exception("Path \"{$indexFile}\" is not writable.");
+		}
 	}
 }
