@@ -675,7 +675,7 @@ class ClockworkSupport
 			'uri'     => $this->app['request']->getRequestUri(),
 			'input'   => $this->app['request']->input(),
 			'cookies' => $this->app['request']->cookie(),
-			'host'    => $this->app['request']->host()
+			'host'    => method_exists($this->app['request'], 'host') ? $this->app['request']->host() : $this->app['request']->getHost()
 		]);
 	}
 
