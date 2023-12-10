@@ -27,7 +27,7 @@ class Search
 		}
 
 		foreach ([ 'stopOnFirstMismatch' ] as $option) {
-			$this->$option = isset($options[$option]) ? $options[$option] : $this->$condition;
+			$this->$option = isset($options[$option]) ? $options[$option] : $this->$option;
 		}
 
 		$this->method = array_map('strtolower', $this->method);
