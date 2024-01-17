@@ -39,7 +39,7 @@ class ClockworkMiddleware extends Middleware
 
 		$this->app->getLog()->setWriter($clockworkLogWriter);
 
-		$clockworkDataUri = '#/__clockwork(?:/(?<id>[0-9-]+))?(?:/(?<direction>(?:previous|next)))?(?:/(?<count>\d+))?#';
+		$clockworkDataUri = '#/__clockwork(?:/(?<id>([0-9-]+|latest)))?(?:/(?<direction>(?:previous|next)))?(?:/(?<count>\d+))?#';
 		if ($this->app->config('debug') && preg_match($clockworkDataUri, $this->app->request()->getPathInfo(), $matches)) {
 			$matches = array_merge([ 'direction' => null, 'count' => null ], $matches);
 			return $this->retrieveRequest($matches['id'], $matches['direction'], $matches['count']);
