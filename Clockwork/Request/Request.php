@@ -401,7 +401,7 @@ class Request
 	// name), line (caller line number), tags
 	public function addModelAction($model, $action, $data = [])
 	{
-		$this->modelActions[] = [
+		$this->modelsActions[] = [
 			'model'      => $model,
 			'key'        => isset($data['key']) ? $data['key'] : null,
 			'action'     => $action,
