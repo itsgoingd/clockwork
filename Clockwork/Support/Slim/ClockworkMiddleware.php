@@ -44,10 +44,16 @@ class ClockworkMiddleware
 			return $this->authenticate($request);
 		}
 
-		$clockworkDataUri = '#/__clockwork(?:/(?<id>([0-9-]+|latest)))?(?:/(?<direction>(?:previous|next)))?(?:/(?<count>\d+))?#';
+		$clockworkDataUri = '#/__clockwork(?:/(?<id>([0-9-]+|latest)))?(?:/(?<extended>(?:extended)))?(?:/(?<direction>(?:previous|next)))?(?:/(?<count>\d+))?#';
 		if (preg_match($clockworkDataUri, $request->getUri()->getPath(), $matches)) {
-			$matches = array_merge([ 'id' => null, 'direction' => null, 'count' => null ], $matches);
-			return $this->retrieveRequest($request, $matches['id'], $matches['direction'], $matches['count']);
+			$matches = array_merge([ 'id' => null, 'direction' => null, 'count' => null, 'extended' => null ], $matches);
+			return $this->retrieveRequest(
+				$request,
+				$matches['id'],
+				$matches['direction'],
+				$matches['count'],
+				$matches['extended'] === 'extended'
+			);
 		}
 
 		$response = $handler->handle($request);
@@ -62,7 +68,7 @@ class ClockworkMiddleware
 		return $this->jsonResponse([ 'token' => $token ], $token ? 200 : 403);
 	}
 
-	protected function retrieveRequest(Request $request, $id, $direction, $count)
+	protected function retrieveRequest(Request $request, $id, $direction, $count, $extended)
 	{
 		$authenticator = $this->clockwork->authenticator();
 		$storage = $this->clockwork->storage();
@@ -75,14 +81,29 @@ class ClockworkMiddleware
 
 		if ($direction == 'previous') {
 			$data = $storage->previous($id, $count);
+			if ($extended) {
+				foreach ($data as $datum) {
+					$this->clockwork->extendRequest($datum);
+				}
+			}
 		} elseif ($direction == 'next') {
 			$data = $storage->next($id, $count);
+			if ($extended) {
+				foreach ($data as $datum) {
+					$this->clockwork->extendRequest($datum);
+				}
+			}
 		} elseif ($id == 'latest') {
 			$data = $storage->latest();
+			if ($extended && $data) {
+				$this->clockwork->extendRequest($data);
+			}
 		} else {
 			$data = $storage->find($id);
+			if ($extended && $data) {
+				$this->clockwork->extendRequest($data);
+			}
 		}
-
 		return $this->jsonResponse($data);
 	}
 
