@@ -1,27 +1,35 @@
 <?php namespace Clockwork\Support\Slim;
 
 use Clockwork\Clockwork;
-use Clockwork\Authentication\NullAuthenticator;
 use Clockwork\DataSource\PsrMessageDataSource;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Helpers\ServerTiming;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\App;
 
 // Slim 4 middleware
 class ClockworkMiddleware
 {
+	/** @var App */
 	protected $app;
+	/** @var Clockwork */
 	protected $clockwork;
+	/** @var float */
 	protected $startTime;
 
+	/**
+	 * @param App $app
+	 * @param string|Clockwork $storagePathOrClockwork
+	 * @param float|null $startTime
+	 */
 	public function __construct($app, $storagePathOrClockwork, $startTime = null)
 	{
 		$this->app = $app;
 		$this->clockwork = $storagePathOrClockwork instanceof Clockwork
 			? $storagePathOrClockwork : $this->createDefaultClockwork($storagePathOrClockwork);
-		$this->startTime = $startTime ?: microtime(true);
+		$this->startTime = $startTime ? floatval($startTime) : microtime(true);
 	}
 
 	public function __invoke(Request $request, RequestHandler $handler)
@@ -104,7 +112,6 @@ class ClockworkMiddleware
 		$clockwork = new Clockwork();
 
 		$clockwork->storage(new FileStorage($storagePath));
-		$clockwork->authenticator(new NullAuthenticator);
 
 		return $clockwork;
 	}
