@@ -24,6 +24,10 @@ class FileStorage extends Storage
 	// Index file handle
 	protected $indexHandle;
 
+	// Flag whether the first record is to be retrieved next
+	/** @var bool */
+	protected $indexInitial;
+
 	// Return new storage, takes path where to store files as argument
 	public function __construct($path, $pathPermissions = 0700, $expiration = null, $compress = false)
 	{
@@ -176,6 +180,7 @@ class FileStorage extends Storage
 		}
 
 		$this->indexHandle = fopen("{$this->path}/index", 'r');
+		$this->indexInitial = true;
 
 		if ($lock) flock($this->indexHandle, LOCK_EX);
 		if ($position == 'end') fseek($this->indexHandle, 0, SEEK_END);
@@ -236,8 +241,14 @@ class FileStorage extends Storage
 	{
 		if (feof($this->indexHandle)) return;
 
-		// File pointer is always at the start of the line, call extra fgets to skip current line
-		fgets($this->indexHandle);
+		// File pointer is always at the start of the last retrieved line.
+		// Call an extra `fgets()` to skip current line, unless it is the
+		// first line actually being read.
+		if (!$this->indexInitial) {
+			fgets($this->indexHandle);
+		} else {
+			$this->indexInitial = false;
+		}
 		$line = fgets($this->indexHandle);
 
 		// Check if we read an empty line or reached the end of file
