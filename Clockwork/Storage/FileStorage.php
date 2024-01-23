@@ -25,10 +25,10 @@ class FileStorage extends Storage
 	protected $indexHandle;
 
 	// Return new storage, takes path where to store files as argument
-	public function __construct($path, $pathPermissions = 0700, $expiration = null, $compress = false)
+	public function __construct($path, $pathPermissions = null, $expiration = null, $compress = false)
 	{
 		$this->path = $path;
-		$this->pathPermissions = $pathPermissions;
+		$this->pathPermissions = ($pathPermissions === null) ? 0700 : $pathPermissions;
 		$this->expiration = $expiration === null ? 60 * 24 * 7 : $expiration;
 		$this->compress = $compress;
 	}
