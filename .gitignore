@@ -1,0 +1,3 @@
+# PHP Composer files
+composer.lock
+vendor/
