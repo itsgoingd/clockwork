@@ -25,7 +25,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Clockwork\\": "Clockwork/"
+            "Clockwork\\": "Clockwork/",
+            "Tests\\Clockwork\\": "tests/"
         }
     },
     "extra": {
@@ -37,5 +38,8 @@
                 "Clockwork": "Clockwork\\Support\\Laravel\\Facade"
             }
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
     }
 }
