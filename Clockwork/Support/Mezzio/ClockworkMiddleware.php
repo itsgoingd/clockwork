@@ -21,12 +21,7 @@ class ClockworkMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (!$this->clockwork->isEnabled()) {
-            return $handler->handle($request);
-        }
-
         $requestPath = rtrim($request->getUri()->getPath(), '/');
-
         $apiPath = ltrim($this->clockwork->getApiPath(), '/');
         $clockworkDataUri = "#/$apiPath(?:/(?<id>[0-9-]+))?(?:/(?<direction>(?:previous|next)))?(?:/(?<count>\d+))?#";
         if (preg_match($clockworkDataUri, $requestPath, $matches)) {
