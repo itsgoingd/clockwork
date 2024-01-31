@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'enable' => getenv('CLOCKWORK_ENABLE') !== false ? getenv('CLOCKWORK_ENABLE') : true,
+    'enable' => getenv('CLOCKWORK_ENABLE') !== false ? getenv('CLOCKWORK_ENABLE') : false,
 
     /*
     |------------------------------------------------------------------------------------------------------------------
@@ -128,7 +128,7 @@ return [
         'enable' => getenv('CLOCKWORK_WEB_ENABLE') !== false ? getenv('CLOCKWORK_WEB_ENABLE') : true,
 
         // Path where to install the Web UI assets, should be publicly accessible
-        'path' => getenv('CLOCKWORK_WEB_PATH') !== false ? getenv('CLOCKWORK_WEB_PATH') : __DIR__ . '/../../../../../../public/vendor/clockwork',
+        'path' => getenv('CLOCKWORK_WEB_PATH') !== false ? getenv('CLOCKWORK_WEB_PATH') : 'public/vendor/clockwork',
 
         // Public URI where the installed Web UI assets will be accessible
         'uri' => getenv('CLOCKWORK_WEB_URI') !== false ? getenv('CLOCKWORK_WEB_URI') : '/vendor/clockwork',
@@ -151,7 +151,7 @@ return [
     'storage' => getenv('CLOCKWORK_STORAGE') !== false ? getenv('CLOCKWORK_STORAGE') : 'files',
 
     // Path where the Clockwork metadata is stored
-    'storage_files_path' => getenv('CLOCKWORK_STORAGE_FILES_PATH') !== false ? getenv('CLOCKWORK_STORAGE_FILES_PATH') : __DIR__ . '/../../../../../../clockwork',
+    'storage_files_path' => getenv('CLOCKWORK_STORAGE_FILES_PATH') !== false ? getenv('CLOCKWORK_STORAGE_FILES_PATH') : 'data/clockwork',
 
     // Compress the metadata files using gzip, trading a little bit of performance for lower disk usage
     'storage_files_compress' => getenv('CLOCKWORK_STORAGE_FILES_COMPRESS') !== false ? getenv('CLOCKWORK_STORAGE_FILES_COMPRESS') : false,
