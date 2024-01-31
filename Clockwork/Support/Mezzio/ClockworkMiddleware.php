@@ -22,10 +22,13 @@ class ClockworkMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $requestPath = rtrim($request->getUri()->getPath(), '/');
-        $apiPath = ltrim($this->clockwork->getApiPath(), '/');
-        $clockworkDataUri = "#/$apiPath(?:/(?<id>[0-9-]+))?(?:/(?<direction>(?:previous|next)))?(?:/(?<count>\d+))?#";
-        if (preg_match($clockworkDataUri, $requestPath, $matches)) {
-            return new JsonResponse($this->clockwork->getMetadata($request->getUri()->getPath()));
+
+        if ($this->clockwork->isEnabled()) {
+            $apiPath = ltrim($this->clockwork->getApiPath(), '/');
+            $clockworkDataUri = "#/$apiPath(?:/(?<id>[0-9-]+))?(?:/(?<direction>(?:previous|next)))?(?:/(?<count>\d+))?#";
+            if (preg_match($clockworkDataUri, $requestPath, $matches)) {
+                return new JsonResponse($this->clockwork->getMetadata($request->getUri()->getPath()));
+            }
         }
 
         if ($this->clockwork->isWebEnabled()) {
