@@ -179,6 +179,7 @@ return [
     */
 
     'authentication' => getenv('CLOCKWORK_AUTHENTICATION') !== false ? getenv('CLOCKWORK_AUTHENTICATION') : false,
+    'authentication_api' => getenv('CLOCKWORK_AUTHENTICATION_API') !== false ? getenv('CLOCKWORK_AUTHENTICATION_API') : '/__clockwork/auth',
 
     // Password for the simple authentication
     'authentication_password' => getenv('CLOCKWORK_AUTHENTICATION_PASSWORD') !== false ? getenv('CLOCKWORK_AUTHENTICATION_PASSWORD') : 'VerySecretPassword',
