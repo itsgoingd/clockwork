@@ -24,10 +24,15 @@ class ClockworkMiddleware implements MiddlewareInterface
         $requestPath = rtrim($request->getUri()->getPath(), '/');
 
         if ($this->clockwork->isEnabled()) {
+            $apiAuthentication = ltrim($this->clockwork->getAuthenticationAPI(), '/');
+            if ($this->clockwork->isAuthenticationEnabled() && $requestPath == $apiAuthentication) {
+                return $this->clockwork->usePsrMessage($request, new Response())->authenticate($requestPath);
+            }
+
             $apiPath = ltrim($this->clockwork->getApiPath(), '/');
             $clockworkDataUri = "#/$apiPath(?:/(?<id>[0-9-]+))?(?:/(?<direction>(?:previous|next)))?(?:/(?<count>\d+))?#";
             if (preg_match($clockworkDataUri, $requestPath, $matches)) {
-                return new JsonResponse($this->clockwork->getMetadata($request->getUri()->getPath()));
+                return $this->clockwork->usePsrMessage($request, new Response())->returnMetadata($requestPath);
             }
         }
 
@@ -37,6 +42,8 @@ class ClockworkMiddleware implements MiddlewareInterface
             }
         }
 
+        // Inject clockwork instance in the request, useful to log new events or timeline
+        $request = $request->withAttribute('Clockwork', $this->clockwork->getClockwork());
         return $this->clockwork->usePsrMessage($request, $handler->handle($request))->requestProcessed();
     }
 }
