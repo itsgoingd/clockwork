@@ -4,7 +4,6 @@ namespace Clockwork\Support\Mezzio;
 
 use Clockwork\Support\Mezzio\Clockwork;
 use Laminas\Diactoros\Response;
-use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
