@@ -481,4 +481,31 @@ class Clockwork
 	{
 		return static::instance()->$method(...$args);
 	}
+
+	public function isEnabled()
+	{
+		return $this->config['enable'];
+	}
+
+	public function getApiPath()
+	{
+		return $this->config['api'];
+	}
+
+	public function isWebEnabled()
+	{
+		return $this->config['web']['enable'];
+	}
+
+	public function getWebPath()
+	{
+		// TODO: Clarify what the meaning here is.
+		// return $this->config['web']['uri'];
+		return '/web';
+	}
+
+	public function isAuthenticationEnabled()
+	{
+		return $this->config['authentication'];
+	}
 }
