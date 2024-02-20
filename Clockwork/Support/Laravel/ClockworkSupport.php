@@ -441,7 +441,7 @@ class ClockworkSupport
 			];
 
 			$response->cookie(
-				new Cookie('x-clockwork', json_encode($clockworkBrowser), time() + 60, null, null, null, false)
+				new Cookie('x-clockwork', json_encode($clockworkBrowser), time() + 60, null, null, $request->secure(), false)
 			);
 		}
 
