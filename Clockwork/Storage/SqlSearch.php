@@ -95,14 +95,10 @@ class SqlSearch extends Search
 		if (! count($inputs)) return null;
 
 		$bindings = [];
-		$values = implode(', ', array_map(
-			static function ($input, $index) use ($field, &$bindings) {
-				$bindings["{$field}{$index}"] = $input;
-				return ":{$field}{$index}";
-			},
-			$inputs,
-			array_keys($inputs)
-		));
+		$values = implode(', ', array_map(function ($input, $index) use ($field, &$bindings) {
+			$bindings["{$field}{$index}"] = $input;
+			return ":{$field}{$index}";
+		}, $inputs, array_keys($inputs)));
 
 		return [ $this->quote($field) . " IN ({$values})", $bindings ];
 	}
