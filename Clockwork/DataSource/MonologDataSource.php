@@ -3,8 +3,8 @@
 use Clockwork\DataSource\DataSource;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
-use Clockwork\Support\Monolog\Handler\ClockworkHandler;
-
+use Clockwork\Support\Monolog\Monolog2\ClockworkHandler as Monolog2ClockworkHandler;
+use Clockwork\Support\Monolog\Monolog\ClockworkHandler;
 use Monolog\Logger as Monolog;
 
 // Data source for Monolog, provides application log
@@ -18,7 +18,21 @@ class MonologDataSource extends DataSource
 	{
 		$this->log = new Log;
 
-		$monolog->pushHandler(new ClockworkHandler($this->log));
+		$handler=null;
+		switch (\Monolog\Logger::API) {
+			case 1:
+				$handler=new ClockworkHandler($this->log);
+				break;
+			case 2:
+				$handler=new Monolog2ClockworkHandler($this->log);
+				break;
+			default:
+				// By default use the latest implementation of clockwork handler
+				$handler=new Monolog2ClockworkHandler($this->log);
+				break;
+		}
+		
+		$monolog->pushHandler($handler);
 	}
 
 	// Adds log entries to the request
