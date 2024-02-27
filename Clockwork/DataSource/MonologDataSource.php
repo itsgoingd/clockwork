@@ -5,7 +5,7 @@ use Clockwork\Request\Log;
 use Clockwork\Request\Request;
 use Clockwork\Support\Monolog\Monolog2\ClockworkHandler;
 use Clockwork\Support\Monolog\Monolog\ClockworkHandler as LegacyClockworkHandler;
-use Monolog\Logger as Monolog;
+use Monolog\Logger;
 
 // Data source for Monolog, provides application log
 class MonologDataSource extends DataSource
@@ -14,11 +14,11 @@ class MonologDataSource extends DataSource
 	protected $log;
 
 	// Create a new data source, takes Monolog instance as an argument
-	public function __construct(Monolog $monolog)
+	public function __construct(Logger $monolog)
 	{
 		$this->log = new Log;
 
-		$handler = Monolog::API == 1 ? new LegacyClockworkHandler($this->log) : new ClockworkHandler($this->log);
+		$handler = Logger::API == 1 ? new LegacyClockworkHandler($this->log) : new ClockworkHandler($this->log);
 		
 		$monolog->pushHandler($handler);
 	}
