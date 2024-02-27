@@ -18,7 +18,7 @@ class MonologDataSource extends DataSource
 	{
 		$this->log = new Log;
 
-		$handler = Logger::API == 1 ? new LegacyClockworkHandler($this->log) : new ClockworkHandler($this->log);
+		$handler = Monolog::API == 1 ? new LegacyClockworkHandler($this->log) : new ClockworkHandler($this->log);
 		
 		$monolog->pushHandler($handler);
 	}
