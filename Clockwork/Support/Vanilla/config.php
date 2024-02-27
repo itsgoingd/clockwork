@@ -163,11 +163,11 @@ return [
 
 	// Configuration for the Redis storage
 	'storage_redis' => [
-		'host' => isset('CLOCKWORK_STORAGE_REDIS_HOST') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_HOST') : '127.0.0.1',
-		'username' => isset('CLOCKWORK_STORAGE_REDIS_USERNAME') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_USERNAME') : null,
-		'password' => isset('CLOCKWORK_STORAGE_REDIS_PASSWORD') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_PASSWORD') : null,
-		'port' => isset('CLOCKWORK_STORAGE_REDIS_PORT') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_PORT') : 6379,
-		'database' => isset('CLOCKWORK_STORAGE_REDIS_DB') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_DB') : 0
+		'host' => getenv('CLOCKWORK_STORAGE_REDIS_HOST') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_HOST') : '127.0.0.1',
+		'username' => getenv('CLOCKWORK_STORAGE_REDIS_USERNAME') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_USERNAME') : null,
+		'password' => getenv('CLOCKWORK_STORAGE_REDIS_PASSWORD') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_PASSWORD') : null,
+		'port' => getenv('CLOCKWORK_STORAGE_REDIS_PORT') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_PORT') : 6379,
+		'database' => getenv('CLOCKWORK_STORAGE_REDIS_DB') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_DB') : 0
 	],
 
 	// Redis prefix for Clockwork keys ("clockwork" if not set)
