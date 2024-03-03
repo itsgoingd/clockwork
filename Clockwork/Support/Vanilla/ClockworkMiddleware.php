@@ -6,7 +6,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-// Generic Clockwork middleware fro use with PSR-compatible applications
+// Generic Clockwork middleware for use with PSR-compatible applications
 class ClockworkMiddleware implements MiddlewareInterface
 {
 	// The underlying vanilla Clockwork support class instance
@@ -48,7 +48,7 @@ class ClockworkMiddleware implements MiddlewareInterface
 	// Process the middleware
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) :ResponseInterface
 	{
-		$request->withAttribute('clockwork', $this->clockwork);
+		$request = $request->withAttribute('clockwork', $this->clockwork);
 		
 		$this->clockwork->event('Controller')->begin();
 

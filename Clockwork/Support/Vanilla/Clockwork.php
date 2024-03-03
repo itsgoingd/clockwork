@@ -243,7 +243,7 @@ class Clockwork
 
 		$token = $this->incomingRequest()->input('_token');
 
-		if (! $request->updateToken || ! hash_equals($request->updateToken, $token)) {
+		if (! $request->updateToken || ! $token || ! hash_equals($request->updateToken, $token)) {
 			return $this->response([ 'message' => 'Invalid update token.' ], 403);
 		}
 
@@ -323,7 +323,7 @@ class Clockwork
 	public function usePsrMessage(PsrRequest $request, PsrResponse $response = null, PsrResponseFactory $responseFactory = null)
 	{
 		if (! $response && ! $responseFactory && ! class_exists(Psr17Factory::class)) {
-			throw new \Exception('Please provide response instance, response factory or install the php-http/discovery package.');
+			throw new \Exception('The Clockwork vanilla integration requires a response, response factory or the php-http/discovery package to be installed.');
 		}
 
 		$this->psrRequest = $request;
@@ -458,20 +458,37 @@ class Clockwork
 		}
 	}
 
-	// Make a Clockwork incoming request instance
+	// Creates and caches an incoming request instance
 	protected function incomingRequest()
 	{
 		if ($this->incomingRequest) return $this->incomingRequest;
 
-		return $this->incomingRequest = new IncomingRequest([
-			'method'  => $this->psrRequest ? $this->psrRequest->getMethod() : $_SERVER['REQUEST_METHOD'],
-			'uri'     => $this->psrRequest ? $this->psrRequest->getUri()->getPath() : $_SERVER['REQUEST_URI'],
-			'headers' => $this->psrRequest
-				? array_map(function ($values) { return implode(', ', $values); }, $this->psrRequest->getHeaders())
-				: $_SERVER,
-			'input'   => $this->psrRequest
-				? array_merge($this->psrRequest->getQueryParams(), (array) $this->psrRequest->getParsedBody())
-				: array_merge($_GET, $_POST, (array) json_decode(file_get_contents('php://input'), true))
+		return $this->incomingRequest = $this->psrRequest ? $this->incomingRequestFromPsr() : $this->incomingRequestFromGlobals();
+	}
+
+	// Creates an incoming request instance from globals
+	protected function incomingRequestFromGlobals()
+	{
+		return new IncomingRequest([
+			'method'  => $_SERVER['REQUEST_METHOD'],
+			'uri'     => $_SERVER['REQUEST_URI'],
+			'headers' => $_SERVER,
+			'input'   => array_merge($_GET, $_POST, (array) json_decode(file_get_contents('php://input'), true))
+		]);
+	}
+
+	// Creates an incoming request instance from a PSR request
+	protected function incomingRequestFromPsr()
+	{
+		return new IncomingRequest([
+			'method'  => $this->psrRequest->getMethod(),
+			'uri'     => $this->psrRequest->getUri()->getPath(),
+			'headers' => array_map(function ($values) { return implode(', ', $values); }, $this->psrRequest->getHeaders()),
+			'input'   => array_merge(
+				$this->psrRequest->getQueryParams(),
+				(array) $this->psrRequest->getParsedBody(),
+				(array) json_decode((string) $this->psrRequest->getBody(), true)
+			)
 		]);
 	}
 
