@@ -402,10 +402,10 @@ class Clockwork
 	public function configureShouldCollect()
 	{
 		$this->clockwork->shouldCollect([
-			'onDemand'       => $this->config['requests']['on_demand'],
-			'sample'         => $this->config['requests']['sample'],
-			'except'         => $this->config['requests']['except'],
-			'only'           => $this->config['requests']['only'],
+			'onDemand'        => $this->config['requests']['on_demand'],
+			'sample'          => $this->config['requests']['sample'],
+			'except'          => $this->config['requests']['except'],
+			'only'            => $this->config['requests']['only'],
 			'exceptPreflight' => $this->config['requests']['except_preflight']
 		]);
 
