@@ -13,7 +13,7 @@ return [
 	|
 	*/
 
-	'enable' => getenv('CLOCKWORK_ENABLE') !== false ? getenv('CLOCKWORK_ENABLE') : false,
+	'enable' => getenv('CLOCKWORK_ENABLE') !== false ? getenv('CLOCKWORK_ENABLE') : true,
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------
