@@ -160,6 +160,7 @@ class ClockworkSupport
 					? $this->app['clockwork.notifications'] : $this->app['clockwork.swift']
 			);
 		}
+		if ($this->isFeatureEnabled('http_requests')) $clockwork->addDataSource($this->app['clockwork.http-requests']);
 		if ($this->isFeatureAvailable('xdebug')) $clockwork->addDataSource($this->app['clockwork.xdebug']);
 		if ($this->isFeatureEnabled('views')) {
 			$clockwork->addDataSource(
@@ -179,6 +180,7 @@ class ClockworkSupport
 		if ($this->isFeatureEnabled('cache')) $this->app['clockwork.cache']->listenToEvents();
 		if ($this->isFeatureEnabled('database')) $this->app['clockwork.eloquent']->listenToEvents();
 		if ($this->isFeatureEnabled('events')) $this->app['clockwork.events']->listenToEvents();
+		if ($this->isFeatureEnabled('http_requests')) $this->app['clockwork.http-requests']->listenToEvents();
 		if ($this->isFeatureEnabled('notifications')) {
 			$this->isFeatureAvailable('notifications-events')
 				? $this->app['clockwork.notifications']->listenToEvents() : $this->app['clockwork.swift']->listenToEvents();
@@ -587,6 +589,8 @@ class ClockworkSupport
 	{
 		if ($feature == 'database') {
 			return $this->app['config']->get('database.default');
+		} elseif ($feature == 'http_requests') {
+			return class_exists(\Illuminate\Http\Client\Request::class);
 		} elseif ($feature == 'notifications-events') {
 			return class_exists(\Illuminate\Mail\Events\MessageSent::class)
 				&& class_exists(\Illuminate\Notifications\Events\NotificationSent::class);

@@ -133,6 +133,9 @@ class Request
 	// Custom user data
 	public $userData = [];
 
+	// HTTP requests
+	public $httpRequests = [];
+
 	// Subrequests
 	public $subrequests = [];
 
@@ -298,6 +301,7 @@ class Request
 			'userData'                 => array_map(function ($data) {
 				return $data instanceof UserData ? $data->toArray() : $data;
 			}, $this->userData),
+			'httpRequests'             => $this->httpRequests,
 			'subrequests'              => $this->subrequests,
 			'xdebug'                   => $this->xdebug,
 			'commandName'              => $this->commandName,

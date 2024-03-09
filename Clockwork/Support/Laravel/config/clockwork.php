@@ -72,6 +72,11 @@ return [
 			],
 		],
 
+		// Sent HTTP requests
+		'http_requests' => [
+			'enabled' => env('CLOCKWORK_HTTP_REQUESTS_ENABLED', true),
+		],
+
 		// Laravel log (you can still log directly to Clockwork with laravel log disabled)
 		'log' => [
 			'enabled' => env('CLOCKWORK_LOG_ENABLED', true)
