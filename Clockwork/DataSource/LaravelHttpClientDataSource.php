@@ -15,7 +15,7 @@ class LaravelHttpClientDataSource extends DataSource
 	// Event dispatcher instance
 	protected $dispatcher;
 
-	// Sent notifications
+	// Sent HTTP requests
 	protected $requests = [];
 	
 	// Map of executing requests, keyed by their object hash
@@ -32,8 +32,6 @@ class LaravelHttpClientDataSource extends DataSource
 	{
 		$request->httpRequests = array_merge($request->httpRequests, $this->requests);
 		
-		$request->log()->debug($this->requests);
-	
 		return $request;
 	}
 	
@@ -60,7 +58,7 @@ class LaravelHttpClientDataSource extends DataSource
 		$request = (object) [
 			'request'  => (object) [
 				'method'  => $event->request->method(),
-				'url'     => $event->request->url(),
+				'url'     => $this->removeAuthFromUrl($event->request->url()),
 				'headers' => $event->request->headers(),
 				'content' => $event->request->data(),
 				'body'    => $event->request->body(),
@@ -90,8 +88,7 @@ class LaravelHttpClientDataSource extends DataSource
 			'status'  => $event->response->status(),
 			'headers' => $event->response->headers(),
 			'content' => $event->response->json(),
-			'body'    => $event->response->body(),
-			'stats'   => $event->response->handlerStats()
+			'body'    => $event->response->body()
 		];
 		$request->stats = (object) [
 			'timing' => isset($stats['total_time_us']) ? (object) [
@@ -121,7 +118,6 @@ class LaravelHttpClientDataSource extends DataSource
 	// Update last request with error when connection fails
 	protected function connectionFailed($event)
 	{
-		dd($event);
 		if (! isset($this->executingRequests[spl_object_hash($event->request)])) return;
 
 		$request = $this->executingRequests[spl_object_hash($event->request)];
@@ -130,5 +126,11 @@ class LaravelHttpClientDataSource extends DataSource
 		$request->error = 'connection-failed';
 
 		unset($this->executingRequests[spl_object_hash($event->request)]);
+	}
+
+	// Removes username and password from the URL
+	protected function removeAuthFromUrl($url)
+	{
+		return preg_replace('#^(.+?://)(.+?@)(.*)$#', '$1$3', $url);
 	}
 }
