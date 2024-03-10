@@ -19,6 +19,17 @@ class GuzzleDataSource extends DataSource
 	// Sent HTTP requests
 	protected $requests = [];
 	
+	// Whether to collect request and response content (json or form data) and raw content
+	protected $collectContent = true;
+	protected $collectRawContent = true;
+
+	// Create a new data source instance
+	public function __construct($collectContent = true, $collectRawContent = false)
+	{
+		$this->collectContent = $collectContent;
+		$this->collectRawContent = $collectRawContent;
+	}
+
 	// Returns a new Guzzle instance, pre-configured with Clockwork support
 	public function instance(array $config = [])
 	{
@@ -89,14 +100,14 @@ class GuzzleDataSource extends DataSource
 				'method'  => $request->getMethod(),
 				'url'     => $this->removeAuthFromUrl((string) $request->getUri()),
 				'headers' => $request->getHeaders(),
-				'content' => $this->resolveRequestContent($request),
-				'body'    => (string) $request->getBody(),
+				'content' => $this->collectContent ? $this->resolveRequestContent($request) : null,
+				'body'    => $this->collectRawContent ? (string) $request->getBody() : null
 			],
 			'response' => (object) [
 				'status'  => (int) $response->getStatusCode(),
 				'headers' => $response->getHeaders(),
-				'content' => json_decode((string) $response->getBody(), true),
-				'body'    => (string) $response->getBody()
+				'content' => $this->collectContent ? json_decode((string) $response->getBody(), true) : null,
+				'body'    => $this->collectRawContent ? (string) $response->getBody() : null
 			],
 			'stats'    => $stats ? (object) [
 				'timing' => isset($stats['total_time_us']) ? (object) [

@@ -155,7 +155,11 @@ class ClockworkServiceProvider extends ServiceProvider
 		});
 
 		$this->app->singleton('clockwork.http-requests', function ($app) {
-			return new LaravelHttpClientDataSource($app['events']);
+			return new LaravelHttpClientDataSource(
+				$app['events'],
+				$app['clockwork.support']->getConfig('features.http_requests.collect_data'),
+				$app['clockwork.support']->getConfig('features.http_requests.collect_raw_data')
+			);
 		});
 
 		$this->app->singleton('clockwork.laravel', function ($app) {

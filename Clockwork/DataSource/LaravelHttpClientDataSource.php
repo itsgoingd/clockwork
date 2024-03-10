@@ -21,10 +21,17 @@ class LaravelHttpClientDataSource extends DataSource
 	// Map of executing requests, keyed by their object hash
 	protected $executingRequests = [];
 	
+	// Whether to collect request and response content (json or form data) and raw content
+	protected $collectContent = true;
+	protected $collectRawContent = true;
+
 	// Create a new data source instance, takes an event dispatcher as argument
-	public function __construct(Dispatcher $dispatcher)
+	public function __construct(Dispatcher $dispatcher, $collectContent = true, $collectRawContent = false)
 	{
 		$this->dispatcher = $dispatcher;
+
+		$this->collectContent = $collectContent;
+		$this->collectRawContent = $collectRawContent;
 	}
 	
 	// Add sent notifications to the request
@@ -60,8 +67,8 @@ class LaravelHttpClientDataSource extends DataSource
 				'method'  => $event->request->method(),
 				'url'     => $this->removeAuthFromUrl($event->request->url()),
 				'headers' => $event->request->headers(),
-				'content' => $event->request->data(),
-				'body'    => $event->request->body(),
+				'content' => $this->collectContent ? $event->request->data() : null,
+				'body'    => $this->collectRawContent ? $event->request->body() : null
 			],
 			'response' => null,
 			'stats'    => null,
@@ -87,8 +94,8 @@ class LaravelHttpClientDataSource extends DataSource
 		$request->response = (object) [
 			'status'  => $event->response->status(),
 			'headers' => $event->response->headers(),
-			'content' => $event->response->json(),
-			'body'    => $event->response->body()
+			'content' => $this->collectContent ? $event->response->json() : null,
+			'body'    => $this->collectRawContent ? $event->response->body() : null
 		];
 		$request->stats = (object) [
 			'timing' => isset($stats['total_time_us']) ? (object) [
