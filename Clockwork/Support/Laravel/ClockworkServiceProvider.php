@@ -6,6 +6,7 @@ use Clockwork\DataSource\EloquentDataSource;
 use Clockwork\DataSource\LaravelCacheDataSource;
 use Clockwork\DataSource\LaravelDataSource;
 use Clockwork\DataSource\LaravelEventsDataSource;
+use Clockwork\DataSource\LaravelHttpClientDataSource;
 use Clockwork\DataSource\LaravelNotificationsDataSource;
 use Clockwork\DataSource\LaravelQueueDataSource;
 use Clockwork\DataSource\LaravelRedisDataSource;
@@ -151,6 +152,14 @@ class ClockworkServiceProvider extends ServiceProvider
 				$app['events'],
 				$app['clockwork.support']->getConfig('features.events.ignored_events', [])
 			));
+		});
+
+		$this->app->singleton('clockwork.http-requests', function ($app) {
+			return new LaravelHttpClientDataSource(
+				$app['events'],
+				$app['clockwork.support']->getConfig('features.http_requests.collect_data'),
+				$app['clockwork.support']->getConfig('features.http_requests.collect_raw_data')
+			);
 		});
 
 		$this->app->singleton('clockwork.laravel', function ($app) {
