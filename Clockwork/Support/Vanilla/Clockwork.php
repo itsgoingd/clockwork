@@ -495,8 +495,10 @@ class Clockwork
 	// Resolves default metadata REST api request either from the URI, or the request query parameter
 	protected function defaultMetadataRequest()
 	{
+		$apiPath = $this->config['api'];
+
 		if ($request = $this->incomingRequest()->input('request')) return $request;
-		if (preg_match('#^/__clockwork/(.*)#', $this->incomingRequest()->uri, $matches)) return $matches[1];
+		if (preg_match("#^{$apiPath}(.*)#", $this->incomingRequest()->uri, $matches)) return $matches[1];
 
 		return '';
 	}
@@ -505,6 +507,12 @@ class Clockwork
 	public function getClockwork()
 	{
 		return $this->clockwork;
+	}
+
+	// Return the configuration array
+	public function getConfig()
+	{
+		return $this->config;
 	}
 
 	// Pass any method calls to the underlying Clockwork instance

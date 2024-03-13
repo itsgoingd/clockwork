@@ -63,8 +63,10 @@ class ClockworkMiddleware implements MiddlewareInterface
 	// Handle a Clockwork REST api request if routing is enabled
 	protected function handleApiRequest(ServerRequestInterface $request)
 	{
+		$path = $this->clockwork->getConfig()['api'];
+
 		if (! $this->handleRouting) return;
-		if (! preg_match('#/__clockwork/.*#', $request->getUri()->getPath())) return; 
+		if (! preg_match("#{$path}.*#", $request->getUri()->getPath())) return;
 		
 		return $this->clockwork->usePsrMessage($request, null, $this->responseFactory)->handleMetadata();
 	}
@@ -72,8 +74,10 @@ class ClockworkMiddleware implements MiddlewareInterface
 	// Handle a Clockwork Web interface request if routing is enabled
 	protected function handleWebRequest(ServerRequestInterface $request)
 	{
+		$path = is_string($this->clockwork->getConfig()['web']['enable']) ? $this->clockwork->getConfig()['web']['enable'] : '/clockwork';
+
 		if (! $this->handleRouting) return;
-		if ($request->getUri()->getPath() != '/clockwork') return; 
+		if ($request->getUri()->getPath() != $path) return;
 
 		return $this->clockwork->usePsrMessage($request, null, $this->responseFactory)->returnWeb();
 	}
