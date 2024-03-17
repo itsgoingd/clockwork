@@ -1,5 +1,6 @@
 <?php namespace Clockwork\Support\Vanilla;
 
+use Http\Discovery\Psr17Factory;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -68,7 +69,7 @@ class ClockworkMiddleware implements MiddlewareInterface
 		if (! $this->handleRouting) return;
 		if (! preg_match("#{$path}.*#", $request->getUri()->getPath())) return;
 		
-		return $this->clockwork->usePsrMessage($request, null, $this->responseFactory)->handleMetadata();
+		return $this->clockwork->usePsrMessage($request, $this->prepareResponse())->handleMetadata();
 	}
 
 	// Handle a Clockwork Web interface request if routing is enabled
@@ -79,6 +80,15 @@ class ClockworkMiddleware implements MiddlewareInterface
 		if (! $this->handleRouting) return;
 		if ($request->getUri()->getPath() != $path) return;
 
-		return $this->clockwork->usePsrMessage($request, null, $this->responseFactory)->returnWeb();
+		return $this->clockwork->usePsrMessage($request, $this->prepareResponse())->returnWeb();
+	}
+
+	protected function prepareResponse()
+	{
+		if (! $this->responseFactory && ! class_exists(Psr17Factory::class)) {
+			throw new \Exception('The Clockwork vanilla middleware requires a response factory or the php-http/discovery package to be installed.');
+		}
+
+		return ($this->responseFactory ?: new Psr17Factory)->createResponse();
 	}
 }

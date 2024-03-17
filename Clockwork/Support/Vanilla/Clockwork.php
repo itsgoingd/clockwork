@@ -14,10 +14,8 @@ use Clockwork\Storage\RedisStorage;
 use Clockwork\Storage\Search;
 use Clockwork\Storage\SqlStorage;
 
-use Http\Discovery\Psr17Factory;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Message\ResponseInterface as PsrResponse;
-use Psr\Http\Message\ResponseFactoryInterface as PsrResponseFactory;
 
 // Clockwork integration for vanilla php and unsupported frameworks
 class Clockwork
@@ -320,14 +318,10 @@ class Clockwork
 	}
 
 	// Use a PSR-7 request and response instances instead of vanilla php HTTP apis
-	public function usePsrMessage(PsrRequest $request, PsrResponse $response = null, PsrResponseFactory $responseFactory = null)
+	public function usePsrMessage(PsrRequest $request, PsrResponse $response = null)
 	{
-		if (! $response && ! $responseFactory && ! class_exists(Psr17Factory::class)) {
-			throw new \Exception('The Clockwork vanilla integration requires a response, response factory or the php-http/discovery package to be installed.');
-		}
-
 		$this->psrRequest = $request;
-		$this->psrResponse = $response ?: ($responseFactory ?: new Psr17Factory)->createResponse();
+		$this->psrResponse = $response;
 
 		$this->clockwork->addDataSource(new PsrMessageDataSource($request, $response));
 
