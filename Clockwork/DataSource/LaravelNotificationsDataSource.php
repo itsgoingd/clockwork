@@ -157,9 +157,11 @@ class LaravelNotificationsDataSource extends DataSource
 			$channelSpecific = $this->resolveSlackChannelSpecific($event, $event->notification->toSlack($event->notifiable));
 		} elseif ($event->channel == 'nexmo') {
 			$channelSpecific = $this->resolveNexmoChannelSpecific($event, $event->notification->toNexmo($event->notifiable));
-		} elseif ($event->channel == 'broadcast') {
+		} elseif ($event->channel == 'broadcast' && method_exists($event->notification, 'toBroadcast')) {
 			$channelSpecific = [ 'data' => [ 'data' => (new Serializer)->normalize($event->notification->toBroadcast($event->notifiable)) ] ];
-		} elseif ($event->channel == 'database') {
+		} elseif ($event->channel == 'database' && method_exists($event->notification, 'toDatabase')) {
+			$channelSpecific = [ 'data' => [ 'data' => (new Serializer)->normalize($event->notification->toDatabase($event->notifiable)) ] ];
+		} elseif (in_array($event->channel, ['database', 'broadcast']) && method_exists($event->notification, 'toArray')) {
 			$channelSpecific = [ 'data' => [ 'data' => (new Serializer)->normalize($event->notification->toArray($event->notifiable)) ] ];
 		} else {
 			$channelSpecific = [];
