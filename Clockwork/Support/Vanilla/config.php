@@ -7,13 +7,13 @@ return [
 	| Enable Clockwork
 	|------------------------------------------------------------------------------------------------------------------
 	|
-	| You can explicitly enable or disable Clockwork here. When disabled,
-	| the storeRequest and returnRequest methods will be no-ops. This provides
-	| a convenient way to disable Clockwork in production.
+	| You can explicitly enable or disable Clockwork here. When disabled, the storeRequest and returnRequest methods
+	| will be no-ops. This provides a convenient way to disable Clockwork in production.
+	| Unless explicitly enabled, Clockwork only runs on localhost, *.local, *.test and *.wip domains.
 	|
 	*/
 
-	'enable' => getenv('CLOCKWORK_ENABLE') !== false ? getenv('CLOCKWORK_ENABLE') : true,
+	'enable' => getenv('CLOCKWORK_ENABLE') !== false ? getenv('CLOCKWORK_ENABLE') : null,
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------

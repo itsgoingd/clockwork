@@ -72,14 +72,14 @@ class Clockwork
 	// execution, return PSR-7 response if one was set
 	public function requestProcessed()
 	{
-		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return $this->psrResponse;
+		if (! $this->isEnabled() && ! $this->config['collect_data_always']) return $this->psrResponse;
 
 		if (! $this->clockwork->shouldCollect()->filter($this->incomingRequest())) return $this->psrResponse;
 		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->request())) return $this->psrResponse;
 
 		$this->clockwork->resolveRequest()->storeRequest();
 
-		if (! $this->config['enable']) return $this->psrResponse;
+		if (! $this->isEnabled()) return $this->psrResponse;
 
 		$this->sendHeaders();
 
@@ -93,7 +93,7 @@ class Clockwork
 	// Resolves and records the current request as a command, should be called at the end of app execution
 	public function commandExecuted($name, $exitCode = null, $arguments = [], $options = [], $argumentsDefaults = [], $optionsDefaults = [], $output = null)
 	{
-		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
+		if (! $this->isEnabled() && ! $this->config['collect_data_always']) return;
 
 		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->request())) return;
 
@@ -105,7 +105,7 @@ class Clockwork
 	// Resolves and records the current request as a queue job, should be called at the end of app execution
 	public function queueJobExecuted($name, $description = null, $status = 'processed', $payload = [], $queue = null, $connection = null, $options = [])
 	{
-		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
+		if (! $this->isEnabled() && ! $this->config['collect_data_always']) return;
 
 		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->request())) return;
 
@@ -118,7 +118,7 @@ class Clockwork
 	// in the request processing
 	public function sendHeaders()
 	{
-		if (! $this->config['enable'] || $this->headersSent) return;
+		if (! $this->isEnabled() || $this->headersSent) return;
 
 		$this->headersSent = true;
 
@@ -171,7 +171,7 @@ class Clockwork
 	// Retrieve metadata based on the passed Clockwork REST api request and send HTTP response
 	public function returnMetadata($request = null)
 	{
-		if (! $this->config['enable']) return $this->response(null, 404);
+		if (! $this->isEnabled()) return $this->response(null, 404);
 
 		$authenticator = $this->clockwork->authenticator();
 		$authenticated = $authenticator->check($this->incomingRequest()->header('HTTP_X_CLOCKWORK_AUTH', ''));
@@ -186,7 +186,7 @@ class Clockwork
 	// Returns metadata based on the passed Clockwork REST api request
 	public function getMetadata($request = null)
 	{
-		if (! $this->config['enable']) return;
+		if (! $this->isEnabled()) return;
 
 		$authenticator = $this->clockwork->authenticator();
 		$authenticated = $authenticator->check($this->incomingRequest()->header('HTTP_X_CLOCKWORK_AUTH', ''));
@@ -225,7 +225,7 @@ class Clockwork
 	// Update metadata based on the passed Clockwork REST api request and send HTTP response
 	public function updateMetadata($request = null)
 	{
-		if (! $this->config['enable'] || ! $this->config['features']['performance']['client_metrics']) {
+		if (! $this->isEnabled() || ! $this->config['features']['performance']['client_metrics']) {
 			return $this->response(null, 404);
 		}
 
@@ -259,7 +259,7 @@ class Clockwork
 	// Authanticates access to Clockwork REST api
 	public function authenticate()
 	{
-		if (! $this->config['enable']) return;
+		if (! $this->isEnabled()) return;
 
 		$token = $this->clockwork->authenticator()->attempt([
 			'username' => $this->incomingRequest()->input('username', ''),
@@ -467,7 +467,8 @@ class Clockwork
 			'method'  => $_SERVER['REQUEST_METHOD'],
 			'uri'     => $_SERVER['REQUEST_URI'],
 			'headers' => $_SERVER,
-			'input'   => array_merge($_GET, $_POST, (array) json_decode(file_get_contents('php://input'), true))
+			'input'   => array_merge($_GET, $_POST, (array) json_decode(file_get_contents('php://input'), true)),
+			'host'    => explode(':', $_SERVER['HTTP_HOST'] ?: $_SERVER['SERVER_NAME'] ?: $_SERVER['SERVER_ADDR'])[0]
 		]);
 	}
 
@@ -482,7 +483,8 @@ class Clockwork
 				$this->psrRequest->getQueryParams(),
 				(array) $this->psrRequest->getParsedBody(),
 				(array) json_decode((string) $this->psrRequest->getBody(), true)
-			)
+			),
+			'host'    => $this->psrRequest->getUri()->getHost()
 		]);
 	}
 
@@ -495,6 +497,13 @@ class Clockwork
 		if (preg_match("#^{$apiPath}(.*)#", $this->incomingRequest()->uri, $matches)) return $matches[1];
 
 		return '';
+	}
+
+	// Check whether Clockwork is enabled at all
+	public function isEnabled()
+	{
+		return $this->config['enable']
+			|| $this->config['enable'] === null && ($this->incomingRequest()->hasLocalHost() || \PHP_SAPI == 'cli' || \PHP_SAPI == 'phpdbg');
 	}
 
 	// Return the underlying Clockwork instance
