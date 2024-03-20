@@ -78,7 +78,7 @@ class ClockworkMiddleware implements MiddlewareInterface
 		$path = is_string($this->clockwork->getConfig()['web']['enable']) ? $this->clockwork->getConfig()['web']['enable'] : '/clockwork';
 
 		if (! $this->handleRouting) return;
-		if ($request->getUri()->getPath() != $path) return;
+		if (! preg_match("#^{$path}(/.*)?#", $request->getUri()->getPath())) return;
 
 		return $this->clockwork->usePsrMessage($request, $this->prepareResponse())->returnWeb();
 	}
