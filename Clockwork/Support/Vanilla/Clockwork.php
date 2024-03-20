@@ -13,7 +13,7 @@ use Clockwork\Storage\FileStorage;
 use Clockwork\Storage\RedisStorage;
 use Clockwork\Storage\Search;
 use Clockwork\Storage\SqlStorage;
-
+use Clockwork\Web\Web;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Message\ResponseInterface as PsrResponse;
 
@@ -274,23 +274,40 @@ class Clockwork
 	{
 		if (! $this->config['web']['enable']) return;
 
-		$this->installWeb();
-
-		$asset = function ($uri) { return "{$this->config['web']['uri']}/{$uri}"; };
-		$metadataPath = $this->config['api'];
-		$url = $this->config['web']['uri'];
-
-		if (! preg_match('#/index.html$#', $url)) {
-			$url = rtrim($url, '/') . '/index.html';
+		$installPath = $this->config['web']['path'];
+		if ($installPath !== false) {
+			$this->installWeb();
+			$webPath = $this->config['web']['uri'];
+		} else {
+			$webPath = is_string($this->config['web']['enable']) ? $this->config['web']['enable'] : '/clockwork';
 		}
 
-		ob_start();
+		$request = $this->incomingRequest();
+		switch ($request->uri) {
+			case $webPath:
+			case $webPath . '/':
+				// Note: `$asset`, `$metadataPath` and `$url` are used in
+				// the `iframe.html.php` template.
+				$asset = static function ($uri) use ($webPath) { return "{$webPath}/{$uri}"; };
+				$metadataPath = $this->config['api'];
+				$url = $webPath . '/index.html';
 
-		include __DIR__ . '/iframe.html.php';
+				ob_start();
+				include __DIR__ . '/iframe.html.php';
+				$html = ob_get_clean();
 
-		$html = ob_get_clean();
+				return $this->response($html, null, false);
 
-		return $this->response($html, null, false);
+			default:
+				$relativePath = substr($request->uri, strlen($webPath) + 1);
+				$web = new Web();
+				$asset = $web->asset($relativePath);
+				if (!$asset) return $this->response(null, 404);
+				$data = file_get_contents($asset['path']);
+				if ($data === false) return $this->response(null, 404);
+
+				return $this->response($data, null, false, $asset['mime']);
+		}
 	}
 
 	// Installs the Web UI by copying the assets to the public directory, no-op if already installed
