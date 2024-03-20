@@ -437,18 +437,34 @@ class Clockwork
 		}
 	}
 
-	// Send a json response, uses the PSR-7 response if set
-	protected function response($data = null, $status = null, $json = true)
+	/**
+	 * Send a response
+	 *
+	 * If set, this returns a PSR-7 response, otherwise it writes the response
+	 * using `echo`.
+	 *
+	 * @param mixed|null $data       payload to return as response body or null
+	 * @param int|null $status       HTTP status code, defaults to 200 if none is given
+	 * @param bool $json             whether to JSON-encode the payload `$data`, ignored if no payload is given
+	 * @param string|null $mimetype  the mime type to send as content type
+	 */
+	protected function response($data = null, $status = null, $json = true, $mimetype = null)
 	{
-		if ($json) $this->setHeader('Content-Type', 'application/json');
+		// optionally encode the payload
+		if (($data !== null) && $json) {
+			$mimetype = ($mimetype === null) ? 'application/json' : $mimetype;
+			$data = json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR);
+		}
+
+		if ($mimetype !== null) $this->setHeader('Content-Type', $mimetype);
 
 		if ($this->psrResponse) {
 			if ($status) $this->psrResponse = $this->psrResponse->withStatus($status);
-			$this->psrResponse->getBody()->write($json ? json_encode($data, \JSON_PARTIAL_OUTPUT_ON_ERROR) : $data);
+			if ($data !== null) $this->psrResponse->getBody()->write($data);
 			return $this->psrResponse;
 		} else {
 			if ($status) http_response_code($status);
-			echo $json ? json_encode($data, \JSON_PARTIAL_OUTPUT_ON_ERROR) : $data;
+			if ($data !== null) echo $data;
 		}
 	}
 
