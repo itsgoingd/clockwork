@@ -3,8 +3,7 @@
 use Clockwork\DataSource\DataSource;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
-use Clockwork\Support\Monolog\Monolog2\ClockworkHandler;
-use Clockwork\Support\Monolog\Monolog\ClockworkHandler as LegacyClockworkHandler;
+use Clockwork\Support\Monolog;
 use Monolog\Logger;
 
 // Data source for Monolog, provides application log
@@ -18,8 +17,19 @@ class MonologDataSource extends DataSource
 	{
 		$this->log = new Log;
 
-		$handler = Logger::API == 1 ? new LegacyClockworkHandler($this->log) : new ClockworkHandler($this->log);
-		
+		switch (Logger::API) {
+			case 3:
+				$handler = new Monolog\Monolog3\ClockworkHandler($this->log);
+				break;
+			case 2:
+				$handler = new Monolog\Monolog2\ClockworkHandler($this->log);
+				break;
+			case 1:
+				$handler = new Monolog\Monolog\ClockworkHandler($this->log);
+				break;
+			default:
+				throw new \RuntimeException('Unsupported Monolog version: ' . Logger::API);
+		}
 		$monolog->pushHandler($handler);
 	}
 
