@@ -1,3 +1,8 @@
+5.2.1
+
+- fixed collecting Laravel database notifications using toDatabase and broadcast notifications using toArray (implemented by ryzr, thanks!)
+- fixed serialization of incomplete PHP classes (implemented by hamedghaderi, thanks!)
+
 5.2
 
 - added new security protection - running Clockwork is now restricted to local domains unless explicitly enabled
