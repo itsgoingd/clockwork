@@ -286,11 +286,15 @@ class ClockworkSupport
 			if (! $this->getConfig('artisan.collect_output')) return;
 			if (! $event->command || $this->isCommandFiltered($event->command)) return;
 
-			$event->output->setFormatter(
-				version_compare(\Illuminate\Foundation\Application::VERSION, '9.0.0', '<')
-					? new Console\CapturingLegacyFormatter($event->output->getFormatter())
-					: new Console\CapturingFormatter($event->output->getFormatter())
-			);
+			if (version_compare(\Illuminate\Foundation\Application::VERSION, '9.0.0', '<')) {
+				$formatter = new Console\CapturingOldFormatter($event->output->getFormatter());
+			} elseif (version_compare(\Illuminate\Foundation\Application::VERSION, '11.0.0', '<')) {
+				$formatter = new Console\CapturingLegacyFormatter($event->output->getFormatter());
+			} else {
+				$formatter = new Console\CapturingFormatter($event->output->getFormatter());
+			}
+
+			$event->output->setFormatter($formatter);
 		});
 
 		$this->app['events']->listen(\Illuminate\Console\Events\CommandFinished::class, function ($event) {
