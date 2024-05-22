@@ -124,6 +124,25 @@ class EloquentDataSource extends DataSource
 			});
 		}
 
+		// Laravel 5.2 and up
+		if (class_exists(\Illuminate\Database\Events\TransactionBeginning::class)) {
+			$this->eventDispatcher->listen(\Illuminate\Database\Events\TransactionBeginning::class, function ($event) {
+				$this->registerTransactionQuery($event, 'START TRANSACTION');
+			});
+		}
+
+		if (class_exists(\Illuminate\Database\Events\TransactionCommitted::class)) {
+			$this->eventDispatcher->listen(\Illuminate\Database\Events\TransactionCommitted::class, function ($event) {
+				$this->registerTransactionQuery($event, 'COMMIT');
+			});
+		}
+
+		if (class_exists(\Illuminate\Database\Events\TransactionRolledBack::class)) {
+			$this->eventDispatcher->listen(\Illuminate\Database\Events\TransactionRolledBack::class, function ($event) {
+				$this->registerTransactionQuery($event, 'ROLLBACK');
+			});
+		}
+
 		if (class_exists(\Illuminate\Database\Events\QueryExecuted::class)) {
 			// Laravel 5.2 and up
 			$this->eventDispatcher->listen(\Illuminate\Database\Events\QueryExecuted::class, function ($event) {
@@ -153,6 +172,26 @@ class EloquentDataSource extends DataSource
 
 			$this->collectModelEvent($event, $model);
 		});
+	}
+
+	// Collect an executed transaction query
+	protected function registerTransactionQuery($event, $name)
+	{
+		$query = [
+			'query'      => $name,
+			'duration'   => 0,
+			'connection' => $event->connectionName,
+			'time'       => 0,
+			'trace'      => [],
+			'model'      => $this->nextQueryModel,
+			'tags'       => []
+		];
+
+		$this->nextQueryModel = null;
+
+		if (! $this->collectQueries) return;
+
+		$this->queries[] = $query;
 	}
 
 	// Collect an executed database query
