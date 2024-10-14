@@ -24,7 +24,7 @@ class SqlSearch extends Search
 
 		$this->pdo = $pdo;
 
-		list($this->conditions, $this->bindings) = $this->resolveConditions();
+		[ $this->conditions, $this->bindings ] = $this->resolveConditions();
 
 		$this->buildQuery();
 	}
