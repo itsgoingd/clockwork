@@ -1,15 +1,12 @@
 <?php namespace Clockwork\DataSource;
 
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\StackTrace;
+use Clockwork\Helpers\{Serializer, StackTrace};
 use Clockwork\Request\Request;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Events\MessageSending;
-use Illuminate\Mail\Events\MessageSent;
-use Illuminate\Notifications\Events\NotificationSending;
-use Illuminate\Notifications\Events\NotificationSent;
+use Illuminate\Mail\Events\{MessageSending, MessageSent};
+use Illuminate\Notifications\Events\{NotificationSending, NotificationSent};
 
 // Data source for Laravel notifications and mail components, provides sent notifications and emails
 class LaravelNotificationsDataSource extends DataSource
@@ -202,8 +199,8 @@ class LaravelNotificationsDataSource extends DataSource
 			$message = $message->toArray();
 
 			$data = [
-				'from' => isset($message['username']) ? $message['username'] : null,
-				'to'   => isset($message['channel']) ? $message['channel'] : null,
+				'from' => $message['username'] ?? null,
+				'to'   => $message['channel'] ?? null,
 				'data' => [ 'content' => $message ]
 			];
 		}
@@ -258,8 +255,8 @@ class LaravelNotificationsDataSource extends DataSource
 		return array_map(function ($address) {
 			if (! is_array($address)) return $address;
 
-			$email = isset($address['address']) ? $address['address'] : $address[0];
-			$name = isset($address['name']) ? $address['name'] : $address[1];
+			$email = $address['address'] ?? $address[0];
+			$name = $address['name'] ?? $address[1];
 
 			return $name ? "{$name} <{$email}>" : $email;
 		}, $address);

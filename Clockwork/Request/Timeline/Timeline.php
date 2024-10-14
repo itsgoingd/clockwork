@@ -17,7 +17,7 @@ class Timeline
 	// Find or create a new event, takes description and optional data - name, start, end, duration, color, data
 	public function event($description, $data = [])
 	{
-		$name = isset($data['name']) ? $data['name'] : $description;
+		$name = $data['name'] ?? $description;
 
 		if ($event = $this->find($name)) return $event;
 

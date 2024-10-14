@@ -52,9 +52,9 @@ class RedisStorage extends Storage
 
 		$redis->connect($connection['host'], $connection['port']);
 		$redis->auth(array_filter([
-			'user' => isset($connection['username']) ? $connection['username'] : null,
-				'pass' => isset($connection['password']) ? $connection['password'] : null
-			]));
+			'user' => $connection['username'] ?? null,
+			'pass' => $connection['password'] ?? null
+		]));
 		$redis->select($connection['database']);
 
 		return $redis;

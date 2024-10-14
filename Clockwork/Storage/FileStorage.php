@@ -266,7 +266,7 @@ class FileStorage extends Storage
 	// Create an incomplete request from index data
 	protected function makeRequestFromIndex($record)
 	{
-		$type = isset($record[7]) ? $record[7] : 'response';
+		$type = $record[7] ?? 'response';
 
 		if ($type == 'command') {
 			$nameField = 'commandName';

@@ -1,21 +1,13 @@
 <?php namespace Clockwork\Support\Vanilla;
 
 use Clockwork\Clockwork as BaseClockwork;
-use Clockwork\Authentication\NullAuthenticator;
-use Clockwork\Authentication\SimpleAuthenticator;
-use Clockwork\DataSource\PhpDataSource;
-use Clockwork\DataSource\PsrMessageDataSource;
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\ServerTiming;
-use Clockwork\Helpers\StackFilter;
+use Clockwork\Authentication\{NullAuthenticator, SimpleAuthenticator};
+use Clockwork\DataSource\{PhpDataSource, PsrMessageDataSource};
+use Clockwork\Helpers\{Serializer, ServerTiming, StackFilter};
 use Clockwork\Request\IncomingRequest;
-use Clockwork\Storage\FileStorage;
-use Clockwork\Storage\RedisStorage;
-use Clockwork\Storage\Search;
-use Clockwork\Storage\SqlStorage;
+use Clockwork\Storage\{FileStorage, RedisStorage, Search, SqlStorage};
 
-use Psr\Http\Message\ServerRequestInterface as PsrRequest;
-use Psr\Http\Message\ResponseInterface as PsrResponse;
+use Psr\Http\Message\{ResponseInterface as PsrResponse, ServerRequestInterface as PsrRequest};
 
 // Clockwork integration for vanilla php and unsupported frameworks
 class Clockwork
@@ -197,9 +189,9 @@ class Clockwork
 
 		preg_match('#(?<id>[0-9-]+|latest)(?:/(?<direction>next|previous))?(?:/(?<count>\d+))?#', $request, $matches);
 
-		$id = isset($matches['id']) ? $matches['id'] : null;
-		$direction = isset($matches['direction']) ? $matches['direction'] : null;
-		$count = isset($matches['count']) ? $matches['count'] : null;
+		$id = $matches['id'] ?? null;
+		$direction = $matches['direction'] ?? null;
+		$count = $matches['count'] ?? null;
 
 		if ($direction == 'previous') {
 			$data = $this->clockwork->storage()->previous($id, $count, Search::fromRequest($this->incomingRequest()->input));

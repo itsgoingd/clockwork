@@ -1,8 +1,7 @@
 <?php namespace Clockwork\Support\Symfony;
 
 use Clockwork\Helpers\Serializer;
-use Clockwork\Request\Log;
-use Clockwork\Request\Request;
+use Clockwork\Request\{Log, Request};
 use Clockwork\Request\Timeline\Timeline;
 
 use Symfony\Component\HttpKernel\Profiler\Profile;
@@ -157,7 +156,7 @@ class ProfileTransformer
 	protected function getLog($data)
 	{
 		$messages = array_map(function ($log) {
-			$context = isset($log['context']) ? $log['context'] : [];
+			$context = $log['context'] ?? [];
 			$replacements = array_filter($context, function ($v) { return ! is_array($v) && ! is_object($v) && ! is_resource($v); });
 
 			return [

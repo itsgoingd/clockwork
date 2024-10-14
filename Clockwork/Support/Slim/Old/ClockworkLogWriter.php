@@ -37,6 +37,6 @@ class ClockworkLogWriter
 
 	protected function getPsrLevel($level)
 	{
-		return isset($this->logLevels[$level]) ? $this->logLevels[$level] : $level;
+		return $this->logLevels[$level] ?? $level;
 	}
 }

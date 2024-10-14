@@ -1,8 +1,7 @@
 <?php namespace Clockwork\Support\Symfony;
 
 use Symfony\Component\Config\Loader\Loader;
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\{Route, RouteCollection};
 
 class ClockworkLoader extends Loader
 {

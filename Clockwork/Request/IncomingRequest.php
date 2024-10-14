@@ -27,13 +27,13 @@ class IncomingRequest
 	// Returns a header value, or default if not set
 	public function header($key, $default = null)
 	{
-		return isset($this->headers[$key]) ? $this->headers[$key] : $default;
+		return $this->headers[$key] ?? $default;
 	}
 
 	// Returns an input value, or default if not set
 	public function input($key, $default = null)
 	{
-		return isset($this->input[$key]) ? $this->input[$key] : $default;
+		return $this->input[$key] ?? $default;
 	}
 
 	// Returns true, if HTTP host is one of the common domains used for local development

@@ -1,17 +1,12 @@
 <?php namespace Clockwork\DataSource;
 
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\StackTrace;
+use Clockwork\Helpers\{Serializer, StackTrace};
 use Clockwork\Request\Request;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\TransferStats;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\{Client, HandlerStack, TransferStats};
+use GuzzleHttp\Exception\{GuzzleException, RequestException};
 use GuzzleHttp\Promise\PromiseInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\{RequestInterface, ResponseInterface};
 
 // Data source for Guzzle HTTP client, provides executed HTTP requests
 class GuzzleDataSource extends DataSource
@@ -39,7 +34,7 @@ class GuzzleDataSource extends DataSource
 	// Updates Guzzle configuration array with Clockwork support
 	public function configure(array $config = [])
 	{
-		$handler = isset($config['handler']) ? $config['handler'] : HandlerStack::create();
+		$handler = $config['handler'] ?? HandlerStack::create();
 		
 		$handler->push($this);
 		
@@ -70,7 +65,7 @@ class GuzzleDataSource extends DataSource
 			$time = microtime(true);
 			$stats = null;
 			
-			$originalOnStats = isset($options['on_stats']) ? $options['on_stats'] : null;
+			$originalOnStats = $options['on_stats'] ?? null;
 			$options['on_stats'] = function (TransferStats $transferStats) use (&$stats, $originalOnStats) {
 				$stats = $transferStats->getHandlerStats();
 				if ($originalOnStats) $originalOnStats($transferStats);
@@ -117,18 +112,18 @@ class GuzzleDataSource extends DataSource
 					'transfer' => ($stats['total_time_us'] - $stats['starttransfer_time_us']) / 1000
 				] : null,
 				'size' => (object) [
-					'upload' => isset($stats['size_upload']) ? $stats['size_upload'] : null,
-					'download' => isset($stats['size_download']) ? $stats['size_download'] : null
+					'upload' => $stats['size_upload'] ?? null,
+					'download' => $stats['size_download'] ?? null
 				],
 				'speed' => (object) [
-					'upload' => isset($stats['speed_upload']) ? $stats['speed_upload'] : null,
-					'download' => isset($stats['speed_download']) ? $stats['speed_download'] : null
+					'upload' => $stats['speed_upload'] ?? null,
+					'download' => $stats['speed_download'] ?? null
 				],
 				'hosts' => (object) [
 					'local' => isset($stats['local_ip']) ? [ 'ip' => $stats['local_ip'], 'port' => $stats['local_port'] ] : null,
 					'remote' => isset($stats['primary_ip']) ? [ 'ip' => $stats['primary_ip'], 'port' => $stats['primary_port'] ] : null
 				],
-				'version' => isset($stats['http_version']) ? $stats['http_version'] : null 
+				'version' => $stats['http_version'] ?? null
 			] : null,
 			'error'    => null, 
 			'time'     => $startTime,
