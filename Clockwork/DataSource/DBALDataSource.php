@@ -58,7 +58,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 	}
 
 	// DBAL SQLLogger event
-	public function startQuery($sql, array $params = null, array $types = null)
+	public function startQuery($sql, ?array $params = null, ?array $types = null)
 	{
 		$this->query = [
 			'query'  => $sql,
@@ -118,7 +118,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 	 *
 	 * @return string
 	 */
-	public function replaceParams($platform, $sql, array $params = null, array $types = null)
+	public function replaceParams($platform, $sql, ?array $params = null, ?array $types = null)
 	{
 		if (is_array($params)) {
 			foreach ($params as $key => $param) {

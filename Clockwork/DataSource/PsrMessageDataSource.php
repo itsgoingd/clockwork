@@ -14,7 +14,7 @@ class PsrMessageDataSource extends DataSource
 	protected $psrResponse;
 
 	// Create a new data source, takes PSR-7 request and response as arguments
-	public function __construct(PsrRequest $psrRequest = null, PsrResponse $psrResponse = null)
+	public function __construct(?PsrRequest $psrRequest = null, ?PsrResponse $psrResponse = null)
 	{
 		$this->psrRequest  = $psrRequest;
 		$this->psrResponse = $psrResponse;

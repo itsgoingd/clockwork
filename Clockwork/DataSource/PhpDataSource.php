@@ -72,7 +72,7 @@ class PhpDataSource extends DataSource
 			$header = ucwords(strtolower($header));
 			$header = str_replace(' ', '-', $header);
 
-			$headers[$header] = array_merge($headers[$header] ?? [], $value);
+			$headers[$header] = array_merge($headers[$header] ?? [], [ $value ]);
 		}
 
 		ksort($headers);
