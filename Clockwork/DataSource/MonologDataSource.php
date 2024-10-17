@@ -3,8 +3,9 @@
 use Clockwork\DataSource\DataSource;
 use Clockwork\Request\Log;
 use Clockwork\Request\Request;
-use Clockwork\Support\Monolog\Monolog2\ClockworkHandler;
 use Clockwork\Support\Monolog\Monolog\ClockworkHandler as LegacyClockworkHandler;
+use Clockwork\Support\Monolog\Monolog2\ClockworkHandler;
+
 use Monolog\Logger;
 
 // Data source for Monolog, provides application log

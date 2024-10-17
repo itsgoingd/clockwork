@@ -37,11 +37,11 @@ class ProfilerClockworkDumper
 
 		$timeline->event($name, [
 			'name'  => $id,
-			'start' => isset($data[3]['wt']) ? $data[3]['wt'] : null,
-			'end'   => isset($data[4]['wt']) ? $data[4]['wt'] : null,
+			'start' => $data[3]['wt'] ?? null,
+			'end'   => $data[4]['wt'] ?? null,
 			'data'  => [
 				'data'        => [],
-				'memoryUsage' => isset($data[4]['mu']) ? $data[4]['mu'] : null,
+				'memoryUsage' => $data[4]['mu'] ?? null,
 				'parent'      => $parent
 			]
 		]);

@@ -1,7 +1,6 @@
 <?php namespace Clockwork\Support\Laravel\Console;
 
-use Symfony\Component\Console\Formatter\OutputFormatterInterface;
-use Symfony\Component\Console\Formatter\OutputFormatterStyleInterface;
+use Symfony\Component\Console\Formatter\{OutputFormatterInterface, OutputFormatterStyleInterface};
 
 // Formatter wrapping around a "real" formatter, capturing the formatted output (Symfony 6.x)
 class CapturingLegacyFormatter implements OutputFormatterInterface

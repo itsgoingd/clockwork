@@ -2,18 +2,11 @@
 
 use Clockwork\Clockwork;
 use Clockwork\Authentication\AuthenticatorInterface;
-use Clockwork\DataSource\EloquentDataSource;
-use Clockwork\DataSource\LaravelCacheDataSource;
-use Clockwork\DataSource\LaravelDataSource;
-use Clockwork\DataSource\LaravelEventsDataSource;
-use Clockwork\DataSource\LaravelHttpClientDataSource;
-use Clockwork\DataSource\LaravelNotificationsDataSource;
-use Clockwork\DataSource\LaravelQueueDataSource;
-use Clockwork\DataSource\LaravelRedisDataSource;
-use Clockwork\DataSource\LaravelViewsDataSource;
-use Clockwork\DataSource\SwiftDataSource;
-use Clockwork\DataSource\TwigDataSource;
-use Clockwork\DataSource\XdebugDataSource;
+use Clockwork\DataSource\{
+	EloquentDataSource, LaravelCacheDataSource, LaravelDataSource, LaravelEventsDataSource, LaravelHttpClientDataSource,
+	LaravelNotificationsDataSource, LaravelQueueDataSource, LaravelRedisDataSource, LaravelViewsDataSource, SwiftDataSource,
+	TwigDataSource, XdebugDataSource
+};
 use Clockwork\Helpers\StackFilter;
 use Clockwork\Request\Request;
 use Clockwork\Storage\StorageInterface;

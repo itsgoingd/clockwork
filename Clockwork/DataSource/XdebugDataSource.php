@@ -16,7 +16,7 @@ class XdebugDataSource extends DataSource
 	// Extends the request with full profiling data
 	public function extend(Request $request)
 	{
-		$profile = isset($request->xdebug['profile']) ? $request->xdebug['profile'] : null;
+		$profile = $request->xdebug['profile'] ?? null;
 
 		if ($profile && ! preg_match('/\.php$/', $profile) && is_readable($profile)) {
 			$request->xdebug['profileData'] = file_get_contents($profile);

@@ -1,8 +1,7 @@
 <?php namespace Clockwork\Support\Slim\Old;
 
 use Clockwork\Clockwork;
-use Clockwork\DataSource\PhpDataSource;
-use Clockwork\DataSource\SlimDataSource;
+use Clockwork\DataSource\{PhpDataSource, SlimDataSource};
 use Clockwork\Helpers\ServerTiming;
 use Clockwork\Storage\FileStorage;
 

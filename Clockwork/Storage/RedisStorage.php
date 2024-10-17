@@ -52,9 +52,9 @@ class RedisStorage extends Storage
 
 		$redis->connect($connection['host'], $connection['port']);
 		$redis->auth(array_filter([
-			'user' => isset($connection['username']) ? $connection['username'] : null,
-				'pass' => isset($connection['password']) ? $connection['password'] : null
-			]));
+			'user' => $connection['username'] ?? null,
+			'pass' => $connection['password'] ?? null
+		]));
 		$redis->select($connection['database']);
 
 		return $redis;
@@ -79,7 +79,7 @@ class RedisStorage extends Storage
 	}
 
 	// Returns all requests
-	public function all(Search $search = null)
+	public function all(?Search $search = null)
 	{
 		if ($search->isNotEmpty()) {
 			return $this->search($search);
@@ -95,7 +95,7 @@ class RedisStorage extends Storage
 	}
 
 	// Return the latest request
-	public function latest(Search $search = null)
+	public function latest(?Search $search = null)
 	{
 		if ($search->isNotEmpty()) {
 			return $this->search('previous', $search, -1, 1);
@@ -106,7 +106,7 @@ class RedisStorage extends Storage
 	}
 
 	// Return requests received before specified id, optionally limited to specified count
-	public function previous($id, $count = null, Search $search = null)
+	public function previous($id, $count = null, ?Search $search = null)
 	{
 		$requestIndex = $this->redis->zRank($this->prefix('requests'), $id) - 1;
 
@@ -122,7 +122,7 @@ class RedisStorage extends Storage
 	}
 
 	// Return requests received after specified id, optionally limited to specified count
-	public function next($id, $count = null, Search $search = null)
+	public function next($id, $count = null, ?Search $search = null)
 	{
 		$requestIndex = $this->redis->zRank($this->prefix('requests'), $id);
 		$indexLength = $this->redis->zCard($this->prefix('requests'));
@@ -186,7 +186,7 @@ class RedisStorage extends Storage
 	}
 
 	// Search for requests based on the requests sorted set
-	protected function search($direction, Search $search = null, $requestIndex = null, $count = null)
+	protected function search($direction, ?Search $search = null, $requestIndex = null, $count = null)
 	{
 		if ($requestIndex) {
 			$ids = $direction == 'previous'

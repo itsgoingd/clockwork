@@ -1,9 +1,7 @@
 <?php namespace Clockwork\DataSource\Concerns;
 
-use Clockwork\Helpers\StackFilter;
-use Clockwork\Helpers\StackTrace;
-use Clockwork\Request\Log;
-use Clockwork\Request\Request;
+use Clockwork\Helpers\{StackFilter, StackTrace};
+use Clockwork\Request\{Log, Request};
 
 // Duplicate (N+1) queries detection for EloquentDataSource, inspired by the beyondcode/laravel-query-detector package
 // by Marcel Pociot (https://github.com/beyondcode/laravel-query-detector)

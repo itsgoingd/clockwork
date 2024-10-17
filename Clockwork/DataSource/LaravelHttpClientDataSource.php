@@ -1,13 +1,10 @@
 <?php namespace Clockwork\DataSource;
 
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\StackTrace;
+use Clockwork\Helpers\{Serializer, StackTrace};
 use Clockwork\Request\Request;
 
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Http\Client\Events\ConnectionFailed;
-use Illuminate\Http\Client\Events\RequestSending;
-use Illuminate\Http\Client\Events\ResponseReceived;
+use Illuminate\Http\Client\Events\{ConnectionFailed, RequestSending, ResponseReceived};
 
 // Data source for Laravel HTTP client, provides executed HTTP requests
 class LaravelHttpClientDataSource extends DataSource
@@ -105,18 +102,18 @@ class LaravelHttpClientDataSource extends DataSource
 				'transfer' => ($stats['total_time_us'] - $stats['starttransfer_time_us']) / 1000
 			] : null,
 			'size' => (object) [
-				'upload' => isset($stats['size_upload']) ? $stats['size_upload'] : null,
-				'download' => isset($stats['size_download']) ? $stats['size_download'] : null
+				'upload' => $stats['size_upload'] ?? null,
+				'download' => $stats['size_download'] ?? null
 			],
 			'speed' => (object) [
-				'upload' => isset($stats['speed_upload']) ? $stats['speed_upload'] : null,
-				'download' => isset($stats['speed_download']) ? $stats['speed_download'] : null
+				'upload' => $stats['speed_upload'] ?? null,
+				'download' => $stats['speed_download'] ?? null
 			],
 			'hosts' => (object) [
 				'local' => isset($stats['local_ip']) ? [ 'ip' => $stats['local_ip'], 'port' => $stats['local_port'] ] : null,
 				'remote' => isset($stats['primary_ip']) ? [ 'ip' => $stats['primary_ip'], 'port' => $stats['primary_port'] ] : null
 			],
-			'version' => isset($stats['http_version']) ? $stats['http_version'] : null 
+			'version' => $stats['http_version'] ?? null
 		];
 		
 		unset($this->executingRequests[spl_object_hash($event->request)]);

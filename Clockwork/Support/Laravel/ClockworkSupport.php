@@ -1,28 +1,18 @@
 <?php namespace Clockwork\Support\Laravel;
 
 use Clockwork\Clockwork;
-use Clockwork\Authentication\NullAuthenticator;
-use Clockwork\Authentication\SimpleAuthenticator;
+use Clockwork\Authentication\{NullAuthenticator, SimpleAuthenticator};
 use Clockwork\DataSource\PhpDataSource;
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\ServerTiming;
-use Clockwork\Helpers\StackFilter;
-use Clockwork\Helpers\StackTrace;
-use Clockwork\Request\IncomingRequest;
-use Clockwork\Request\Request;
-use Clockwork\Storage\FileStorage;
-use Clockwork\Storage\RedisStorage;
-use Clockwork\Storage\Search;
-use Clockwork\Storage\SqlStorage;
+use Clockwork\Helpers\{Serializer, ServerTiming, StackFilter, StackTrace};
+use Clockwork\Request\{IncomingRequest, Request};
+use Clockwork\Storage\{FileStorage, RedisStorage, Search, SqlStorage};
 use Clockwork\Web\Web;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
+use Illuminate\Http\{JsonResponse, Response};
 use Illuminate\Redis\RedisManager;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\{BinaryFileResponse, Cookie};
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 // Support class for the Laravel integration
@@ -114,7 +104,7 @@ class ClockworkSupport
 			return new JsonResponse([ 'message' => 'Request not found.' ], 404);
 		}
 
-		$token = isset($input['_token']) ? $input['_token'] : '';
+		$token = $input['_token'] ?? '';
 
 		if (! $request->updateToken || ! hash_equals($request->updateToken, $token)) {
 			return new JsonResponse([ 'message' => 'Invalid update token.' ], 403);
@@ -382,10 +372,10 @@ class ClockworkSupport
 				$job->getQueue(),
 				$job->getConnectionName(),
 				array_filter([
-					'maxTries'     => isset($payload['maxTries']) ? $payload['maxTries'] : null,
-					'delaySeconds' => isset($payload['delaySeconds']) ? $payload['delaySeconds'] : null,
-					'timeout'      => isset($payload['timeout']) ? $payload['timeout'] : null,
-					'timeoutAt'    => isset($payload['timeoutAt']) ? $payload['timeoutAt'] : null
+					'maxTries'     => $payload['maxTries'] ?? null,
+					'delaySeconds' => $payload['delaySeconds'] ?? null,
+					'timeout'      => $payload['timeout'] ?? null,
+					'timeoutAt'    => $payload['timeoutAt'] ?? null
 				])
 			)
 			->storeRequest();
