@@ -55,7 +55,6 @@ class GuzzleDataSource extends DataSource
 	public function reset()
 	{
 		$this->requests = [];
-		$this->executingRequests = [];
 	}
 	
 	// Guzzle middleware implemenation, that does the requests logging itself
