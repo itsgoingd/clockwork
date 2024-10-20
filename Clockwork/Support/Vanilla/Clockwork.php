@@ -6,6 +6,7 @@ use Clockwork\DataSource\{PhpDataSource, PsrMessageDataSource};
 use Clockwork\Helpers\{Serializer, ServerTiming, StackFilter};
 use Clockwork\Request\IncomingRequest;
 use Clockwork\Storage\{FileStorage, RedisStorage, Search, SqlStorage};
+use Clockwork\Web\Web;
 
 use Psr\Http\Message\{ResponseInterface as PsrResponse, ServerRequestInterface as PsrRequest};
 
@@ -266,15 +267,25 @@ class Clockwork
 	{
 		if (! $this->config['web']['enable']) return;
 
-		$this->installWeb();
+		if ($this->config['web']['path']) $this->installWeb();
 
-		$asset = function ($uri) { return "{$this->config['web']['uri']}/{$uri}"; };
+		// Note, "uri" is a deprecated option removed from the config file, to be completely removed in Clockwork 6
+		$webPath = $this->config['web']['uri']
+			?? (is_string($this->config['web']['enable']) ? $this->config['web']['enable'] : '/clockwork');
+
+		$uri = $this->incomingRequest()->uri;
+
+		return preg_match("#^{$webPath}/(.+)#", $uri)
+			? $this->serveWebAsset($webPath, $uri)
+			: $this->serveWebIndex($webPath);
+	}
+
+	protected function serveWebIndex($webPath)
+	{
+		// Note, $asset, $metadataPath and $url are used in the iframe.html.php template
+		$asset = function ($uri) use ($webPath) { return "{$webPath}/{$uri}"; };
 		$metadataPath = $this->config['api'];
-		$url = $this->config['web']['uri'];
-
-		if (! preg_match('#/index.html$#', $url)) {
-			$url = rtrim($url, '/') . '/index.html';
-		}
+		$url = "{$webPath}/index.html";
 
 		ob_start();
 
@@ -283,6 +294,19 @@ class Clockwork
 		$html = ob_get_clean();
 
 		return $this->response($html, null, false);
+	}
+
+	protected function serveWebAsset($webPath, $uri)
+	{
+		$asset = (new Web)->asset(substr($uri, strlen($webPath) + 1));
+
+		if (! $asset) return $this->response(null, 404);
+
+		$data = file_get_contents($asset['path']);
+
+		if ($data === false) return $this->response(null, 404);
+
+		return $this->response($data, null, false, $asset['mime']);
 	}
 
 	// Installs the Web UI by copying the assets to the public directory, no-op if already installed
@@ -430,17 +454,20 @@ class Clockwork
 	}
 
 	// Send a json response, uses the PSR-7 response if set
-	protected function response($data = null, $status = null, $json = true)
+	protected function response($data = null, $status = null, $json = true, $mimetype = null)
 	{
-		if ($json) $this->setHeader('Content-Type', 'application/json');
+		$data = $json ? json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR) : $data;
+		$mimetype = $json ? 'application/json' : $mimetype;
+
+		if ($mimetype !== null) $this->setHeader('Content-Type', $mimetype);
 
 		if ($this->psrResponse) {
 			if ($status) $this->psrResponse = $this->psrResponse->withStatus($status);
-			$this->psrResponse->getBody()->write($json ? json_encode($data, \JSON_PARTIAL_OUTPUT_ON_ERROR) : $data);
+			if ($data !== null) $this->psrResponse->getBody()->write($data);
 			return $this->psrResponse;
 		} else {
 			if ($status) http_response_code($status);
-			echo $json ? json_encode($data, \JSON_PARTIAL_OUTPUT_ON_ERROR) : $data;
+			if ($data !== null) echo $data;
 		}
 	}
 
