@@ -114,7 +114,7 @@ class SqlStorage extends Storage
 	}
 
 	// Returns all requests
-	public function all(Search $search = null)
+	public function all(?Search $search = null)
 	{
 		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, array_keys($this->fields)));
 		$search = SqlSearch::fromBase($search, $this->pdo);
@@ -134,7 +134,7 @@ class SqlStorage extends Storage
 	}
 
 	// Return the latest request
-	public function latest(Search $search = null)
+	public function latest(?Search $search = null)
 	{
 		$fields = implode(', ', array_map(function ($field) { return $this->quote($field); }, array_keys($this->fields)));
 		$search = SqlSearch::fromBase($search, $this->pdo);
@@ -147,7 +147,7 @@ class SqlStorage extends Storage
 	}
 
 	// Return requests received before specified id, optionally limited to specified count
-	public function previous($id, $count = null, Search $search = null)
+	public function previous($id, $count = null, ?Search $search = null)
 	{
 		$count = (int) $count;
 
@@ -162,7 +162,7 @@ class SqlStorage extends Storage
 	}
 
 	// Return requests received after specified id, optionally limited to specified count
-	public function next($id, $count = null, Search $search = null)
+	public function next($id, $count = null, ?Search $search = null)
 	{
 		$count = (int) $count;
 

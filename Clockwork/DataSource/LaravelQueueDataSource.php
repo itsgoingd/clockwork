@@ -1,7 +1,6 @@
 <?php namespace Clockwork\DataSource;
 
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\StackTrace;
+use Clockwork\Helpers\{Serializer, StackTrace};
 use Clockwork\Request\Request;
 
 use Illuminate\Queue\Queue;
@@ -47,7 +46,7 @@ class LaravelQueueDataSource extends DataSource
 				'connection' => $connection,
 				'queue'      => $queue,
 				'name'       => $payload['displayName'],
-				'data'       => isset($payload['data']['command']) ? $payload['data']['command'] : null,
+				'data'       => $payload['data']['command'] ?? null,
 				'maxTries'   => $payload['maxTries'],
 				'timeout'    => $payload['timeout'],
 				'time'       => microtime(true)

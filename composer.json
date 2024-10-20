@@ -12,7 +12,7 @@
         }
     ],
     "require": {
-        "php": ">=5.6",
+        "php": ">=7.1",
         "ext-json": "*"
     },
     "suggest": {
@@ -20,7 +20,8 @@
 		"ext-pdo_sqlite": "Needed in order to use a SQLite for metadata storage",
 		"ext-pdo_mysql": "Needed in order to use MySQL for metadata storage",
 		"ext-pdo_postgres": "Needed in order to use Postgres for metadata storage",
-		"ext-redis": "Needed in order to use Redis for metadata storage"
+		"ext-redis": "Needed in order to use Redis for metadata storage",
+		"php-http/discovery": "Vanilla integration - required for the middleware zero-configuration setup"
     },
     "autoload": {
         "psr-4": {

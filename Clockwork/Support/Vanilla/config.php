@@ -7,13 +7,13 @@ return [
 	| Enable Clockwork
 	|------------------------------------------------------------------------------------------------------------------
 	|
-	| You can explicitly enable or disable Clockwork here. When disabled,
-	| the storeRequest and returnRequest methods will be no-ops. This provides
-	| a convenient way to disable Clockwork in production.
+	| You can explicitly enable or disable Clockwork here. When disabled, the storeRequest and returnRequest methods
+	| will be no-ops. This provides a convenient way to disable Clockwork in production.
+	| Unless explicitly enabled, Clockwork only runs on localhost, *.local, *.test and *.wip domains.
 	|
 	*/
 
-	'enable' => getenv('CLOCKWORK_ENABLE') !== false ? getenv('CLOCKWORK_ENABLE') : false,
+	'enable' => getenv('CLOCKWORK_ENABLE') !== false ? getenv('CLOCKWORK_ENABLE') : null,
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------
@@ -128,7 +128,7 @@ return [
 		'enable' => getenv('CLOCKWORK_WEB_ENABLE') !== false ? getenv('CLOCKWORK_WEB_ENABLE') : true,
 
 		// Path where to install the Web UI assets, should be publicly accessible
-		'path' => getenv('CLOCKWORK_WEB_PATH') !== false ? getenv('CLOCKWORK_WEB_PATH') : __DIR__ . '/../../../../../public/vendor/clockwork',
+		'path' => getenv('CLOCKWORK_WEB_PATH') !== false ? getenv('CLOCKWORK_WEB_PATH') : __DIR__ . '/../../../../../../public/vendor/clockwork',
 
 		// Public URI where the installed Web UI assets will be accessible
 		'uri' => getenv('CLOCKWORK_WEB_URI') !== false ? getenv('CLOCKWORK_WEB_URI') : '/vendor/clockwork',

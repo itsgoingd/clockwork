@@ -12,6 +12,11 @@ class ClockworkCleanCommand extends Command
 	// Command description
 	protected $description = 'Cleans Clockwork request metadata';
 
+	// Command aliases
+	protected $aliases = [
+		'clockwork:clear',
+	];
+
 	// Command options
 	public function getOptions()
 	{

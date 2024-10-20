@@ -3,8 +3,7 @@
 use Clockwork\Request\Request;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Logging\LoggerChain;
-use Doctrine\DBAL\Logging\SQLLogger;
+use Doctrine\DBAL\Logging\{LoggerChain, SQLLogger};
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 
@@ -59,7 +58,7 @@ class DBALDataSource extends DataSource implements SQLLogger
 	}
 
 	// DBAL SQLLogger event
-	public function startQuery($sql, array $params = null, array $types = null)
+	public function startQuery($sql, ?array $params = null, ?array $types = null)
 	{
 		$this->query = [
 			'query'  => $sql,
@@ -119,11 +118,11 @@ class DBALDataSource extends DataSource implements SQLLogger
 	 *
 	 * @return string
 	 */
-	public function replaceParams($platform, $sql, array $params = null, array $types = null)
+	public function replaceParams($platform, $sql, ?array $params = null, ?array $types = null)
 	{
 		if (is_array($params)) {
 			foreach ($params as $key => $param) {
-				$type  = isset($types[$key]) ? $types[$key] : null; // Originally used null coalescing
+				$type  = $types[$key] ?? null;
 				$param = $this->convertParam($platform, $param, $type);
 				$sql   = preg_replace('/\?/', "$param", $sql, 1);
 			}

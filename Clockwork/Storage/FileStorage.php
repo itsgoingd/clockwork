@@ -34,7 +34,7 @@ class FileStorage extends Storage
 	}
 
 	// Returns all requests
-	public function all(Search $search = null)
+	public function all(?Search $search = null)
 	{
 		return $this->loadRequests($this->searchIndexForward($search));
 	}
@@ -46,20 +46,20 @@ class FileStorage extends Storage
 	}
 
 	// Return the latest request
-	public function latest(Search $search = null)
+	public function latest(?Search $search = null)
 	{
 		$requests = $this->loadRequests($this->searchIndexBackward($search, null, 1));
 		return reset($requests);
 	}
 
 	// Return requests received before specified id, optionally limited to specified count
-	public function previous($id, $count = null, Search $search = null)
+	public function previous($id, $count = null, ?Search $search = null)
 	{
 		return $this->loadRequests($this->searchIndexBackward($search, $id, $count));
 	}
 
 	// Return requests received after specified id, optionally limited to specified count
-	public function next($id, $count = null, Search $search = null)
+	public function next($id, $count = null, ?Search $search = null)
 	{
 		return $this->loadRequests($this->searchIndexForward($search, $id, $count));
 	}
@@ -132,19 +132,19 @@ class FileStorage extends Storage
 	}
 
 	// Search index backward from specified ID or last record, with optional results count limit
-	protected function searchIndexBackward(Search $search = null, $id = null, $count = null)
+	protected function searchIndexBackward(?Search $search = null, $id = null, $count = null)
 	{
 		return $this->searchIndex('previous', $search, $id, $count);
 	}
 
 	// Search index forward from specified ID or last record, with optional results count limit
-	protected function searchIndexForward(Search $search = null, $id = null, $count = null)
+	protected function searchIndexForward(?Search $search = null, $id = null, $count = null)
 	{
 		return $this->searchIndex('next', $search, $id, $count);
 	}
 
 	// Search index in specified direction from specified ID or last record, with optional results count limit
-	protected function searchIndex($direction, Search $search = null, $id = null, $count = null)
+	protected function searchIndex($direction, ?Search $search = null, $id = null, $count = null)
 	{
 		$this->openIndex($direction == 'previous' ? 'end' : 'start', false, true);
 
@@ -205,6 +205,9 @@ class FileStorage extends Storage
 
 		$line = '';
 
+		// File pointer is always kept at the start of the "next" record, scroll back to the end of "previous" record
+		fseek($this->indexHandle, $position - 1);
+
 		// reads 1024B chunks of the file backwards from the current position, until a newline is found or we reach the top
 		while ($position > 0) {
 			// find next position to read from, make sure we don't read beyond file boundary
@@ -228,7 +231,7 @@ class FileStorage extends Storage
 			if ($newline !== false) break;
 		}
 
-		return $this->makeRequestFromIndex(str_getcsv($line));
+		return $this->makeRequestFromIndex(str_getcsv($line, ',', '"', ''));
 	}
 
 	// Read next line from index
@@ -236,25 +239,18 @@ class FileStorage extends Storage
 	{
 		if (feof($this->indexHandle)) return;
 
-		// File pointer is always at the start of the line, call extra fgets to skip current line
-		fgets($this->indexHandle);
+		// File pointer is always at the start of the "next" record
 		$line = fgets($this->indexHandle);
 
 		// Check if we read an empty line or reached the end of file
 		if ($line === false) return;
 
-		// Reset the file pointer to the start of the read line
-		fseek($this->indexHandle, ftell($this->indexHandle) - strlen($line));
-
-		return $this->makeRequestFromIndex(str_getcsv($line));
+		return $this->makeRequestFromIndex(str_getcsv($line, ',', '"', ''));
 	}
 
 	// Trim index file from beginning to current position (including)
 	protected function trimIndex()
 	{
-		// File pointer is always at the start of the line, call extra fgets to skip current line
-		fgets($this->indexHandle);
-
 		// Read the rest of the index file
 		$trimmedLength = filesize("{$this->path}/index") - ftell($this->indexHandle);
 		$trimmed = $trimmedLength > 0 ? fread($this->indexHandle, $trimmedLength) : '';
@@ -266,7 +262,7 @@ class FileStorage extends Storage
 	// Create an incomplete request from index data
 	protected function makeRequestFromIndex($record)
 	{
-		$type = isset($record[7]) ? $record[7] : 'response';
+		$type = $record[7] ?? 'response';
 
 		if ($type == 'command') {
 			$nameField = 'commandName';
@@ -312,7 +308,7 @@ class FileStorage extends Storage
 			$request->responseStatus,
 			$request->getResponseDuration(),
 			$request->type
-		]);
+		], ',', '"', '');
 
 		flock($handle, LOCK_UN);
 		fclose($handle);

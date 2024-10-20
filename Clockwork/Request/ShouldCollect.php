@@ -57,8 +57,8 @@ class ShouldCollect
 		if (! $this->onDemand) return true;
 
 		if ($this->onDemand !== true) {
-			$input = isset($request->input['clockwork-profile']) ? $request->input['clockwork-profile'] : '';
-			$cookie = isset($request->cookies['clockwork-profile']) ? $request->cookies['clockwork-profile'] : '';
+			$input = $request->input['clockwork-profile'] ?? '';
+			$cookie = $request->cookies['clockwork-profile'] ?? '';
 
 			return hash_equals($this->onDemand, $input) || hash_equals($this->onDemand, $cookie);
 		}

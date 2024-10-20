@@ -56,6 +56,8 @@ class Serializer
 			$className = get_class($data);
 			$objectHash = spl_object_hash($data);
 
+			if ($className === '__PHP_Incomplete_Class') return [ '__class__' => $className ];
+
 			if ($limit === 0) return [ '__class__' => $className, '__omitted__' => 'limit' ];
 
 			if (isset($context['references'][$objectHash])) return [ '__type__' => 'recursion' ];
