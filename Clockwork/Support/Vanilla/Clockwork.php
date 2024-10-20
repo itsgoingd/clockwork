@@ -293,8 +293,6 @@ class Clockwork
 
 		$html = ob_get_clean();
 
-		exit($html);
-
 		return $this->response($html, null, false);
 	}
 
