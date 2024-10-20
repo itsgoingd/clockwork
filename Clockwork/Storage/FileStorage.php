@@ -205,6 +205,9 @@ class FileStorage extends Storage
 
 		$line = '';
 
+		// File pointer is always kept at the start of the "next" record, scroll back to the end of "previous" record
+		fseek($this->indexHandle, $position - 1);
+
 		// reads 1024B chunks of the file backwards from the current position, until a newline is found or we reach the top
 		while ($position > 0) {
 			// find next position to read from, make sure we don't read beyond file boundary
@@ -236,15 +239,11 @@ class FileStorage extends Storage
 	{
 		if (feof($this->indexHandle)) return;
 
-		// File pointer is always at the start of the line, call extra fgets to skip current line
-		fgets($this->indexHandle);
+		// File pointer is always at the start of the "next" record
 		$line = fgets($this->indexHandle);
 
 		// Check if we read an empty line or reached the end of file
 		if ($line === false) return;
-
-		// Reset the file pointer to the start of the read line
-		fseek($this->indexHandle, ftell($this->indexHandle) - strlen($line));
 
 		return $this->makeRequestFromIndex(str_getcsv($line, ',', '"', ''));
 	}
@@ -252,9 +251,6 @@ class FileStorage extends Storage
 	// Trim index file from beginning to current position (including)
 	protected function trimIndex()
 	{
-		// File pointer is always at the start of the line, call extra fgets to skip current line
-		fgets($this->indexHandle);
-
 		// Read the rest of the index file
 		$trimmedLength = filesize("{$this->path}/index") - ftell($this->indexHandle);
 		$trimmed = $trimmedLength > 0 ? fread($this->indexHandle, $trimmedLength) : '';
