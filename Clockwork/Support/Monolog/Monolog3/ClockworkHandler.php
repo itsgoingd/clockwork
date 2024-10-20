@@ -2,9 +2,8 @@
 
 use Clockwork\Request\Log as ClockworkLog;
 
-use Monolog\Logger;
+use Monolog\{Logger, LogRecord};
 use Monolog\Handler\AbstractProcessingHandler;
-use Monolog\LogRecord;
 
 // Stores messages in a Clockwork log instance (compatible with Monolog 3.x)
 class ClockworkHandler extends AbstractProcessingHandler
