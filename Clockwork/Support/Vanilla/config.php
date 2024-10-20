@@ -113,29 +113,23 @@ return [
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------
-	| Clockwork web UI
+	| Clockwork Web UI
 	|------------------------------------------------------------------------------------------------------------------
 	|
 	| Clockwork comes bundled with a full Clockwork App accessible as a Web UI. Here you can enable and configure this
 	| feature.
-	| Clockwork::returnWeb api is used to expose the Web UI in your vanilla app, see the installation instructions for
-	| details.
+	| When not using the Clockwork middleware, you will need to call the Clockwork::returnWeb api to expose the Web UI,
+	| see the installation instructions for details.
 	|
 	*/
 
 	'web' => [
-		// Enable or disable the Web UI, set to the public uri where Clockwork Web UI is accessible
-		// If this is just set to `true`, it defaults to serve the web UI from
-		// the `/clockwork` path.
+		// Enable or disable the Web UI, you can also set a custom URI here (defaults to /clockwork).
 		'enable' => getenv('CLOCKWORK_WEB_ENABLE') !== false ? getenv('CLOCKWORK_WEB_ENABLE') : true,
 
-		// Path where to install the Web UI assets, should be publicly accessible
-		// If set to `false`, it disables copying the assets and serves them in-place
-		// instead.
-		'path' => getenv('CLOCKWORK_WEB_PATH') !== false ? getenv('CLOCKWORK_WEB_PATH') : __DIR__ . '/../../../../../../public/vendor/clockwork',
-
-		// Public URI where the installed Web UI assets will be accessible
-		'uri' => getenv('CLOCKWORK_WEB_URI') !== false ? getenv('CLOCKWORK_WEB_URI') : '/vendor/clockwork',
+		// Public path where the Web UI assets should be copied to. This is only required for applications not using
+		// the Clockwork middleware or router, see the installation instructions for details.
+		'path' => getenv('CLOCKWORK_WEB_PATH') !== false ? getenv('CLOCKWORK_WEB_PATH') : false
 	],
 
 	/*
