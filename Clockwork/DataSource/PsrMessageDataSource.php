@@ -4,8 +4,7 @@ use Clockwork\DataSource\DataSource;
 use Clockwork\Helpers\Serializer;
 use Clockwork\Request\Request;
 
-use Psr\Http\Message\ServerRequestInterface as PsrRequest;
-use Psr\Http\Message\ResponseInterface as PsrResponse;
+use Psr\Http\Message\{ResponseInterface as PsrResponse, ServerRequestInterface as PsrRequest};
 
 // Data source providing data obtainable from the PSR-7 request and response interfaces
 class PsrMessageDataSource extends DataSource
@@ -15,7 +14,7 @@ class PsrMessageDataSource extends DataSource
 	protected $psrResponse;
 
 	// Create a new data source, takes PSR-7 request and response as arguments
-	public function __construct(PsrRequest $psrRequest = null, PsrResponse $psrResponse = null)
+	public function __construct(?PsrRequest $psrRequest = null, ?PsrResponse $psrResponse = null)
 	{
 		$this->psrRequest  = $psrRequest;
 		$this->psrResponse = $psrResponse;
@@ -53,9 +52,7 @@ class PsrMessageDataSource extends DataSource
 	{
 		$env = $this->psrRequest->getServerParams();
 
-		if (isset($env['REQUEST_TIME_FLOAT'])) {
-			return $env['REQUEST_TIME_FLOAT'];
-		}
+		return $env['REQUEST_TIME_FLOAT'] ?? null;
 	}
 
 	// Get the response time (current time, assuming most of the application code has already run at this point)

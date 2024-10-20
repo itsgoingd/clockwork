@@ -119,7 +119,7 @@ class Clockwork
 	}
 
 	// Extends the request with an additional data form all data sources, which is not required for normal use
-	public function extendRequest(Request $request = null)
+	public function extendRequest(?Request $request = null)
 	{
 		foreach ($this->dataSources as $dataSource) {
 			$dataSource->extend($request ?: $this->request);
@@ -145,7 +145,7 @@ class Clockwork
 	}
 
 	// Get or set the current request instance
-	public function request(Request $request = null)
+	public function request(?Request $request = null)
 	{
 		if (! $request) return $this->request;
 
@@ -207,7 +207,7 @@ class Clockwork
 	}
 
 	// Get or set a storage implementation
-	public function storage(StorageInterface $storage = null)
+	public function storage(?StorageInterface $storage = null)
 	{
 		if (! $storage) return $this->storage;
 
@@ -216,7 +216,7 @@ class Clockwork
 	}
 
 	// Get or set an authenticator implementation
-	public function authenticator(AuthenticatorInterface $authenticator = null)
+	public function authenticator(?AuthenticatorInterface $authenticator = null)
 	{
 		if (! $authenticator) return $this->authenticator;
 

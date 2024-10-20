@@ -3,9 +3,7 @@
 use Clockwork\Clockwork;
 use Clockwork\Support\Laravel\ClockworkSupport;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use Illuminate\Http\{JsonResponse, RedirectResponse, Request};
 use Illuminate\Routing\Controller;
 use Laravel\Telescope\Telescope;
 

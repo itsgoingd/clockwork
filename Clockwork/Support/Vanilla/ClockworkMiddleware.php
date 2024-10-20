@@ -1,11 +1,8 @@
 <?php namespace Clockwork\Support\Vanilla;
 
 use Http\Discovery\Psr17Factory;
-use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Message\{ResponseFactoryInterface, ResponseInterface, ServerRequestInterface};
+use Psr\Http\Server\{MiddlewareInterface, RequestHandlerInterface};
 
 // Generic Clockwork middleware for use with PSR-compatible applications
 class ClockworkMiddleware implements MiddlewareInterface

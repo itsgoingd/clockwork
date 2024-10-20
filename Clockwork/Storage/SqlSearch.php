@@ -18,19 +18,19 @@ class SqlSearch extends Search
 	protected $pdo;
 
 	// Create a new instance, takes search parameters
-	public function __construct($search = [], PDO $pdo = null)
+	public function __construct($search = [], ?PDO $pdo = null)
 	{
 		parent::__construct($search);
 
 		$this->pdo = $pdo;
 
-		list($this->conditions, $this->bindings) = $this->resolveConditions();
+		[ $this->conditions, $this->bindings ] = $this->resolveConditions();
 
 		$this->buildQuery();
 	}
 
 	// Creates a new instance from a base Search class instance
-	public static function fromBase(Search $search = null, PDO $pdo = null)
+	public static function fromBase(?Search $search = null, ?PDO $pdo = null)
 	{
 		return new static((array) $search, $pdo);
 	}

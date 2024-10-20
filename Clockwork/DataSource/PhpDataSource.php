@@ -72,11 +72,7 @@ class PhpDataSource extends DataSource
 			$header = ucwords(strtolower($header));
 			$header = str_replace(' ', '-', $header);
 
-			if (! isset($headers[$header])) {
-				$headers[$header] = [ $value ];
-			} else {
-				$headers[$header][] = $value;
-			}
+			$headers[$header] = array_merge($headers[$header] ?? [], [ $value ]);
 		}
 
 		ksort($headers);
@@ -87,27 +83,23 @@ class PhpDataSource extends DataSource
 	// Get the request method
 	protected function getRequestMethod()
 	{
-		if (isset($_SERVER['REQUEST_METHOD'])) {
-			return $_SERVER['REQUEST_METHOD'];
-		}
+		return $_SERVER['REQUEST_METHOD'] ?? null;
 	}
 
 	// Get the response time
 	protected function getRequestTime()
 	{
-		if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
-			return $_SERVER['REQUEST_TIME_FLOAT'];
-		}
+		return $_SERVER['REQUEST_TIME_FLOAT'] ?? null;
 	}
 
 	// Get the request URL
 	protected function getRequestUrl()
 	{
-		$https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on';
-		$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null;
-		$addr = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : null;
-		$port = isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : null;
-		$uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
+		$https = ($_SERVER['HTTPS'] ?? null) == 'on';
+		$host = $_SERVER['HTTP_HOST'] ?? null;
+		$addr = $_SERVER['SERVER_ADDR'] ?? null;
+		$port = $_SERVER['SERVER_PORT'] ?? null;
+		$uri = $_SERVER['REQUEST_URI'] ?? null;
 
 		$scheme = $https ? 'https' : 'http';
 		$host = $host ?: $addr;
@@ -122,9 +114,7 @@ class PhpDataSource extends DataSource
 	// Get the request URI
 	protected function getRequestUri()
 	{
-		if (isset($_SERVER['REQUEST_URI'])) {
-			return $_SERVER['REQUEST_URI'];
-		}
+		return $_SERVER['REQUEST_URI'] ?? null;
 	}
 
 	// Get the response status code

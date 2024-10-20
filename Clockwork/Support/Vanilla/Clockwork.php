@@ -190,9 +190,9 @@ class Clockwork
 
 		preg_match('#(?<id>[0-9-]+|latest)(?:/(?<direction>next|previous))?(?:/(?<count>\d+))?#', $request, $matches);
 
-		$id = isset($matches['id']) ? $matches['id'] : null;
-		$direction = isset($matches['direction']) ? $matches['direction'] : null;
-		$count = isset($matches['count']) ? $matches['count'] : null;
+		$id = $matches['id'] ?? null;
+		$direction = $matches['direction'] ?? null;
+		$count = $matches['count'] ?? null;
 
 		if ($direction == 'previous') {
 			$data = $this->clockwork->storage()->previous($id, $count, Search::fromRequest($this->incomingRequest()->input));

@@ -67,7 +67,7 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 	// Register Clockwork REST api routes
 	public function registerRoutes()
 	{
-		$router = isset($this->app->router) ? $this->app->router : $this->app;
+		$router = $this->app->router ?? $this->app;
 
 		$router->get('/__clockwork/{id:(?:[0-9-]+|latest)}/extended', 'Clockwork\Support\Lumen\Controller@getExtendedData');
 		$router->get('/__clockwork/{id:(?:[0-9-]+|latest)}[/{direction:(?:next|previous)}[/{count:\d+}]]', 'Clockwork\Support\Lumen\Controller@getData');
@@ -78,7 +78,7 @@ class ClockworkServiceProvider extends LaravelServiceProvider
 	// Register Clockwork app routes
 	public function registerWebRoutes()
 	{
-		$router = isset($this->app->router) ? $this->app->router : $this->app;
+		$router = $this->app->router ?? $this->app;
 
 		$this->app['clockwork.support']->webPaths()->each(function ($path) use ($router) {
 			$router->get("{$path}", 'Clockwork\Support\Lumen\Controller@webRedirect');
