@@ -3,8 +3,8 @@
 	"short_name": "Clockwork",
 	"icons": [
 		{
-			"src": "img/icons/apple-touch-icon-180x180.png",
-			"sizes": "180x180",
+			"src": "img/icon-128x128.png",
+			"sizes": "128x128",
 			"type": "image/png"
 		}
 	],
