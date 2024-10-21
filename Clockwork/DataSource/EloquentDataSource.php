@@ -358,6 +358,9 @@ class EloquentDataSource extends DataSource
 	// Returns model key without crashing when using Eloquent strict mode and it's not loaded
 	protected function getModelKey($model)
 	{
+		// Some applications use non-string primary keys, even when this is not supported by Laravel
+		if (! is_string($model->getKeyName())) return;
+
 		try {
 			return $model->getKey();
 		} catch (\Illuminate\Database\Eloquent\MissingAttributeException $e) {}
