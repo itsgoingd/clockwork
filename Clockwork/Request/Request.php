@@ -231,20 +231,6 @@ class Request
 		$this->currentTimeline = new Timeline\Timeline($this->timelineData);
 	}
 
-	// Compute the sum of durations of all database queries
-	public function getDatabaseDuration()
-	{
-		return array_reduce($this->databaseQueries, function ($total, $query) {
-			return $total + ($query['duration'] ?? 0);
-		}, 0);
-	}
-
-	// Compute response duration in milliseconds
-	public function getResponseDuration()
-	{
-		return ($this->responseTime - $this->time) * 1000;
-	}
-
 	// Get all request data as an array
 	public function toArray()
 	{
@@ -266,29 +252,29 @@ class Request
 			'cookies'                  => $this->cookies,
 			'responseTime'             => $this->responseTime,
 			'responseStatus'           => $this->responseStatus,
-			'responseDuration'         => $this->responseDuration ?: $this->getResponseDuration(),
+			'responseDuration'         => $this->responseDuration ?? $this->getResponseDuration(),
 			'memoryUsage'              => $this->memoryUsage,
 			'middleware'               => $this->middleware,
 			'databaseQueries'          => $this->databaseQueries,
-			'databaseQueriesCount'     => $this->databaseQueriesCount,
-			'databaseSlowQueries'      => $this->databaseSlowQueries,
-			'databaseSelects'          => $this->databaseSelects,
-			'databaseInserts'          => $this->databaseInserts,
-			'databaseUpdates'          => $this->databaseUpdates,
-			'databaseDeletes'          => $this->databaseDeletes,
-			'databaseOthers'           => $this->databaseOthers,
-			'databaseDuration'         => $this->getDatabaseDuration(),
+			'databaseQueriesCount'     => $this->databaseQueriesCount ?? $this->getDatabaseQueriesCount(),
+			'databaseSlowQueries'      => $this->databaseSlowQueries ?? $this->getDatabaseSlowQueriesCount(),
+			'databaseSelects'          => $this->databaseSelects ?? $this->getDatabaseSelects(),
+			'databaseInserts'          => $this->databaseInserts ?? $this->getDatabaseInserts(),
+			'databaseUpdates'          => $this->databaseUpdates ?? $this->getDatabaseUpdates(),
+			'databaseDeletes'          => $this->databaseDeletes ?? $this->getDatabaseDeletes(),
+			'databaseOthers'           => $this->databaseOthers ?? $this->getDatabaseOthers(),
+			'databaseDuration'         => $this->databaseDuration ?? $this->getDatabaseDuration(),
 			'cacheQueries'             => $this->cacheQueries,
-			'cacheReads'               => $this->cacheReads,
-			'cacheHits'                => $this->cacheHits,
-			'cacheWrites'              => $this->cacheWrites,
-			'cacheDeletes'             => $this->cacheDeletes,
-			'cacheTime'                => $this->cacheTime,
+			'cacheReads'               => $this->cacheReads ?? $this->getCacheReads(),
+			'cacheHits'                => $this->cacheHits ?? $this->getCacheHits(),
+			'cacheWrites'              => $this->cacheWrites ?? $this->getCacheWrites(),
+			'cacheDeletes'             => $this->cacheDeletes ?? $this->getCacheDeletes(),
+			'cacheTime'                => $this->cacheTime ?? $this->getCacheTime(),
 			'modelsActions'            => $this->modelsActions,
-			'modelsRetrieved'          => $this->modelsRetrieved,
-			'modelsCreated'            => $this->modelsCreated,
-			'modelsUpdated'            => $this->modelsUpdated,
-			'modelsDeleted'            => $this->modelsDeleted,
+			'modelsRetrieved'          => $this->modelsRetrieved ?? $this->getModelsRetrieved(),
+			'modelsCreated'            => $this->modelsCreated ?? $this->getModelsCreated(),
+			'modelsUpdated'            => $this->modelsUpdated ?? $this->getModelsUpdated(),
+			'modelsDeleted'            => $this->modelsDeleted ?? $this->getModelsDeleted(),
 			'redisCommands'            => $this->redisCommands,
 			'queueJobs'                => $this->queueJobs,
 			'timelineData'             => $this->timeline()->toArray(),
@@ -576,6 +562,146 @@ class Request
 			'trace'     => $trace,
 			'passed'    => $passed
 		];
+	}
+
+	// Compute response duration in milliseconds
+	public function getResponseDuration()
+	{
+		return ($this->responseTime - $this->time) * 1000;
+	}
+
+	// Compute total database queries count
+	public function getDatabaseQueriesCount()
+	{
+		return count($this->databaseQueries);
+	}
+
+	// Compute total database slow queries count
+	public function getDatabaseSlowQueriesCount()
+	{
+		return count(array_filter($this->databaseQueries, function ($query) {
+			return in_array('slow', $query['tags'] ?? []);
+		}));
+	}
+
+	// Compute total database select queries count
+	public function getDatabaseSelects()
+	{
+		return count(array_filter($this->databaseQueries, function ($query) {
+			return preg_match('/^select\b/i', ltrim($query['query']));
+		}));
+	}
+
+	// Compute total database insert queries count
+	public function getDatabaseInserts()
+	{
+		return count(array_filter($this->databaseQueries, function ($query) {
+			return preg_match('/^insert\b/i', ltrim($query['query']));
+		}));
+	}
+
+	// Compute total database update queries count
+	public function getDatabaseUpdates()
+	{
+		return count(array_filter($this->databaseQueries, function ($query) {
+			return preg_match('/^update\b/i', ltrim($query['query']));
+		}));
+	}
+
+	// Compute total database delete queries count
+	public function getDatabaseDeletes()
+	{
+		return count(array_filter($this->databaseQueries, function ($query) {
+			return preg_match('/^delete\b/i', ltrim($query['query']));
+		}));
+	}
+
+	// Compute total database other queries count
+	public function getDatabaseOthers()
+	{
+		return count(array_filter($this->databaseQueries, function ($query) {
+			return ! preg_match('/^(select|insert|update|delete)\b/i', ltrim($query['query']));
+		}));
+	}
+
+	// Compute the sum of durations of all database queries
+	public function getDatabaseDuration()
+	{
+		return array_reduce($this->databaseQueries, function ($total, $query) {
+			return $total + ($query['duration'] ?? 0);
+		}, 0);
+	}
+
+	// Compute total cache reads count
+	public function getCacheReads()
+	{
+		return count(array_filter($this->cacheQueries, function ($query) {
+			return $query['type'] == 'miss' || $query['type'] == 'hit';
+		}));
+	}
+
+	// Compute total cache hits count
+	public function getCacheHits()
+	{
+		return count(array_filter($this->cacheQueries, function ($query) {
+			return $query['type'] == 'hit';
+		}));
+	}
+
+	// Compute total cache writes count
+	public function getCacheWrites()
+	{
+		return count(array_filter($this->cacheQueries, function ($query) {
+			return $query['type'] == 'write';
+		}));
+	}
+
+	// Compute total cache deletes count
+	public function getCacheDeletes()
+	{
+		return count(array_filter($this->cacheQueries, function ($query) {
+			return $query['type'] == 'delete';
+		}));
+	}
+
+	// Compute the total time spent querying cache
+	public function getCacheTime()
+	{
+		return array_reduce($this->cacheQueries, function ($total, $query) {
+			return $total + ($query['duration'] ?? 0);
+		}, 0);
+	}
+
+	// Compute total retrieved models count
+	public function getModelsRetrieved()
+	{
+		return count(array_filter($this->modelsActions, function ($action) {
+			return $action['type'] == 'retrieved';
+		}));
+	}
+
+	// Compute total created models count
+	public function getModelsCreated()
+	{
+		return count(array_filter($this->modelsActions, function ($action) {
+			return $action['type'] == 'created';
+		}));
+	}
+
+	// Compute total updated models count
+	public function getModelsUpdated()
+	{
+		return count(array_filter($this->modelsActions, function ($action) {
+			return $action['type'] == 'updated';
+		}));
+	}
+
+	// Compute total deleted models count
+	public function getModelsDeleted()
+	{
+		return count(array_filter($this->modelsActions, function ($action) {
+			return $action['type'] == 'deleted';
+		}));
 	}
 
 	// Generate unique request ID in the form of <current time>-<random number>
