@@ -12,7 +12,7 @@ class ClockworkLoader extends Loader
 		$this->support = $support;
 	}
 
-	public function load($resource, $type = null)
+	public function load($resource, $type = null): mixed
 	{
 		$routes = new RouteCollection();
 
@@ -45,7 +45,7 @@ class ClockworkLoader extends Loader
 		return $routes;
 	}
 
-	public function supports($resource, $type = null)
+	public function supports($resource, $type = null): bool
 	{
 		return $type == 'clockwork';
 	}

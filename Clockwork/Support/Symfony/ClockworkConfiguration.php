@@ -13,7 +13,7 @@ class ClockworkConfiguration implements ConfigurationInterface
 		$this->debug = $debug;
 	}
 
-	public function getConfigTreeBuilder()
+	public function getConfigTreeBuilder(): TreeBuilder
 	{
 		return $this->getConfigRoot()
 			->children()
