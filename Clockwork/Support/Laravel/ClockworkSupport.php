@@ -216,9 +216,8 @@ class ClockworkSupport
 			$this->incomingRequest = null;
 
 			$this->app->forgetInstance('clockwork.request');
-			$request = $this->app->make('clockwork.request')->override('requestTime', microtime(true));
 
-			$this->app['clockwork']->reset()->request($request);
+			$this->app['clockwork']->reset()->request($this->app->make('clockwork.request'));
 			$this->app['clockwork.laravel']->setApplication($this->app);
 		});
 	}
