@@ -438,6 +438,10 @@ class ClockworkSupport
 			$response->cookie(
 				new Cookie('x-clockwork', json_encode($clockworkBrowser), time() + 60, null, null, $request->secure(), false)
 			);
+		} elseif (in_array('x-clockwork', $this->incomingRequest()->cookies)) {
+			$response->cookie(
+				new Cookie('x-clockwork', '', -1, null, null, $request->secure(), false)
+			);
 		}
 
 		return $response;
