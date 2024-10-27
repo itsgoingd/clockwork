@@ -20,8 +20,10 @@ class ClockworkListener implements EventSubscriberInterface
 
 	public function onKernelRequest(KernelEvent $event)
 	{
-		if (preg_match('#/__clockwork(.*)#', $event->getRequest()->getPathInfo())) {
-			$this->profiler->disable();
+		$disabledPaths = array_merge([ '__clockwork' ], $this->clockwork->webPaths());
+
+		foreach ($disabledPaths as $path) {
+			if (strpos($event->getRequest()->getPathInfo(), "/{$path}") !== false) $this->profiler->disable();
 		}
 	}
 
