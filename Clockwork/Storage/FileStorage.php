@@ -317,7 +317,7 @@ class FileStorage extends Storage
 	// Ensure the metadata path is writable and initialize it if it doesn't exist, throws exception if it is not writable 
 	protected function ensurePathIsWritable()
 	{
-		if (! file_exists($this->path)) {
+		if (! is_dir($this->path)) {
 			// directory doesn't exist, try to create one
 			if (! @mkdir($this->path, $this->pathPermissions, true)) {
 				throw new \Exception("Directory \"{$this->path}\" does not exist.");
@@ -329,7 +329,7 @@ class FileStorage extends Storage
 			throw new \Exception("Path \"{$this->path}\" is not writable.");
 		}
 
-		if (! file_exists($indexFile = "{$this->path}/index")) {
+		if (! is_file($indexFile = "{$this->path}/index")) {
 			file_put_contents($indexFile, '');
 		} elseif (! is_writable($indexFile)) {
 			throw new \Exception("Path \"{$indexFile}\" is not writable.");

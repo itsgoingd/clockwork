@@ -317,7 +317,7 @@ class Clockwork
 		$path = $this->config['web']['path'];
 		$source = __DIR__ . '/../../Web/public';
 
-		if (file_exists("{$path}/index.html")) return;
+		if (is_file("{$path}/index.html")) return;
 
 		@mkdir($path, 0755, true);
 
