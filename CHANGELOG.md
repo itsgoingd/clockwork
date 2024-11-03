@@ -1,3 +1,28 @@
+5.3 (wip)
+
+- added support for collecting HTTP requests, with seamless Laravel and generic Guzzle implementation
+- added generic PSR-compatible middleware to the Vanilla integration (partially implemented by UlrichEckhardt, thanks!)
+- added support for Symfony 6+
+- added support for Doctrine 3+ (idea by DominicDetta, thanks!)
+- added support for Monolog 3 (implemented by Fedorov.Sergey, thanks!)
+- improved collecting database queries in Laravel to include transaction queries (implemented by congnv0330, thanks!)
+- improved collecting notifications in Laravel to include "To" field for database and broadcast notifications and improved email recipient formatting
+- improved Vanilla integration to support serving the Web UI without copying the assets (implemented by UlrichEckhardt, thanks!)
+- improved Request apis to automatically compute number of database queries, cache queries and model actions (idea by MarkusJLechner, thanks!)
+- improved Artisan clockwork:clean to include clockwork:clear alias (implemented by wilsenhc, thanks!)
+- improved Vanilla integration config to use getenv() instead of $_ENV (implemented by UlrichEckhardt and Fedorov.Sergey, thanks!)
+- improved Symfony integration to disable profiler for Clockwork Web UI requests
+- improved Monolog data source to automatically use correct handler (implemented by DominicDetta and Fedorov.Sergey, thanks!)
+- improved Laravel and Vanilla integration to clean up the x-clockwork cookie when it's no longer needed (idea by ssnepenthe, thanks!)
+- improved collecting models in Laravel to avoid crash when model's primary key is not set to string
+- changed file_exists call to is_dir/is_file (idea by staabm, thanks!)
+- fixed PHP 8.4 deprecation notices (reported by gharlan, thanks!)
+- fixed not being able to read first collected request in files storage (reported by UlrichEckhardt, thanks!)
+- fixed connecting to Redis without login or database set in Redit storage (reported by reeslo, thanks!)
+- updated Clockwork App (5.3)
+- BREAKING dropped PHP <7.1 support
+- BREAKING Vanilla integration default value for web.path has changed to false
+
 5.2.2
 
 - fixed collecting Laravel artisan command output on Laravel 11 (reported by uderline, thanks!)

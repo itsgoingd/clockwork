@@ -1,28 +1,18 @@
 <?php namespace Clockwork\Support\Laravel;
 
 use Clockwork\Clockwork;
-use Clockwork\Authentication\NullAuthenticator;
-use Clockwork\Authentication\SimpleAuthenticator;
+use Clockwork\Authentication\{NullAuthenticator, SimpleAuthenticator};
 use Clockwork\DataSource\PhpDataSource;
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\ServerTiming;
-use Clockwork\Helpers\StackFilter;
-use Clockwork\Helpers\StackTrace;
-use Clockwork\Request\IncomingRequest;
-use Clockwork\Request\Request;
-use Clockwork\Storage\FileStorage;
-use Clockwork\Storage\RedisStorage;
-use Clockwork\Storage\Search;
-use Clockwork\Storage\SqlStorage;
+use Clockwork\Helpers\{Serializer, ServerTiming, StackFilter, StackTrace};
+use Clockwork\Request\{IncomingRequest, Request};
+use Clockwork\Storage\{FileStorage, RedisStorage, Search, SqlStorage};
 use Clockwork\Web\Web;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
+use Illuminate\Http\{JsonResponse, Response};
 use Illuminate\Redis\RedisManager;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\{BinaryFileResponse, Cookie};
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 // Support class for the Laravel integration
@@ -114,7 +104,7 @@ class ClockworkSupport
 			return new JsonResponse([ 'message' => 'Request not found.' ], 404);
 		}
 
-		$token = isset($input['_token']) ? $input['_token'] : '';
+		$token = $input['_token'] ?? '';
 
 		if (! $request->updateToken || ! hash_equals($request->updateToken, $token)) {
 			return new JsonResponse([ 'message' => 'Invalid update token.' ], 403);
@@ -160,6 +150,7 @@ class ClockworkSupport
 					? $this->app['clockwork.notifications'] : $this->app['clockwork.swift']
 			);
 		}
+		if ($this->isFeatureEnabled('http_requests')) $clockwork->addDataSource($this->app['clockwork.http-requests']);
 		if ($this->isFeatureAvailable('xdebug')) $clockwork->addDataSource($this->app['clockwork.xdebug']);
 		if ($this->isFeatureEnabled('views')) {
 			$clockwork->addDataSource(
@@ -179,6 +170,7 @@ class ClockworkSupport
 		if ($this->isFeatureEnabled('cache')) $this->app['clockwork.cache']->listenToEvents();
 		if ($this->isFeatureEnabled('database')) $this->app['clockwork.eloquent']->listenToEvents();
 		if ($this->isFeatureEnabled('events')) $this->app['clockwork.events']->listenToEvents();
+		if ($this->isFeatureEnabled('http_requests')) $this->app['clockwork.http-requests']->listenToEvents();
 		if ($this->isFeatureEnabled('notifications')) {
 			$this->isFeatureAvailable('notifications-events')
 				? $this->app['clockwork.notifications']->listenToEvents() : $this->app['clockwork.swift']->listenToEvents();
@@ -224,9 +216,8 @@ class ClockworkSupport
 			$this->incomingRequest = null;
 
 			$this->app->forgetInstance('clockwork.request');
-			$request = $this->app->make('clockwork.request')->override('requestTime', microtime(true));
 
-			$this->app['clockwork']->reset()->request($request);
+			$this->app['clockwork']->reset()->request($this->app->make('clockwork.request'));
 			$this->app['clockwork.laravel']->setApplication($this->app);
 		});
 	}
@@ -380,10 +371,10 @@ class ClockworkSupport
 				$job->getQueue(),
 				$job->getConnectionName(),
 				array_filter([
-					'maxTries'     => isset($payload['maxTries']) ? $payload['maxTries'] : null,
-					'delaySeconds' => isset($payload['delaySeconds']) ? $payload['delaySeconds'] : null,
-					'timeout'      => isset($payload['timeout']) ? $payload['timeout'] : null,
-					'timeoutAt'    => isset($payload['timeoutAt']) ? $payload['timeoutAt'] : null
+					'maxTries'     => $payload['maxTries'] ?? null,
+					'delaySeconds' => $payload['delaySeconds'] ?? null,
+					'timeout'      => $payload['timeout'] ?? null,
+					'timeoutAt'    => $payload['timeoutAt'] ?? null
 				])
 			)
 			->storeRequest();
@@ -446,6 +437,10 @@ class ClockworkSupport
 
 			$response->cookie(
 				new Cookie('x-clockwork', json_encode($clockworkBrowser), time() + 60, null, null, $request->secure(), false)
+			);
+		} elseif (in_array('x-clockwork', $this->incomingRequest()->cookies)) {
+			$response->cookie(
+				new Cookie('x-clockwork', '', -1, null, null, $request->secure(), false)
 			);
 		}
 
@@ -591,6 +586,8 @@ class ClockworkSupport
 	{
 		if ($feature == 'database') {
 			return $this->app['config']->get('database.default');
+		} elseif ($feature == 'http_requests') {
+			return class_exists(\Illuminate\Http\Client\Request::class);
 		} elseif ($feature == 'notifications-events') {
 			return class_exists(\Illuminate\Mail\Events\MessageSent::class)
 				&& class_exists(\Illuminate\Notifications\Events\NotificationSent::class);

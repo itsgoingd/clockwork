@@ -7,13 +7,13 @@ return [
 	| Enable Clockwork
 	|------------------------------------------------------------------------------------------------------------------
 	|
-	| You can explicitly enable or disable Clockwork here. When disabled,
-	| the storeRequest and returnRequest methods will be no-ops. This provides
-	| a convenient way to disable Clockwork in production.
+	| You can explicitly enable or disable Clockwork here. When disabled, the storeRequest and returnRequest methods
+	| will be no-ops. This provides a convenient way to disable Clockwork in production.
+	| Unless explicitly enabled, Clockwork only runs on localhost, *.local, *.test and *.wip domains.
 	|
 	*/
 
-	'enable' => isset($_ENV['CLOCKWORK_ENABLE']) ? $_ENV['CLOCKWORK_ENABLE'] : true,
+	'enable' => getenv('CLOCKWORK_ENABLE') !== false ? getenv('CLOCKWORK_ENABLE') : null,
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------
@@ -30,7 +30,7 @@ return [
 		// Performance metrics
 		'performance' => [
 			// Allow collecting of client metrics. Requires separate clockwork-browser npm package.
-			'client_metrics' => isset($_ENV['CLOCKWORK_PERFORMANCE_CLIENT_METRICS']) ? $_ENV['CLOCKWORK_PERFORMANCE_CLIENT_METRICS'] : true
+			'client_metrics' => getenv('CLOCKWORK_PERFORMANCE_CLIENT_METRICS') !== false ? getenv('CLOCKWORK_PERFORMANCE_CLIENT_METRICS') : true
 		]
 
 	],
@@ -45,7 +45,7 @@ return [
 	|
 	*/
 
-	'toolbar' => isset($_ENV['CLOCKWORK_TOOLBAR']) ? $_ENV['CLOCKWORK_TOOLBAR'] : true,
+	'toolbar' => getenv('CLOCKWORK_TOOLBAR') !== false ? getenv('CLOCKWORK_TOOLBAR') : true,
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------
@@ -60,19 +60,19 @@ return [
 		// With on-demand mode enabled, Clockwork will only profile requests when the browser extension is open or you
 		// manually pass a "clockwork-profile" cookie or get/post data key.
 		// Optionally you can specify a "secret" that has to be passed as the value to enable profiling.
-		'on_demand' => isset($_ENV['CLOCKWORK_REQUESTS_ON_DEMAND']) ? $_ENV['CLOCKWORK_REQUESTS_ON_DEMAND'] : false,
+		'on_demand' => getenv('CLOCKWORK_REQUESTS_ON_DEMAND') !== false ? getenv('CLOCKWORK_REQUESTS_ON_DEMAND') : false,
 
 		// Collect only errors (requests with HTTP 4xx and 5xx responses)
-		'errors_only' => isset($_ENV['CLOCKWORK_REQUESTS_ERRORS_ONLY']) ? $_ENV['CLOCKWORK_REQUESTS_ERRORS_ONLY'] : false,
+		'errors_only' => getenv('CLOCKWORK_REQUESTS_ERRORS_ONLY') !== false ? getenv('CLOCKWORK_REQUESTS_ERRORS_ONLY') : false,
 
 		// Response time threshold in milliseconds after which the request will be marked as slow
-		'slow_threshold' => isset($_ENV['CLOCKWORK_REQUESTS_SLOW_THRESHOLD']) ? $_ENV['CLOCKWORK_REQUESTS_SLOW_THRESHOLD'] : null,
+		'slow_threshold' => getenv('CLOCKWORK_REQUESTS_SLOW_THRESHOLD') !== false ? getenv('CLOCKWORK_REQUESTS_SLOW_THRESHOLD') : null,
 
 		// Collect only slow requests
-		'slow_only' => isset($_ENV['CLOCKWORK_REQUESTS_SLOW_ONLY']) ? $_ENV['CLOCKWORK_REQUESTS_SLOW_ONLY'] : false,
+		'slow_only' => getenv('CLOCKWORK_REQUESTS_SLOW_ONLY') !== false ? getenv('CLOCKWORK_REQUESTS_SLOW_ONLY') : false,
 
 		// Sample the collected requests (eg. set to 100 to collect only 1 in 100 requests)
-		'sample' => isset($_ENV['CLOCKWORK_REQUESTS_SAMPLE']) ? $_ENV['CLOCKWORK_REQUESTS_SAMPLE'] : false,
+		'sample' => getenv('CLOCKWORK_REQUESTS_SAMPLE') !== false ? getenv('CLOCKWORK_REQUESTS_SAMPLE') : false,
 
 		// List of URIs that should not be collected
 		'except' => [
@@ -85,7 +85,7 @@ return [
 		],
 
 		// Don't collect OPTIONS requests, mostly used in the CSRF pre-flight requests and are rarely of interest
-		'except_preflight' => isset($_ENV['CLOCKWORK_REQUESTS_EXCEPT_PREFLIGHT']) ? $_ENV['CLOCKWORK_REQUESTS_EXCEPT_PREFLIGHT'] : true
+		'except_preflight' => getenv('CLOCKWORK_REQUESTS_EXCEPT_PREFLIGHT') !== false ? getenv('CLOCKWORK_REQUESTS_EXCEPT_PREFLIGHT') : true
 	],
 
 	/*
@@ -97,7 +97,7 @@ return [
 	|
 	*/
 
-	'collect_data_always' => isset($_ENV['CLOCKWORK_COLLECT_DATA_ALWAYS']) ? $_ENV['CLOCKWORK_COLLECT_DATA_ALWAYS'] : false,
+	'collect_data_always' => getenv('CLOCKWORK_COLLECT_DATA_ALWAYS') !== false ? getenv('CLOCKWORK_COLLECT_DATA_ALWAYS') : false,
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------
@@ -109,29 +109,27 @@ return [
 	|
 	*/
 
-	'api' => isset($_ENV['CLOCKWORK_API']) ? $_ENV['CLOCKWORK_API'] : '/__clockwork/',
+	'api' => getenv('CLOCKWORK_API') !== false ? getenv('CLOCKWORK_API') : '/__clockwork/',
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------
-	| Clockwork web UI
+	| Clockwork Web UI
 	|------------------------------------------------------------------------------------------------------------------
 	|
 	| Clockwork comes bundled with a full Clockwork App accessible as a Web UI. Here you can enable and configure this
 	| feature.
-	| Clockwork::returnWeb api is used to expose the Web UI in your vanilla app, see the installation instructions for
-	| details.
+	| When not using the Clockwork middleware, you will need to call the Clockwork::returnWeb api to expose the Web UI,
+	| see the installation instructions for details.
 	|
 	*/
 
 	'web' => [
-		// Enable or disable the Web UI, set to the public uri where Clockwork Web UI is accessible
-		'enable' => isset($_ENV['CLOCKWORK_WEB_ENABLE']) ? $_ENV['CLOCKWORK_WEB_ENABLE'] : true,
+		// Enable or disable the Web UI, you can also set a custom URI here (defaults to /clockwork).
+		'enable' => getenv('CLOCKWORK_WEB_ENABLE') !== false ? getenv('CLOCKWORK_WEB_ENABLE') : true,
 
-		// Path where to install the Web UI assets, should be publicly accessible
-		'path' => isset($_ENV['CLOCKWORK_WEB_PATH']) ? $_ENV['CLOCKWORK_WEB_PATH'] : __DIR__ . '/../../../../../public/vendor/clockwork',
-
-		// Public URI where the installed Web UI assets will be accessible
-		'uri' => isset($_ENV['CLOCKWORK_WEB_URI']) ? $_ENV['CLOCKWORK_WEB_URI'] : '/vendor/clockwork'
+		// Public path where the Web UI assets should be copied to. This is only required for applications not using
+		// the Clockwork middleware or router, see the installation instructions for details.
+		'path' => getenv('CLOCKWORK_WEB_PATH') !== false ? getenv('CLOCKWORK_WEB_PATH') : false
 	],
 
 	/*
@@ -145,36 +143,36 @@ return [
 	|   - redis - Stores requests in redis. Requires phpredis.
 	*/
 
-	'storage' => isset($_ENV['CLOCKWORK_STORAGE']) ? $_ENV['CLOCKWORK_STORAGE'] : 'files',
+	'storage' => getenv('CLOCKWORK_STORAGE') !== false ? getenv('CLOCKWORK_STORAGE') : 'files',
 
 	// Path where the Clockwork metadata is stored
-	'storage_files_path' => isset($_ENV['CLOCKWORK_STORAGE_FILES_PATH']) ? $_ENV['CLOCKWORK_STORAGE_FILES_PATH'] : __DIR__ . '/../../../../../../clockwork',
+	'storage_files_path' => getenv('CLOCKWORK_STORAGE_FILES_PATH') !== false ? getenv('CLOCKWORK_STORAGE_FILES_PATH') : __DIR__ . '/../../../../../../clockwork',
 
 	// Compress the metadata files using gzip, trading a little bit of performance for lower disk usage
-	'storage_files_compress' => isset($_ENV['CLOCKWORK_STORAGE_FILES_COMPRESS']) ? $_ENV['CLOCKWORK_STORAGE_FILES_COMPRESS'] : false,
+	'storage_files_compress' => getenv('CLOCKWORK_STORAGE_FILES_COMPRESS') !== false ? getenv('CLOCKWORK_STORAGE_FILES_COMPRESS') : false,
 
 	// SQL database to use, can be a PDO connection string or a path to a sqlite file
-	'storage_sql_database' => isset($_ENV['CLOCKWORK_STORAGE_SQL_DATABASE']) ? $_ENV['CLOCKWORK_STORAGE_SQL_DATABASE'] : 'sqlite:' . __DIR__ . '/../../../../../clockwork.sqlite',
-	'storage_sql_username' => isset($_ENV['CLOCKWORK_STORAGE_SQL_USERNAME']) ? $_ENV['CLOCKWORK_STORAGE_SQL_USERNAME'] : null,
-	'storage_sql_password' => isset($_ENV['CLOCKWORK_STORAGE_SQL_PASSWORD']) ? $_ENV['CLOCKWORK_STORAGE_SQL_PASSWORD'] : null,
+	'storage_sql_database' => getenv('CLOCKWORK_STORAGE_SQL_DATABASE') !== false ? getenv('CLOCKWORK_STORAGE_SQL_DATABASE') : 'sqlite:' . __DIR__ . '/../../../../../clockwork.sqlite',
+	'storage_sql_username' => getenv('CLOCKWORK_STORAGE_SQL_USERNAME') !== false ? getenv('CLOCKWORK_STORAGE_SQL_USERNAME') : null,
+	'storage_sql_password' => getenv('CLOCKWORK_STORAGE_SQL_PASSWORD') !== false ? getenv('CLOCKWORK_STORAGE_SQL_PASSWORD') : null,
 
 	// SQL table name to use, the table is automatically created and updated when needed
-	'storage_sql_table' => isset($_ENV['CLOCKWORK_STORAGE_SQL_TABLE']) ? $_ENV['CLOCKWORK_STORAGE_SQL_TABLE'] : 'clockwork',
+	'storage_sql_table' => getenv('CLOCKWORK_STORAGE_SQL_TABLE') !== false ? getenv('CLOCKWORK_STORAGE_SQL_TABLE') : 'clockwork',
 
 	// Configuration for the Redis storage
 	'storage_redis' => [
-		'host' => isset($_ENV['CLOCKWORK_STORAGE_REDIS_HOST']) ? $_ENV['CLOCKWORK_STORAGE_REDIS_HOST'] : '127.0.0.1',
-		'username' => isset($_ENV['CLOCKWORK_STORAGE_REDIS_USERNAME']) ? $_ENV['CLOCKWORK_STORAGE_REDIS_USERNAME'] : null,
-		'password' => isset($_ENV['CLOCKWORK_STORAGE_REDIS_PASSWORD']) ? $_ENV['CLOCKWORK_STORAGE_REDIS_PASSWORD'] : null,
-		'port' => isset($_ENV['CLOCKWORK_STORAGE_REDIS_PORT']) ? $_ENV['CLOCKWORK_STORAGE_REDIS_PORT'] : 6379,
-		'database' => isset($_ENV['CLOCKWORK_STORAGE_REDIS_DB']) ? $_ENV['CLOCKWORK_STORAGE_REDIS_DB'] : 0
+		'host' => getenv('CLOCKWORK_STORAGE_REDIS_HOST') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_HOST') : '127.0.0.1',
+		'username' => getenv('CLOCKWORK_STORAGE_REDIS_USERNAME') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_USERNAME') : null,
+		'password' => getenv('CLOCKWORK_STORAGE_REDIS_PASSWORD') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_PASSWORD') : null,
+		'port' => getenv('CLOCKWORK_STORAGE_REDIS_PORT') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_PORT') : 6379,
+		'database' => getenv('CLOCKWORK_STORAGE_REDIS_DB') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_DB') : 0
 	],
 
 	// Redis prefix for Clockwork keys ("clockwork" if not set)
-	'storage_redis_prefix' => isset($_ENV['CLOCKWORK_STORAGE_REDIS_PREFIX']) ? $_ENV['CLOCKWORK_STORAGE_REDIS_PREFIX'] : 'clockwork',
+	'storage_redis_prefix' => getenv('CLOCKWORK_STORAGE_REDIS_PREFIX') !== false ? getenv('CLOCKWORK_STORAGE_REDIS_PREFIX') : 'clockwork',
 
 	// Maximum lifetime of collected metadata in minutes, older requests will automatically be deleted, false to disable
-	'storage_expiration' => isset($_ENV['CLOCKWORK_STORAGE_EXPIRATION']) ? $_ENV['CLOCKWORK_STORAGE_EXPIRATION'] : 60 * 24 * 7,
+	'storage_expiration' => getenv('CLOCKWORK_STORAGE_EXPIRATION') !== false ? getenv('CLOCKWORK_STORAGE_EXPIRATION') : 60 * 24 * 7,
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------
@@ -187,10 +185,10 @@ return [
 	|
 	*/
 
-	'authentication' => isset($_ENV['CLOCKWORK_AUTHENTICATION']) ? $_ENV['CLOCKWORK_AUTHENTICATION'] : false,
+	'authentication' => getenv('CLOCKWORK_AUTHENTICATION') !== false ? getenv('CLOCKWORK_AUTHENTICATION') : false,
 
 	// Password for the simple authentication
-	'authentication_password' => isset($_ENV['CLOCKWORK_AUTHENTICATION_PASSWORD']) ? $_ENV['CLOCKWORK_AUTHENTICATION_PASSWORD'] : 'VerySecretPassword',
+	'authentication_password' => getenv('CLOCKWORK_AUTHENTICATION_PASSWORD') !== false ? getenv('CLOCKWORK_AUTHENTICATION_PASSWORD') : 'VerySecretPassword',
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------
@@ -205,10 +203,10 @@ return [
 
 	'stack_traces' => [
 		// Enable or disable collecting of stack traces
-		'enabled' => isset($_ENV['CLOCKWORK_STACK_TRACES_ENABLED']) ? $_ENV['CLOCKWORK_STACK_TRACES_ENABLED'] : true,
+		'enabled' => getenv('CLOCKWORK_STACK_TRACES_ENABLED') !== false ? getenv('CLOCKWORK_STACK_TRACES_ENABLED') : true,
 
 		// Limit the number of frames to be collected
-		'limit' => isset($_ENV['CLOCKWORK_STACK_TRACES_LIMIT']) ? $_ENV['CLOCKWORK_STACK_TRACES_LIMIT'] : 10,
+		'limit' => getenv('CLOCKWORK_STACK_TRACES_LIMIT') !== false ? getenv('CLOCKWORK_STACK_TRACES_LIMIT') : 10,
 
 		// List of vendor names to skip when determining caller, common vendor are automatically added
 		'skip_vendors' => [
@@ -237,7 +235,7 @@ return [
 	*/
 
 	// Maximum depth of serialized multi-level arrays and objects
-	'serialization_depth' => isset($_ENV['CLOCKWORK_SERIALIZATION_DEPTH']) ? $_ENV['CLOCKWORK_SERIALIZATION_DEPTH'] : 10,
+	'serialization_depth' => getenv('CLOCKWORK_SERIALIZATION_DEPTH') !== false ? getenv('CLOCKWORK_SERIALIZATION_DEPTH') : 10,
 
 	// A list of classes that will never be serialized (eg. a common service container class)
 	'serialization_blackbox' => [
@@ -254,7 +252,7 @@ return [
 	|
 	*/
 
-	'register_helpers' => isset($_ENV['CLOCKWORK_REGISTER_HELPERS']) ? $_ENV['CLOCKWORK_REGISTER_HELPERS'] : false,
+	'register_helpers' => getenv('CLOCKWORK_REGISTER_HELPERS') !== false ? getenv('CLOCKWORK_REGISTER_HELPERS') : false,
 
 	/*
 	|------------------------------------------------------------------------------------------------------------------
@@ -281,6 +279,6 @@ return [
 	|
 	*/
 
-	'server_timing' => isset($_ENV['CLOCKWORK_SERVER_TIMING']) ? $_ENV['CLOCKWORK_SERVER_TIMING'] : 10
+	'server_timing' => getenv('CLOCKWORK_SERVER_TIMING') !== false ? getenv('CLOCKWORK_SERVER_TIMING') : 10
 
 ];

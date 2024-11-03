@@ -1,1 +1,15 @@
-{"name":"Clockwork","short_name":"Clockwork","theme_color":"#2786f3","icons":[{"src":"img/icons/apple-touch-icon-180x180.png","sizes":"180x180","type":"image/png"}],"start_url":"/","display":"standalone","background_color":"#fff"}
+{
+	"name": "Clockwork",
+	"short_name": "Clockwork",
+	"icons": [
+		{
+			"src": "img/icon-128x128.png",
+			"sizes": "128x128",
+			"type": "image/png"
+		}
+	],
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#fff",
+	"theme_color": "#2786f3"
+}

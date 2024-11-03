@@ -3,8 +3,7 @@
 use Clockwork\Clockwork;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 
 class ClockworkController extends AbstractController
 {
@@ -54,7 +53,9 @@ class ClockworkController extends AbstractController
 		$this->ensureClockworkIsEnabled();
 		$this->ensureClockworkWebIsEnabled();
 
-		return $this->redirect('/' . $request->getPathInfo() . '/app');
+		$path = $this->support->webPaths()[0];
+
+		return $this->redirectToRoute("clockwork.webIndex.{$path}");
 	}
 
 	protected function ensureClockworkIsEnabled()

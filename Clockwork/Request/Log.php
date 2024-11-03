@@ -1,8 +1,6 @@
 <?php namespace Clockwork\Request;
 
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\StackTrace;
-use Clockwork\Helpers\StackFilter;
+use Clockwork\Helpers\{Serializer, StackTrace};
 
 // Data structure representing a log with timestamped messages
 class Log

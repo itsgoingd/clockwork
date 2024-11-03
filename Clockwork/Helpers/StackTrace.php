@@ -16,7 +16,7 @@ class StackTrace
 	{
 		$backtraceOptions = isset($options['arguments'])
 			? DEBUG_BACKTRACE_PROVIDE_OBJECT : DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS;
-		$limit = isset($options['limit']) ? $options['limit'] : 0;
+		$limit = $options['limit'] ?? 0;
 
 		return static::from(debug_backtrace($backtraceOptions, $limit));
 	}
@@ -115,7 +115,7 @@ class StackTrace
 	{
 		if (isset($frame['file'])) return $frame;
 
-		$nextFrame = isset($trace[$index + 1]) ? $trace[$index + 1] : null;
+		$nextFrame = $trace[$index + 1] ?? null;
 
 		if (! $nextFrame || ! in_array($nextFrame['function'], [ 'call_user_func', 'call_user_func_array' ])) return $frame;
 

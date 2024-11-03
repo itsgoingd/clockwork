@@ -6,8 +6,7 @@ use Clockwork\DataSource\PsrMessageDataSource;
 use Clockwork\Storage\FileStorage;
 use Clockwork\Helpers\ServerTiming;
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\{ResponseInterface as Response, ServerRequestInterface as Request};
 
 // Slim 3 middleware
 class ClockworkMiddleware

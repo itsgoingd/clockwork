@@ -1,7 +1,7 @@
 <?php namespace Clockwork\Support\Symfony;
 
-use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 
 class ClockworkConfiguration implements ConfigurationInterface
@@ -13,7 +13,7 @@ class ClockworkConfiguration implements ConfigurationInterface
 		$this->debug = $debug;
 	}
 
-	public function getConfigTreeBuilder()
+	public function getConfigTreeBuilder(): TreeBuilder
 	{
 		return $this->getConfigRoot()
 			->children()

@@ -1,21 +1,14 @@
 <?php namespace Clockwork\Support\Vanilla;
 
 use Clockwork\Clockwork as BaseClockwork;
-use Clockwork\Authentication\NullAuthenticator;
-use Clockwork\Authentication\SimpleAuthenticator;
-use Clockwork\DataSource\PhpDataSource;
-use Clockwork\DataSource\PsrMessageDataSource;
-use Clockwork\Helpers\Serializer;
-use Clockwork\Helpers\ServerTiming;
-use Clockwork\Helpers\StackFilter;
+use Clockwork\Authentication\{NullAuthenticator, SimpleAuthenticator};
+use Clockwork\DataSource\{PhpDataSource, PsrMessageDataSource};
+use Clockwork\Helpers\{Serializer, ServerTiming, StackFilter};
 use Clockwork\Request\IncomingRequest;
-use Clockwork\Storage\FileStorage;
-use Clockwork\Storage\RedisStorage;
-use Clockwork\Storage\Search;
-use Clockwork\Storage\SqlStorage;
+use Clockwork\Storage\{FileStorage, RedisStorage, Search, SqlStorage};
+use Clockwork\Web\Web;
 
-use Psr\Http\Message\ServerRequestInterface as PsrRequest;
-use Psr\Http\Message\ResponseInterface as PsrResponse;
+use Psr\Http\Message\{ResponseInterface as PsrResponse, ServerRequestInterface as PsrRequest};
 
 // Clockwork integration for vanilla php and unsupported frameworks
 class Clockwork
@@ -28,6 +21,9 @@ class Clockwork
 	// PSR-7 request and response
 	protected $psrRequest;
 	protected $psrResponse;
+
+	// Incoming request instance
+	protected $incomingRequest;
 
 	// Whether the headers were already sent (header can be sent manually)
 	protected $headersSent = false;
@@ -69,14 +65,14 @@ class Clockwork
 	// execution, return PSR-7 response if one was set
 	public function requestProcessed()
 	{
-		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return $this->psrResponse;
+		if (! $this->isEnabled() && ! $this->config['collect_data_always']) return $this->psrResponse;
 
 		if (! $this->clockwork->shouldCollect()->filter($this->incomingRequest())) return $this->psrResponse;
 		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->request())) return $this->psrResponse;
 
 		$this->clockwork->resolveRequest()->storeRequest();
 
-		if (! $this->config['enable']) return $this->psrResponse;
+		if (! $this->isEnabled()) return $this->psrResponse;
 
 		$this->sendHeaders();
 
@@ -90,7 +86,7 @@ class Clockwork
 	// Resolves and records the current request as a command, should be called at the end of app execution
 	public function commandExecuted($name, $exitCode = null, $arguments = [], $options = [], $argumentsDefaults = [], $optionsDefaults = [], $output = null)
 	{
-		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
+		if (! $this->isEnabled() && ! $this->config['collect_data_always']) return;
 
 		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->request())) return;
 
@@ -102,7 +98,7 @@ class Clockwork
 	// Resolves and records the current request as a queue job, should be called at the end of app execution
 	public function queueJobExecuted($name, $description = null, $status = 'processed', $payload = [], $queue = null, $connection = null, $options = [])
 	{
-		if (! $this->config['enable'] && ! $this->config['collect_data_always']) return;
+		if (! $this->isEnabled() && ! $this->config['collect_data_always']) return;
 
 		if (! $this->clockwork->shouldRecord()->filter($this->clockwork->request())) return;
 
@@ -115,7 +111,7 @@ class Clockwork
 	// in the request processing
 	public function sendHeaders()
 	{
-		if (! $this->config['enable'] || $this->headersSent) return;
+		if (! $this->isEnabled() || $this->headersSent) return;
 
 		$this->headersSent = true;
 
@@ -134,6 +130,8 @@ class Clockwork
 
 		if ($this->config['features']['performance']['client_metrics'] || $this->config['toolbar']) {
 			$this->setCookie('x-clockwork', $this->getCookiePayload(), time() + 60);
+		} elseif (in_array('x-clockwork', $this->incomingRequest()->cookies)) {
+			$this->setCookie('x-clockwork', '', -1);
 		}
 	}
 
@@ -157,8 +155,8 @@ class Clockwork
 	// Handle Clockwork REST api request, retrieves or updates Clockwork metadata
 	public function handleMetadata($request = null, $method = null)
 	{
-		if (! $request) $request = isset($_GET['request']) ? $_GET['request'] : '';
-		if (! $method) $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
+		if (! $request) $request = $this->defaultMetadataRequest();
+		if (! $method) $method = $this->incomingRequest()->method;
 
 		if ($method == 'POST' && $request == 'auth') return $this->authenticate();
 
@@ -168,10 +166,10 @@ class Clockwork
 	// Retrieve metadata based on the passed Clockwork REST api request and send HTTP response
 	public function returnMetadata($request = null)
 	{
-		if (! $this->config['enable']) return $this->response(null, 404);
+		if (! $this->isEnabled()) return $this->response(null, 404);
 
 		$authenticator = $this->clockwork->authenticator();
-		$authenticated = $authenticator->check(isset($_SERVER['HTTP_X_CLOCKWORK_AUTH']) ? $_SERVER['HTTP_X_CLOCKWORK_AUTH'] : '');
+		$authenticated = $authenticator->check($this->incomingRequest()->header('HTTP_X_CLOCKWORK_AUTH', ''));
 
 		if ($authenticated !== true) {
 			return $this->response([ 'message' => $authenticated, 'requires' => $authenticator->requires() ], 403);
@@ -183,27 +181,27 @@ class Clockwork
 	// Returns metadata based on the passed Clockwork REST api request
 	public function getMetadata($request = null)
 	{
-		if (! $this->config['enable']) return;
+		if (! $this->isEnabled()) return;
 
 		$authenticator = $this->clockwork->authenticator();
-		$authenticated = $authenticator->check(isset($_SERVER['HTTP_X_CLOCKWORK_AUTH']) ? $_SERVER['HTTP_X_CLOCKWORK_AUTH'] : '');
+		$authenticated = $authenticator->check($this->incomingRequest()->header('HTTP_X_CLOCKWORK_AUTH', ''));
 
 		if ($authenticated !== true) return;
 
-		if (! $request) $request = isset($_GET['request']) ? $_GET['request'] : '';
+		if (! $request) $request = $this->defaultMetadataRequest();
 
 		preg_match('#(?<id>[0-9-]+|latest)(?:/(?<direction>next|previous))?(?:/(?<count>\d+))?#', $request, $matches);
 
-		$id = isset($matches['id']) ? $matches['id'] : null;
-		$direction = isset($matches['direction']) ? $matches['direction'] : null;
-		$count = isset($matches['count']) ? $matches['count'] : null;
+		$id = $matches['id'] ?? null;
+		$direction = $matches['direction'] ?? null;
+		$count = $matches['count'] ?? null;
 
 		if ($direction == 'previous') {
-			$data = $this->clockwork->storage()->previous($id, $count, Search::fromRequest($_GET));
+			$data = $this->clockwork->storage()->previous($id, $count, Search::fromRequest($this->incomingRequest()->input));
 		} elseif ($direction == 'next') {
-			$data = $this->clockwork->storage()->next($id, $count, Search::fromRequest($_GET));
+			$data = $this->clockwork->storage()->next($id, $count, Search::fromRequest($this->incomingRequest()->input));
 		} elseif ($id == 'latest') {
-			$data = $this->clockwork->storage()->latest(Search::fromRequest($_GET));
+			$data = $this->clockwork->storage()->latest(Search::fromRequest($this->incomingRequest()->input));
 		} else {
 			$data = $this->clockwork->storage()->find($id);
 		}
@@ -222,11 +220,11 @@ class Clockwork
 	// Update metadata based on the passed Clockwork REST api request and send HTTP response
 	public function updateMetadata($request = null)
 	{
-		if (! $this->config['enable'] || ! $this->config['features']['performance']['client_metrics']) {
+		if (! $this->isEnabled() || ! $this->config['features']['performance']['client_metrics']) {
 			return $this->response(null, 404);
 		}
 
-		if (! $request) $request = isset($_GET['request']) ? $_GET['request'] : '';
+		if (! $request) $request = $this->defaultMetadataRequest();
 
 		$storage = $this->clockwork->storage();
 
@@ -236,15 +234,13 @@ class Clockwork
 			return $this->response([ 'message' => 'Request not found.' ], 404);
 		}
 
-		$input = json_decode(file_get_contents('php://input'), true);
+		$token = $this->incomingRequest()->input('_token');
 
-		$token = isset($input['_token']) ? $input['_token'] : '';
-
-		if (! $request->updateToken || ! hash_equals($request->updateToken, $token)) {
+		if (! $request->updateToken || ! $token || ! hash_equals($request->updateToken, $token)) {
 			return $this->response([ 'message' => 'Invalid update token.' ], 403);
 		}
 
-		foreach ($input as $key => $value) {
+		foreach ($this->incomingRequest()->input as $key => $value) {
 			if (in_array($key, [ 'clientMetrics', 'webVitals' ])) {
 				$request->$key = $value;
 			}
@@ -256,15 +252,13 @@ class Clockwork
 	}
 
 	// Authanticates access to Clockwork REST api
-	public function authenticate($request = null)
+	public function authenticate()
 	{
-		if (! $this->config['enable']) return;
-
-		if (! $request) $request = isset($_GET['request']) ? $_GET['request'] : '';
+		if (! $this->isEnabled()) return;
 
 		$token = $this->clockwork->authenticator()->attempt([
-			'username' => isset($_POST['username']) ? $_POST['username'] : '',
-			'password' => isset($_POST['password']) ? $_POST['password'] : ''
+			'username' => $this->incomingRequest()->input('username', ''),
+			'password' => $this->incomingRequest()->input('password', '')
 		]);
 
 		return $this->response([ 'token' => $token ], $token ? 200 : 403);
@@ -275,15 +269,25 @@ class Clockwork
 	{
 		if (! $this->config['web']['enable']) return;
 
-		$this->installWeb();
+		if ($this->config['web']['path']) $this->installWeb();
 
-		$asset = function ($uri) { return "{$this->config['web']['uri']}/{$uri}"; };
+		// Note, "uri" is a deprecated option removed from the config file, to be completely removed in Clockwork 6
+		$webPath = $this->config['web']['uri']
+			?? (is_string($this->config['web']['enable']) ? $this->config['web']['enable'] : '/clockwork');
+
+		$uri = $this->incomingRequest()->uri;
+
+		return preg_match("#^{$webPath}/(.+)#", $uri)
+			? $this->serveWebAsset($webPath, $uri)
+			: $this->serveWebIndex($webPath);
+	}
+
+	protected function serveWebIndex($webPath)
+	{
+		// Note, $asset, $metadataPath and $url are used in the iframe.html.php template
+		$asset = function ($uri) use ($webPath) { return "{$webPath}/{$uri}"; };
 		$metadataPath = $this->config['api'];
-		$url = $this->config['web']['uri'];
-
-		if (! preg_match('#/index.html$#', $url)) {
-			$url = rtrim($url, '/') . '/index.html';
-		}
+		$url = "{$webPath}/index.html";
 
 		ob_start();
 
@@ -294,13 +298,26 @@ class Clockwork
 		return $this->response($html, null, false);
 	}
 
+	protected function serveWebAsset($webPath, $uri)
+	{
+		$asset = (new Web)->asset(substr($uri, strlen($webPath) + 1));
+
+		if (! $asset) return $this->response(null, 404);
+
+		$data = file_get_contents($asset['path']);
+
+		if ($data === false) return $this->response(null, 404);
+
+		return $this->response($data, null, false, $asset['mime']);
+	}
+
 	// Installs the Web UI by copying the assets to the public directory, no-op if already installed
 	public function installWeb()
 	{
 		$path = $this->config['web']['path'];
 		$source = __DIR__ . '/../../Web/public';
 
-		if (file_exists("{$path}/index.html")) return;
+		if (is_file("{$path}/index.html")) return;
 
 		@mkdir($path, 0755, true);
 
@@ -439,35 +456,89 @@ class Clockwork
 	}
 
 	// Send a json response, uses the PSR-7 response if set
-	protected function response($data = null, $status = null, $json = true)
+	protected function response($data = null, $status = null, $json = true, $mimetype = null)
 	{
-		if ($json) $this->setHeader('Content-Type', 'application/json');
+		$data = $json ? json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR) : $data;
+		$mimetype = $json ? 'application/json' : $mimetype;
+
+		if ($mimetype !== null) $this->setHeader('Content-Type', $mimetype);
 
 		if ($this->psrResponse) {
 			if ($status) $this->psrResponse = $this->psrResponse->withStatus($status);
-			$this->psrResponse->getBody()->write($json ? json_encode($data, \JSON_PARTIAL_OUTPUT_ON_ERROR) : $data);
+			if ($data !== null) $this->psrResponse->getBody()->write($data);
 			return $this->psrResponse;
 		} else {
 			if ($status) http_response_code($status);
-			echo $json ? json_encode($data, \JSON_PARTIAL_OUTPUT_ON_ERROR) : $data;
+			if ($data !== null) echo $data;
 		}
 	}
 
-	// Make a Clockwork incoming request instance
+	// Creates and caches an incoming request instance
 	protected function incomingRequest()
+	{
+		if ($this->incomingRequest) return $this->incomingRequest;
+
+		return $this->incomingRequest = $this->psrRequest ? $this->incomingRequestFromPsr() : $this->incomingRequestFromGlobals();
+	}
+
+	// Creates an incoming request instance from globals
+	protected function incomingRequestFromGlobals()
 	{
 		return new IncomingRequest([
 			'method'  => $_SERVER['REQUEST_METHOD'],
 			'uri'     => $_SERVER['REQUEST_URI'],
-			'input'   => $_REQUEST,
-			'cookies' => $_COOKIE
+			'headers' => $_SERVER,
+			'input'   => array_merge($_GET, $_POST, (array) json_decode(file_get_contents('php://input'), true)),
+			'cookies' => $_COOKIE,
+			'host'    => explode(':', $_SERVER['HTTP_HOST'] ?: $_SERVER['SERVER_NAME'] ?: $_SERVER['SERVER_ADDR'])[0]
 		]);
+	}
+
+	// Creates an incoming request instance from a PSR request
+	protected function incomingRequestFromPsr()
+	{
+		return new IncomingRequest([
+			'method'  => $this->psrRequest->getMethod(),
+			'uri'     => $this->psrRequest->getUri()->getPath(),
+			'headers' => array_map(function ($values) { return implode(', ', $values); }, $this->psrRequest->getHeaders()),
+			'input'   => array_merge(
+				$this->psrRequest->getQueryParams(),
+				(array) $this->psrRequest->getParsedBody(),
+				(array) json_decode((string) $this->psrRequest->getBody(), true)
+			),
+			'cookies' => $this->psrRequest->getCookieParams(),
+			'host'    => $this->psrRequest->getUri()->getHost()
+		]);
+	}
+
+	// Resolves default metadata REST api request either from the URI, or the request query parameter
+	protected function defaultMetadataRequest()
+	{
+		$apiPath = $this->config['api'];
+
+		if ($request = $this->incomingRequest()->input('request')) return $request;
+		if (preg_match("#^{$apiPath}(.*)#", $this->incomingRequest()->uri, $matches)) return $matches[1];
+
+		return '';
+	}
+
+	// Check whether Clockwork is enabled at all
+	public function isEnabled()
+	{
+		return $this->config['enable']
+			|| $this->config['enable'] === null && ($this->incomingRequest()->hasLocalHost() || \PHP_SAPI == 'cli' || \PHP_SAPI == 'phpdbg');
 	}
 
 	// Return the underlying Clockwork instance
 	public function getClockwork()
 	{
 		return $this->clockwork;
+	}
+
+	// Return the configuration array
+	public function getConfig()
+	{
+		return $this->config;
 	}
 
 	// Pass any method calls to the underlying Clockwork instance

@@ -1,8 +1,7 @@
 <?php namespace Clockwork\Support\Symfony;
 
 use Clockwork\Helpers\Serializer;
-use Clockwork\Request\Log;
-use Clockwork\Request\Request;
+use Clockwork\Request\{Log, Request};
 use Clockwork\Request\Timeline\Timeline;
 
 use Symfony\Component\HttpKernel\Profiler\Profile;
@@ -126,7 +125,7 @@ class ProfileTransformer
 
 	protected function getEvents($data)
 	{
-		$handledEvents = array_values(array_reduce($this->unwrap($data->getCalledListeners()), function ($events, $listener) {
+		$handledEvents = array_values(array_reduce($this->unwrap($data->getCalledListeners('event_dispatcher')), function ($events, $listener) {
 			if (! isset($events[$listener['event']])) {
 				$events[$listener['event']] = [ 'event' => $listener['event'], 'listeners' => [] ];
 			}
@@ -138,7 +137,7 @@ class ProfileTransformer
 
 		$orphanedEvents = array_map(function ($event) {
 			return [ 'event' => $event ];
-		}, $this->unwrap($data->getOrphanedEvents()));
+		}, $this->unwrap($data->getOrphanedEvents('event_dispatcher')));
 
 		return array_merge($handledEvents, $orphanedEvents);
 	}
@@ -157,7 +156,7 @@ class ProfileTransformer
 	protected function getLog($data)
 	{
 		$messages = array_map(function ($log) {
-			$context = isset($log['context']) ? $log['context'] : [];
+			$context = $log['context'] ?? [];
 			$replacements = array_filter($context, function ($v) { return ! is_array($v) && ! is_object($v) && ! is_resource($v); });
 
 			return [

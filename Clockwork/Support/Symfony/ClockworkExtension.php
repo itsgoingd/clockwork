@@ -7,7 +7,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
 class ClockworkExtension extends ConfigurableExtension
 {
-	public function loadInternal(array $config, ContainerBuilder $container)
+	public function loadInternal(array $config, ContainerBuilder $container): void
 	{
 		$loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/Resources/config'));
 		$loader->load('clockwork.php');

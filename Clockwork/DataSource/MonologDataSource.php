@@ -1,11 +1,10 @@
 <?php namespace Clockwork\DataSource;
 
 use Clockwork\DataSource\DataSource;
-use Clockwork\Request\Log;
-use Clockwork\Request\Request;
-use Clockwork\Support\Monolog\Handler\ClockworkHandler;
+use Clockwork\Request\{Log, Request};
+use Clockwork\Support\Monolog;
 
-use Monolog\Logger as Monolog;
+use Monolog\Logger;
 
 // Data source for Monolog, provides application log
 class MonologDataSource extends DataSource
@@ -14,11 +13,19 @@ class MonologDataSource extends DataSource
 	protected $log;
 
 	// Create a new data source, takes Monolog instance as an argument
-	public function __construct(Monolog $monolog)
+	public function __construct(Logger $monolog)
 	{
 		$this->log = new Log;
 
-		$monolog->pushHandler(new ClockworkHandler($this->log));
+		if (Logger::API === 1) {
+			$handler = new Monolog\Monolog\ClockworkHandler($this->log);
+		} elseif (Logger::API === 2) {
+			$handler = new Monolog\Monolog2\ClockworkHandler($this->log);
+		} else {
+			$handler = new Monolog\Monolog3\ClockworkHandler($this->log);
+		}
+
+		$monolog->pushHandler($handler);
 	}
 
 	// Adds log entries to the request
