@@ -1,4 +1,4 @@
-5.3 (wip)
+5.3
 
 - added support for collecting HTTP requests, with seamless Laravel and generic Guzzle implementation
 - added generic PSR-compatible middleware to the Vanilla integration (partially implemented by UlrichEckhardt, thanks!)
