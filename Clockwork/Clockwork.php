@@ -1,14 +1,9 @@
 <?php namespace Clockwork;
 
-use Clockwork\Authentication\AuthenticatorInterface;
-use Clockwork\Authentication\NullAuthenticator;
+use Clockwork\Authentication\{AuthenticatorInterface, NullAuthenticator};
 use Clockwork\DataSource\DataSourceInterface;
 use Clockwork\Helpers\Serializer;
-use Clockwork\Request\Log;
-use Clockwork\Request\Request;
-use Clockwork\Request\RequestType;
-use Clockwork\Request\ShouldCollect;
-use Clockwork\Request\ShouldRecord;
+use Clockwork\Request\{Request, RequestType, ShouldCollect, ShouldRecord};
 use Clockwork\Storage\StorageInterface;
 use Closure;
 
