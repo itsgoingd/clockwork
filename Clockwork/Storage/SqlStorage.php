@@ -70,6 +70,7 @@ class SqlStorage extends Storage
 		'viewsData'                => 'TEXT NULL',
 		'userData'                 => 'TEXT NULL',
 		'subrequests'              => 'TEXT NULL',
+		'httpRequests'             => 'TEXT NULL',
 		'xdebug'                   => 'TEXT NULL',
 		'commandName'              => 'TEXT NULL',
 		'commandArguments'         => 'TEXT NULL',
@@ -100,9 +101,9 @@ class SqlStorage extends Storage
 		'headers', 'getData', 'postData', 'requestData', 'sessionData', 'authenticatedUser', 'cookies', 'middleware',
 		'databaseQueries', 'cacheQueries', 'modelsActions', 'modelsRetrieved', 'modelsCreated', 'modelsUpdated',
 		'modelsDeleted', 'redisCommands', 'queueJobs', 'timelineData', 'log', 'events', 'routes', 'notifications',
-		'emailsData', 'viewsData', 'userData', 'subrequests', 'xdebug', 'commandArguments', 'commandArgumentsDefaults',
-		'commandOptions', 'commandOptionsDefaults', 'jobPayload', 'jobOptions', 'testAsserts', 'parent',
-		'clientMetrics', 'webVitals'
+		'emailsData', 'viewsData', 'userData', 'httpRequests', 'subrequests', 'xdebug', 'commandArguments',
+		'commandArgumentsDefaults', 'commandOptions', 'commandOptionsDefaults', 'jobPayload', 'jobOptions', 'testAsserts',
+		'parent', 'clientMetrics', 'webVitals'
 	];
 
 	// Return a new storage, takes PDO object or DSN and optionally a table name and database credentials as arguments
@@ -225,7 +226,7 @@ class SqlStorage extends Storage
 		// first we get rid of existing table if it exists by renaming it so we won't lose any data
 		try {
 			$table = $this->quote($this->table);
-			$backupTableName = $this->quote("{$this->table}_backup_" . date('Ymd'));
+			$backupTableName = $this->quote("{$this->table}_backup_" . date('Ymd_His'));
 			$this->pdo->exec("ALTER TABLE {$table} RENAME TO {$backupTableName};");
 
 			$indexName = $this->quote("{$this->table}_time_index");

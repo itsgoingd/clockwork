@@ -12,9 +12,9 @@ class RedisStorage extends Storage
 		'headers', 'getData', 'postData', 'requestData', 'sessionData', 'authenticatedUser', 'cookies', 'middleware',
 		'databaseQueries', 'cacheQueries', 'modelsActions', 'modelsRetrieved', 'modelsCreated', 'modelsUpdated',
 		'modelsDeleted', 'redisCommands', 'queueJobs', 'timelineData', 'log', 'events', 'routes', 'notifications',
-		'emailsData', 'viewsData', 'userData', 'subrequests', 'xdebug', 'commandArguments', 'commandArgumentsDefaults',
-		'commandOptions', 'commandOptionsDefaults', 'jobPayload', 'jobOptions', 'testAsserts', 'parent',
-		'clientMetrics', 'webVitals'
+		'emailsData', 'viewsData', 'userData', 'httpRequests', 'subrequests', 'xdebug', 'commandArguments',
+		'commandArgumentsDefaults', 'commandOptions', 'commandOptionsDefaults', 'jobPayload', 'jobOptions', 'testAsserts',
+		'parent', 'clientMetrics', 'webVitals'
 	];
 
 	// Redis client instance
