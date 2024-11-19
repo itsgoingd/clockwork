@@ -1,3 +1,8 @@
+5.3.1
+
+- fixed storing HTTP requests in SQL and Redis storage (reported by andrew-bannister, thanks!)
+- updated Clockwork App (5.3.1)
+
 5.3
 
 - added support for collecting HTTP requests, with seamless Laravel and generic Guzzle implementation
