@@ -276,6 +276,10 @@ class LaravelNotificationsDataSource extends DataSource
 	// Try to resolve a name for a notifiable, we try Eloquent email, name or default to a class name
 	protected function resolveNotifiableName($notifiable)
 	{
+		if ($notifiable instanceof \Illuminate\Notifications\AnonymousNotifiable) {
+			return 'anonymous';
+		}
+
 		$notifiableClass = is_object($notifiable) ? get_class($notifiable) : null;
 
 		if ($notifiable instanceof \Illuminate\Database\Eloquent\Model) {
