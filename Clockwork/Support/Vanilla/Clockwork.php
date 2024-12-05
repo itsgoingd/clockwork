@@ -336,7 +336,7 @@ class Clockwork
 	}
 
 	// Use a PSR-7 request and response instances instead of vanilla php HTTP apis
-	public function usePsrMessage(PsrRequest $request, PsrResponse $response = null)
+	public function usePsrMessage(PsrRequest $request, ?PsrResponse $response = null)
 	{
 		$this->psrRequest = $request;
 		$this->psrResponse = $response;
