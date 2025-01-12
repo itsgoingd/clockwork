@@ -1,3 +1,9 @@
+5.3.3
+
+- fixed collecting HTTP requests consuming the response body (reported by mikethea1, thanks!)
+- fixed PHP 8.4 incompatibility in vanilla integration (implemented by txdFabio, thanks!)
+- updated Clockwork App (5.3.2)
+
 5.3.2
 
 - fixed crash collecting Laravel on-demand notifications with database or broadcast channels (reported by michaelthedev, thanks!) 
