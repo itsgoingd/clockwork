@@ -116,6 +116,9 @@ class LaravelHttpClientDataSource extends DataSource
 			'version' => $stats['http_version'] ?? null
 		];
 		
+		$responseBody = $event->response->toPsrResponse()->getBody();
+		if ($responseBody->tell()) $responseBody->rewind();
+
 		unset($this->executingRequests[spl_object_hash($event->request)]);
 	}
 	
