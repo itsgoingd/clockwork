@@ -77,7 +77,7 @@ class GuzzleDataSource extends DataSource
 					return $response;
 				}, function(GuzzleException $exception) use ($request, $time, $stats) {
 					$response = $exception instanceof RequestException ? $exception->getResponse() : null;
-					$this->collectRequest($request, $response, $time, $stats);
+					$this->collectRequest($request, $response, $time, $stats, $exception->getMessage());
 
 					throw $exception;
 				});
@@ -85,7 +85,7 @@ class GuzzleDataSource extends DataSource
 	}
 	
 	// Collect a request-response pair
-	protected function collectRequest($request, $response = null, $startTime = null, $stats = null)
+	protected function collectRequest($request, $response = null, $startTime = null, $stats = null, $error = null)
 	{
 		$trace = StackTrace::get();
 
@@ -97,12 +97,12 @@ class GuzzleDataSource extends DataSource
 				'content' => $this->collectContent ? $this->resolveRequestContent($request) : null,
 				'body'    => $this->collectRawContent ? (string) $request->getBody() : null
 			],
-			'response' => (object) [
+			'response' => $response ? (object) [
 				'status'  => (int) $response->getStatusCode(),
 				'headers' => $response->getHeaders(),
 				'content' => $this->collectContent ? json_decode((string) $response->getBody(), true) : null,
 				'body'    => $this->collectRawContent ? (string) $response->getBody() : null
-			],
+			] : null,
 			'stats'    => $stats ? (object) [
 				'timing' => isset($stats['total_time_us']) ? (object) [
 					'lookup' => $stats['namelookup_time_us'] / 1000,
@@ -124,7 +124,7 @@ class GuzzleDataSource extends DataSource
 				],
 				'version' => $stats['http_version'] ?? null
 			] : null,
-			'error'    => null, 
+			'error'    => $error,
 			'time'     => $startTime,
 			'duration' => (microtime(true) - $startTime) * 1000,
 			'trace'    => (new Serializer)->trace($trace)
@@ -134,7 +134,7 @@ class GuzzleDataSource extends DataSource
 
 		if ($this->passesFilters([ $request ])) {
 			$this->requests[] = $request;
-		}		
+		}
 	}
 	
 	// Resolve request content, with support for form data and json requests
