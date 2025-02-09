@@ -308,7 +308,7 @@ class FileStorage extends Storage
 			$request->responseStatus,
 			$request->getResponseDuration(),
 			$request->type
-		], ',', '"', '');
+		], ',', '"', PHP_VERSION_ID >= 70400 ? '' : '\\');
 
 		flock($handle, LOCK_UN);
 		fclose($handle);
