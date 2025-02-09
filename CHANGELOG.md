@@ -1,3 +1,8 @@
+5.3.4
+
+- fixed handling of Guzzle exceptions with no response when collecting HTTP requests
+- fixed compatibility with old PHP versions (<7.4) in file storage (reported by SheylaSilvana, thanks!)
+
 5.3.3
 
 - fixed collecting HTTP requests consuming the response body (reported by mikethea1, thanks!)

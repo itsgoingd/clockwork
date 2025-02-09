@@ -11,7 +11,7 @@ use Closure;
 class Clockwork
 {
 	// Clockwork library version
-	const VERSION = '5.3.3';
+	const VERSION = '5.3.4';
 
 	// Array of data sources, these objects collect metadata for the current application run
 	protected $dataSources = [];
