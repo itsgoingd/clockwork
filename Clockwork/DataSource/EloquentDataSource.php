@@ -270,15 +270,24 @@ class EloquentDataSource extends DataSource
 		$bindings = $this->databaseManager->connection($connection)->prepareBindings($bindings);
 
 		$index = 0;
-		$query = preg_replace_callback('/\?/', function ($matches) use ($bindings, $connection, &$index) {
-			$binding = $this->quoteBinding($bindings[$index++], $connection);
+		$query = preg_replace_callback('/\'[^\']*\'|[^?]\?|\W:[a-z]+/', function ($matches) use ($bindings, $connection, &$index) {
+			$match = $matches[0];
+
+			if ($match[0] == '\'') { // quoted string
+				return $match;
+			} elseif ($match[1] == '?' && isset($bindings[$index])) { // question-mark binding
+				$binding = $this->quoteBinding($bindings[$index++], $connection);
+			} elseif ($match[1] == ':' && isset($bindings[substr($match, 2)])) { // named binding
+				$binding = $this->quoteBinding($bindings[substr($match, 2)], $connection);
+			} else {
+				return $match;
+			}
 
 			// convert binary bindings to hexadecimal representation
 			if (! preg_match('//u', (string) $binding)) $binding = '0x' . bin2hex($binding);
 
-			// escape backslashes in the binding (preg_replace requires to do so)
-			return (string) $binding;
-		}, $query, count($bindings));
+			return $match[0] . ((string) $binding);
+		}, $query);
 
 		// highlight keywords
 		$keywords = [
