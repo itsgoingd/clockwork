@@ -14,7 +14,7 @@ class ClockworkExtension implements Runner\Extension\Extension
 		Runner\Extension\Facade $facade,
 		Runner\Extension\ParameterCollection $parameters
 	): void {
-		$facade->registerSubscribers(
+		$subscribers = array_filter([
 			new class implements Event\Test\PreparedSubscriber {
 				public function notify($event): void { ClockworkExtension::$asserts = []; }
 			},
@@ -33,42 +33,36 @@ class ClockworkExtension implements Runner\Extension\Extension
 			new class implements Event\Test\SkippedSubscriber {
 				public function notify($event): void { ClockworkExtension::recordTest('skipped', $event->message()); }
 			},
-			new class implements Event\Test\AssertionSucceededSubscriber {
+			interface_exists(Event\Test\AssertionSucceededSubscriber::class) ? new class implements Event\Test\AssertionSucceededSubscriber {
 				public function notify($event): void { ClockworkExtension::recordAssertion(true); }
-			},
-			new class implements Event\Test\AssertionFailedSubscriber {
+			} : null,
+			interface_exists(Event\Test\AssertionFailedSubscriber::class) ? new class implements Event\Test\AssertionFailedSubscriber {
 				public function notify($event): void { ClockworkExtension::recordAssertion(false); }
-			}
-		);
+			} : null
+		]);
+
+		$facade->registerSubscribers(...$subscribers);
 	}
 
 	public static function recordTest($status, $message = null)
 	{
-		$trace = StackTrace::get([ 'arguments' => false, 'limit' => 10 ]);
-		$testFrame = $trace->filter(function ($frame) { return $frame->object instanceof \PHPUnit\Framework\TestCase; })->last();
+		$testCase = static::resolveTestCase();
 
-		if (! $testFrame) return;
+		if (! $testCase) return;
 
-		$testInstance = $testFrame->object;
+		$app = static::resolveApp($testCase);
 
-		$reflectionClass = new \ReflectionClass($testInstance);
-
-		if (! $reflectionClass->hasProperty('app')) return;
-
-		$reflectionProperty = $reflectionClass->getProperty('app');
-		$reflectionProperty->setAccessible(true);
-
-		$app = $reflectionProperty->getValue($testInstance);
+		if (! $app) return;
 
 		if (! $app->make('clockwork.support')->isCollectingTests()) return;
-		if ($app->make('clockwork.support')->isTestFiltered($testInstance->toString())) return;
+		if ($app->make('clockwork.support')->isTestFiltered($testCase->toString())) return;
 
 		$app->make('clockwork')
 			->resolveAsTest(
-				str_replace('__pest_evaluable_', '', $testInstance->toString()),
+				str_replace('__pest_evaluable_', '', $testCase->toString()),
 				$status,
 				$message,
-				ClockworkExtension::$asserts
+				static::$asserts
 			)
 			->storeRequest();
 	}
@@ -86,5 +80,30 @@ class ClockworkExtension implements Runner\Extension\Extension
 			'trace'     => (new Serializer)->trace($trace),
 			'passed'    => $passed
 		];
+	}
+
+	protected static function resolveTestCase()
+	{
+		$trace = StackTrace::get([ 'arguments' => false, 'limit' => 10 ]);
+
+		$testFrame = $trace->filter(function ($frame) { return $frame->object instanceof \PHPUnit\Framework\TestCase; })->last();
+
+		return $testFrame?->object;
+	}
+
+	protected static function resolveApp($testCase)
+	{
+		$reflectionClass = new \ReflectionClass($testCase);
+
+		if ($reflectionClass->hasProperty('app')) {
+			$reflectionProperty = $reflectionClass->getProperty('app');
+			$reflectionProperty->setAccessible(true);
+
+			if ($reflectionProperty->getValue($testCase)) {
+				return $reflectionProperty->getValue($testCase);
+			}
+		} elseif (method_exists($testCase, 'createApplication')) {
+			return $testCase->createApplication();
+		}
 	}
 }
