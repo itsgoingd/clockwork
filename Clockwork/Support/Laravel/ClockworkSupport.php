@@ -271,11 +271,9 @@ class ClockworkSupport
 	public function collectCommands()
 	{
 		$this->app['events']->listen(\Illuminate\Console\Events\CommandStarting::class, function ($event) {
-			// only collect commands ran through artisan cli, other commands are recorded as part of respective request
-			if (basename(StackTrace::get()->last()->file) != 'artisan') return;
+			if (! $this->shouldCollectCommand($event->command)) return;
 
 			if (! $this->getConfig('artisan.collect_output')) return;
-			if (! $event->command || $this->isCommandFiltered($event->command)) return;
 
 			if (version_compare(\Illuminate\Foundation\Application::VERSION, '9.0.0', '<')) {
 				$formatter = new Console\CapturingOldFormatter($event->output->getFormatter());
@@ -289,10 +287,7 @@ class ClockworkSupport
 		});
 
 		$this->app['events']->listen(\Illuminate\Console\Events\CommandFinished::class, function ($event) {
-			// only collect commands ran through artisan cli, other commands are recorded as part of respective request
-			if (basename(StackTrace::get()->last()->file) != 'artisan') return;
-
-			if (! $event->command || $this->isCommandFiltered($event->command)) return;
+			if (! $this->shouldCollectCommand($event->command)) return;
 
 			$command = $this->artisan->find($event->command);
 
@@ -618,6 +613,20 @@ class ClockworkSupport
 	public function isWebEnabled()
 	{
 		return $this->getConfig('web', true);
+	}
+
+	// Check whether we should collect currently executing command
+	protected function shouldCollectCommand($command)
+	{
+		$trace = StackTrace::get();
+
+		// only collect commands ran through the artisan cli, other commands are recorded as part of respective request
+		if (basename($trace->last()->file) != 'artisan') return false;
+
+		// also skip commands called from another command ran through the artisan cli
+		if ($trace->first(StackFilter::make()->isClass(\Illuminate\Foundation\Console\Kernel::class)->isFunction('call'))) return false;
+
+		return $command && ! $this->isCommandFiltered($command);
 	}
 
 	// Check whether a command should not be collected
