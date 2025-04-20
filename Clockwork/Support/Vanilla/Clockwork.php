@@ -2,7 +2,7 @@
 
 use Clockwork\Clockwork as BaseClockwork;
 use Clockwork\Authentication\{NullAuthenticator, SimpleAuthenticator};
-use Clockwork\DataSource\{PhpDataSource, PsrMessageDataSource};
+use Clockwork\DataSource\{PhpDataSource, PsrMessageDataSource, XdebugDataSource};
 use Clockwork\Helpers\{Serializer, ServerTiming, StackFilter};
 use Clockwork\Request\IncomingRequest;
 use Clockwork\Storage\{FileStorage, RedisStorage, Search, SqlStorage};
@@ -47,6 +47,8 @@ class Clockwork
 		$this->configureShouldRecord();
 
 		if ($this->config['register_helpers']) include __DIR__ . '/helpers.php';
+
+		$this->configureXdebug();
 	}
 
 	// Initialize a singleton instance, takes an additional config
@@ -432,6 +434,17 @@ class Clockwork
 			'errorsOnly' => $this->config['requests']['errors_only'],
 			'slowOnly'   => $this->config['requests']['slow_only'] ? $this->config['requests']['slow_threshold'] : false
 		]);
+	}
+
+	protected function configureXdebug()
+	{
+		// Check whether the Xdebug extension is even loaded
+		if (! in_array('xdebug', get_loaded_extensions())) return;
+
+		// Check whether Xdebug is enabled in Clockwork
+		if (! $this->config['features']['xdebug']['enabled']) return;
+
+		$this->clockwork->addDataSource(new XdebugDataSource);
 	}
 
 	// Set a cookie on PSR-7 response or using vanilla php

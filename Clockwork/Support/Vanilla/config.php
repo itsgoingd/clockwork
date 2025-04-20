@@ -31,6 +31,11 @@ return [
 		'performance' => [
 			// Allow collecting of client metrics. Requires separate clockwork-browser npm package.
 			'client_metrics' => getenv('CLOCKWORK_PERFORMANCE_CLIENT_METRICS') !== false ? getenv('CLOCKWORK_PERFORMANCE_CLIENT_METRICS') : true
+		],
+
+		// Xdebug
+		'xdebug' => [
+			'enabled' => getenv('CLOCKWORK_XDEBUG_ENABLED') !== false ? getenv('CLOCKWORK_XDEBUG_ENABLED') : true
 		]
 
 	],
