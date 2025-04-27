@@ -41,8 +41,10 @@ class IncomingRequest
 	{
 		$segments = explode('.', $this->host);
 		$tld = $segments[count($segments) - 1];
+		$local_domains = config('clockwork.local_domains') ?? ['localhost', 'locl', 'local', 'test', 'wip'];
 
-		return $this->host == '127.0.0.1'
-			|| in_array($tld, [ 'localhost', 'local', 'test', 'wip' ]);
+		return $this->host == '127.0.0.1' ||
+			in_array($tld, $local_domains);
+
 	}
 }
