@@ -3,6 +3,8 @@
 // Data structure representing a single timeline event with fluent API
 class Event
 {
+	public ?float $time = null;
+	
 	// Event description
 	public $description;
 	// Unique event name
