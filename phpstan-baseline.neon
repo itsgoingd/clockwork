@@ -1,0 +1,3996 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\AuthenticatorInterface\\:\\:attempt\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Authentication/AuthenticatorInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\AuthenticatorInterface\\:\\:attempt\\(\\) has parameter \\$credentials with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Authentication/AuthenticatorInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\AuthenticatorInterface\\:\\:check\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Authentication/AuthenticatorInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\AuthenticatorInterface\\:\\:check\\(\\) has parameter \\$token with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Authentication/AuthenticatorInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\AuthenticatorInterface\\:\\:requires\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Authentication/AuthenticatorInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\NullAuthenticator\\:\\:attempt\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Authentication/NullAuthenticator.php
+
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\NullAuthenticator\\:\\:attempt\\(\\) has parameter \\$credentials with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Authentication/NullAuthenticator.php
+
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\NullAuthenticator\\:\\:check\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Authentication/NullAuthenticator.php
+
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\NullAuthenticator\\:\\:check\\(\\) has parameter \\$token with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Authentication/NullAuthenticator.php
+
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\NullAuthenticator\\:\\:requires\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Authentication/NullAuthenticator.php
+
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\SimpleAuthenticator\\:\\:__construct\\(\\) has parameter \\$password with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Authentication/SimpleAuthenticator.php
+
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\SimpleAuthenticator\\:\\:attempt\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Authentication/SimpleAuthenticator.php
+
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\SimpleAuthenticator\\:\\:attempt\\(\\) has parameter \\$credentials with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Authentication/SimpleAuthenticator.php
+
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\SimpleAuthenticator\\:\\:check\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Authentication/SimpleAuthenticator.php
+
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\SimpleAuthenticator\\:\\:check\\(\\) has parameter \\$token with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Authentication/SimpleAuthenticator.php
+
+		-
+			message: "#^Method Clockwork\\\\Authentication\\\\SimpleAuthenticator\\:\\:requires\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Authentication/SimpleAuthenticator.php
+
+		-
+			message: "#^Property Clockwork\\\\Authentication\\\\SimpleAuthenticator\\:\\:\\$password has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Authentication/SimpleAuthenticator.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:__call\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:__call\\(\\) has parameter \\$args with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:__call\\(\\) has parameter \\$method with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:addDataSource\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:authenticator\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:dataSources\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:dataSources\\(\\) has parameter \\$dataSources with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:event\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:event\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:event\\(\\) has parameter \\$description with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:extendRequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:getAuthenticator\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:getDataSources\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:getRequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:getStorage\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:log\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:log\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:log\\(\\) has parameter \\$level with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:log\\(\\) has parameter \\$message with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:request\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:reset\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsCommand\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsCommand\\(\\) has parameter \\$arguments with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsCommand\\(\\) has parameter \\$argumentsDefaults with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsCommand\\(\\) has parameter \\$exitCode with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsCommand\\(\\) has parameter \\$name with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsCommand\\(\\) has parameter \\$options with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsCommand\\(\\) has parameter \\$optionsDefaults with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsCommand\\(\\) has parameter \\$output with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsQueueJob\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsQueueJob\\(\\) has parameter \\$connection with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsQueueJob\\(\\) has parameter \\$description with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsQueueJob\\(\\) has parameter \\$name with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsQueueJob\\(\\) has parameter \\$options with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsQueueJob\\(\\) has parameter \\$payload with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsQueueJob\\(\\) has parameter \\$queue with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsQueueJob\\(\\) has parameter \\$status with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsTest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsTest\\(\\) has parameter \\$asserts with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsTest\\(\\) has parameter \\$name with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsTest\\(\\) has parameter \\$status with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveAsTest\\(\\) has parameter \\$statusMessage with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:resolveRequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:setAuthenticator\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:setRequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:setStorage\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:shouldCollect\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:shouldCollect\\(\\) has parameter \\$shouldCollect with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:shouldRecord\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:shouldRecord\\(\\) has parameter \\$shouldRecord with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:storage\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:storeRequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\Clockwork\\:\\:timeline\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Property Clockwork\\\\Clockwork\\:\\:\\$authenticator has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Property Clockwork\\\\Clockwork\\:\\:\\$dataSources has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Property Clockwork\\\\Clockwork\\:\\:\\$request has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Property Clockwork\\\\Clockwork\\:\\:\\$shouldCollect has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Property Clockwork\\\\Clockwork\\:\\:\\$shouldRecord has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Property Clockwork\\\\Clockwork\\:\\:\\$storage has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Clockwork.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\DataSource\\:\\:addFilter\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/DataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\DataSource\\:\\:addFilter\\(\\) has parameter \\$type with no type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/DataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\DataSource\\:\\:clearFilters\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/DataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\DataSource\\:\\:extend\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/DataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\DataSource\\:\\:passesFilters\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/DataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\DataSource\\:\\:passesFilters\\(\\) has parameter \\$args with no type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/DataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\DataSource\\:\\:passesFilters\\(\\) has parameter \\$type with no type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/DataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\DataSource\\:\\:removePasswords\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/DataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\DataSource\\:\\:removePasswords\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/DataSource/DataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\DataSource\\:\\:reset\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/DataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\DataSource\\:\\:resolve\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/DataSource.php
+
+		-
+			message: "#^Property Clockwork\\\\DataSource\\\\DataSource\\:\\:\\$filters has no type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/DataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\DataSourceInterface\\:\\:extend\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/DataSourceInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\DataSourceInterface\\:\\:reset\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/DataSourceInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\DataSourceInterface\\:\\:resolve\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/DataSourceInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PhpDataSource\\:\\:getCookies\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PhpDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PhpDataSource\\:\\:getGetData\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PhpDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PhpDataSource\\:\\:getMemoryUsage\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PhpDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PhpDataSource\\:\\:getPostData\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PhpDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PhpDataSource\\:\\:getRequestData\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PhpDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PhpDataSource\\:\\:getRequestHeaders\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PhpDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PhpDataSource\\:\\:getRequestMethod\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PhpDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PhpDataSource\\:\\:getRequestTime\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PhpDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PhpDataSource\\:\\:getRequestUri\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PhpDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PhpDataSource\\:\\:getRequestUrl\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PhpDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PhpDataSource\\:\\:getResponseStatus\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PhpDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PhpDataSource\\:\\:getResponseTime\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PhpDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PhpDataSource\\:\\:getSessionData\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PhpDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PhpDataSource\\:\\:resolve\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PhpDataSource.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PhpDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PsrMessageDataSource\\:\\:getRequestHeaders\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PsrMessageDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PsrMessageDataSource\\:\\:getRequestTime\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PsrMessageDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PsrMessageDataSource\\:\\:getRequestUri\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PsrMessageDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PsrMessageDataSource\\:\\:getResponseTime\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PsrMessageDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PsrMessageDataSource\\:\\:resolve\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PsrMessageDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PsrMessageDataSource\\:\\:sanitize\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PsrMessageDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\PsrMessageDataSource\\:\\:sanitize\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PsrMessageDataSource.php
+
+		-
+			message: "#^Parameter \\$psrRequest of method Clockwork\\\\DataSource\\\\PsrMessageDataSource\\:\\:__construct\\(\\) has invalid type Psr\\\\Http\\\\Message\\\\ServerRequestInterface\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PsrMessageDataSource.php
+
+		-
+			message: "#^Parameter \\$psrResponse of method Clockwork\\\\DataSource\\\\PsrMessageDataSource\\:\\:__construct\\(\\) has invalid type Psr\\\\Http\\\\Message\\\\ResponseInterface\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PsrMessageDataSource.php
+
+		-
+			message: "#^Property Clockwork\\\\DataSource\\\\PsrMessageDataSource\\:\\:\\$psrRequest has no type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PsrMessageDataSource.php
+
+		-
+			message: "#^Property Clockwork\\\\DataSource\\\\PsrMessageDataSource\\:\\:\\$psrResponse has no type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/PsrMessageDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\XdebugDataSource\\:\\:extend\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/XdebugDataSource.php
+
+		-
+			message: "#^Method Clockwork\\\\DataSource\\\\XdebugDataSource\\:\\:resolve\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/DataSource/XdebugDataSource.php
+
+		-
+			message: "#^Parameter \\#1 \\$data of function gzdecode expects string, string\\|false given\\.$#"
+			count: 1
+			path: Clockwork/DataSource/XdebugDataSource.php
+
+		-
+			message: "#^Class Illuminate\\\\Container\\\\Container not found\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Class Illuminate\\\\Foundation\\\\Application not found\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Class Laravel\\\\Lumen\\\\Application not found\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\Serializer\\:\\:__construct\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\Serializer\\:\\:defaults\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\Serializer\\:\\:defaults\\(\\) has parameter \\$defaults with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\Serializer\\:\\:exception\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\Serializer\\:\\:exception\\(\\) has parameter \\$exception with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\Serializer\\:\\:normalize\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\Serializer\\:\\:normalize\\(\\) has parameter \\$context with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\Serializer\\:\\:normalize\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\Serializer\\:\\:normalize\\(\\) has parameter \\$limit with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\Serializer\\:\\:normalizeEach\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\Serializer\\:\\:normalizeEach\\(\\) has parameter \\$context with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\Serializer\\:\\:normalizeEach\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\Serializer\\:\\:normalizeEach\\(\\) has parameter \\$limit with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\Serializer\\:\\:trace\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Parameter \\#1 \\$keys of function array_combine expects array\\<int\\|string\\>, array\\<int, string\\|null\\> given\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\Serializer\\:\\:\\$cache has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\Serializer\\:\\:\\$defaults has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\Serializer\\:\\:\\$options has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/Serializer.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\ServerTiming\\:\\:add\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/ServerTiming.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\ServerTiming\\:\\:add\\(\\) has parameter \\$description with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/ServerTiming.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\ServerTiming\\:\\:add\\(\\) has parameter \\$metric with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/ServerTiming.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\ServerTiming\\:\\:add\\(\\) has parameter \\$value with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/ServerTiming.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\ServerTiming\\:\\:fromRequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/ServerTiming.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\ServerTiming\\:\\:fromRequest\\(\\) has parameter \\$eventsCount with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/ServerTiming.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\ServerTiming\\:\\:value\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/ServerTiming.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\ServerTiming\\:\\:\\$metrics has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/ServerTiming.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: Clockwork/Helpers/ServerTiming.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:closure\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:filter\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isClass\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isClass\\(\\) has parameter \\$classes with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isFile\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isFile\\(\\) has parameter \\$files with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isFunction\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isFunction\\(\\) has parameter \\$functions with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isNamespace\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isNamespace\\(\\) has parameter \\$namespaces with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isNotClass\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isNotClass\\(\\) has parameter \\$classes with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isNotFile\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isNotFile\\(\\) has parameter \\$files with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isNotFunction\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isNotFunction\\(\\) has parameter \\$functions with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isNotNamespace\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isNotNamespace\\(\\) has parameter \\$namespaces with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isNotVendor\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isNotVendor\\(\\) has parameter \\$vendors with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isVendor\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:isVendor\\(\\) has parameter \\$vendors with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:make\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:matchesClass\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:matchesFile\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:matchesFunction\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:matchesNamespace\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFilter\\:\\:matchesVendor\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFilter\\:\\:\\$classes has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFilter\\:\\:\\$files has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFilter\\:\\:\\$functions has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFilter\\:\\:\\$namespaces has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFilter\\:\\:\\$notClasses has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFilter\\:\\:\\$notFiles has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFilter\\:\\:\\$notFunctions has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFilter\\:\\:\\$notNamespaces has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFilter\\:\\:\\$notVendors has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFilter\\:\\:\\$vendors has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFilter.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFrame\\:\\:__construct\\(\\) has parameter \\$basePath with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFrame.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFrame\\:\\:__construct\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFrame.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFrame\\:\\:__construct\\(\\) has parameter \\$vendorPath with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFrame.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackFrame\\:\\:formatCall\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFrame.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFrame\\:\\:\\$args has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFrame.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFrame\\:\\:\\$call has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFrame.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFrame\\:\\:\\$class has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFrame.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFrame\\:\\:\\$file has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFrame.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFrame\\:\\:\\$function has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFrame.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFrame\\:\\:\\$line has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFrame.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFrame\\:\\:\\$object has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFrame.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFrame\\:\\:\\$shortPath has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFrame.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFrame\\:\\:\\$type has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFrame.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackFrame\\:\\:\\$vendor has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackFrame.php
+
+		-
+			message: "#^Class Illuminate\\\\View\\\\View not found\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:__construct\\(\\) has parameter \\$basePath with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:__construct\\(\\) has parameter \\$frames with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:__construct\\(\\) has parameter \\$vendorPath with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:copy\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:copy\\(\\) has parameter \\$frames with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:filter\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:filter\\(\\) has parameter \\$filter with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:first\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:first\\(\\) has parameter \\$filter with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:fixCallUserFuncFrame\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:fixCallUserFuncFrame\\(\\) has parameter \\$frame with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:fixCallUserFuncFrame\\(\\) has parameter \\$index with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:fixCallUserFuncFrame\\(\\) has parameter \\$trace with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:frames\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:from\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:from\\(\\) has parameter \\$trace with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:get\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:get\\(\\) has parameter \\$options with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:last\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:last\\(\\) has parameter \\$filter with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:limit\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:limit\\(\\) has parameter \\$count with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:resolveBasePath\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:resolveVendorPath\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:resolveViewName\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:skip\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Helpers\\\\StackTrace\\:\\:skip\\(\\) has parameter \\$count with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Parameter \\#3 \\$length of function substr expects int\\|null, int\\<0, max\\>\\|false given\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackTrace\\:\\:\\$basePath has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackTrace\\:\\:\\$frames has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Property Clockwork\\\\Helpers\\\\StackTrace\\:\\:\\$vendorPath has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 2
+			path: Clockwork/Helpers/StackTrace.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\IncomingRequest\\:\\:__construct\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/IncomingRequest.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\IncomingRequest\\:\\:hasLocalHost\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/IncomingRequest.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\IncomingRequest\\:\\:header\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/IncomingRequest.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\IncomingRequest\\:\\:header\\(\\) has parameter \\$default with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/IncomingRequest.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\IncomingRequest\\:\\:header\\(\\) has parameter \\$key with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/IncomingRequest.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\IncomingRequest\\:\\:input\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/IncomingRequest.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\IncomingRequest\\:\\:input\\(\\) has parameter \\$default with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/IncomingRequest.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\IncomingRequest\\:\\:input\\(\\) has parameter \\$key with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/IncomingRequest.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\IncomingRequest\\:\\:\\$cookies has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/IncomingRequest.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\IncomingRequest\\:\\:\\$headers has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/IncomingRequest.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\IncomingRequest\\:\\:\\$host has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/IncomingRequest.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\IncomingRequest\\:\\:\\$input has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/IncomingRequest.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\IncomingRequest\\:\\:\\$method has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/IncomingRequest.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\IncomingRequest\\:\\:\\$uri has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/IncomingRequest.php
+
+		-
+			message: "#^Instanceof between mixed and Exception will always evaluate to false\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:__construct\\(\\) has parameter \\$messages with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:alert\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:alert\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:alert\\(\\) has parameter \\$message with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:critical\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:critical\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:critical\\(\\) has parameter \\$message with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:debug\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:debug\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:debug\\(\\) has parameter \\$message with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:emergency\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:emergency\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:emergency\\(\\) has parameter \\$message with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:error\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:error\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:error\\(\\) has parameter \\$message with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:formatContext\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:formatContext\\(\\) has parameter \\$context with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:formatException\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:formatException\\(\\) has parameter \\$context with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:hasException\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:hasException\\(\\) has parameter \\$context with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:hasTrace\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:hasTrace\\(\\) has parameter \\$context with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:info\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:info\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:info\\(\\) has parameter \\$message with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:log\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:log\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:log\\(\\) has parameter \\$level with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:log\\(\\) has parameter \\$message with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:merge\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:notice\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:notice\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:notice\\(\\) has parameter \\$message with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:sort\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:toArray\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:warning\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:warning\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Log\\:\\:warning\\(\\) has parameter \\$message with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Log\\:\\:\\$messages has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Log.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:__construct\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addCacheQuery\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addCacheQuery\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addCacheQuery\\(\\) has parameter \\$duration with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addCacheQuery\\(\\) has parameter \\$key with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addCacheQuery\\(\\) has parameter \\$type with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addCacheQuery\\(\\) has parameter \\$value with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addDatabaseQuery\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addDatabaseQuery\\(\\) has parameter \\$bindings with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addDatabaseQuery\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addDatabaseQuery\\(\\) has parameter \\$duration with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addDatabaseQuery\\(\\) has parameter \\$query with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addEmail\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addEmail\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addEmail\\(\\) has parameter \\$from with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addEmail\\(\\) has parameter \\$headers with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addEmail\\(\\) has parameter \\$subject with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addEmail\\(\\) has parameter \\$to with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addEvent\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addEvent\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addEvent\\(\\) has parameter \\$event with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addEvent\\(\\) has parameter \\$eventData with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addEvent\\(\\) has parameter \\$time with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addModelAction\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addModelAction\\(\\) has parameter \\$action with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addModelAction\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addModelAction\\(\\) has parameter \\$model with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addNotification\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addNotification\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addNotification\\(\\) has parameter \\$from with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addNotification\\(\\) has parameter \\$subject with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addNotification\\(\\) has parameter \\$to with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addRoute\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addRoute\\(\\) has parameter \\$action with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addRoute\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addRoute\\(\\) has parameter \\$method with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addRoute\\(\\) has parameter \\$uri with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addSubrequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addSubrequest\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addSubrequest\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addSubrequest\\(\\) has parameter \\$url with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addTestAssert\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addTestAssert\\(\\) has parameter \\$arguments with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addTestAssert\\(\\) has parameter \\$name with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addTestAssert\\(\\) has parameter \\$passed with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addTestAssert\\(\\) has parameter \\$trace with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addView\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addView\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addView\\(\\) has parameter \\$name with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:addView\\(\\) has parameter \\$viewData with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:except\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:except\\(\\) has parameter \\$keys with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:generateRequestId\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:generateUpdateToken\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getCacheDeletes\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getCacheHits\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getCacheReads\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getCacheTime\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getCacheWrites\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getDatabaseDeletes\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getDatabaseDuration\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getDatabaseInserts\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getDatabaseOthers\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getDatabaseQueriesCount\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getDatabaseSelects\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getDatabaseSlowQueriesCount\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getDatabaseUpdates\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getModelsCreated\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getModelsDeleted\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getModelsRetrieved\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getModelsUpdated\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:getResponseDuration\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:log\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:only\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:only\\(\\) has parameter \\$keys with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:setAuthenticatedUser\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:setAuthenticatedUser\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:setAuthenticatedUser\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:setAuthenticatedUser\\(\\) has parameter \\$username with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:setParent\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:setParent\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:setParent\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:timeline\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:toArray\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:toJson\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:userData\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Request\\:\\:userData\\(\\) has parameter \\$key with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed\\)\\: bool\\)\\|null, Closure\\(mixed\\)\\: \\(0\\|1\\|false\\) given\\.$#"
+			count: 4
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$authenticatedUser has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$cacheDeletes has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$cacheHits has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$cacheQueries has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$cacheReads has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$cacheTime has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$cacheWrites has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$clientMetrics has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$commandArguments has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$commandArgumentsDefaults has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$commandExitCode has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$commandName has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$commandOptions has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$commandOptionsDefaults has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$commandOutput has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$controller has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$cookies has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$currentLog has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$currentTimeline has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$databaseDeletes has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$databaseDuration has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$databaseInserts has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$databaseOthers has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$databaseQueries has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$databaseQueriesCount has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$databaseSelects has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$databaseSlowQueries has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$databaseUpdates has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$emailsData has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$events has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$getData has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$headers has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$httpRequests has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$id has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$jobConnection has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$jobDescription has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$jobName has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$jobOptions has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$jobPayload has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$jobQueue has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$jobStatus has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$log has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$memoryUsage has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$method has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$middleware has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$modelsActions has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$modelsCreated has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$modelsDeleted has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$modelsRetrieved has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$modelsUpdated has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$notifications has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$parent has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$postData has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$queueJobs has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$redisCommands has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$requestData has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$responseDuration has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$responseStatus has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$responseTime has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$routes has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$sessionData has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$subrequests has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$testAsserts has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$testName has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$testStatus has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$testStatusMessage has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$time has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$timelineData has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$type has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$updateToken has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$uri has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$url has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$userData has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$version has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$viewsData has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$webVitals has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Request\\:\\:\\$xdebug has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Request.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:__call\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:__call\\(\\) has parameter \\$method with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:__call\\(\\) has parameter \\$parameters with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:except\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:except\\(\\) has parameter \\$uris with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:filter\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:merge\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:merge\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:only\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:only\\(\\) has parameter \\$uris with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:passCallback\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:passExcept\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:passExceptPreflight\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:passOnDemand\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:passOnly\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldCollect\\:\\:passSampling\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\ShouldCollect\\:\\:\\$callback has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\ShouldCollect\\:\\:\\$except has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\ShouldCollect\\:\\:\\$exceptPreflight has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\ShouldCollect\\:\\:\\$onDemand has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\ShouldCollect\\:\\:\\$only has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\ShouldCollect\\:\\:\\$sample has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldCollect.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldRecord\\:\\:__call\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldRecord.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldRecord\\:\\:__call\\(\\) has parameter \\$method with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldRecord.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldRecord\\:\\:__call\\(\\) has parameter \\$parameters with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldRecord.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldRecord\\:\\:filter\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldRecord.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldRecord\\:\\:merge\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldRecord.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldRecord\\:\\:merge\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldRecord.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldRecord\\:\\:passCallback\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldRecord.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldRecord\\:\\:passErrorsOnly\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldRecord.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\ShouldRecord\\:\\:passSlowOnly\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldRecord.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\ShouldRecord\\:\\:\\$callback has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldRecord.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\ShouldRecord\\:\\:\\$errorsOnly has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldRecord.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\ShouldRecord\\:\\:\\$slowOnly has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/ShouldRecord.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:__call\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:__call\\(\\) has parameter \\$method with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:__call\\(\\) has parameter \\$parameters with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:__construct\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:__construct\\(\\) has parameter \\$description with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:begin\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:duration\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:duration\\(\\) has parameter \\$duration with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:end\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:finalize\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:finalize\\(\\) has parameter \\$end with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:finalize\\(\\) has parameter \\$start with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:run\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:run\\(\\) has parameter \\$args with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:toArray\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:\\$color has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:\\$data has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:\\$description has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:\\$end has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:\\$name has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Timeline\\\\Event\\:\\:\\$start has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Event.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:__construct\\(\\) has parameter \\$events with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:create\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:create\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:create\\(\\) has parameter \\$description with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:event\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:event\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:event\\(\\) has parameter \\$description with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:finalize\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:finalize\\(\\) has parameter \\$end with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:finalize\\(\\) has parameter \\$start with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:find\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:find\\(\\) has parameter \\$name with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:merge\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:sort\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:toArray\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\Timeline\\\\Timeline\\:\\:\\$events has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/Timeline/Timeline.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserData\\:\\:counters\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserData.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserData\\:\\:counters\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/UserData.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserData\\:\\:data\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserData.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserData\\:\\:data\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/UserData.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserData\\:\\:data\\(\\) has parameter \\$key with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserData.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserData\\:\\:table\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserData.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserData\\:\\:table\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/UserData.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserData\\:\\:table\\(\\) has parameter \\$title with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserData.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserData\\:\\:title\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserData.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserData\\:\\:title\\(\\) has parameter \\$title with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserData.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserData\\:\\:toArray\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserData.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\UserData\\:\\:\\$data has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserData.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\UserData\\:\\:\\$title has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserData.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserDataItem\\:\\:__construct\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Request/UserDataItem.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserDataItem\\:\\:labels\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserDataItem.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserDataItem\\:\\:labels\\(\\) has parameter \\$labels with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserDataItem.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserDataItem\\:\\:showAs\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserDataItem.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserDataItem\\:\\:showAs\\(\\) has parameter \\$showAs with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserDataItem.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserDataItem\\:\\:title\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserDataItem.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserDataItem\\:\\:title\\(\\) has parameter \\$title with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserDataItem.php
+
+		-
+			message: "#^Method Clockwork\\\\Request\\\\UserDataItem\\:\\:toArray\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserDataItem.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\UserDataItem\\:\\:\\$data has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserDataItem.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\UserDataItem\\:\\:\\$labels has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserDataItem.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\UserDataItem\\:\\:\\$showAs has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserDataItem.php
+
+		-
+			message: "#^Property Clockwork\\\\Request\\\\UserDataItem\\:\\:\\$title has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Request/UserDataItem.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:__construct\\(\\) has parameter \\$compress with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:__construct\\(\\) has parameter \\$expiration with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:__construct\\(\\) has parameter \\$path with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:__construct\\(\\) has parameter \\$pathPermissions with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:all\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:cleanup\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:cleanup\\(\\) has parameter \\$force with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:closeIndex\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:closeIndex\\(\\) has parameter \\$lock with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:ensurePathIsWritable\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:find\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:find\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:latest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:loadRequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:loadRequest\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:loadRequests\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:loadRequests\\(\\) has parameter \\$ids with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:makeRequestFromIndex\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:makeRequestFromIndex\\(\\) has parameter \\$record with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:next\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:next\\(\\) has parameter \\$count with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:next\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:openIndex\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:openIndex\\(\\) has parameter \\$force with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:openIndex\\(\\) has parameter \\$lock with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:openIndex\\(\\) has parameter \\$position with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:previous\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:previous\\(\\) has parameter \\$count with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:previous\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:readIndex\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:readIndex\\(\\) has parameter \\$direction with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:readNextIndex\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:readPreviousIndex\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:searchIndex\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:searchIndex\\(\\) has parameter \\$count with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:searchIndex\\(\\) has parameter \\$direction with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:searchIndex\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:searchIndexBackward\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:searchIndexBackward\\(\\) has parameter \\$count with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:searchIndexBackward\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:searchIndexForward\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:searchIndexForward\\(\\) has parameter \\$count with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:searchIndexForward\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:store\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:store\\(\\) has parameter \\$skipIndex with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:trimIndex\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:update\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\FileStorage\\:\\:updateIndex\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Parameter \\#1 \\$data of class Clockwork\\\\Request\\\\Request constructor expects array, mixed given\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Parameter \\#1 \\$data of function gzcompress expects string, string\\|false given\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Parameter \\#1 \\$data of function gzuncompress expects string, string\\|false given\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Parameter \\#1 \\$haystack of function strrpos expects string, string\\|false given\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function flock expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fseek expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function substr expects string, string\\|false given\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\FileStorage\\:\\:\\$cleanupChance has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\FileStorage\\:\\:\\$compress has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\FileStorage\\:\\:\\$expiration has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\FileStorage\\:\\:\\$indexHandle has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\FileStorage\\:\\:\\$path has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\FileStorage\\:\\:\\$pathPermissions has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/FileStorage.php
+
+		-
+			message: "#^Cannot access property \\$controller on Clockwork\\\\Storage\\\\Search\\|null\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Cannot access property \\$method on Clockwork\\\\Storage\\\\Search\\|null\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Cannot access property \\$name on Clockwork\\\\Storage\\\\Search\\|null\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Cannot access property \\$received on Clockwork\\\\Storage\\\\Search\\|null\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Cannot access property \\$status on Clockwork\\\\Storage\\\\Search\\|null\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Cannot access property \\$time on Clockwork\\\\Storage\\\\Search\\|null\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Cannot access property \\$type on Clockwork\\\\Storage\\\\Search\\|null\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Cannot access property \\$uri on Clockwork\\\\Storage\\\\Search\\|null\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Cannot call method isNotEmpty\\(\\) on Clockwork\\\\Storage\\\\Search\\|null\\.$#"
+			count: 4
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:__construct\\(\\) has parameter \\$connection with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:__construct\\(\\) has parameter \\$expiration with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:__construct\\(\\) has parameter \\$prefix with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:all\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:cleanup\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:createClient\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:createClient\\(\\) has parameter \\$connection with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:createRedisClient\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:createRedisClient\\(\\) has parameter \\$connection with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:createRedisClusterClient\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:createRedisClusterClient\\(\\) has parameter \\$connection with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:dataToRequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:dataToRequest\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:find\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:find\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:isCluster\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:isCluster\\(\\) has parameter \\$connection with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:latest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:loadRequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:loadRequest\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:loadRequests\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:loadRequests\\(\\) has parameter \\$ids with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:next\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:next\\(\\) has parameter \\$count with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:next\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:prefix\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:prefix\\(\\) has parameter \\$key with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:previous\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:previous\\(\\) has parameter \\$count with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:previous\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:resultsToRequests\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:resultsToRequests\\(\\) has parameter \\$results with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:search\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:search\\(\\) has parameter \\$count with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:search\\(\\) has parameter \\$direction with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:search\\(\\) has parameter \\$requestIndex with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:store\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\RedisStorage\\:\\:update\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\RedisStorage\\:\\:\\$expiration has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\RedisStorage\\:\\:\\$needsSerialization has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\RedisStorage\\:\\:\\$prefix has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\RedisStorage\\:\\:\\$redis has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/RedisStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:__construct\\(\\) has parameter \\$options with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:__construct\\(\\) has parameter \\$search with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:fromRequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:fromRequest\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:isEmpty\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:isNotEmpty\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matches\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesCommand\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesDate\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesDate\\(\\) has parameter \\$inputs with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesDate\\(\\) has parameter \\$value with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesExact\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesExact\\(\\) has parameter \\$inputs with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesExact\\(\\) has parameter \\$value with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesNumber\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesNumber\\(\\) has parameter \\$inputs with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesNumber\\(\\) has parameter \\$value with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesQueueJob\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesRequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesString\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesString\\(\\) has parameter \\$inputs with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesString\\(\\) has parameter \\$value with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Search\\:\\:matchesTest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\Search\\:\\:\\$controller has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\Search\\:\\:\\$method has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\Search\\:\\:\\$name has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\Search\\:\\:\\$received has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\Search\\:\\:\\$status has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\Search\\:\\:\\$stopOnFirstMismatch has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\Search\\:\\:\\$time has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\Search\\:\\:\\$type has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\Search\\:\\:\\$uri has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: Clockwork/Storage/Search.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:__construct\\(\\) has parameter \\$search with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:addCondition\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:addCondition\\(\\) has parameter \\$bindings with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:addCondition\\(\\) has parameter \\$condition with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:buildQuery\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:fromBase\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:quote\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:quote\\(\\) has parameter \\$identifier with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:resolveConditions\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:resolveDateCondition\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:resolveDateCondition\\(\\) has parameter \\$fields with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:resolveDateCondition\\(\\) has parameter \\$inputs with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:resolveExactCondition\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:resolveExactCondition\\(\\) has parameter \\$field with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:resolveExactCondition\\(\\) has parameter \\$inputs with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:resolveNumberCondition\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:resolveNumberCondition\\(\\) has parameter \\$fields with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:resolveNumberCondition\\(\\) has parameter \\$inputs with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:resolveStringCondition\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:resolveStringCondition\\(\\) has parameter \\$fields with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlSearch\\:\\:resolveStringCondition\\(\\) has parameter \\$inputs with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\SqlSearch\\:\\:\\$bindings has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\SqlSearch\\:\\:\\$conditions has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\SqlSearch\\:\\:\\$pdo has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\SqlSearch\\:\\:\\$query has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlSearch.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:__construct\\(\\) has parameter \\$dsn with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:__construct\\(\\) has parameter \\$expiration with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:__construct\\(\\) has parameter \\$password with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:__construct\\(\\) has parameter \\$table with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:__construct\\(\\) has parameter \\$username with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:all\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:buildSchema\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:buildSchema\\(\\) has parameter \\$table with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:cleanup\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:dataToRequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:dataToRequest\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:find\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:find\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:initialize\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:latest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:next\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:next\\(\\) has parameter \\$count with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:next\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:previous\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:previous\\(\\) has parameter \\$count with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:previous\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:query\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:query\\(\\) has parameter \\$bindings with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:query\\(\\) has parameter \\$firstTry with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:query\\(\\) has parameter \\$query with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:quote\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:quote\\(\\) has parameter \\$identifier with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:resultsToRequests\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:resultsToRequests\\(\\) has parameter \\$stmt with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:store\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SqlStorage\\:\\:update\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\SqlStorage\\:\\:\\$expiration has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\SqlStorage\\:\\:\\$fields has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\SqlStorage\\:\\:\\$needsSerialization has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\SqlStorage\\:\\:\\$pdo has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\SqlStorage\\:\\:\\$table has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Variable \\$table might not be defined\\.$#"
+			count: 2
+			path: Clockwork/Storage/SqlStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\Storage\\:\\:update\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/Storage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\StorageInterface\\:\\:all\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/StorageInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\StorageInterface\\:\\:cleanup\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/StorageInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\StorageInterface\\:\\:find\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/StorageInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\StorageInterface\\:\\:find\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/StorageInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\StorageInterface\\:\\:latest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/StorageInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\StorageInterface\\:\\:next\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/StorageInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\StorageInterface\\:\\:next\\(\\) has parameter \\$count with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/StorageInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\StorageInterface\\:\\:next\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/StorageInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\StorageInterface\\:\\:previous\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/StorageInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\StorageInterface\\:\\:previous\\(\\) has parameter \\$count with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/StorageInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\StorageInterface\\:\\:previous\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/StorageInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\StorageInterface\\:\\:store\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/StorageInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\StorageInterface\\:\\:update\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/StorageInterface.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:__construct\\(\\) has parameter \\$path with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:cleanup\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:cleanup\\(\\) has parameter \\$force with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:loadRequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:loadRequest\\(\\) has parameter \\$token with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:makeRequestFromIndex\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:makeRequestFromIndex\\(\\) has parameter \\$record with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:openIndex\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:openIndex\\(\\) has parameter \\$force with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:openIndex\\(\\) has parameter \\$lock with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:openIndex\\(\\) has parameter \\$position with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:store\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:store\\(\\) has parameter \\$skipIndex with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fseek expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Parameter \\$profiler of method Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:__construct\\(\\) has invalid type Symfony\\\\Component\\\\HttpKernel\\\\Profiler\\\\Profiler\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:\\$path has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Property Clockwork\\\\Storage\\\\SymfonyStorage\\:\\:\\$profiler has no type specified\\.$#"
+			count: 1
+			path: Clockwork/Storage/SymfonyStorage.php
+
+		-
+			message: "#^Method Clockwork\\\\Web\\\\Web\\:\\:asset\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Web/Web.php
+
+		-
+			message: "#^Method Clockwork\\\\Web\\\\Web\\:\\:asset\\(\\) has parameter \\$path with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Web/Web.php
+
+		-
+			message: "#^Method Clockwork\\\\Web\\\\Web\\:\\:resolveAssetPath\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Clockwork/Web/Web.php
+
+		-
+			message: "#^Method Clockwork\\\\Web\\\\Web\\:\\:resolveAssetPath\\(\\) has parameter \\$path with no type specified\\.$#"
+			count: 1
+			path: Clockwork/Web/Web.php
+
+		-
+			message: "#^Parameter \\#1 \\$haystack of function strpos expects string, string\\|false given\\.$#"
+			count: 1
+			path: Clockwork/Web/Web.php
+
+		-
+			message: "#^Parameter \\#2 \\$needle of function strpos expects string, string\\|false given\\.$#"
+			count: 1
+			path: Clockwork/Web/Web.php
