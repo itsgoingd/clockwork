@@ -1,0 +1,6 @@
+# PHP Composer files
+composer.lock
+vendor/
+
+# PHPUnit cache
+.phpunit.cache/
