@@ -118,9 +118,9 @@ class LumenDataSource extends DataSource
 		if ($this->app->bound('request')) {
 			return $this->app['request']->getMethod();
 		} elseif (isset($_POST['_method'])) {
-			return strtoupper($_POST['_method']);
+			return strtoupper((string) $_POST['_method']);
 		} else {
-			return $_SERVER['REQUEST_METHOD'];
+			return $_SERVER['REQUEST_METHOD'] ?? null;
 		}
 	}
 
@@ -188,7 +188,7 @@ class LumenDataSource extends DataSource
 			return $this->app['request']->getPathInfo();
 		} else {
 			$query = $_SERVER['QUERY_STRING'] ?? '';
-			return '/' . trim(str_replace("?{$query}", '', $_SERVER['REQUEST_URI']), '/');
+			return '/' . trim(str_replace("?{$query}", '', $_SERVER['REQUEST_URI'] ?? ''), '/');
 		}
 	}
 }

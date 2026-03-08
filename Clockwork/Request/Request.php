@@ -569,7 +569,7 @@ class Request
 	public function getDatabaseSelects()
 	{
 		return count(array_filter($this->databaseQueries, function ($query) {
-			return preg_match('/^select\b/i', ltrim($query['query']));
+			return preg_match('/^select\b/i', ltrim($query['query'] ?? ''));
 		}));
 	}
 
@@ -577,7 +577,7 @@ class Request
 	public function getDatabaseInserts()
 	{
 		return count(array_filter($this->databaseQueries, function ($query) {
-			return preg_match('/^insert\b/i', ltrim($query['query']));
+			return preg_match('/^insert\b/i', ltrim($query['query'] ?? ''));
 		}));
 	}
 
@@ -585,7 +585,7 @@ class Request
 	public function getDatabaseUpdates()
 	{
 		return count(array_filter($this->databaseQueries, function ($query) {
-			return preg_match('/^update\b/i', ltrim($query['query']));
+			return preg_match('/^update\b/i', ltrim($query['query'] ?? ''));
 		}));
 	}
 
@@ -593,7 +593,7 @@ class Request
 	public function getDatabaseDeletes()
 	{
 		return count(array_filter($this->databaseQueries, function ($query) {
-			return preg_match('/^delete\b/i', ltrim($query['query']));
+			return preg_match('/^delete\b/i', ltrim($query['query'] ?? ''));
 		}));
 	}
 
@@ -601,7 +601,7 @@ class Request
 	public function getDatabaseOthers()
 	{
 		return count(array_filter($this->databaseQueries, function ($query) {
-			return ! preg_match('/^(select|insert|update|delete)\b/i', ltrim($query['query']));
+			return ! preg_match('/^(select|insert|update|delete)\b/i', ltrim($query['query'] ?? ''));
 		}));
 	}
 
