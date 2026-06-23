@@ -310,8 +310,9 @@ class EloquentDataSource extends DataSource
 
 		$pdo = $connection->getPdo();
 
+		// In case of non-PDO connections or known drivers without quote support (ODBC, Crate), we apply our own simple MSSQL style quoting instead.
+		// Some drivers use object bindings (eg. Crate), in this case we try to JSON encode the value.
 		if ($pdo === null || $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'odbc' || $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'crate') {
-			// PDO_ODBC and PDO Crate driver doesn't support the quote method, apply simple MSSQL style quoting instead - Crate sometimes uses a object as a binding - for json support
 			$binding = is_object($binding) ? json_encode($binding) : $binding;
 			return "'" . str_replace("'", "''", $binding) . "'";
 		}
