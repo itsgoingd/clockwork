@@ -106,7 +106,7 @@ class PhpDataSource extends DataSource
 		$port = (! $https && $port != 80 || $https && $port != 443) ? ":{$port}" : '';
 
 		// remove port number from the host
-		$host = $host !== null ? preg_replace('/:\d+$/', '', trim($host)) : null;
+		$host = $host ? preg_replace('/:\d+$/', '', trim($host)) : null;
 
 		return "{$scheme}://{$host}{$port}{$uri}";
 	}
