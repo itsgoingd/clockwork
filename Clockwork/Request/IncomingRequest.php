@@ -39,7 +39,7 @@ class IncomingRequest
 	// Returns true, if HTTP host is one of the common domains used for local development
 	public function hasLocalHost()
 	{
-		$segments = explode('.', $this->host);
+		$segments = explode('.', $this->host ?? '');
 		$tld = $segments[count($segments) - 1];
 
 		return $this->host == '127.0.0.1'

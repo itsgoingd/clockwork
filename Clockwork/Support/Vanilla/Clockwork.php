@@ -497,13 +497,15 @@ class Clockwork
 	// Creates an incoming request instance from globals
 	protected function incomingRequestFromGlobals()
 	{
+		$host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? $_SERVER['SERVER_ADDR'] ?? '';
+
 		return new IncomingRequest([
-			'method'  => $_SERVER['REQUEST_METHOD'],
-			'uri'     => $_SERVER['REQUEST_URI'],
+			'method'  => $_SERVER['REQUEST_METHOD'] ?? null,
+			'uri'     => $_SERVER['REQUEST_URI'] ?? null,
 			'headers' => $_SERVER,
 			'input'   => array_merge($_GET, $_POST, (array) json_decode(file_get_contents('php://input'), true)),
 			'cookies' => $_COOKIE,
-			'host'    => explode(':', $_SERVER['HTTP_HOST'] ?: $_SERVER['SERVER_NAME'] ?: $_SERVER['SERVER_ADDR'])[0]
+			'host'    => explode(':', $host)[0]
 		]);
 	}
 

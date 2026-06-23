@@ -101,24 +101,24 @@ class StackFilter
 
 	protected function matchesClass(StackFrame $frame)
 	{
-		if (count($this->classes) && ! in_array($frame->class, $this->classes)) return false;
-		if (count($this->notClasses) && in_array($frame->class, $this->notClasses)) return false;
+		if (count($this->classes) && ! in_array($frame->class ?? '', $this->classes)) return false;
+		if (count($this->notClasses) && in_array($frame->class ?? '', $this->notClasses)) return false;
 
 		return true;
 	}
 
 	protected function matchesFile(StackFrame $frame)
 	{
-		if (count($this->files) && ! in_array($frame->file, $this->files)) return false;
-		if (count($this->notFiles) && in_array($frame->file, $this->notFiles)) return false;
+		if (count($this->files) && ! in_array($frame->file ?? '', $this->files)) return false;
+		if (count($this->notFiles) && in_array($frame->file ?? '', $this->notFiles)) return false;
 
 		return true;
 	}
 
 	protected function matchesFunction(StackFrame $frame)
 	{
-		if (count($this->functions) && ! in_array($frame->function, $this->functions)) return false;
-		if (count($this->notFunctions) && in_array($frame->function, $this->notFunctions)) return false;
+		if (count($this->functions) && ! in_array($frame->function ?? '', $this->functions)) return false;
+		if (count($this->notFunctions) && in_array($frame->function ?? '', $this->notFunctions)) return false;
 
 		return true;
 	}
@@ -140,8 +140,8 @@ class StackFilter
 
 	protected function matchesVendor(StackFrame $frame)
 	{
-		if (count($this->vendors) && ! in_array($frame->vendor, $this->vendors)) return false;
-		if (count($this->notVendors) && in_array($frame->vendor, $this->notVendors)) return false;
+		if (count($this->vendors) && ! in_array($frame->vendor ?? '', $this->vendors)) return false;
+		if (count($this->notVendors) && in_array($frame->vendor ?? '', $this->notVendors)) return false;
 
 		return true;
 	}

@@ -324,7 +324,7 @@ class EloquentDataSource extends DataSource
 	// Increment query counts for collected query
 	protected function incrementQueryCount($query)
 	{
-		$sql = ltrim($query['query']);
+		$sql = ltrim($query['query'] ?? '');
 
 		$this->count['total']++;
 
