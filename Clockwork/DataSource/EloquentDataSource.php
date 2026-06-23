@@ -270,25 +270,38 @@ class EloquentDataSource extends DataSource
 	{
 		// add bindings to query
 		$bindings = $this->databaseManager->connection($connection)->prepareBindings($bindings);
-
+		
+		$bindingsArePositional = array_keys($bindings) === range(0, count($bindings) - 1);
+		
+		/**
+		 * Regexp explanation:
+		 * ('(?:''|[^'])*')   - single quoted string (handles escaped single quotes by doubling)
+		 * ("(?:""|[^"])*")   - double quoted string (handles escaped double quotes by doubling)
+		 * (--.*)             - single-line comment
+		 * (\/\*[\s\S]*?\*\/) - multi-line comment
+		 * (*SKIP)(*FAIL)     - skip all matches above
+		 * \?                 - positional placeholder
+		 * :\w+               - named placeholder
+		 */
+		$pattern = $bindingsArePositional
+			? "/('(?:''|[^'])*'|\"(?:\"\"|[^\"])*\"|--.*|\/\*[\s\S]*?\*\/)(*SKIP)(*FAIL)|\?/"
+			: "/('(?:''|[^'])*'|\"(?:\"\"|[^\"])*\"|--.*|\/\*[\s\S]*?\*\/)(*SKIP)(*FAIL)|:\w+/";
+		
+		
 		$index = 0;
-		$query = preg_replace_callback('/\'[^\']*\'|[^?]\?|\W:[a-z]+/', function ($matches) use ($bindings, $connection, &$index) {
-			$match = $matches[0];
-
-			if ($match[0] == '\'') { // quoted string
-				return $match;
-			} elseif ($match[1] == '?' && isset($bindings[$index])) { // question-mark binding
-				$binding = $this->quoteBinding($bindings[$index++], $connection);
-			} elseif ($match[1] == ':' && isset($bindings[substr($match, 2)])) { // named binding
-				$binding = $this->quoteBinding($bindings[substr($match, 2)], $connection);
-			} else {
-				return $match;
-			}
-
+		$query = preg_replace_callback($pattern, function ($matches) use ($bindings, $connection, &$index, $bindingsArePositional) {
+			$binding = $bindingsArePositional
+				? $bindings[$index++]
+				: $bindings[ltrim($matches[$index++], ':')];
+			
+			$binding = $this->quoteBinding($binding, $connection);
+			
 			// convert binary bindings to hexadecimal representation
-			if (! preg_match('//u', (string) $binding)) $binding = '0x' . bin2hex($binding);
-
-			return $match[0] . ((string) $binding);
+			if (!preg_match('//u', (string)$binding)) {
+				$binding = '0x' . bin2hex($binding);
+			}
+			
+			return (string)$binding;
 		}, $query);
 
 		// highlight keywords
