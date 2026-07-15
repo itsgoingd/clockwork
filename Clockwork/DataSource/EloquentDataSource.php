@@ -266,41 +266,7 @@ class EloquentDataSource extends DataSource
 	// Takes a query, an array of bindings and the connection as arguments, returns runnable query with upper-cased keywords
 	protected function createRunnableQuery($query, $bindings, $connection)
 	{
-		// add bindings to query
-		$bindings = $this->databaseManager->connection($connection)->prepareBindings($bindings);
-		
-		$bindingsArePositional = array_keys($bindings) === range(0, count($bindings) - 1);
-		
-		/**
-		 * Regexp explanation:
-		 * ('(?:''|[^'])*')   - single quoted string (handles escaped single quotes by doubling)
-		 * ("(?:""|[^"])*")   - double quoted string (handles escaped double quotes by doubling)
-		 * (--.*)             - single-line comment
-		 * (\/\*[\s\S]*?\*\/) - multi-line comment
-		 * (*SKIP)(*FAIL)     - skip all matches above
-		 * \?                 - positional placeholder
-		 * :\w+               - named placeholder
-		 */
-		$pattern = $bindingsArePositional
-			? "/('(?:''|[^'])*'|\"(?:\"\"|[^\"])*\"|--.*|\/\*[\s\S]*?\*\/)(*SKIP)(*FAIL)|\?/"
-			: "/('(?:''|[^'])*'|\"(?:\"\"|[^\"])*\"|--.*|\/\*[\s\S]*?\*\/)(*SKIP)(*FAIL)|:\w+/";
-		
-		
-		$index = 0;
-		$query = preg_replace_callback($pattern, function ($matches) use ($bindings, $connection, &$index, $bindingsArePositional) {
-			$binding = $bindingsArePositional
-				? $bindings[$index++]
-				: $bindings[ltrim($matches[$index++], ':')];
-			
-			$binding = $this->quoteBinding($binding, $connection);
-			
-			// convert binary bindings to hexadecimal representation
-			if (!preg_match('//u', (string)$binding)) {
-				$binding = '0x' . bin2hex($binding);
-			}
-			
-			return (string)$binding;
-		}, $query);
+		$query = $this->replaceBindings($query, $bindings, $connection);
 
 		// highlight keywords
 		$keywords = [
@@ -310,6 +276,47 @@ class EloquentDataSource extends DataSource
 		$regexp = '/\b' . implode('\b|\b', $keywords) . '\b/i';
 
 		return preg_replace_callback($regexp, function ($match) { return strtoupper($match[0]); }, $query);
+	}
+
+	// Replaces query placeholders with their prepared and quoted bindings
+	protected function replaceBindings($query, $bindings, $connection)
+	{
+		$bindings = $this->databaseManager->connection($connection)->prepareBindings($bindings);
+
+		if (! count($bindings)) return $query;
+
+		$bindingsArePositional = array_keys($bindings) === range(0, count($bindings) - 1);
+
+		/**
+		 * Regexp explanation:
+		 * ('(?:''|[^'])*')   - single quoted string (handles escaped single quotes by doubling)
+		 * ("(?:""|[^"])*")   - double quoted string (handles escaped double quotes by doubling)
+		 * (--.*)             - single-line comment
+		 * (\/\*[\s\S]*?\*\/) - multi-line comment
+		 * (*SKIP)(*FAIL)     - skip all matches above
+		 * \?                 - positional placeholder
+		 * (?<!:):\w+         - named placeholder, excluding PostgreSQL casts
+		 */
+		$pattern = $bindingsArePositional
+			? "/('(?:''|[^'])*'|\"(?:\"\"|[^\"])*\"|--.*|\/\*[\s\S]*?\*\/)(*SKIP)(*FAIL)|\?/"
+			: "/('(?:''|[^'])*'|\"(?:\"\"|[^\"])*\"|--.*|\/\*[\s\S]*?\*\/)(*SKIP)(*FAIL)|(?<!:):\w+/";
+
+		$index = 0;
+
+		return preg_replace_callback($pattern, function ($matches) use ($bindings, $connection, &$index, $bindingsArePositional) {
+			$binding = $bindingsArePositional
+				? $bindings[$index++]
+				: $bindings[ltrim($matches[0], ':')];
+
+			// convert binary bindings to hexadecimal representation
+			if (! preg_match('//u', (string) $binding)) {
+				return '0x' . bin2hex((string) $binding);
+			}
+
+			$binding = $this->quoteBinding($binding, $connection);
+
+			return (string) $binding;
+		}, $query);
 	}
 
 	// Takes a query binding and a connection name, returns a quoted binding value
