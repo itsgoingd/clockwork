@@ -14,10 +14,10 @@ class LaravelHttpClientDataSource extends DataSource
 
 	// Sent HTTP requests
 	protected $requests = [];
-	
+
 	// Map of executing requests, keyed by their object hash
 	protected $executingRequests = [];
-	
+
 	// Whether to collect request and response content (json or form data) and raw content
 	protected $collectContent = true;
 	protected $collectRawContent = true;
@@ -30,22 +30,22 @@ class LaravelHttpClientDataSource extends DataSource
 		$this->collectContent = $collectContent;
 		$this->collectRawContent = $collectRawContent;
 	}
-	
+
 	// Add sent notifications to the request
 	public function resolve(Request $request)
 	{
 		$request->httpRequests = array_merge($request->httpRequests, $this->requests);
-		
+
 		return $request;
 	}
-	
+
 	// Reset the data source to an empty state, clearing any collected data
 	public function reset()
 	{
 		$this->requests = [];
 		$this->executingRequests = [];
 	}
-	
+
 	// Listen to the email and notification events
 	public function listenToEvents()
 	{
@@ -53,12 +53,12 @@ class LaravelHttpClientDataSource extends DataSource
 		$this->dispatcher->listen(RequestSending::class, function ($event) { $this->sendingRequest($event); });
 		$this->dispatcher->listen(ResponseReceived::class, function ($event) { $this->responseReceived($event); });
 	}
-	
+
 	// Collect an executing request
 	protected function sendingRequest(RequestSending $event)
 	{
 		$trace = StackTrace::get()->resolveViewName();
-		
+
 		$request = (object) [
 			'request'  => (object) [
 				'method'  => $event->request->method(),
@@ -69,11 +69,11 @@ class LaravelHttpClientDataSource extends DataSource
 			],
 			'response' => null,
 			'stats'    => null,
-			'error'    => null, 
+			'error'    => null,
 			'time'     => microtime(true),
 			'trace'    => (new Serializer)->trace($trace)
 		];
-		
+
 		if ($this->passesFilters([ $request ])) {
 			$this->requests[] = $this->executingRequests[spl_object_hash($event->request)] = $request;
 		}
@@ -83,16 +83,20 @@ class LaravelHttpClientDataSource extends DataSource
 	protected function responseReceived($event)
 	{
 		if (! isset($this->executingRequests[spl_object_hash($event->request)])) return;
-		
+
 		$request = $this->executingRequests[spl_object_hash($event->request)];
 		$stats = $event->response->handlerStats();
-				
+
+		$responseBody = $event->response->toPsrResponse()->getBody();
+		$isStream = ! $responseBody->isSeekable();
+
 		$request->duration = (microtime(true) - $request->time) * 1000;
 		$request->response = (object) [
 			'status'  => $event->response->status(),
 			'headers' => $event->response->headers(),
-			'content' => $this->collectContent ? $event->response->json() : null,
-			'body'    => $this->collectRawContent ? $event->response->body() : null
+			'content' => ! $isStream && $this->collectContent ? $event->response->json() : null,
+			'body'    => ! $isStream && $this->collectRawContent ? $event->response->body() : null,
+			'stream'  => $isStream
 		];
 		$request->stats = (object) [
 			'timing' => isset($stats['total_time_us']) ? (object) [
@@ -115,20 +119,19 @@ class LaravelHttpClientDataSource extends DataSource
 			],
 			'version' => $stats['http_version'] ?? null
 		];
-		
-		$responseBody = $event->response->toPsrResponse()->getBody();
-		if ($responseBody->tell()) $responseBody->rewind();
+
+		if (! $isStream && $responseBody->tell()) $responseBody->rewind();
 
 		unset($this->executingRequests[spl_object_hash($event->request)]);
 	}
-	
+
 	// Update last request with error when connection fails
 	protected function connectionFailed($event)
 	{
 		if (! isset($this->executingRequests[spl_object_hash($event->request)])) return;
 
 		$request = $this->executingRequests[spl_object_hash($event->request)];
-		
+
 		$request->duration = (microtime(true) - $request->time) * 1000;
 		$request->error = 'connection-failed';
 

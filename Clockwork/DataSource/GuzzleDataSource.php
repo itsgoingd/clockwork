@@ -13,7 +13,7 @@ class GuzzleDataSource extends DataSource
 {
 	// Sent HTTP requests
 	protected $requests = [];
-	
+
 	// Whether to collect request and response content (json or form data) and raw content
 	protected $collectContent = true;
 	protected $collectRawContent = true;
@@ -30,40 +30,40 @@ class GuzzleDataSource extends DataSource
 	{
 		return new Client($this->configure($config));
 	}
-	
+
 	// Updates Guzzle configuration array with Clockwork support
 	public function configure(array $config = [])
 	{
 		$handler = $config['handler'] ?? HandlerStack::create();
-		
+
 		$handler->push($this);
-		
+
 		$config['handler'] = $handler;
-		
+
 		return $config;
 	}
-	
+
 	// Add sent notifications to the request
 	public function resolve(Request $request)
 	{
 		$request->httpRequests = array_merge($request->httpRequests, $this->requests);
-		
+
 		return $request;
 	}
-	
+
 	// Reset the data source to an empty state, clearing any collected data
 	public function reset()
 	{
 		$this->requests = [];
 	}
-	
+
 	// Guzzle middleware implemenation, that does the requests logging itself
 	public function __invoke(callable $handler): callable
 	{
 		return function(RequestInterface $request, array $options) use ($handler): PromiseInterface {
 			$time = microtime(true);
 			$stats = null;
-			
+
 			$originalOnStats = $options['on_stats'] ?? null;
 			$options['on_stats'] = function (TransferStats $transferStats) use (&$stats, $originalOnStats) {
 				$stats = $transferStats->getHandlerStats();
@@ -83,11 +83,14 @@ class GuzzleDataSource extends DataSource
 				});
 		};
 	}
-	
+
 	// Collect a request-response pair
 	protected function collectRequest($request, $response = null, $startTime = null, $stats = null, $error = null)
 	{
 		$trace = StackTrace::get();
+
+		$responseBody = $response ? $response->getBody() : null;
+		$isStream = $responseBody && ! $responseBody->isSeekable();
 
 		$request = (object) [
 			'request'  => (object) [
@@ -100,8 +103,9 @@ class GuzzleDataSource extends DataSource
 			'response' => $response ? (object) [
 				'status'  => (int) $response->getStatusCode(),
 				'headers' => $response->getHeaders(),
-				'content' => $this->collectContent ? json_decode((string) $response->getBody(), true) : null,
-				'body'    => $this->collectRawContent ? (string) $response->getBody() : null
+				'content' => ! $isStream && $this->collectContent ? json_decode((string) $responseBody, true) : null,
+				'body'    => ! $isStream && $this->collectRawContent ? (string) $responseBody : null,
+				'stream'  => $isStream
 			] : null,
 			'stats'    => $stats ? (object) [
 				'timing' => isset($stats['total_time_us']) ? (object) [
@@ -129,20 +133,20 @@ class GuzzleDataSource extends DataSource
 			'duration' => (microtime(true) - $startTime) * 1000,
 			'trace'    => (new Serializer)->trace($trace)
 		];
-		
-		if ($response && $response->getBody()->tell()) $response->getBody()->rewind();
+
+		if (! $isStream && $responseBody && $responseBody->tell()) $responseBody->rewind();
 
 		if ($this->passesFilters([ $request ])) {
 			$this->requests[] = $request;
 		}
 	}
-	
+
 	// Resolve request content, with support for form data and json requests
 	protected function resolveRequestContent($request)
 	{
 		$body = (string) $request->getBody();
 		$headers = $request->getHeaders();
-		
+
 		if (isset($headers['Content-Type']) && $headers['Content-Type'][0] == 'application/x-www-form-urlencoded') {
 			parse_str($body, $parameters);
 			return $parameters;
@@ -152,7 +156,7 @@ class GuzzleDataSource extends DataSource
 
         return [];
 	}
-	
+
 	// Removes username and password from the URL
 	protected function removeAuthFromUrl($url)
 	{
