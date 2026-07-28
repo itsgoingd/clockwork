@@ -11,6 +11,8 @@ use Psr\Http\Message\{RequestInterface, ResponseInterface};
 // Data source for Guzzle HTTP client, provides executed HTTP requests
 class GuzzleDataSource extends DataSource
 {
+	use Concerns\HttpCollectResponseBody;
+
 	// Sent HTTP requests
 	protected $requests = [];
 
@@ -19,10 +21,11 @@ class GuzzleDataSource extends DataSource
 	protected $collectRawContent = true;
 
 	// Create a new data source instance
-	public function __construct($collectContent = true, $collectRawContent = false)
+	public function __construct($collectContent = true, $collectRawContent = false, $maxResponseDataSize = null)
 	{
 		$this->collectContent = $collectContent;
 		$this->collectRawContent = $collectRawContent;
+		$this->maxResponseDataSize = $maxResponseDataSize;
 	}
 
 	// Returns a new Guzzle instance, pre-configured with Clockwork support
@@ -89,8 +92,7 @@ class GuzzleDataSource extends DataSource
 	{
 		$trace = StackTrace::get();
 
-		$responseBody = $response ? $response->getBody() : null;
-		$isStream = $responseBody && ! $responseBody->isSeekable();
+		$responseData = $response ? $this->collectResponseBody($response->getBody()) : null;
 
 		$request = (object) [
 			'request'  => (object) [
@@ -101,11 +103,12 @@ class GuzzleDataSource extends DataSource
 				'body'    => $this->collectRawContent ? (string) $request->getBody() : null
 			],
 			'response' => $response ? (object) [
-				'status'  => (int) $response->getStatusCode(),
-				'headers' => $response->getHeaders(),
-				'content' => ! $isStream && $this->collectContent ? json_decode((string) $responseBody, true) : null,
-				'body'    => ! $isStream && $this->collectRawContent ? (string) $responseBody : null,
-				'stream'  => $isStream
+				'status'    => (int) $response->getStatusCode(),
+				'headers'   => $response->getHeaders(),
+				'content'   => $responseData->content,
+				'body'      => $responseData->body,
+				'stream'    => $responseData->stream,
+				'truncated' => $responseData->truncated
 			] : null,
 			'stats'    => $stats ? (object) [
 				'timing' => isset($stats['total_time_us']) ? (object) [
@@ -134,7 +137,6 @@ class GuzzleDataSource extends DataSource
 			'trace'    => (new Serializer)->trace($trace)
 		];
 
-		if (! $isStream && $responseBody && $responseBody->tell()) $responseBody->rewind();
 
 		if ($this->passesFilters([ $request ])) {
 			$this->requests[] = $request;

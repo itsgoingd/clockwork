@@ -151,7 +151,8 @@ class ClockworkServiceProvider extends ServiceProvider
 			return new LaravelHttpClientDataSource(
 				$app['events'],
 				$app['clockwork.support']->getConfig('features.http_requests.collect_data'),
-				$app['clockwork.support']->getConfig('features.http_requests.collect_raw_data')
+				$app['clockwork.support']->getConfig('features.http_requests.collect_raw_data'),
+				$app['clockwork.support']->getConfig('features.http_requests.response_data_limit')
 			);
 		});
 

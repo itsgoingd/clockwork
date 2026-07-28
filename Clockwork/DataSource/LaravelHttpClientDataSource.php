@@ -9,6 +9,8 @@ use Illuminate\Http\Client\Events\{ConnectionFailed, RequestSending, ResponseRec
 // Data source for Laravel HTTP client, provides executed HTTP requests
 class LaravelHttpClientDataSource extends DataSource
 {
+	use Concerns\HttpCollectResponseBody;
+
 	// Event dispatcher instance
 	protected $dispatcher;
 
@@ -23,12 +25,13 @@ class LaravelHttpClientDataSource extends DataSource
 	protected $collectRawContent = true;
 
 	// Create a new data source instance, takes an event dispatcher as argument
-	public function __construct(Dispatcher $dispatcher, $collectContent = true, $collectRawContent = false)
+	public function __construct(Dispatcher $dispatcher, $collectContent = true, $collectRawContent = false, $maxResponseDataSize = null)
 	{
 		$this->dispatcher = $dispatcher;
 
 		$this->collectContent = $collectContent;
 		$this->collectRawContent = $collectRawContent;
+		$this->maxResponseDataSize = $maxResponseDataSize;
 	}
 
 	// Add sent notifications to the request
@@ -87,16 +90,16 @@ class LaravelHttpClientDataSource extends DataSource
 		$request = $this->executingRequests[spl_object_hash($event->request)];
 		$stats = $event->response->handlerStats();
 
-		$responseBody = $event->response->toPsrResponse()->getBody();
-		$isStream = ! $responseBody->isSeekable();
+		$responseData = $this->collectResponseBody($event->response->toPsrResponse()->getBody());
 
 		$request->duration = (microtime(true) - $request->time) * 1000;
 		$request->response = (object) [
-			'status'  => $event->response->status(),
-			'headers' => $event->response->headers(),
-			'content' => ! $isStream && $this->collectContent ? $event->response->json() : null,
-			'body'    => ! $isStream && $this->collectRawContent ? $event->response->body() : null,
-			'stream'  => $isStream
+			'status'    => $event->response->status(),
+			'headers'   => $event->response->headers(),
+			'content'   => $responseData->content,
+			'body'      => $responseData->body,
+			'stream'    => $responseData->stream,
+			'truncated' => $responseData->truncated
 		];
 		$request->stats = (object) [
 			'timing' => isset($stats['total_time_us']) ? (object) [
@@ -120,7 +123,6 @@ class LaravelHttpClientDataSource extends DataSource
 			'version' => $stats['http_version'] ?? null
 		];
 
-		if (! $isStream && $responseBody->tell()) $responseBody->rewind();
 
 		unset($this->executingRequests[spl_object_hash($event->request)]);
 	}

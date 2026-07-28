@@ -80,7 +80,10 @@ return [
 			'collect_data' => env('CLOCKWORK_HTTP_REQUESTS_COLLECT_DATA', true),
 
 			// Collect raw request and response content (high storage usage with large responses)
-			'collect_raw_data' => env('CLOCKWORK_HTTP_REQUESTS_COLLECT_RAW_DATA', false)
+			'collect_raw_data' => env('CLOCKWORK_HTTP_REQUESTS_COLLECT_RAW_DATA', false),
+
+			// Maximum size in bytes of collected response data (null for unlimited)
+			'response_data_limit' => env('CLOCKWORK_HTTP_REQUESTS_RESPONSE_DATA_LIMIT', 1 * 1024 * 1024)
 		],
 
 		// Laravel log (you can still log directly to Clockwork with laravel log disabled)
