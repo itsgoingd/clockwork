@@ -28,6 +28,30 @@ trait HttpCollectResponseBody
 		];
 	}
 
+	protected function collectStreamResponseBody($request)
+	{
+		$content = '';
+
+		return function ($chunk, $complete) use (&$content, $request) {
+			if (! $request->response || $request->response->truncated) return;
+
+			$limit = $this->maxResponseDataSize;
+			$remaining = $limit === null ? null : $limit - strlen($content);
+
+			if ($limit === null || $remaining >= strlen($chunk)) {
+				$content .= $chunk;
+			} else {
+				$content .= substr($chunk, 0, $remaining);
+				$request->response->truncated = true;
+			}
+
+			if ($this->collectRawContent) $request->response->body = $content;
+			if ($complete && ! $request->response->truncated && $this->collectContent) {
+				$request->response->content = json_decode($content, true);
+			}
+		};
+	}
+
 	protected function readResponseBody($body, $limit)
 	{
 		$body->rewind();

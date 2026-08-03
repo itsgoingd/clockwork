@@ -2,9 +2,12 @@
 
 use Clockwork\Helpers\{Serializer, StackTrace};
 use Clockwork\Request\Request;
+use Clockwork\Support\Guzzle\ClockworkCapturingStream;
 
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Http\Client\Factory;
 use Illuminate\Http\Client\Events\{ConnectionFailed, RequestSending, ResponseReceived};
+use Psr\Http\Message\{RequestInterface, ResponseInterface};
 
 // Data source for Laravel HTTP client, provides executed HTTP requests
 class LaravelHttpClientDataSource extends DataSource
@@ -13,24 +16,29 @@ class LaravelHttpClientDataSource extends DataSource
 
 	// Event dispatcher instance
 	protected $dispatcher;
+	protected $http;
 
 	// Sent HTTP requests
 	protected $requests = [];
 
 	// Map of executing requests, keyed by their object hash
 	protected $executingRequests = [];
+	protected $executingPsrRequests = [];
 
 	// Whether to collect request and response content (json or form data) and raw content
 	protected $collectContent = true;
 	protected $collectRawContent = true;
+	protected $collectStreamContent = false;
 
 	// Create a new data source instance, takes an event dispatcher as argument
-	public function __construct(Dispatcher $dispatcher, $collectContent = true, $collectRawContent = false, $maxResponseDataSize = null)
+	public function __construct(Dispatcher $dispatcher, ?Factory $http = null, $collectContent = true, $collectRawContent = false, $collectStreamContent = false, $maxResponseDataSize = null)
 	{
 		$this->dispatcher = $dispatcher;
+		$this->http = $http;
 
 		$this->collectContent = $collectContent;
 		$this->collectRawContent = $collectRawContent;
+		$this->collectStreamContent = $collectStreamContent;
 		$this->maxResponseDataSize = $maxResponseDataSize;
 	}
 
@@ -47,6 +55,7 @@ class LaravelHttpClientDataSource extends DataSource
 	{
 		$this->requests = [];
 		$this->executingRequests = [];
+		$this->executingPsrRequests = [];
 	}
 
 	// Listen to the email and notification events
@@ -55,6 +64,10 @@ class LaravelHttpClientDataSource extends DataSource
 		$this->dispatcher->listen(ConnectionFailed::class, function ($event) { $this->connectionFailed($event); });
 		$this->dispatcher->listen(RequestSending::class, function ($event) { $this->sendingRequest($event); });
 		$this->dispatcher->listen(ResponseReceived::class, function ($event) { $this->responseReceived($event); });
+
+		if ($this->collectStreamContent && $this->http && method_exists($this->http, 'globalMiddleware')) {
+			$this->http->globalMiddleware($this->streamCapturingMiddleware());
+		}
 	}
 
 	// Collect an executing request
@@ -79,6 +92,7 @@ class LaravelHttpClientDataSource extends DataSource
 
 		if ($this->passesFilters([ $request ])) {
 			$this->requests[] = $this->executingRequests[spl_object_hash($event->request)] = $request;
+			$this->executingPsrRequests[spl_object_hash($event->request->toPsrRequest())] = $request;
 		}
 	}
 
@@ -125,6 +139,26 @@ class LaravelHttpClientDataSource extends DataSource
 
 
 		unset($this->executingRequests[spl_object_hash($event->request)]);
+		unset($this->executingPsrRequests[spl_object_hash($event->request->toPsrRequest())]);
+	}
+
+	protected function streamCapturingMiddleware()
+	{
+		return function (callable $handler) {
+			return function (RequestInterface $request, array $options) use ($handler) {
+				return $handler($request, $options)->then(function (ResponseInterface $response) use ($request) {
+					$clockworkRequest = $this->executingPsrRequests[spl_object_hash($request)] ?? null;
+
+					if ($clockworkRequest && ! $response->getBody()->isSeekable()) {
+						return $response->withBody(new ClockworkCapturingStream(
+							$response->getBody(), $this->collectStreamResponseBody($clockworkRequest)
+						));
+					}
+
+					return $response;
+				});
+			};
+		};
 	}
 
 	// Update last request with error when connection fails
@@ -138,6 +172,7 @@ class LaravelHttpClientDataSource extends DataSource
 		$request->error = 'connection-failed';
 
 		unset($this->executingRequests[spl_object_hash($event->request)]);
+		unset($this->executingPsrRequests[spl_object_hash($event->request->toPsrRequest())]);
 	}
 
 	// Removes username and password from the URL

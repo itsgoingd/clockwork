@@ -2,6 +2,7 @@
 
 use Clockwork\Helpers\{Serializer, StackTrace};
 use Clockwork\Request\Request;
+use Clockwork\Support\Guzzle\ClockworkCapturingStream;
 
 use GuzzleHttp\{Client, HandlerStack, TransferStats};
 use GuzzleHttp\Exception\{GuzzleException, RequestException};
@@ -19,12 +20,14 @@ class GuzzleDataSource extends DataSource
 	// Whether to collect request and response content (json or form data) and raw content
 	protected $collectContent = true;
 	protected $collectRawContent = true;
+	protected $collectStreamContent = false;
 
 	// Create a new data source instance
-	public function __construct($collectContent = true, $collectRawContent = false, $maxResponseDataSize = null)
+	public function __construct($collectContent = true, $collectRawContent = false, $collectStreamContent = false, $maxResponseDataSize = null)
 	{
 		$this->collectContent = $collectContent;
 		$this->collectRawContent = $collectRawContent;
+		$this->collectStreamContent = $collectStreamContent;
 		$this->maxResponseDataSize = $maxResponseDataSize;
 	}
 
@@ -75,7 +78,13 @@ class GuzzleDataSource extends DataSource
 
 			return $handler($request, $options)
 				->then(function(ResponseInterface $response) use ($request, $time, $stats) {
-					$this->collectRequest($request, $response, $time, $stats);
+					$clockworkRequest = $this->collectRequest($request, $response, $time, $stats);
+
+					if ($clockworkRequest && $this->collectStreamContent && ! $response->getBody()->isSeekable()) {
+						return $response->withBody(new ClockworkCapturingStream(
+							$response->getBody(), $this->collectStreamResponseBody($clockworkRequest)
+						));
+					}
 
 					return $response;
 				}, function(GuzzleException $exception) use ($request, $time, $stats) {
@@ -137,9 +146,10 @@ class GuzzleDataSource extends DataSource
 			'trace'    => (new Serializer)->trace($trace)
 		];
 
-
 		if ($this->passesFilters([ $request ])) {
 			$this->requests[] = $request;
+
+			return $request;
 		}
 	}
 

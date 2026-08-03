@@ -11,6 +11,7 @@ use Clockwork\Helpers\StackFilter;
 use Clockwork\Request\Request;
 use Clockwork\Storage\StorageInterface;
 
+use Illuminate\Http\Client\Factory;
 use Illuminate\Support\ServiceProvider;
 
 class ClockworkServiceProvider extends ServiceProvider
@@ -150,8 +151,10 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->singleton('clockwork.http-requests', function ($app) {
 			return new LaravelHttpClientDataSource(
 				$app['events'],
+				$app[Factory::class],
 				$app['clockwork.support']->getConfig('features.http_requests.collect_data'),
 				$app['clockwork.support']->getConfig('features.http_requests.collect_raw_data'),
+				$app['clockwork.support']->getConfig('features.http_requests.collect_stream_data'),
 				$app['clockwork.support']->getConfig('features.http_requests.response_data_limit')
 			);
 		});
