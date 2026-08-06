@@ -2,11 +2,19 @@
 
 use Clockwork\Clockwork;
 use Clockwork\Authentication\AuthenticatorInterface;
-use Clockwork\DataSource\{
-	EloquentDataSource, LaravelCacheDataSource, LaravelDataSource, LaravelEventsDataSource, LaravelHttpClientDataSource,
-	LaravelNotificationsDataSource, LaravelQueueDataSource, LaravelRedisDataSource, LaravelViewsDataSource, SwiftDataSource,
-	TwigDataSource, XdebugDataSource
-};
+use Clockwork\DataSource\{EloquentDataSource,
+	LaravelCacheDataSource,
+	LaravelDataSource,
+	LaravelEventsDataSource,
+	LaravelHttpClientDataSource,
+	LaravelNotificationsDataSource,
+	LaravelQueueDataSource,
+	LaravelRedisDataSource,
+	LaravelScoutDataSource,
+	LaravelViewsDataSource,
+	SwiftDataSource,
+	TwigDataSource,
+	XdebugDataSource};
 use Clockwork\Helpers\StackFilter;
 use Clockwork\Request\Request;
 use Clockwork\Storage\StorageInterface;
@@ -194,6 +202,10 @@ class ClockworkServiceProvider extends ServiceProvider
 			return $dataSource;
 		});
 
+		$this->app->singleton('clockwork.scout', function ($app) {
+			return (new LaravelScoutDataSource($app['events']));
+		});
+
 		$this->app->singleton('clockwork.swift', function ($app) {
 			return new SwiftDataSource($app['mailer']->getSwiftMailer());
 		});
@@ -230,6 +242,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->alias('clockwork.notifications', LaravelNotificationsDataSource::class);
 		$this->app->alias('clockwork.queue', LaravelQueueDataSource::class);
 		$this->app->alias('clockwork.redis', LaravelRedisDataSource::class);
+		$this->app->alias('clockwork.scout', LaravelScoutDataSource::class);
 		$this->app->alias('clockwork.swift', SwiftDataSource::class);
 		$this->app->alias('clockwork.xdebug', XdebugDataSource::class);
 	}

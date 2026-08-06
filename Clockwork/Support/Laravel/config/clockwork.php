@@ -115,6 +115,11 @@ return [
 			'enabled' => env('CLOCKWORK_REDIS_ENABLED', true)
 		],
 
+		// Redis commands
+		'scout' => [
+			'enabled' => env('CLOCKWORK_SCOUT_ENABLED', true)
+		],
+
 		// Routes list
 		'routes' => [
 			'enabled' => env('CLOCKWORK_ROUTES_ENABLED', false),
