@@ -1,5 +1,6 @@
 <?php namespace Clockwork\Support\Symfony;
 
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
@@ -15,7 +16,7 @@ class ClockworkExtension extends ConfigurableExtension
 		$container->getDefinition(ClockworkSupport::class)->replaceArgument('$config', $config);
 	}
 
-	public function getConfiguration(array $config, ContainerBuilder $container)
+	public function getConfiguration(array $config, ContainerBuilder $container): ?ConfigurationInterface
 	{
 		return new ClockworkConfiguration($container->getParameter('kernel.debug'));
 	}

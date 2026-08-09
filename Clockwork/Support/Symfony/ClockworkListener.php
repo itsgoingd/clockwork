@@ -39,7 +39,7 @@ class ClockworkListener implements EventSubscriberInterface
 		$response->headers->set('X-Clockwork-Version', Clockwork::VERSION);
 	}
 
-	public static function getSubscribedEvents()
+	public static function getSubscribedEvents(): array
 	{
 		return [
 			KernelEvents::REQUEST => [ 'onKernelRequest', 512 ],
