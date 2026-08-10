@@ -26,6 +26,7 @@ class ClockworkServiceProvider extends ServiceProvider
 		if ($this->app['clockwork.support']->isCollectingData()) {
 			$this->registerEventListeners();
 			$this->registerMiddleware();
+			$this->registerCallbacks();
 		}
 
 		$this->app['clockwork.support']->handleArtisanEvents();
@@ -232,6 +233,14 @@ class ClockworkServiceProvider extends ServiceProvider
 		$this->app->alias('clockwork.redis', LaravelRedisDataSource::class);
 		$this->app->alias('clockwork.swift', SwiftDataSource::class);
 		$this->app->alias('clockwork.xdebug', XdebugDataSource::class);
+	}
+
+	// Register a callback to record the request after app termination
+	protected function registerCallbacks()
+	{
+		$this->app->terminating(function () {
+			$this->app['clockwork.support']->recordRequest();
+		});
 	}
 
 	// Register event listeners
