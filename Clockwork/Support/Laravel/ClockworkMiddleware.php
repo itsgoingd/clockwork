@@ -33,6 +33,6 @@ class ClockworkMiddleware
 	// Record the current request after a response is sent
 	public function terminate()
 	{
-		$this->app['clockwork.support']->recordRequest();
+		$this->app['clockwork']->event('Terminating')->begin();
 	}
 }

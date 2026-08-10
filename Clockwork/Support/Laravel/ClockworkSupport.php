@@ -27,6 +27,9 @@ class ClockworkSupport
 	// Incoming request instance
 	protected $incomingRequest;
 
+	// Whether the current Clockwork request should be stored
+	protected $shouldRecordRequest = false;
+
 	public function __construct(Application $app)
 	{
 		$this->app = $app;
@@ -216,6 +219,7 @@ class ClockworkSupport
 			$this->incomingRequest = null;
 
 			$this->app->forgetInstance('clockwork.request');
+			$this->shouldRecordRequest = false;
 
 			$this->app['clockwork']->reset()->request($this->app->make('clockwork.request'));
 			$this->app['clockwork.laravel']->setApplication($this->app);
@@ -385,14 +389,19 @@ class ClockworkSupport
 		$clockwork = $this->app['clockwork'];
 		$clockworkRequest = $clockwork->request();
 
-		$clockwork->event('Controller')->end();
-
 		$this->setResponse($response);
 
 		$clockwork->resolveRequest();
 
-		if (! $this->isEnabled() || ! $this->isRecording($clockworkRequest)) {
-			return $response; // Clockwork is disabled or we are not recording this request
+		if (! $this->isRecording($clockworkRequest)) {
+			return $response; // Clockwork is not recording this request
+		}
+
+		$this->shouldRecordRequest = true;
+		$clockwork->reset();
+
+		if (! $this->isEnabled()) {
+			return $response; // Clockwork is disabled
 		}
 
 		$response->headers->set('X-Clockwork-Id', $clockworkRequest->id, true);
@@ -445,16 +454,13 @@ class ClockworkSupport
 	// Records the current http request
 	public function recordRequest()
 	{
-		if (! $this->isCollectingRequests()) {
-			return; // Clockwork is not collecting data, additional check when the middleware is enabled manually
-		}
+		if (! $this->shouldRecordRequest) return;
 
 		$clockwork = $this->app['clockwork'];
 
-		if (! $this->isRecording($clockwork->request())) {
-			return; // Collecting data is disabled, return immediately
-		}
+		if ($event = $clockwork->timeline()->find('Terminating')) $event->end();
 
+		$clockwork->resolveRequest();
 		$clockwork->storeRequest();
 	}
 

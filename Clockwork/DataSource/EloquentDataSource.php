@@ -83,10 +83,10 @@ class EloquentDataSource extends DataSource
 
 		$request->modelsActions = array_merge($request->modelsActions, $this->modelsActions);
 
-		$request->modelsRetrieved = $this->modelsCount['retrieved'];
-		$request->modelsCreated   = $this->modelsCount['created'];
-		$request->modelsUpdated   = $this->modelsCount['updated'];
-		$request->modelsDeleted   = $this->modelsCount['deleted'];
+		$request->modelsRetrieved = $this->mergeModelCounts($request->modelsRetrieved, $this->modelsCount['retrieved']);
+		$request->modelsCreated   = $this->mergeModelCounts($request->modelsCreated, $this->modelsCount['created']);
+		$request->modelsUpdated   = $this->mergeModelCounts($request->modelsUpdated, $this->modelsCount['updated']);
+		$request->modelsDeleted   = $this->mergeModelCounts($request->modelsDeleted, $this->modelsCount['deleted']);
 
 		$this->appendDuplicateQueriesWarnings($request);
 
@@ -362,6 +362,16 @@ class EloquentDataSource extends DataSource
 		if (in_array('slow', $query['tags'])) {
 			$this->count['slow']++;
 		}
+	}
+
+	// Merge model counts from two runs
+	protected function mergeModelCounts($existingCounts, $newCounts)
+	{
+		foreach ($newCounts as $model => $count) {
+			$existingCounts[$model] = ($existingCounts[$model] ?? 0) + $count;
+		}
+
+		return $existingCounts;
 	}
 
 	// Increment model counts for collected model action
