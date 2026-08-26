@@ -18,9 +18,6 @@ class FileStorage extends Storage
 	// Compress the files using gzip
 	protected $compress;
 
-	// Metadata cleanup chance
-	protected $cleanupChance = 100;
-
 	// Index file handle
 	protected $indexHandle;
 
@@ -91,7 +88,7 @@ class FileStorage extends Storage
 	// Cleanup old requests
 	public function cleanup($force = false)
 	{
-		if ($this->expiration === false || (! $force && rand(1, $this->cleanupChance) != 1)) return;
+		if ($this->expiration === false) return;
 
 		$this->openIndex('start', true, true); // reopen index with lock
 
