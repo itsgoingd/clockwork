@@ -156,6 +156,11 @@ return [
 	// Compress the metadata files using gzip, trading a little bit of performance for lower disk usage
 	'storage_files_compress' => getenv('CLOCKWORK_STORAGE_FILES_COMPRESS') !== false ? getenv('CLOCKWORK_STORAGE_FILES_COMPRESS') : false,
 
+	// Clean up expired metadata after storing each request, disable to only clean up manually
+	'storage_cleanup' => getenv('CLOCKWORK_STORAGE_CLEANUP') !== false
+		? filter_var(getenv('CLOCKWORK_STORAGE_CLEANUP'), FILTER_VALIDATE_BOOLEAN)
+		: true,
+
 	// SQL database to use, can be a PDO connection string or a path to a sqlite file
 	'storage_sql_database' => getenv('CLOCKWORK_STORAGE_SQL_DATABASE') !== false ? getenv('CLOCKWORK_STORAGE_SQL_DATABASE') : 'sqlite:' . __DIR__ . '/../../../../../clockwork.sqlite',
 	'storage_sql_username' => getenv('CLOCKWORK_STORAGE_SQL_USERNAME') !== false ? getenv('CLOCKWORK_STORAGE_SQL_USERNAME') : null,

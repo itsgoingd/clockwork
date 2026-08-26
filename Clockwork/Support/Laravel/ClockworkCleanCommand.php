@@ -29,6 +29,8 @@ class ClockworkCleanCommand extends Command
 	// Execute the console command
 	public function handle()
 	{
+		$this->laravel['config']->set('clockwork.storage_cleanup', true);
+
 		if ($this->option('all')) {
 			$this->laravel['config']->set('clockwork.storage_expiration', 0);
 		} elseif ($expiration = $this->option('expiration')) {
