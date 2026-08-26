@@ -100,14 +100,28 @@ class FileStorage extends Storage
 
 		if (! count($old)) return $this->closeIndex(true);
 
-		$this->readPreviousIndex();
-		$this->trimIndex();
-		$this->closeIndex(true); // explicitly close index to unlock asap
+		$deleted = [];
 
 		foreach ($old as $id) {
-			$path = "{$this->path}/{$id}.json";
-			@unlink($this->compress ? "{$path}.gz" : $path);
+			if ($this->deleteRequest($id)) $deleted[] = $id; else break;
 		}
+
+		if (! count($deleted)) return $this->closeIndex(true);
+
+		fseek($this->indexHandle, 0);
+		$this->searchIndexForward(null, null, count($deleted));
+		$this->trimIndex();
+		$this->closeIndex(true); // explicitly close index to unlock asap
+	}
+
+	// Delete all possible metadata files for a request
+	protected function deleteRequest($id)
+	{
+		foreach ([ "{$this->path}/{$id}.json", "{$this->path}/{$id}.json.gz" ] as $path) {
+			if (file_exists($path) && ! @unlink($path)) return false;
+		}
+
+		return true;
 	}
 
 	// Load a single request by id from filesystem
