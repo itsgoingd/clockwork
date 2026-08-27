@@ -324,6 +324,10 @@ return [
 	// Redis prefix for Clockwork keys ("clockwork" if not set)
 	'storage_redis_prefix' => env('CLOCKWORK_STORAGE_REDIS_PREFIX', 'clockwork'),
 
+	// Clean up expired metadata after storing each request, disable to clean up manually or if you want to schedule
+	// the clockwork:clean command to run in regular intervals
+	'storage_cleanup' => env('CLOCKWORK_STORAGE_CLEANUP', true),
+
 	// Maximum lifetime of collected metadata in minutes, older requests will automatically be deleted, false to disable
 	'storage_expiration' => env('CLOCKWORK_STORAGE_EXPIRATION', 60 * 24 * 7),
 

@@ -359,19 +359,19 @@ class Clockwork
 				$this->config['storage_sql_table'],
 				$this->config['storage_sql_username'],
 				$this->config['storage_sql_password'],
-				$this->config['storage_expiration']
+				$this->config['storage_cleanup'] ? $this->config['storage_expiration'] : false
 			);
 		} elseif ($storage == 'redis') {
 			$storage = new RedisStorage(
 				$this->config['storage_redis'],
-				$this->config['storage_expiration'],
+				$this->config['storage_cleanup'] ? $this->config['storage_expiration'] : false,
 				$this->config['storage_redis_prefix']
 			);
 		} else {
 			$storage = new FileStorage(
 				$this->config['storage_files_path'],
 				0700,
-				$this->config['storage_expiration'],
+				$this->config['storage_cleanup'] ? $this->config['storage_expiration'] : false,
 				$this->config['storage_files_compress']
 			);
 		}

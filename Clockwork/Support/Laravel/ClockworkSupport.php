@@ -230,7 +230,7 @@ class ClockworkSupport
 	public function makeStorage()
 	{
 		$storage = $this->getConfig('storage', 'files');
-		$expiration = $this->getConfig('storage_expiration');
+		$expiration = $this->getConfig('storage_cleanup', true) ? $this->getConfig('storage_expiration') : false;
 
 		if ($storage == 'sql') {
 			$database = $this->getConfig('storage_sql_database', storage_path('clockwork.sqlite'));
