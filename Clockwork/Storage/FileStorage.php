@@ -70,13 +70,15 @@ class FileStorage extends Storage
 		$path = "{$this->path}/{$request->id}.json";
 		$data = @json_encode($request->toArray(), \JSON_PARTIAL_OUTPUT_ON_ERROR);
 
-		$this->compress
-			? file_put_contents("{$path}.gz", gzcompress($data))
-			: file_put_contents($path, $data . PHP_EOL);
+		$path = $this->compress ? "{$path}.gz" : $path;
+		$data = $this->compress ? gzcompress($data) : $data . PHP_EOL;
 
-		if (! $skipIndex) $this->updateIndex($request);
-
-		$this->cleanup();
+		try {
+			if (! $this->writeRequest($path, $data)) return;
+			if (! $skipIndex && ! $this->updateIndex($request)) @unlink($path);
+		} finally {
+			$this->cleanup();
+		}
 	}
 
 	// Update existing request
@@ -140,6 +142,12 @@ class FileStorage extends Storage
 	protected function loadRequests($ids)
 	{
 		return array_filter(array_map(function ($id) { return $this->loadRequest($id); }, $ids));
+	}
+
+	// Write request metadata to a file
+	protected function writeRequest($path, $data)
+	{
+		return file_put_contents($path, $data);
 	}
 
 	// Search index backward from specified ID or last record, with optional results count limit
@@ -294,35 +302,45 @@ class FileStorage extends Storage
 	// Update index with a new request
 	protected function updateIndex(Request $request)
 	{
-		$handle = fopen("{$this->path}/index", 'a');
+		$handle = @fopen("{$this->path}/index", 'a');
 
-		if (! $handle) return;
+		if (! $handle) return false;
 
-		if (! flock($handle, LOCK_EX)) return fclose($handle);
+		try {
+			if (! flock($handle, LOCK_EX)) return false;
 
-		if ($request->type == 'command') {
-			$nameField = 'commandName';
-		} elseif ($request->type == 'queue-job') {
-			$nameField = 'jobName';
-		} elseif ($request->type == 'test') {
-			$nameField = 'testName';
-		} else {
-			$nameField = 'uri';
+			if ($request->type == 'command') {
+				$nameField = 'commandName';
+			} elseif ($request->type == 'queue-job') {
+				$nameField = 'jobName';
+			} elseif ($request->type == 'test') {
+				$nameField = 'testName';
+			} else {
+				$nameField = 'uri';
+			}
+
+			$position = ftell($handle);
+			$written = fputcsv($handle, [
+				$request->id,
+				$request->time,
+				$request->method,
+				$request->$nameField,
+				$request->controller,
+				$request->responseStatus,
+				$request->getResponseDuration(),
+				$request->type
+			], ',', '"', PHP_VERSION_ID >= 70400 ? '' : '\\');
+
+			if ($written === false || ! fflush($handle)) {
+				if ($position !== false) ftruncate($handle, $position);
+				return false;
+			}
+
+			return true;
+		} finally {
+			flock($handle, LOCK_UN);
+			fclose($handle);
 		}
-
-		fputcsv($handle, [
-			$request->id,
-			$request->time,
-			$request->method,
-			$request->$nameField,
-			$request->controller,
-			$request->responseStatus,
-			$request->getResponseDuration(),
-			$request->type
-		], ',', '"', PHP_VERSION_ID >= 70400 ? '' : '\\');
-
-		flock($handle, LOCK_UN);
-		fclose($handle);
 	}
 
 	// Ensure the metadata path is writable and initialize it if it doesn't exist, throws exception if it is not writable
