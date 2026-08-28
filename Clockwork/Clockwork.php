@@ -64,8 +64,12 @@ class Clockwork
 	// Resolve the current request as a "command" type request with command-specific data
 	public function resolveAsCommand($name, $exitCode = null, $arguments = [], $options = [], $argumentsDefaults = [], $optionsDefaults = [], $output = null)
 	{
-		$this->resolveRequest();
+		return $this->resolveRequest()->asCommand($name, $exitCode, $arguments, $options, $argumentsDefaults, $optionsDefaults, $output);
+	}
 
+	// Set the current request as a "command" type request with command-specific data
+	public function asCommand($name, $exitCode = null, $arguments = [], $options = [], $argumentsDefaults = [], $optionsDefaults = [], $output = null)
+	{
 		$this->request->type = RequestType::COMMAND;
 		$this->request->commandName = $name;
 		$this->request->commandArguments = $arguments;
@@ -81,8 +85,12 @@ class Clockwork
 	// Resolve the current request as a "queue-job" type request with queue-job-specific data
 	public function resolveAsQueueJob($name, $description = null, $status = 'processed', $payload = [], $queue = null, $connection = null, $options = [])
 	{
-		$this->resolveRequest();
+		return $this->resolveRequest()->asQueueJob($name, $description, $status, $payload, $queue, $connection, $options);
+	}
 
+	// Set the current request as a "queue-job" type request with queue-job-specific data
+	public function asQueueJob($name, $description = null, $status = 'processed', $payload = [], $queue = null, $connection = null, $options = [])
+	{
 		$this->request->type = RequestType::QUEUE_JOB;
 		$this->request->jobName = $name;
 		$this->request->jobDescription = $description;
@@ -99,8 +107,12 @@ class Clockwork
 	// message in case of failure and array of ran asserts
 	public function resolveAsTest($name, $status = 'passed', $statusMessage = null, $asserts = [])
 	{
-		$this->resolveRequest();
+		return $this->resolveRequest()->asTest($name, $status, $statusMessage, $asserts);
+	}
 
+	// Set the current request as a "test" type request with test-specific data
+	public function asTest($name, $status = 'passed', $statusMessage = null, $asserts = [])
+	{
 		$this->request->type = RequestType::TEST;
 		$this->request->testName = $name;
 		$this->request->testStatus = $status;
