@@ -8,6 +8,7 @@ use PHPUnit\{Event, Runner, TextUI};
 class ClockworkExtension implements Runner\Extension\Extension
 {
 	public static $asserts = [];
+	public static $tests = [];
 
 	public function bootstrap(
 		TextUI\Configuration\Configuration $configuration,
@@ -15,23 +16,27 @@ class ClockworkExtension implements Runner\Extension\Extension
 		Runner\Extension\ParameterCollection $parameters
 	): void {
 		$subscribers = array_filter([
+
 			new class implements Event\Test\PreparedSubscriber {
-				public function notify($event): void { ClockworkExtension::$asserts = []; }
+				public function notify($event): void { ClockworkExtension::$asserts = []; ClockworkExtension::prepareTest($event->test()->id()); }
 			},
 			new class implements Event\Test\ErroredSubscriber {
-				public function notify($event): void { ClockworkExtension::recordTest('error', $event->throwable()->message()); }
+				public function notify($event): void { ClockworkExtension::finishTest($event->test()->id(), 'error', $event->throwable()->message()); }
 			},
 			new class implements Event\Test\FailedSubscriber {
-				public function notify($event): void { ClockworkExtension::recordTest('failed', $event->throwable()->message()); }
+				public function notify($event): void { ClockworkExtension::finishTest($event->test()->id(), 'failed', $event->throwable()->message()); }
 			},
 			new class implements Event\Test\MarkedIncompleteSubscriber {
-				public function notify($event): void { ClockworkExtension::recordTest('incomplete', $event->throwable()->message()); }
+				public function notify($event): void { ClockworkExtension::finishTest($event->test()->id(), 'incomplete', $event->throwable()->message()); }
 			},
 			new class implements Event\Test\PassedSubscriber {
-				public function notify($event): void { ClockworkExtension::recordTest('passed'); }
+				public function notify($event): void { ClockworkExtension::finishTest($event->test()->id(), 'passed'); }
 			},
 			new class implements Event\Test\SkippedSubscriber {
-				public function notify($event): void { ClockworkExtension::recordTest('skipped', $event->message()); }
+				public function notify($event): void { ClockworkExtension::finishTest($event->test()->id(), 'skipped', $event->message()); }
+			},
+			new class implements Event\Test\FinishedSubscriber {
+				public function notify($event): void { ClockworkExtension::storeTest($event->test()->id()); }
 			},
 			interface_exists(Event\Test\AssertionSucceededSubscriber::class) ? new class implements Event\Test\AssertionSucceededSubscriber {
 				public function notify($event): void { ClockworkExtension::recordAssertion(true); }
@@ -44,8 +49,10 @@ class ClockworkExtension implements Runner\Extension\Extension
 		$facade->registerSubscribers(...$subscribers);
 	}
 
-	public static function recordTest($status, $message = null)
+	public static function prepareTest($id)
 	{
+		if (static::isPrepared($id)) return;
+
 		$testCase = static::resolveTestCase();
 
 		if (! $testCase) return;
@@ -54,19 +61,74 @@ class ClockworkExtension implements Runner\Extension\Extension
 
 		if (! $app) return;
 
-		if (! $app->make('clockwork.support')->isCollectingTests()) return;
-		if ($app->make('clockwork.support')->isTestFiltered($testCase->toString())) return;
+		$support = $app->make('clockwork.support');
 
-		$app->make('clockwork')
-			->resolveAsTest(
-				str_replace('__pest_evaluable_', '', $testCase->toString()),
-				$status,
-				$message,
-				static::$asserts
-			)
+		if (! $support->isCollectingTests()) return;
+		if ($support->isTestFiltered($testCase->toString())) return;
+
+		static::$tests[$id] = [
+			'clockwork' => $app->make('clockwork'),
+			'name'      => str_replace('__pest_evaluable_', '', $testCase->toString()),
+			'status'    => 'passed',
+			'message'   => null
+		];
+
+		static::beforeApplicationDestroyed($testCase, function () use ($id) {
+			static::resolveTest($id);
+		});
+	}
+
+	public static function finishTest($id, $status, $message = null)
+	{
+		static::prepareTest($id);
+
+		if (! static::isPrepared($id)) return;
+
+		static::$tests[$id]['status'] = $status;
+		static::$tests[$id]['message'] = $message;
+	}
+
+	public static function resolveTest($id)
+	{
+		if (! static::isPrepared($id) || static::isResolved($id)) return;
+
+		static::$tests[$id]['clockwork']->resolveRequest();
+		static::$tests[$id]['resolved'] = true;
+	}
+
+	public static function storeTest($id)
+	{
+		if (! static::isPrepared($id)) return;
+
+		static::resolveTest($id);
+
+		$test = static::$tests[$id];
+
+		unset(static::$tests[$id]);
+
+		$test['clockwork']
+			->asTest($test['name'], $test['status'], $test['message'], static::$asserts)
 			->storeRequest();
 	}
-	
+
+	protected static function isPrepared($id)
+	{
+		return isset(static::$tests[$id]);
+	}
+
+	protected static function isResolved($id)
+	{
+		return isset(static::$tests[$id]['resolved']);
+	}
+
+	protected static function beforeApplicationDestroyed($testCase, $callback)
+	{
+		// Call the protected beforeApplicationDestroyed method by binding a closure to the object
+		(function ($callback) {
+			$this->beforeApplicationDestroyed($callback);
+		})->call($testCase, $callback);
+	}
+
 	public static function recordAssertion($passed = true)
 	{
 		$trace = StackTrace::get([ 'arguments' => true, 'limit' => 10 ]);
@@ -93,17 +155,11 @@ class ClockworkExtension implements Runner\Extension\Extension
 
 	protected static function resolveApp($testCase)
 	{
-		$reflectionClass = new \ReflectionClass($testCase);
+		if (! property_exists($testCase, 'app')) return;
 
-		if ($reflectionClass->hasProperty('app')) {
-			$reflectionProperty = $reflectionClass->getProperty('app');
-			$reflectionProperty->setAccessible(true);
-
-			if ($reflectionProperty->getValue($testCase)) {
-				return $reflectionProperty->getValue($testCase);
-			}
-		} elseif (method_exists($testCase, 'createApplication')) {
-			return $testCase->createApplication();
-		}
+		// Retrieve the protected app property by binding a closure to the object
+		return (function () {
+			return $this->app;
+		})->call($testCase);
 	}
 }
