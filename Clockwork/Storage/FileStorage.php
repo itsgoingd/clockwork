@@ -94,7 +94,7 @@ class FileStorage extends Storage
 
 		$this->openIndex('start', true, true); // reopen index with lock
 
-		$expirationTime = time() - ($this->expiration * 60);
+		$expirationTime = time() - ((int) $this->expiration * 60);
 
 		$old = $this->searchIndexForward(
 			new Search([ 'received' => [ '<' . date('c', $expirationTime) ] ], [ 'stopOnFirstMismatch' => true ])
