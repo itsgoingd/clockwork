@@ -145,6 +145,7 @@ class ClockworkSupport
 		if ($this->isFeatureEnabled('database')) $clockwork->addDataSource($this->app['clockwork.eloquent']);
 		if ($this->isFeatureEnabled('cache')) $clockwork->addDataSource($this->app['clockwork.cache']);
 		if ($this->isFeatureEnabled('redis')) $clockwork->addDataSource($this->app['clockwork.redis']);
+		if ($this->isFeatureEnabled('scout')) $clockwork->addDataSource($this->app['clockwork.scout']);
 		if ($this->isFeatureEnabled('queue')) $clockwork->addDataSource($this->app['clockwork.queue']);
 		if ($this->isFeatureEnabled('events')) $clockwork->addDataSource($this->app['clockwork.events']);
 		if ($this->isFeatureEnabled('notifications')) {
@@ -173,6 +174,7 @@ class ClockworkSupport
 		if ($this->isFeatureEnabled('cache')) $this->app['clockwork.cache']->listenToEvents();
 		if ($this->isFeatureEnabled('database')) $this->app['clockwork.eloquent']->listenToEvents();
 		if ($this->isFeatureEnabled('events')) $this->app['clockwork.events']->listenToEvents();
+		if ($this->isFeatureEnabled('scout')) $this->app['clockwork.scout']->listenToEvents();
 		if ($this->isFeatureEnabled('http_requests')) $this->app['clockwork.http-requests']->listenToEvents();
 		if ($this->isFeatureEnabled('notifications')) {
 			$this->isFeatureAvailable('notifications-events')
