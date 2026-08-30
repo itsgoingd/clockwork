@@ -1,0 +1,23 @@
+includes:
+	- phpstan-baseline.neon
+
+parameters:
+	level: 9
+	excludePaths:
+		# Exclude a few source files because they require additional packages
+		# that are not direct dependencies.
+		# TODO: At least install them as dev-dependencies or even just in the
+		# Github pipeline.
+		- Clockwork/DataSource/DBALDataSource.php
+		- Clockwork/DataSource/DoctrineDataSource.php
+		- Clockwork/DataSource/EloquentDataSource.php
+		- Clockwork/DataSource/GuzzleDataSource.php
+		- Clockwork/DataSource/Laravel*DataSource.php
+		- Clockwork/DataSource/LumenDataSource.php
+		- Clockwork/DataSource/MonologDataSource.php
+		- Clockwork/DataSource/SlimDataSource.php
+		- Clockwork/DataSource/SwiftDataSource.php
+		- Clockwork/DataSource/TwigDataSource.php
+		- Clockwork/Support
+	paths:
+		- Clockwork

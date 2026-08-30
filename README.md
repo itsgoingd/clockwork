@@ -142,3 +142,45 @@ Read more about available features on the [Clockwork website](https://undergroun
 		<img width="150px" src="https://github.com/itsgoingd/clockwork/raw/master/.github/assets/footer.png">
 	</a>
 </p>
+
+## Hacking
+
+### PHPStan Static Analyzer Integration
+
+All code is checked for common flaws using [PHPStan](https://phpstan.org), a
+static code analyzer.
+This is executed in a Github action defined in .github/workflows/phpstan.yaml.
+
+#### Running PHPStan Locally
+
+You can execute it using `vendor/bin/phpstan analyze`.
+If you fix any of the existing flaws, you have to remove them from the
+baseline (phpstan-baseline.neon), either manually or by regenerating
+the baseline.
+If you add any flaw, first choice is of course to improve the code, but
+if the code is sound and PHPStan reports a false positive, you can also
+regenerate the baseline.
+In order to regenerate the baseline, run `vendor/bin/phpstan analyze
+--generate-baseline`.
+
+#### Troubleshooting
+
+- I get different flaws locally than those reported by the Github action:
+  This can easily happen when your local environment does not match the one
+  on Github. In particular, the PHP version, the installed extensions but
+  also packages that you have installed locally. In that case, you can't
+  easily use the local results. Perhaps the easiest way would be to use a
+  Docker container that is set up to resemble the Github environment.
+- PHPStan complains about a flaw, but I already fixed it:
+  Check the error message carefully, PHPStan will tell you if you fix a flaw,
+  but leave an exception in the baseline. In that case, remove the flaw from
+  the baseline.
+- I get complaints about some code that is totally valid:
+  Sometimes, PHPStan reports false positives, too. In that case, consider
+  filing a bug ticket (maybe it already exists even?), and add the flaw to
+  the baseline.
+- I don't have any changes at all, but still get complaints:
+  This can happen if e.g. PHPStan itself is not the same version as the one
+  executed by the Github action. Newer versions may find additional flaws
+  or maybe not flag some valid code as false positive. Since we don't lock
+  the installed version (using composer.lock), this can happen.
