@@ -54,7 +54,7 @@ class Serializer
 			if ($data instanceof \Closure) return [ '__type__' => 'anonymous function' ];
 
 			$className = get_class($data);
-			$objectHash = spl_object_hash($data);
+			$objectHash = PHP_VERSION_ID >= 70200 ? spl_object_id($data) : spl_object_hash($data);
 
 			if ($className === '__PHP_Incomplete_Class') return [ '__class__' => $className ];
 

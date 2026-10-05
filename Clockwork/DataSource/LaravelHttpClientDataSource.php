@@ -91,17 +91,17 @@ class LaravelHttpClientDataSource extends DataSource
 		];
 
 		if ($this->passesFilters([ $request ])) {
-			$this->requests[] = $this->executingRequests[spl_object_hash($event->request)] = $request;
-			$this->executingPsrRequests[spl_object_hash($event->request->toPsrRequest())] = $request;
+			$this->requests[] = $this->executingRequests[spl_object_id($event->request)] = $request;
+			$this->executingPsrRequests[spl_object_id($event->request->toPsrRequest())] = $request;
 		}
 	}
 
 	// Update last request with response details and time taken
 	protected function responseReceived($event)
 	{
-		if (! isset($this->executingRequests[spl_object_hash($event->request)])) return;
+		if (! isset($this->executingRequests[spl_object_id($event->request)])) return;
 
-		$request = $this->executingRequests[spl_object_hash($event->request)];
+		$request = $this->executingRequests[spl_object_id($event->request)];
 		$stats = $event->response->handlerStats();
 
 		$responseData = $this->collectResponseBody($event->response->toPsrResponse()->getBody());
@@ -138,8 +138,8 @@ class LaravelHttpClientDataSource extends DataSource
 		];
 
 
-		unset($this->executingRequests[spl_object_hash($event->request)]);
-		unset($this->executingPsrRequests[spl_object_hash($event->request->toPsrRequest())]);
+		unset($this->executingRequests[spl_object_id($event->request)]);
+		unset($this->executingPsrRequests[spl_object_id($event->request->toPsrRequest())]);
 	}
 
 	protected function streamCapturingMiddleware()
@@ -147,7 +147,7 @@ class LaravelHttpClientDataSource extends DataSource
 		return function (callable $handler) {
 			return function (RequestInterface $request, array $options) use ($handler) {
 				return $handler($request, $options)->then(function (ResponseInterface $response) use ($request) {
-					$clockworkRequest = $this->executingPsrRequests[spl_object_hash($request)] ?? null;
+					$clockworkRequest = $this->executingPsrRequests[spl_object_id($request)] ?? null;
 
 					if ($clockworkRequest && ! $response->getBody()->isSeekable()) {
 						return $response->withBody(new ClockworkCapturingStream(
@@ -164,15 +164,15 @@ class LaravelHttpClientDataSource extends DataSource
 	// Update last request with error when connection fails
 	protected function connectionFailed($event)
 	{
-		if (! isset($this->executingRequests[spl_object_hash($event->request)])) return;
+		if (! isset($this->executingRequests[spl_object_id($event->request)])) return;
 
-		$request = $this->executingRequests[spl_object_hash($event->request)];
+		$request = $this->executingRequests[spl_object_id($event->request)];
 
 		$request->duration = (microtime(true) - $request->time) * 1000;
 		$request->error = 'connection-failed';
 
-		unset($this->executingRequests[spl_object_hash($event->request)]);
-		unset($this->executingPsrRequests[spl_object_hash($event->request->toPsrRequest())]);
+		unset($this->executingRequests[spl_object_id($event->request)]);
+		unset($this->executingPsrRequests[spl_object_id($event->request->toPsrRequest())]);
 	}
 
 	// Removes username and password from the URL
